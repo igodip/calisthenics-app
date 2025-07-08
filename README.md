@@ -1,4 +1,4 @@
-# prova3
+# Calisthenics App
 
 A new Flutter project.
 
