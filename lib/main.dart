@@ -1,8 +1,16 @@
+import 'package:Calisthenics/login.dart';
 import 'package:Calisthenics/training.dart';
 import 'package:flutter/material.dart';
 import 'package:Calisthenics/profile.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://qxpcpenymczssmiyxwyr.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4cGNwZW55bWN6c3NtaXl4d3lyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwOTUxNjcsImV4cCI6MjA2NzY3MTE2N30.UptZRydjQ6ZWU_gOALx5lgyfPoe5PFqNLxaaGX129As',          
+  );
+
   runApp(const CalisthenicsApp());
 }
 
@@ -44,7 +52,24 @@ class _HomePageState extends State<HomePage> {
   bool payed = false;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } else {
+        print('Utente loggato: ${user.email}');
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {    
     final List<Widget> pages = [
       HomeContent(payed: payed),
       const Center(child: Text('Impostazioni')),
@@ -71,6 +96,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+
 class HomeContent extends StatefulWidget {
   final bool payed;
 
@@ -88,18 +114,19 @@ class _HomeContentState extends State<HomeContent> {
       if (!widget.payed) {
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Avviso'),
-            content: const Text(
-              'Non hai ancora effettuato il pagamento del mese.\nNon hai ancora effettuato il pagamento del mese.\nNon hai ancora effettuato il pagamento del mese.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
+          builder:
+              (context) => AlertDialog(
+                title: const Text('Avviso'),
+                content: const Text(
+                  'Non hai ancora effettuato il pagamento del mese.\nNon hai ancora effettuato il pagamento del mese.\nNon hai ancora effettuato il pagamento del mese.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('OK'),
+                  ),
+                ],
               ),
-            ],
-          ),
         );
       }
     });
@@ -119,58 +146,63 @@ class _HomeContentState extends State<HomeContent> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Allenamento(
-                    data: [
-                      {
-                        "esercizio": "Chin up negativi",
-                        "settimana1": "5x2",
-                        "scarico": "-2serie",
-                        "recupero": "1-3'",
-                        "note": "6’ di negativa, se chiuse tutte le rep e serie, +1rep volta dopo",
-                        "timer": 15,
-                        "rep": 5,
-                      },
-                      {
-                        "esercizio": "Dip",
-                        "settimana1": "Armap2 15'",
-                        "scarico": "-2serie",
-                        "note": "Quando arrivi a 12 serie passa a triple volta dopo",
-                        "timer": 15,
-                        "rep": 12,
-                      },
-                      {
-                        "esercizio": "Pull up elastico viola",
-                        "settimana1": "Amrap1 12’",
-                        "scarico": "-2serie",
-                        "note": "Se arrivi a 12 singole, passa a doppie",
-                        "timer": 15,
-                        "rep": 12
-                      },
-                      {
-                        "esercizio": "Push up",
-                        "settimana1": "4x8",
-                        "scarico": "-1serie",
-                        "recupero": "2-3'",
-                        "note": "Se chiuse tutte le rep e le serie bene, +1rep a tutte",
-                        "timer": 15,
-                      },
-                      {
-                        "esercizio": "Australian 30",
-                        "settimana1": "3xMax tecnico",
-                        "scarico": "-1serie",
-                        "recupero": "90\"",
-                        "note": "Se chiuse tutte le rep e le serie bene, +1rep a tutte",
-                        "rep": 3,
-                      },
-                      {
-                        "esercizio": "Plank + barchetta raccolta",
-                        "settimana1": "3x30\" + Max",
-                        "recupero": "60\" fra giri",
-                        "note": "",
-                        "timer": 15,
-                      },
-                    ],
-                  ),
+                  builder:
+                      (context) => Allenamento(
+                        data: [
+                          {
+                            "esercizio": "Chin up negativi",
+                            "settimana1": "5x2",
+                            "scarico": "-2serie",
+                            "recupero": "1-3'",
+                            "note":
+                                "6’ di negativa, se chiuse tutte le rep e serie, +1rep volta dopo",
+                            "timer": 15,
+                            "rep": 5,
+                          },
+                          {
+                            "esercizio": "Dip",
+                            "settimana1": "Armap2 15'",
+                            "scarico": "-2serie",
+                            "note":
+                                "Quando arrivi a 12 serie passa a triple volta dopo",
+                            "timer": 15,
+                            "rep": 12,
+                          },
+                          {
+                            "esercizio": "Pull up elastico viola",
+                            "settimana1": "Amrap1 12’",
+                            "scarico": "-2serie",
+                            "note": "Se arrivi a 12 singole, passa a doppie",
+                            "timer": 15,
+                            "rep": 12,
+                          },
+                          {
+                            "esercizio": "Push up",
+                            "settimana1": "4x8",
+                            "scarico": "-1serie",
+                            "recupero": "2-3'",
+                            "note":
+                                "Se chiuse tutte le rep e le serie bene, +1rep a tutte",
+                            "timer": 15,
+                          },
+                          {
+                            "esercizio": "Australian 30",
+                            "settimana1": "3xMax tecnico",
+                            "scarico": "-1serie",
+                            "recupero": "90\"",
+                            "note":
+                                "Se chiuse tutte le rep e le serie bene, +1rep a tutte",
+                            "rep": 3,
+                          },
+                          {
+                            "esercizio": "Plank + barchetta raccolta",
+                            "settimana1": "3x30\" + Max",
+                            "recupero": "60\" fra giri",
+                            "note": "",
+                            "timer": 15,
+                          },
+                        ],
+                      ),
                 ),
               );
             },
@@ -180,9 +212,9 @@ class _HomeContentState extends State<HomeContent> {
             title: 'Giorno B',
             icon: Icons.settings,
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('In arrivo...')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('In arrivo...')));
             },
           ),
           const SizedBox(height: 16),

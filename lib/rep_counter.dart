@@ -4,12 +4,14 @@ class RepCounter extends StatefulWidget {
   final String title;
   final int initialCount;
   final int? targetCount; // Optional rep goal
+  final String timerType;
 
   const RepCounter({
     super.key,
     required this.title,
     this.initialCount = 0,
     this.targetCount,
+    required this.timerType,
   });
 
   @override

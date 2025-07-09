@@ -1,5 +1,27 @@
 // lib/profile.dart
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final supabase = Supabase.instance.client;
+
+Future<Map<String, String>> getUserData() async {
+  try {
+    final response = await supabase.from('users').select().single();
+    final username = response['username'] ?? 'Nome sconosciuto';
+    final email = response['mail'] ?? 'Mail Sconosciuta';
+
+    return {
+      'username': username,
+      'email': email,
+    };
+  } catch (e) {
+    print('Errore: $e');
+     return {
+      'username': 'Errore nel caricamento',
+      'email': 'Errore nel caricamento',
+    };
+  }
+}
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -20,16 +42,38 @@ class ProfilePage extends StatelessWidget {
               color: Colors.white,
             ),
           ),
+
           const SizedBox(height: 16),
-          const Text('Nome Utente', style: TextStyle(fontSize: 22)),
-          const SizedBox(height: 8),
-          const Text('user@email.com', style: TextStyle(color: Colors.grey)),
-          const SizedBox(height: 24),
+
+          FutureBuilder<Map<String, String>>(
+            future: getUserData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+                return const Text('Errore nel caricamento dati');
+              }
+
+              final data = snapshot.data!;
+              final username = data['username'] ?? 'Nome non trovato';
+              final email = data['email'] ?? 'Email non trovata';
+
+              return Column(
+                children: [
+                  Text(username, style: const TextStyle(fontSize: 22)),
+                  Text(email, style: const TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 4),
+                ],
+              );
+            },
+          ),
+
+
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('Modifica profilo'),
+              leading: const Icon(Icons.edit),
+              title: const Text('Modifica profilo'),
               onTap: () {
                 // Azione Modifica
               },
@@ -38,8 +82,8 @@ class ProfilePage extends StatelessWidget {
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Logout'),
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
               onTap: () {
                 // Azione logout
               },

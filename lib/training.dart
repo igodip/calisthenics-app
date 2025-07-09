@@ -92,7 +92,7 @@ class Allenamento extends StatelessWidget {
                                 MaterialPageRoute(
                                   builder:
                                       (_) =>
-                                      RepCounter(title: row['esercizio']),
+                                      RepCounter(title: row['esercizio'], timerType: ""), //NICOLò RICORDATI DI FARE IL TIMERTYPE
                                 ),
                               );
                             }
@@ -107,7 +107,7 @@ class Allenamento extends StatelessWidget {
                         _cell(row['note']),
                       ],
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
               SizedBox(width: 10),
