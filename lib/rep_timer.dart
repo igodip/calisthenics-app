@@ -63,11 +63,12 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
   void _incrementRep() {
     setState(() {
       _repCount++;
-      if (widget.targetRepCount != null && _repCount >= widget.targetRepCount!) {
+      if (widget.targetRepCount != null &&
+          _repCount >= widget.targetRepCount!) {
         // Optionally do something on reaching goal
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Rep goal reached!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Rep goal reached!')));
       }
     });
   }
@@ -95,66 +96,108 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
     super.dispose();
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(title: Text("Timer")),
+  //     body: Center(
+  //       child: Text(
+  //         _formattedTime,
+  //         style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
+  //       ),
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(16),
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(widget.title,
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 24),
-            // Timer section
-            Text(
-              _formattedTime,
-              style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Card(
+            margin: const EdgeInsets.all(16),
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: _isRunning ? _stopTimer : _startTimer,
-                  child: Text(_isRunning ? 'Pause' : 'Start'),
-                ),
-                const SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: _resetTimer,
-                  child: const Text('Reset'),
-                ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Timer section
+                  Text(
+                    _formattedTime,
+                    style: const TextStyle(
+                      fontSize: 60,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _isRunning ? _stopTimer : _startTimer,
+                        child: Text(_isRunning ? 'Pause' : 'Start'),
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: _resetTimer,
+                        child: const Text('Reset'),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 40),
+                  // Rep counter section
+                  Text(
+                    'Reps: $_repCount',
+                    style: const TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (widget.targetRepCount != null)
+                    Text(
+                      'Goal: ${widget.targetRepCount}',
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        iconSize: 36,
+                        icon: const Icon(Icons.remove),
+                        onPressed: _decrementRep,
+                      ),
+                      const SizedBox(width: 24),
+                      IconButton(
+                        iconSize: 36,
+                        icon: const Icon(Icons.add),
+                        onPressed: _incrementRep,
+                      ),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: _resetRep,
+                    child: const Text('Reset Reps'),
+                  ),
+                ],
+              ),
             ),
-            const Divider(height: 40),
-            // Rep counter section
-            Text('Reps: $_repCount',
-                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w600)),
-            if (widget.targetRepCount != null)
-              Text('Goal: ${widget.targetRepCount}',
-                  style: const TextStyle(fontSize: 16, color: Colors.grey)),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  iconSize: 36,
-                  icon: const Icon(Icons.remove),
-                  onPressed: _decrementRep,
-                ),
-                const SizedBox(width: 24),
-                IconButton(
-                  iconSize: 36,
-                  icon: const Icon(Icons.add),
-                  onPressed: _incrementRep,
-                ),
-              ],
-            ),
-            TextButton(onPressed: _resetRep, child: const Text('Reset Reps')),
-          ],
+          ),
         ),
       ),
     );
