@@ -162,7 +162,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
                   const Divider(height: 40),
                   // Rep counter section
                   Text(
-                    'Reps: $_repCount',
+                    'Serie: $_repCount',
                     style: const TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.w600,
