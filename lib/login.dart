@@ -1,60 +1,66 @@
+// lib/login.dart
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+    const LoginPage({super.key});
 
-  @override
-  State<LoginPage> createState() => _LoginPageState();
+    @override
+    State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  String errorText = '';
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    String errorText = '';
 
   Future<void> login() async {
     setState(() {
-      errorText = '';
+        errorText = '';
     });
 
     try {
-      final response = await supabase.auth.signInWithPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text,
-      );
+        final response = await supabase.auth.signInWithPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text,
+        );
 
-      final user = response.user;
-      if (user == null) {
-        setState(() {
-          errorText = 'Credenziali errate.';
-        });
-        return;
-      }
+        final user = response.user;
+        if (user == null) {
+            setState(() {
+            errorText = 'Credenziali errate.';
+            });
+            return;
+        }
 
-      final userData = await supabase
-          .from('users')
-          .select()
-          .eq('id', user.id)
-          .maybeSingle();
+        final userData = await supabase
+            .from('users')
+            .select()
+            .eq('uuid', user.id)
+            .limit(1)
+            .maybeSingle();
 
-      if (userData == null) {
-        setState(() {
-          errorText = 'Utente non registrato nella tabella users.';
-        });
-        return;
-      }
+        if (userData == null) {
+            // Inserisci automaticamente una riga
+            await supabase.from('users').insert({
+            'uuid': user.id,
+            'email': user.email,
+            'username': user.email!.split('@').first,
+            'active': true,
+            'payed': false,
+            });
 
-      final isActive = userData['active'] == true;
+            // final isActive = userData?['active'] == true;
 
-      if (!isActive) {
-        setState(() {
-          errorText = 'Account disattivato.';
-        });
-        return;
-      }
+            // if (!isActive) {
+            // setState(() {
+            //     errorText = 'Account disattivato.';
+            // });
+            // return;
+            // }
+        }
 
       Navigator.pushReplacementNamed(context, '/');
     } on AuthException catch (e) {
@@ -64,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       setState(() {
         errorText = 'Errore: ${e.toString()}';
+        print('Error: $e');
       });
     }
   }
@@ -90,7 +97,10 @@ class _LoginPageState extends State<LoginPage> {
             if (errorText.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
-                child: Text(errorText, style: const TextStyle(color: Colors.red)),
+                child: Text(
+                    errorText,
+                    style: const TextStyle(color: Colors.red),
+                ),
               ),
           ],
         ),
