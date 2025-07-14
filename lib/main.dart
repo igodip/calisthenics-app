@@ -1,3 +1,4 @@
+// lib/main.dart
 import 'package:Calisthenics/login.dart';
 import 'package:Calisthenics/training.dart';
 import 'package:flutter/material.dart';
@@ -33,9 +34,24 @@ class CalisthenicsApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const HomePage(title: 'Calisthenics'),
+      home: const AuthGate(),
       debugShowCheckedModeBanner: false,
     );
+  }
+}
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final user = Supabase.instance.client.auth.currentUser;
+
+    if (user != null) {
+      return const HomePage(title: 'Calisthenics');
+    } else {
+      return const LoginPage();
+    }
   }
 }
 
@@ -49,36 +65,50 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-  bool payed = false;
+  bool? payed;
+  
+  final supabase = Supabase.instance.client;
+
+  Future<bool?> getPayedStatus() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return null;
+
+    final response = await supabase
+        .from('users')
+        .select('payed')
+        .eq('uuid', user.id)
+        .maybeSingle();
+
+    if (response == null) return null;
+
+    return response['payed'] == true;
+  }
 
   @override
   void initState() {
     super.initState();
+    fetchPayedStatus();
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = Supabase.instance.client.auth.currentUser;
-      if (user == null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
-      } else {
-        print('Utente loggato: ${user.email}');
-      }
+  Future<void> fetchPayedStatus() async {
+    final status = await getPayedStatus();
+    setState(() {
+      payed = status;
     });
   }
 
   @override
   Widget build(BuildContext context) {    
     final List<Widget> pages = [
-      HomeContent(payed: payed),
+      HomeContent(payed: payed ?? false),
       const Center(child: Text('Impostazioni')),
       const ProfilePage(),
     ];
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: pages[selectedIndex],
+      body: payed == null ? const Center(child: CircularProgressIndicator()) : pages[selectedIndex],
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
         onTap: (int index) {
