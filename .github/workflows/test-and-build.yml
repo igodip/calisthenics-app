@@ -10,7 +10,7 @@ on:
 
 jobs:
   main:
-    runs-on: macos-latest
+    runs-on: macOS
 
     steps:
 
@@ -27,7 +27,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.22.2'
+          flutter-version-file: pubspec.yaml # path to pubspec.yaml
 
       - name: Get Flutter packages
         run: |
