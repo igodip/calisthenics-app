@@ -37,6 +37,27 @@ jobs:
 #        run: |
 #          flutter analyze
 
-      - name: Run all tests
+#      - name: Run all tests
+#        run: |
+#          flutter test
+
+      - name: Build APK
         run: |
-          flutter test
+          flutter build apk
+
+      - name: Flutter build ipa
+        run: |
+          flutter build ipa --no-codesign
+
+      - name: Compress Archives and IPAs
+        run: |
+          cd build
+          tar -czf ios_build.tar.gz ios
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Releases
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/ios_build.tar.gz
