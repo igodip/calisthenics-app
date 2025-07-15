@@ -10,7 +10,7 @@ on:
 
 jobs:
   main:
-    runs-on: macOS
+    runs-on: macos-latest
 
     steps:
 
