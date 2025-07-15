@@ -29,7 +29,6 @@ Future<Map<String, String>> getUserData() async {
       'email': email,
     };
   } catch (e) {
-    print('Errore: $e');
     return {
       'username': 'Errore nel caricamento',
       'email': 'Errore nel caricamento',

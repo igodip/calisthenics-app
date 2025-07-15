@@ -70,7 +70,6 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       setState(() {
         errorText = 'Errore: ${e.toString()}';
-        print('Error: $e');
       });
     }
   }
