@@ -1,6 +1,5 @@
 // lib/main.dart
 import 'package:Calisthenics/login.dart';
-import 'package:Calisthenics/training.dart';
 import 'package:flutter/material.dart';
 import 'package:Calisthenics/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -54,7 +53,6 @@ class AuthGate extends StatelessWidget {
     } else {
       return const LoginPage();
     }
-    return const HomePage(title: 'Calisthenics');
   }
 }
 
