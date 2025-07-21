@@ -4,10 +4,10 @@ import 'package:Calisthenics/result.dart';
 import 'package:Calisthenics/timer.dart';
 import 'package:flutter/material.dart';
 
-class Allenamento extends StatelessWidget {
+class Training extends StatelessWidget {
   final List<Map<String, dynamic>> data;
 
-  const Allenamento({super.key, required this.data});
+  const Training({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {

@@ -37,6 +37,10 @@ dependencies:
   mrx_charts: ^0.1.3
   supabase_flutter: ^2.9.1
   shared_preferences: ^2.2.2
+  flutter_reactive_ble: ^5.0.2
+  provider: ^6.1.1
+  fl_chart: ^0.66.0
+  change_app_package_name: ^1.5.0
 
 dev_dependencies:
   flutter_test:
