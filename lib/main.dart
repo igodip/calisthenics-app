@@ -1,16 +1,17 @@
 // lib/main.dart
-import 'package:Calisthenics/login.dart';
+import 'package:calisync/login.dart';
 import 'package:flutter/material.dart';
-import 'package:Calisthenics/profile.dart';
+import 'package:calisync/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'google_login.dart';
 import 'home_content.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
-    url: 'https://qxpcpenymczssmiyxwyr.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4cGNwZW55bWN6c3NtaXl4d3lyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwOTUxNjcsImV4cCI6MjA2NzY3MTE2N30.UptZRydjQ6ZWU_gOALx5lgyfPoe5PFqNLxaaGX129As',          
+    url: 'https://jrqjysycoqhlnyufhliy.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpycWp5c3ljb3FobG55dWZobGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0MzM0NTIsImV4cCI6MjA2ODAwOTQ1Mn0.3BVA-Ar9YtLGGO12Gt6NQkMl2cn18E_b48PGtlFxxCw',
   );
 
   runApp(const CalisthenicsApp());
@@ -51,7 +52,7 @@ class AuthGate extends StatelessWidget {
     if (user != null) {
       return const HomePage(title: 'Calisthenics');
     } else {
-      return const LoginPage();
+      return const GoogleLoginPage();
     }
   }
 }

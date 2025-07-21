@@ -1,6 +1,6 @@
-import 'package:Calisthenics/ble_chart.dart';
-import 'package:Calisthenics/selection_card.dart';
-import 'package:Calisthenics/training.dart';
+import 'package:calisync/ble_chart.dart';
+import 'package:calisync/selection_card.dart';
+import 'package:calisync/training.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 

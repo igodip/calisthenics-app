@@ -1,7 +1,9 @@
 // lib/profile.dart
-import 'package:Calisthenics/login.dart';
+import 'package:calisync/login.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'google_login.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -43,7 +45,7 @@ Future<void> logout(BuildContext context) async {
     if (context.mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => GoogleLoginPage()),
       );
     }
   } catch (e) {

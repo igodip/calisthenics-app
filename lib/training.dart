@@ -1,7 +1,7 @@
-import 'package:Calisthenics/rep_counter.dart';
-import 'package:Calisthenics/rep_timer.dart';
-import 'package:Calisthenics/result.dart';
-import 'package:Calisthenics/timer.dart';
+import 'package:calisync/rep_counter.dart';
+import 'package:calisync/rep_timer.dart';
+import 'package:calisync/result.dart';
+import 'package:calisync/timer.dart';
 import 'package:flutter/material.dart';
 
 class Training extends StatelessWidget {

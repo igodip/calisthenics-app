@@ -1,4 +1,4 @@
-name: Calisthenics
+name: calisync
 description: "Calisthenics App."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -41,6 +41,7 @@ dependencies:
   provider: ^6.1.1
   fl_chart: ^0.66.0
   change_app_package_name: ^1.5.0
+  app_links: ^6.0.0
 
 dev_dependencies:
   flutter_test:

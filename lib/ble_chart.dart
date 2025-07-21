@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
-var SERVICE_UUID = Uuid.parse("12345678-1234-5678-1234-56789abcdef0");
-var CHARACTERISTIC_UUID = Uuid.parse("abcdef01-1234-5678-1234-56789abcdef0");
+var serviceUuid = Uuid.parse("12345678-1234-5678-1234-56789abcdef0");
+var characteristicUuid = Uuid.parse("abcdef01-1234-5678-1234-56789abcdef0");
 
 class BLEGraph extends StatefulWidget {
   final FlutterReactiveBle ble;
-  BLEGraph({required this.ble});
+  const BLEGraph({super.key, required this.ble});
 
   @override
   _BLEGraphState createState() => _BLEGraphState();
@@ -38,8 +38,8 @@ class _BLEGraphState extends State<BLEGraph> {
         widget.ble.connectToDevice(id: device.id).listen((_) {});
         final char = QualifiedCharacteristic(
           deviceId: device.id,
-          serviceId: SERVICE_UUID,
-          characteristicId: CHARACTERISTIC_UUID,
+          serviceId: serviceUuid,
+          characteristicId: characteristicUuid,
         );
         widget.ble.subscribeToCharacteristic(char).listen((data) {
           final line = String.fromCharCodes(data);

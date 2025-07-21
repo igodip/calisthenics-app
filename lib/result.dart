@@ -31,7 +31,7 @@ class HistogramChart extends StatelessWidget {
                   max: 13.0,
                   min: 7.0,
                   textStyle: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white,
                     fontSize: 10.0,
                   ),
                 ),
@@ -40,7 +40,7 @@ class HistogramChart extends StatelessWidget {
                   max: 300.0,
                   min: 0.0,
                   textStyle: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white,
                     fontSize: 10.0,
                   ),
                 ),

@@ -96,19 +96,6 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
     super.dispose();
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(title: Text("Timer")),
-  //     body: Center(
-  //       child: Text(
-  //         _formattedTime,
-  //         style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
