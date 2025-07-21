@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {    
     final List<Widget> pages = [
-      HomeContent(payed: payed ?? false),
+      HomeContent(),
       const Center(child: Text('Impostazioni')),
       const ProfilePage(),
     ];
