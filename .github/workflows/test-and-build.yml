@@ -28,21 +28,6 @@ jobs:
           echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
           echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
 
-      - name: Check OpenSSL
-        run: openssl version -a
-
-      - name: Debug P12
-        run: |
-          openssl pkcs12 -info -in cert.p12 -passin pass:${{ secrets.IOS_P12_PASSWORD }} || true
-
-      - name: Authenticate with Apple
-        run: |
-          # Sign in to Apple so Xcode can fetch provisioning profiles
-          xcrun notarytool store-credentials "AC_PASSWORD" \
-            --apple-id "${{ secrets.APPLE_ID }}" \
-            --team-id "${{ secrets.APPLE_TEAM_ID }}" \
-            --password "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
-
       - name: Create and Unlock Keychain
         run: |
           KEYCHAIN=build.keychain
@@ -52,6 +37,14 @@ jobs:
           security default-keychain -s $KEYCHAIN
           security unlock-keychain -p "" $KEYCHAIN
           security set-keychain-settings $KEYCHAIN
+
+      - name: Authenticate with Apple
+        run: |
+          # Sign in to Apple so Xcode can fetch provisioning profiles
+          xcrun notarytool store-credentials "AC_PASSWORD" \
+            --apple-id "${{ secrets.APPLE_ID }}" \
+            --team-id "${{ secrets.APPLE_TEAM_ID }}" \
+            --password "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
 
       - name: Install Provisioning Profile
         run: |
