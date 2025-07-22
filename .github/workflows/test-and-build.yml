@@ -68,8 +68,8 @@ jobs:
 
       - name: Decode Certificate and Provisioning Profile
         run: |
-          echo "${{ secrets.P12_BASE64 }}" | base64 --decode > cert.p12
-          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > profile.mobileprovision
+          echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
+          echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
 
       - name: Create and Unlock Keychain
         run: |
