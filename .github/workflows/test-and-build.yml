@@ -109,3 +109,11 @@ jobs:
           path: |
             ${{steps.sign_app.outputs.signedReleaseFile}}
             build/ios_build.tar.gz
+      - name: Upload to TestFlight
+        if: success()
+        run: |
+          xcrun altool --upload-app \
+            -t ios \
+            -f build/Runner.ipa \
+            -u "${{ secrets.APPLE_ID }}" \
+            -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
