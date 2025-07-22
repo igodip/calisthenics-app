@@ -30,7 +30,6 @@ jobs:
 
       - name: Debug P12
         run: |
-          echo "${{ secrets.P12_BASE64 }}" | base64 --decode > cert.p12
           openssl pkcs12 -info -in cert.p12 -passin pass:${{ secrets.P12_PASSWORD }} || true
 
       - name: Create and Unlock Keychain
