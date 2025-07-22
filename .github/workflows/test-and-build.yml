@@ -41,9 +41,9 @@ jobs:
 #        run: |
 #          flutter test
 
-      - name: Build APK
+      - name: Build app bundle
         run: |
-          flutter build --release apk
+          flutter build appbundle --release
 
       - name: Flutter build ipa
         run: |
@@ -54,11 +54,11 @@ jobs:
           cd build
           tar -czf ios_build.tar.gz ios
 
-      - name: Sign app APK
+      - name: Sign app bundle
         id: sign_app
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: build/app/outputs/flutter-apk
+          releaseDirectory: build/app/outputs/bundle/release
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
