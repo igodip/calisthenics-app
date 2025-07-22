@@ -38,30 +38,30 @@ jobs:
           security list-keychains -s $KEYCHAIN
           security default-keychain -s $KEYCHAIN
           security set-keychain-settings $KEYCHAIN
+          security find-identity -p codesigning $KEYCHAIN
 
-      - name: Authenticate with Apple
-        run: |
-          # Sign in to Apple so Xcode can fetch provisioning profiles
-          xcrun notarytool store-credentials "AC_PASSWORD" \
-            --apple-id "${{ secrets.APPLE_ID }}" \
-            --team-id "${{ secrets.APPLE_TEAM_ID }}" \
-            --password "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
+#      - name: Authenticate with Apple
+#        run: |
+#          # Sign in to Apple so Xcode can fetch provisioning profiles
+#          xcrun notarytool store-credentials "AC_PASSWORD" \
+#            --apple-id "${{ secrets.APPLE_ID }}" \
+#            --team-id "${{ secrets.APPLE_TEAM_ID }}" \
+#            --password "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
 
       - name: Install Provisioning Profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Check Xcode build settings with provisioning updates
-        working-directory: ios
-        env:
-          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-        run: |
-          xcodebuild -workspace Runner.xcworkspace \
-          -scheme Runner \
-          -showBuildSettings \
-          -allowProvisioningUpdates \
-          DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM
+#      - name: Check Xcode build settings with provisioning updates
+#        working-directory: ios
+#        env:
+#          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+#        run: |
+#          xcodebuild -workspace Runner.xcworkspace \
+#          -scheme Runner \
+#          -showBuildSettings \
+#          DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -81,9 +81,9 @@ jobs:
 #        run: |
 #          flutter test
 
-      - name: Build app bundle
-        run: |
-          flutter build appbundle --release
+#      - name: Build app bundle
+#        run: |
+#          flutter build appbundle --release
 
       - name: Flutter build ipa
         run: |
@@ -94,32 +94,31 @@ jobs:
           cd build
           tar -czf ios_build.tar.gz ios
 
-      - name: Sign app bundle
-        id: sign_app
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: build/app/outputs/bundle/release
-          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-          alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
+#      - name: Sign app bundle
+#        id: sign_app
+#        uses: r0adkll/sign-android-release@v1
+#        with:
+#          releaseDirectory: build/app/outputs/bundle/release
+#          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+#          alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+#          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+#          keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
+#        env:
+#          BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Archive with Xcode
         env:
           DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-          PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.PROVISIONING_PROFILE_UUID }}
+          PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}
         run: |
           xcodebuild -workspace ios/Runner.xcworkspace \
             -scheme Runner \
             -sdk iphoneos \
             -configuration Release \
             archive -archivePath build/Runner.xcarchive \
-            -allowProvisioningUpdates \
             DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM \
-            PROVISIONING_PROFILE_SPECIFIER=$PROVISIONING_PROFILE_SPECIFIER \ 
-            CODE_SIGN_STYLE=Manual
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution"
 
       - name: Export IPA
         run: |
