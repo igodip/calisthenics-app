@@ -28,6 +28,9 @@ jobs:
           echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
           echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
 
+      - name: Check OpenSSL
+        run: openssl version -a
+
       - name: Debug P12
         run: |
           openssl pkcs12 -info -in cert.p12 -passin pass:${{ secrets.P12_PASSWORD }} || true
