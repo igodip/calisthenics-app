@@ -9,9 +9,13 @@
   <key>provisioningProfiles</key>
   <dict>
     <key>com.idipaolo.calisync</key>
-    <string>CaliSync</string>
+    <string>4552e6aa-3643-4d67-818c-350623319f37</string>
   </dict>
   <key>teamID</key>
   <string>77JXY423ZW</string>
+  <key>stripSwiftSymbols</key>
+  <key>destination</key>
+  <string>export</string>
+  <true/>
 </dict>
 </plist>
