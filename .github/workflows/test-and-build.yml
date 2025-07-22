@@ -66,6 +66,42 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
+      - name: Decode Certificate and Provisioning Profile
+        run: |
+          echo "${{ secrets.P12_BASE64 }}" | base64 --decode > cert.p12
+          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > profile.mobileprovision
+
+      - name: Create and Unlock Keychain
+        run: |
+          KEYCHAIN=build.keychain
+          security create-keychain -p "" $KEYCHAIN
+          security import cert.p12 -k $KEYCHAIN -P "${{ secrets.P12_PASSWORD }}" -T /usr/bin/codesign
+          security list-keychains -s $KEYCHAIN
+          security default-keychain -s $KEYCHAIN
+          security unlock-keychain -p "" $KEYCHAIN
+          security set-keychain-settings $KEYCHAIN
+
+      - name: Install Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Archive with Xcode
+        run: |
+          xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -sdk iphoneos \
+            -configuration Release \
+            archive -archivePath build/Runner.xcarchive \
+            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportOptionsPlist ios/ExportOptions.plist \
+            -exportPath build
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
