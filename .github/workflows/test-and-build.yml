@@ -29,6 +29,26 @@ jobs:
           channel: 'stable'
           flutter-version: 3.29.2
 
+      - name: Decode Certificate and Provisioning Profile
+        run: |
+          echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
+          echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
+
+      - name: Create and Unlock Keychain
+        run: |
+          KEYCHAIN=build.keychain
+          security create-keychain -p "" $KEYCHAIN
+          security import cert.p12 -k $KEYCHAIN -P ""${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
+          security list-keychains -s $KEYCHAIN
+          security default-keychain -s $KEYCHAIN
+          security unlock-keychain -p "" $KEYCHAIN
+          security set-keychain-settings $KEYCHAIN
+
+      - name: Install Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
       - name: Get Flutter packages
         run: |
           flutter pub get
@@ -65,26 +85,6 @@ jobs:
           keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
-
-      - name: Decode Certificate and Provisioning Profile
-        run: |
-          echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
-          echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
-
-      - name: Create and Unlock Keychain
-        run: |
-          KEYCHAIN=build.keychain
-          security create-keychain -p "" $KEYCHAIN
-          security import cert.p12 -k $KEYCHAIN -P "" -T /usr/bin/codesign
-          security list-keychains -s $KEYCHAIN
-          security default-keychain -s $KEYCHAIN
-          security unlock-keychain -p "" $KEYCHAIN
-          security set-keychain-settings $KEYCHAIN
-
-      - name: Install Provisioning Profile
-        run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Archive with Xcode
         run: |
