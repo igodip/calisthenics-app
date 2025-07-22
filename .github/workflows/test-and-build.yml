@@ -108,7 +108,7 @@ jobs:
             -configuration Release \
             archive -archivePath build/Runner.xcarchive \
             -allowProvisioningUpdates \
-            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }}
+            "DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }}"
 
       - name: Export IPA
         run: |
