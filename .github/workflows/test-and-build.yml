@@ -32,10 +32,11 @@ jobs:
         run: |
           KEYCHAIN=build.keychain
           security create-keychain -p "" $KEYCHAIN
+          security set-keychain-settings -lut 21600
+          security unlock-keychain -p "" $KEYCHAIN
           security import cert.p12 -k $KEYCHAIN -P "${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
           security list-keychains -s $KEYCHAIN
           security default-keychain -s $KEYCHAIN
-          security unlock-keychain -p "" $KEYCHAIN
           security set-keychain-settings $KEYCHAIN
 
       - name: Authenticate with Apple
@@ -106,17 +107,17 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Archive with Xcode
-        working-directory: ios
         env:
           DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          xcodebuild -workspace Runner.xcworkspace \
+          xcodebuild -workspace ios/Runner.xcworkspace \
             -scheme Runner \
             -sdk iphoneos \
             -configuration Release \
             archive -archivePath build/Runner.xcarchive \
             -allowProvisioningUpdates \
-            DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM
+            DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM \
+            CODE_SIGN_STYLE=Manual
 
       - name: Export IPA
         run: |
