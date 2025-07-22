@@ -51,9 +51,16 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Verify Apple credentials stored
+      - name: Check Xcode build settings with provisioning updates
+        working-directory: ios
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          xcodebuild -showBuildSettings -allowProvisioningUpdates
+          xcodebuild -workspace Runner.xcworkspace \
+          -scheme Runner \
+          -showBuildSettings \
+          -allowProvisioningUpdates \
+          DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
