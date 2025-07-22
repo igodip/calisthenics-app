@@ -118,7 +118,7 @@ jobs:
             archive -archivePath build/Runner.xcarchive \
             -allowProvisioningUpdates \
             DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM \
-            PROVISIONING_PROFILE_SPECIFIER=$PROVISIONING_PROFILE_SPECIFIER
+            PROVISIONING_PROFILE_SPECIFIER=$PROVISIONING_PROFILE_SPECIFIER \ 
             CODE_SIGN_STYLE=Manual
 
       - name: Export IPA
