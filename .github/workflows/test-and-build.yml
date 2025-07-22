@@ -33,7 +33,7 @@ jobs:
 
       - name: Debug P12
         run: |
-          openssl pkcs12 -info -in cert.p12 -passin pass:${{ secrets.P12_PASSWORD }} || true
+          openssl pkcs12 -info -in cert.p12 -passin pass:${{ secrets.IOS_P12_PASSWORD }} || true
 
       - name: Create and Unlock Keychain
         run: |
@@ -100,6 +100,7 @@ jobs:
             -sdk iphoneos \
             -configuration Release \
             archive -archivePath build/Runner.xcarchive \
+            -allowProvisioningUpdates \
             DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }}
 
       - name: Export IPA
@@ -107,7 +108,8 @@ jobs:
           xcodebuild -exportArchive \
             -archivePath build/Runner.xcarchive \
             -exportOptionsPlist ios/ExportOptions.plist \
-            -exportPath build
+            -exportPath build \
+            -allowProvisioningUpdates
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
