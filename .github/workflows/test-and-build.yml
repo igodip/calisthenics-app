@@ -43,11 +43,11 @@ jobs:
 
       - name: Build APK
         run: |
-          flutter build apk
+          flutter build --release apk
 
       - name: Flutter build ipa
         run: |
-          flutter build ipa --no-codesign
+          flutter build ipa --release --no-codesign
 
       - name: Compress Archives and IPAs
         run: |
