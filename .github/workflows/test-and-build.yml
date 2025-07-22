@@ -23,12 +23,6 @@ jobs:
           distribution: 'zulu'
           java-version: "18.x"
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          flutter-version: 3.29.2
-
       - name: Decode Certificate and Provisioning Profile
         run: |
           echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
@@ -48,6 +42,12 @@ jobs:
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: 3.29.2
 
       - name: Get Flutter packages
         run: |
