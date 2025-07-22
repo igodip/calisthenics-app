@@ -38,7 +38,7 @@ jobs:
         run: |
           KEYCHAIN=build.keychain
           security create-keychain -p "" $KEYCHAIN
-          security import cert.p12 -k $KEYCHAIN -P "${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
+          security import cert.p12 -k $KEYCHAIN -p "" -T /usr/bin/codesign
           security list-keychains -s $KEYCHAIN
           security default-keychain -s $KEYCHAIN
           security unlock-keychain -p "" $KEYCHAIN
