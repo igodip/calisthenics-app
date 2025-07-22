@@ -57,10 +57,11 @@ jobs:
       - name: Sign app APK
         id: sign_app
         uses: r0adkll/sign-android-release@v1
-        signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-        alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-        keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-        keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
+        with:
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
