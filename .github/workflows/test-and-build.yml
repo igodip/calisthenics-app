@@ -40,7 +40,7 @@ jobs:
           # Sign in to Apple so Xcode can fetch provisioning profiles
           xcrun altool --list-providers \
             -u "${{ secrets.APPLE_ID }}" \
-            -p "${{ secrets.APPLE_PASSWORD }}"
+            -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
 
       - name: Create and Unlock Keychain
         run: |
