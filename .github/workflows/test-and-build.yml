@@ -106,14 +106,17 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Archive with Xcode
+        working-directory: ios
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          xcodebuild -workspace ios/Runner.xcworkspace \
+          xcodebuild -workspace Runner.xcworkspace \
             -scheme Runner \
             -sdk iphoneos \
             -configuration Release \
             archive -archivePath build/Runner.xcarchive \
             -allowProvisioningUpdates \
-            "DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }}"
+            DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM
 
       - name: Export IPA
         run: |
