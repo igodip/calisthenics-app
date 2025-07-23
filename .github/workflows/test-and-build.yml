@@ -53,24 +53,6 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Patch Podfile to disable code signing for pods
-        working-directory: ios
-        run: |
-          if grep -q "post_install" Podfile; then
-            sed -i.bak '/post_install do/,/end/d' Podfile
-          fi
-          echo "" >> Podfile
-          echo "post_install do |installer|" >> Podfile
-          echo "  installer.pods_project.targets.each do |target|" >> Podfile
-          echo "    target.build_configurations.each do |config|" >> Podfile
-          echo "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'" >> Podfile
-          echo "      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'" >> Podfile
-          echo "      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''" >> Podfile
-          echo "      config.build_settings['PROVISIONING_PROFILE'] = ''" >> Podfile
-          echo "    end" >> Podfile
-          echo "  end" >> Podfile
-          echo "end" >> Podfile
-
 #      - name: Check Xcode build settings with provisioning updates
 #        working-directory: ios
 #        env:
