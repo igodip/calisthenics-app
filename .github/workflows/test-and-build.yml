@@ -59,9 +59,7 @@ jobs:
           if grep -q "post_install" Podfile; then
             sed -i.bak '/post_install do/,/end/d' Podfile
           fi
-
           cat << 'EOF' >> Podfile
-
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
