@@ -118,7 +118,6 @@ jobs:
           echo "    end" >> Podfile
           echo "  end" >> Podfile
           echo "end" >> Podfile
-          echo "end" >> Podfile 
           
           cat Podfile
           
