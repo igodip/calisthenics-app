@@ -117,6 +117,7 @@ jobs:
             -configuration Release \
             archive -archivePath build/Runner.xcarchive \
             DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM \
+            PROVISIONING_PROFILE_SPECIFIER=$PROVISIONING_PROFILE_SPECIFIER \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution"
 
