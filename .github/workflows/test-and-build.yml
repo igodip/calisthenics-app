@@ -90,10 +90,9 @@ jobs:
           flutter build ipa --release --no-codesign
 
       - name: Check Podfile, patch for no code signing, and rebuild
-        working-directory: ios
         run: |
           # Abort if Podfile is missing
-          if [ ! -f Podfile ]; then
+          if [ ! -f ios/Podfile ]; then
           echo "❌ Error: Podfile not found in ios/. Did you run 'flutter create .'?"
           exit 1
           fi
@@ -119,15 +118,13 @@ jobs:
 #          echo "  end" >> Podfile
 #          echo "end" >> Podfile
           
-          cat Podfile
+          cat ios/Podfile
           
           # Go back to project root and rebuild Flutter iOS
-          cd ..
           flutter pub get
           flutter build ios --release --no-codesign
           
           # Back into ios dir, install pods
-          cd ios
           pod install --repo-update
 
       - name: Compress Archives and IPAs
