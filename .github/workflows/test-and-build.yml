@@ -102,7 +102,7 @@ jobs:
     
     
           # Remove any extra standalone 'end' that might break structure
-          sed -i.bak '/^end$/d' Podfile
+          sed -i.bak '${/^end$/d;}' Podfile
           
           # Remove any existing post_install block
           sed -i.bak '/post_install do/,/end/d' Podfile
