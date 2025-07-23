@@ -89,6 +89,42 @@ jobs:
         run: |
           flutter build ipa --release --no-codesign
 
+      - name: Check Podfile, patch for no code signing, and rebuild
+        working-directory: ios
+        run: |
+          # Abort if Podfile is missing
+          if [ ! -f Podfile ]; then
+          echo "❌ Error: Podfile not found in ios/. Did you run 'flutter create .'?"
+          exit 1
+          fi
+          
+          echo "✅ Found Podfile, patching to disable Pod code signing..."
+          
+          # Remove any existing post_install block
+          sed -i.bak '/post_install do/,/end/d' Podfile
+          
+          # Append new post_install block line by line
+          echo "" >> Podfile
+          echo "post_install do |installer|" >> Podfile
+          echo "  installer.pods_project.targets.each do |target|" >> Podfile
+          echo "    target.build_configurations.each do |config|" >> Podfile
+          echo "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'" >> Podfile
+          echo "      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'" >> Podfile
+          echo "      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''" >> Podfile
+          echo "      config.build_settings['PROVISIONING_PROFILE'] = ''" >> Podfile
+          echo "    end" >> Podfile
+          echo "  end" >> Podfile
+          echo "end" >> Podfile
+          
+          # Go back to project root and rebuild Flutter iOS
+          cd ..
+          flutter pub get
+          flutter build ios --release --no-codesign
+          
+          # Back into ios dir, install pods
+          cd ios
+          pod install --repo-update
+
       - name: Compress Archives and IPAs
         run: |
           cd build
