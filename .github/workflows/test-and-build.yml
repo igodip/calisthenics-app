@@ -116,6 +116,8 @@ jobs:
           echo "  end" >> Podfile
           echo "end" >> Podfile
           
+          cat Podfile
+          
           # Go back to project root and rebuild Flutter iOS
           cd ..
           flutter pub get
