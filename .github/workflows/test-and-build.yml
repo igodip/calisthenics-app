@@ -40,13 +40,13 @@ jobs:
           security set-keychain-settings $KEYCHAIN
           security find-identity -p codesigning $KEYCHAIN
 
-#      - name: Authenticate with Apple
-#        run: |
-#          # Sign in to Apple so Xcode can fetch provisioning profiles
-#          xcrun notarytool store-credentials "AC_PASSWORD" \
-#            --apple-id "${{ secrets.APPLE_ID }}" \
-#            --team-id "${{ secrets.APPLE_TEAM_ID }}" \
-#            --password "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
+      - name: Authenticate with Apple
+        run: |
+          # Sign in to Apple so Xcode can fetch provisioning profiles
+          xcrun notarytool store-credentials "AC_PASSWORD" \
+            --apple-id "${{ secrets.APPLE_ID }}" \
+            --team-id "${{ secrets.APPLE_TEAM_ID }}" \
+            --password "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
 
       - name: Install Provisioning Profile
         run: |
@@ -85,9 +85,19 @@ jobs:
 #        run: |
 #          flutter build appbundle --release
 
+#      - name: Authenticate with Apple (legacy)
+#        env:
+#          APPLE_ID: ${{ secrets.APPLE_ID }}
+#          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+#        run: |
+#          xcrun altool --list-providers \
+#          -u "$APPLE_ID" \
+#          -p "$APPLE_APP_SPECIFIC_PASSWORD"
+
       - name: Flutter build ipa
         run: |
-          flutter build ipa --release --no-codesign
+          export EXTRA_XCODE_FLAGS="--keychain-profile AC_PASSWORD"
+          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
 
       - name: Compress Archives and IPAs
         run: |
@@ -117,6 +127,7 @@ jobs:
             -configuration Release \
             archive -archivePath build/Runner.xcarchive \
             DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM \
+            PROVISIONING_PROFILE_SPECIFIER=$PROVISIONING_PROFILE_SPECIFIER \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution"
 

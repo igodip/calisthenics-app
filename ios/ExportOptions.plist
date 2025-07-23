@@ -5,12 +5,7 @@
   <key>method</key>
   <string>app-store</string>
   <key>signingStyle</key>
-  <string>manual</string>
-  <key>provisioningProfiles</key>
-  <dict>
-    <key>com.idipaolo.calisync</key>
-    <string>4552e6aa-3643-4d67-818c-350623319f37</string>
-  </dict>
+  <string>automatic</string>
   <key>teamID</key>
   <string>77JXY423ZW</string>
   <key>stripSwiftSymbols</key>
