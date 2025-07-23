@@ -97,18 +97,18 @@ jobs:
           exit 1
           fi
           
-          sed -i.bak '/post_install do/,/end/d' Podfile
-          echo "" >> Podfile
-          echo "post_install do |installer|" >> Podfile
-          echo "  installer.pods_project.targets.each do |target|" >> Podfile
-          echo "    target.build_configurations.each do |config|" >> Podfile
-          echo "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'" >> Podfile
-          echo "      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'" >> Podfile
-          echo "      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''" >> Podfile
-          echo "      config.build_settings['PROVISIONING_PROFILE'] = ''" >> Podfile
-          echo "    end" >> Podfile
-          echo "  end" >> Podfile
-          echo "end" >> Podfile
+          sed -i.bak '/post_install do/,/end/d' ios/Podfile
+          echo "" >> ios/Podfile
+          echo "post_install do |installer|" >> ios/Podfile
+          echo "  installer.pods_project.targets.each do |target|" >> ios/Podfile
+          echo "    target.build_configurations.each do |config|" >> ios/Podfile
+          echo "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'" >> ios/Podfile
+          echo "      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'" >> ios/Podfile
+          echo "      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''" >> ios/Podfile
+          echo "      config.build_settings['PROVISIONING_PROFILE'] = ''" >> ios/Podfile
+          echo "    end" >> ios/Podfile
+          echo "  end" >> ios/Podfile
+          echo "end" >> ios/Podfile
           
           cat ios/Podfile
           
