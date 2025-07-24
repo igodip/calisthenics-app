@@ -117,6 +117,7 @@ jobs:
         working-directory: ios
         run: |
           # Back into ios dir, install pods
+          rm -rf Pods Podfile.lock
           pod install --repo-update
           pod update
 
