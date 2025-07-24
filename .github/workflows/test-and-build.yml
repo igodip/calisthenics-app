@@ -112,18 +112,18 @@ jobs:
           echo "end" >> ios/Podfile
           echo "end" >> ios/Podfile
           
-          
           cat ios/Podfile
-          
-          # Go back to project root and rebuild Flutter iOS
-          flutter pub get
-          flutter build ios --release --no-codesign
 
       - name: Install Pods
         working-directory: ios
         run: |
           # Back into ios dir, install pods
           pod install --repo-update
+          pod update
+
+      - name: Flutter build ipa
+        run: |
+          flutter build ipa --release --no-codesign
 
       - name: Compress Archives and IPAs
         run: |
