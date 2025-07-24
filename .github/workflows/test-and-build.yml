@@ -98,6 +98,7 @@ jobs:
           fi
           
           sed -i.bak '/post_install do/,/end/d' ios/Podfile
+          sed -i.bak '${/^end$/d;}' ios/Podfile
           echo "" >> ios/Podfile
           echo "post_install do |installer|" >> ios/Podfile
           echo "  installer.pods_project.targets.each do |target|" >> ios/Podfile
