@@ -96,6 +96,7 @@ jobs:
 
       - name: Flutter build ipa
         run: |
+          export EXTRA_XCODE_FLAGS="--keychain-profile AC_PASSWORD"
           flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
 
       - name: Compress Archives and IPAs
