@@ -110,7 +110,6 @@ jobs:
           echo "    end" >> ios/Podfile
           echo "  end" >> ios/Podfile
           echo "end" >> ios/Podfile
-          echo "end" >> ios/Podfile
           
           cat ios/Podfile
 
