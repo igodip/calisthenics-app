@@ -87,43 +87,8 @@ jobs:
 
       - name: Flutter build ipa
         run: |
-          flutter build ipa --release --no-codesign
+          flutter build ipa —release —export-options-plist=ios/ExportOptions.plist
 
-      - name: Check Podfile, patch for no code signing, and rebuild
-        run: |
-          # Abort if Podfile is missing
-          if [ ! -f ios/Podfile ]; then
-          echo "❌ Error: Podfile not found in ios/. Did you run 'flutter create .'?"
-          exit 1
-          fi
-          
-          sed -i.bak '/post_install do/,/end/d' ios/Podfile
-          sed -i.bak '${/^end$/d;}' ios/Podfile
-          echo "" >> ios/Podfile
-          echo "post_install do |installer|" >> ios/Podfile
-          echo "  installer.pods_project.targets.each do |target|" >> ios/Podfile
-          echo "    target.build_configurations.each do |config|" >> ios/Podfile
-          echo "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'" >> ios/Podfile
-          echo "      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'" >> ios/Podfile
-          echo "      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''" >> ios/Podfile
-          echo "      config.build_settings['PROVISIONING_PROFILE'] = ''" >> ios/Podfile
-          echo "    end" >> ios/Podfile
-          echo "  end" >> ios/Podfile
-          echo "end" >> ios/Podfile
-          
-          cat ios/Podfile
-
-      - name: Install Pods
-        working-directory: ios
-        run: |
-          # Back into ios dir, install pods
-          rm -rf Pods Podfile.lock
-          pod install --repo-update
-          pod update
-
-      - name: Flutter build ipa
-        run: |
-          flutter build ipa --release --no-codesign
 
       - name: Compress Archives and IPAs
         run: |
