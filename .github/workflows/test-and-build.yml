@@ -87,7 +87,7 @@ jobs:
 
       - name: Flutter build ipa
         run: |
-          flutter build ipa —release —export-options-plist=ios/ExportOptions.plist
+          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
 
 
       - name: Compress Archives and IPAs
