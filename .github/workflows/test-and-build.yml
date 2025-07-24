@@ -85,10 +85,18 @@ jobs:
 #        run: |
 #          flutter build appbundle --release
 
+      - name: Authenticate with Apple (legacy)
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          xcrun altool --list-providers \
+          -u "$APPLE_ID" \
+          -p "$APPLE_APP_SPECIFIC_PASSWORD"
+
       - name: Flutter build ipa
         run: |
           flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
-
 
       - name: Compress Archives and IPAs
         run: |
