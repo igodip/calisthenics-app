@@ -67,7 +67,7 @@ jobs:
       - name: Build IPA
         env:
           KEYCHAIN: build.keychain
-        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist -v
 
       # Get build number from workspace / work run
       - name: Build app bundle
