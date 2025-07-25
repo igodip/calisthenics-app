@@ -63,6 +63,9 @@ jobs:
         run: |
           flutter test
 
+      - name: Build IPA
+        run: flutter build ipa --release
+
       # Get build number from workspace / work run
       - name: Build app bundle
         run: |
@@ -87,8 +90,6 @@ jobs:
           path: |
             ${{steps.sign_app.outputs.signedReleaseFile}}
             build/ios_build.tar.gz
-      - name: Build IPA
-        run: flutter build ipa --release
 
       - name: Upload to TestFlight
         if: success()
