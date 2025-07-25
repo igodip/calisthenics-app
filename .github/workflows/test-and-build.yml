@@ -23,35 +23,35 @@ jobs:
           distribution: 'zulu'
           java-version: "18.x"
 
-#      - name: Decode Certificate and Provisioning Profile
-#        run: |
-#          echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
-#          echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
-#
-#      - name: Create and Unlock Keychain
-#        run: |
-#          KEYCHAIN=build.keychain
-#          security create-keychain -p "" $KEYCHAIN
-#          security set-keychain-settings -lut 21600
-#          security unlock-keychain -p "" $KEYCHAIN
-#          security import cert.p12 -k $KEYCHAIN -P "${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
-#          security list-keychains -s $KEYCHAIN $(security list-keychains | tr -d '"')
-#          security default-keychain -s $KEYCHAIN
-#          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" $KEYCHAIN
-#          security find-identity -p codesigning $KEYCHAIN
-#
-#      - name: Install Provisioning Profile
-#        run: |
-#          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-#          UUID=$(grep -A1 UUID -a profile.mobileprovision | grep -io "[-A-F0-9]\{36\}")
-#          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
+      - name: Decode Certificate and Provisioning Profile
+        run: |
+          echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
+          echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
+
+      - name: Create and Unlock Keychain
+        run: |
+          KEYCHAIN=build.keychain
+          security create-keychain -p "" $KEYCHAIN
+          security set-keychain-settings -lut 21600
+          security unlock-keychain -p "" $KEYCHAIN
+          security import cert.p12 -k $KEYCHAIN -P "${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
+          security list-keychains -s $KEYCHAIN $(security list-keychains | tr -d '"')
+          security default-keychain -s $KEYCHAIN
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" $KEYCHAIN
+          security find-identity -p codesigning $KEYCHAIN
+
+      - name: Install Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          UUID=$(grep -A1 UUID -a profile.mobileprovision | grep -io "[-A-F0-9]\{36\}")
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
 
       - name: Authenticate Apple ID
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
-          xcrun altool --list-providers -u "$APPLE_ID" -p "APPLE_APP_SPECIFIC_PASSWORD"
+          xcrun notarytool list-credentials
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
