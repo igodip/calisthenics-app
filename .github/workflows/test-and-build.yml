@@ -23,45 +23,27 @@ jobs:
           distribution: 'zulu'
           java-version: "18.x"
 
-      - name: Decode Certificate and Provisioning Profile
-        run: |
-          echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
-          echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
-
-      - name: Create and Unlock Keychain
-        run: |
-          KEYCHAIN=build.keychain
-          security create-keychain -p "" $KEYCHAIN
-          security set-keychain-settings -lut 21600
-          security unlock-keychain -p "" $KEYCHAIN
-          security import cert.p12 -k $KEYCHAIN -P "${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
-          security list-keychains -s $KEYCHAIN
-          security default-keychain -s $KEYCHAIN
-          security set-keychain-settings $KEYCHAIN
-          security find-identity -p codesigning $KEYCHAIN
-
-      - name: Authenticate with Apple
-        run: |
-          # Sign in to Apple so Xcode can fetch provisioning profiles
-          xcrun notarytool store-credentials "AC_PASSWORD" \
-            --apple-id "${{ secrets.APPLE_ID }}" \
-            --team-id "${{ secrets.APPLE_TEAM_ID }}" \
-            --password "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
-
-      - name: Install Provisioning Profile
-        run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-
-#      - name: Check Xcode build settings with provisioning updates
-#        working-directory: ios
-#        env:
-#          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+#      - name: Decode Certificate and Provisioning Profile
 #        run: |
-#          xcodebuild -workspace Runner.xcworkspace \
-#          -scheme Runner \
-#          -showBuildSettings \
-#          DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM
+#          echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
+#          echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
+
+#      - name: Create and Unlock Keychain
+#        run: |
+#          KEYCHAIN=build.keychain
+#          security create-keychain -p "" $KEYCHAIN
+#          security set-keychain-settings -lut 21600
+#          security unlock-keychain -p "" $KEYCHAIN
+#          security import cert.p12 -k $KEYCHAIN -P "${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
+#          security list-keychains -s $KEYCHAIN
+#          security default-keychain -s $KEYCHAIN
+#          security set-keychain-settings $KEYCHAIN
+#          security find-identity -p codesigning $KEYCHAIN
+#
+#      - name: Install Provisioning Profile
+#        run: |
+#          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+#          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -73,71 +55,48 @@ jobs:
         run: |
           flutter pub get
 
-#      - name: Check for lints
-#        run: |
-#          flutter analyze
+      - name: Check for lints
+        run: |
+          flutter analyze
 
-#      - name: Run all tests
-#        run: |
-#          flutter test
+      - name: Run all tests
+        run: |
+          flutter test
 
-#      - name: Build app bundle
-#        run: |
-#          flutter build appbundle --release
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > release-key.jks
 
-#      - name: Authenticate with Apple (legacy)
+      - name: Build app bundle
+        run: |
+          flutter build appbundle --release
+
+#      - name: Build ipa
+#        uses: cedvdb/action-flutter-build-ios@v1
 #        env:
-#          APPLE_ID: ${{ secrets.APPLE_ID }}
-#          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-#        run: |
-#          xcrun altool --list-providers \
-#          -u "$APPLE_ID" \
-#          -p "$APPLE_APP_SPECIFIC_PASSWORD"
-
-      - name: Flutter build ipa
-        run: |
-          export EXTRA_XCODE_FLAGS="--keychain-profile AC_PASSWORD"
-          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
-
-      - name: Compress Archives and IPAs
-        run: |
-          cd build
-          tar -czf ios_build.tar.gz ios
-
-#      - name: Sign app bundle
-#        id: sign_app
-#        uses: r0adkll/sign-android-release@v1
+#          FLUTTER_XCODE_CODE_SIGN_STYLE: Manual
+#          FLUTTER_XCODE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+#          FLUTTER_XCODE_CODE_SIGN_IDENTITY: ${{ secrets.APPLE_ID }}
+#          FLUTTER_XCODE_PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}
 #        with:
-#          releaseDirectory: build/app/outputs/bundle/release
-#          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-#          alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-#          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-#          keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
-#        env:
-#          BUILD_TOOLS_VERSION: "34.0.0"
+#          # always use --export-options-plist=ios/GithubActionsExportOptions.plist
+#          build-cmd: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+#          certificate-base64: ${{ secrets.IOS_P12 }}
+#          certificate-password: ${{ secrets.IOS_P12_PASSWORD }}
+#          provisioning-profile-base64: ${{ secrets.IOS_MOBILE_PROVISION }}
+#          keychain-password: ${{ secrets.IOS_P12_PASSWORD }}
 
-      - name: Archive with Xcode
+      - name: Sign app bundle
+        id: sign_app
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: build/app/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
         env:
-          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-          PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}
-        run: |
-          xcodebuild -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -sdk iphoneos \
-            -configuration Release \
-            archive -archivePath build/Runner.xcarchive \
-            DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM \
-            PROVISIONING_PROFILE_SPECIFIER=$PROVISIONING_PROFILE_SPECIFIER \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution"
-
-      - name: Export IPA
-        run: |
-          xcodebuild -exportArchive \
-            -archivePath build/Runner.xcarchive \
-            -exportOptionsPlist ios/ExportOptions.plist \
-            -exportPath build \
-            -allowProvisioningUpdates
+          BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -146,11 +105,11 @@ jobs:
           path: |
             ${{steps.sign_app.outputs.signedReleaseFile}}
             build/ios_build.tar.gz
-      - name: Upload to TestFlight
-        if: success()
-        run: |
-          xcrun altool --upload-app \
-            -t ios \
-            -f build/Runner.ipa \
-            -u "${{ secrets.APPLE_ID }}" \
-            -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
+#      - name: Upload to TestFlight
+#        if: success()
+#        run: |
+#          xcrun altool --upload-app \
+#            -t ios \
+#            -f build/Runner.ipa \
+#            -u "${{ secrets.APPLE_ID }}" \
+#            -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"

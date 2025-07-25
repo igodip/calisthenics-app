@@ -28,11 +28,12 @@ class _RepCounterState extends State<RepCounter> {
   }
 
   void _increment() {
+    final navigator = Navigator.of(context);
     setState(() {
       _count++;
       if (widget.targetCount != null && _count >= widget.targetCount!) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          Navigator.of(context).pop(_count); // return count if needed
+          navigator.pop(_count); // return count if needed
         });
       }
     });
