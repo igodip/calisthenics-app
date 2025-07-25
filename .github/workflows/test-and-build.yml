@@ -49,9 +49,9 @@ jobs:
       - name: Authenticate Apple ID
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
-          APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
-          xcrun altool --list-providers -u "$APPLE_ID" -p "$APP_SPECIFIC_PASSWORD"
+          xcrun altool --list-providers -u "$APPLE_ID" -p "APPLE_APP_SPECIFIC_PASSWORD"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
