@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
   <key>method</key>
-  <string>enterprise</string>
+  <string>app-store</string>
   <key>signingStyle</key>
   <string>automatic</string>
   <key>signingCertificate</key>
-  <string>Apple Distribution</string>
+  <string>Apple Distribution: Igor Maria Di Paolo (77JXY423ZW)</string>
   <key>teamID</key>
   <string>77JXY423ZW</string>
   <key>stripSwiftSymbols</key>
