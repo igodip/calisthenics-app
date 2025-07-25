@@ -3,19 +3,21 @@
 <plist version="1.0">
 <dict>
   <key>method</key>
-  <string>app-store</string>
+  <string>app-store-connect</string>
   <key>signingStyle</key>
   <string>manual</string>
-  <key>provisioningProfiles</key>
-  <dict>
-    <key>com.idipaolo.calisync</key>
-    <string>4552e6aa-3643-4d67-818c-350623319f37</string>
-  </dict>
+  <key>signingCertificate</key>
+  <string>Apple Distribution: Igor Maria Di Paolo (77JXY423ZW)</string>
   <key>teamID</key>
   <string>77JXY423ZW</string>
   <key>stripSwiftSymbols</key>
+  <true/>
   <key>destination</key>
   <string>export</string>
-  <true/>
+  <key>provisioningProfiles</key>
+  <dict>
+    <key>com.idipaolo.calisync</key>
+    <string>Calisync</string>
+  </dict>
 </dict>
 </plist>
