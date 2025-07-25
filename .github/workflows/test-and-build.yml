@@ -37,7 +37,6 @@ jobs:
           security import cert.p12 -k $KEYCHAIN -P "${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
           security list-keychains -s $KEYCHAIN
           security default-keychain -s $KEYCHAIN
-          security set-keychain-settings $KEYCHAIN
           security find-identity -p codesigning $KEYCHAIN
 
       - name: Install Provisioning Profile
@@ -64,7 +63,7 @@ jobs:
           flutter test
 
       - name: Build IPA
-        run: flutter build ipa --release
+        run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
 
       # Get build number from workspace / work run
       - name: Build app bundle
