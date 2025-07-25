@@ -1,11 +1,9 @@
 // lib/main.dart
-import 'package:calisync/login.dart';
 import 'package:calisync/terminologia.dart';
 import 'package:flutter/material.dart';
 import 'package:calisync/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'google_login.dart';
 import 'home_content.dart';
 
 void main() async {
@@ -48,13 +46,6 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Supabase.instance.client.auth.currentUser;
-
-    // if (user != null) {
-    //   return const HomePage(title: 'Calisthenics');
-    // } else {
-    //   return const GoogleLoginPage();
-    // }
     return const HomePage(title: 'Calisthenics');
   }
 }
