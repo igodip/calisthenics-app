@@ -46,13 +46,6 @@ jobs:
           UUID=$(grep -A1 UUID -a profile.mobileprovision | grep -io "[-A-F0-9]\{36\}")
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
 
-      - name: Authenticate Apple ID
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-        run: |
-          xcrun notarytool history
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -72,6 +65,8 @@ jobs:
           flutter test
 
       - name: Build IPA
+        env:
+          KEYCHAIN: build.keychain
         run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
 
       # Get build number from workspace / work run
