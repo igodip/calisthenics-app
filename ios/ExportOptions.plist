@@ -17,5 +17,7 @@
   <key>destination</key>
   <string>export</string>
   <true/>
+  <key>signingCertificate</key>
+  <string>Apple Distribution</string>
 </dict>
 </plist>
