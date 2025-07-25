@@ -46,6 +46,63 @@ jobs:
           UUID=$(grep -A1 UUID -a profile.mobileprovision | grep -io "[-A-F0-9]\{36\}")
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
 
+      - name: Validate iOS Signing Setup
+        shell: bash
+        env:
+          IOS_P12_PASSWORD:
+        run: |
+          set -euo pipefail
+
+          P12=cert.p12
+          PROVISION=profile.mobileprovision
+          PASS="$IOS_P12_PASSWORD"
+
+          echo "🔍 Checking provisioning profile and certificate…"
+
+          # Decode .mobileprovision into XML plist
+          security cms -D -i "$PROVISION" -o profile.plist
+
+          # Extract Team ID
+          TEAM_ID=$(plutil -extract TeamIdentifier.0 xml1 -o - profile.plist | \
+            xmllint --xpath 'string(//string)' -)
+
+          # Extract application identifier (includes Team ID)
+          APP_ID=$(plutil -extract Entitlements.application-identifier xml1 -o - profile.plist | \
+            xmllint --xpath 'string(//string)' -)
+
+          # Strip Team ID prefix from bundle ID
+          BUNDLE_ID_PROFILE="${APP_ID#${TEAM_ID}.}"
+
+          # Extract the first Developer Certificate from the profile and print subject
+          CERT_DATA=$(plutil -extract DeveloperCertificates.0 raw -o - profile.plist)
+          echo "$CERT_DATA" | base64 --decode > embedded_cert.der
+          PROFILE_CERT_SUBJECT=$(openssl x509 -inform der -in embedded_cert.der -noout -subject)
+
+          # Extract the certificate subject from the .p12
+          P12_CERT_SUBJECT=$(openssl pkcs12 -in "$P12" -clcerts -nokeys \
+            -passin pass:"$PASS" | openssl x509 -noout -subject)
+
+          # Get bundle ID from Info.plist
+          INFO_BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" ios/Runner/Info.plist)
+
+          echo "Provisioning Profile Team ID: $TEAM_ID"
+          echo "Provisioning Profile Bundle ID: $BUNDLE_ID_PROFILE"
+          echo "Info.plist Bundle ID: $INFO_BUNDLE_ID"
+          echo "Profile Certificate Subject: $PROFILE_CERT_SUBJECT"
+          echo "P12 Certificate Subject: $P12_CERT_SUBJECT"
+
+          # Compare
+          if [[ "$PROFILE_CERT_SUBJECT" != "$P12_CERT_SUBJECT" ]]; then
+            echo "❌ ERROR: The .p12 certificate does not match the provisioning profile!"
+            exit 1
+          fi
+
+          if [[ "$BUNDLE_ID_PROFILE" != "$INFO_BUNDLE_ID" ]]; then
+            echo "❌ ERROR: The provisioning profile bundle ID does not match Info.plist!"
+            exit 1
+          fi
+
+          echo "✅ All signing assets match (Team ID, certificate, and bundle ID)."
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
