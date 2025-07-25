@@ -23,27 +23,27 @@ jobs:
           distribution: 'zulu'
           java-version: "18.x"
 
-#      - name: Decode Certificate and Provisioning Profile
-#        run: |
-#          echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
-#          echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
+      - name: Decode Certificate and Provisioning Profile
+        run: |
+          echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
+          echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
 
-#      - name: Create and Unlock Keychain
-#        run: |
-#          KEYCHAIN=build.keychain
-#          security create-keychain -p "" $KEYCHAIN
-#          security set-keychain-settings -lut 21600
-#          security unlock-keychain -p "" $KEYCHAIN
-#          security import cert.p12 -k $KEYCHAIN -P "${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
-#          security list-keychains -s $KEYCHAIN
-#          security default-keychain -s $KEYCHAIN
-#          security set-keychain-settings $KEYCHAIN
-#          security find-identity -p codesigning $KEYCHAIN
-#
-#      - name: Install Provisioning Profile
-#        run: |
-#          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-#          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+      - name: Create and Unlock Keychain
+        run: |
+          KEYCHAIN=build.keychain
+          security create-keychain -p "" $KEYCHAIN
+          security set-keychain-settings -lut 21600
+          security unlock-keychain -p "" $KEYCHAIN
+          security import cert.p12 -k $KEYCHAIN -P "${{ secrets.IOS_P12_PASSWORD }}" -T /usr/bin/codesign
+          security list-keychains -s $KEYCHAIN
+          security default-keychain -s $KEYCHAIN
+          security set-keychain-settings $KEYCHAIN
+          security find-identity -p codesigning $KEYCHAIN
+
+      - name: Install Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -63,28 +63,10 @@ jobs:
         run: |
           flutter test
 
-      - name: Decode Keystore
-        run: |
-          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > release-key.jks
-
+      # Get build number from workspace / work run
       - name: Build app bundle
         run: |
           flutter build appbundle --release
-
-#      - name: Build ipa
-#        uses: cedvdb/action-flutter-build-ios@v1
-#        env:
-#          FLUTTER_XCODE_CODE_SIGN_STYLE: Manual
-#          FLUTTER_XCODE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-#          FLUTTER_XCODE_CODE_SIGN_IDENTITY: ${{ secrets.APPLE_ID }}
-#          FLUTTER_XCODE_PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}
-#        with:
-#          # always use --export-options-plist=ios/GithubActionsExportOptions.plist
-#          build-cmd: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
-#          certificate-base64: ${{ secrets.IOS_P12 }}
-#          certificate-password: ${{ secrets.IOS_P12_PASSWORD }}
-#          provisioning-profile-base64: ${{ secrets.IOS_MOBILE_PROVISION }}
-#          keychain-password: ${{ secrets.IOS_P12_PASSWORD }}
 
       - name: Sign app bundle
         id: sign_app
@@ -105,11 +87,14 @@ jobs:
           path: |
             ${{steps.sign_app.outputs.signedReleaseFile}}
             build/ios_build.tar.gz
-#      - name: Upload to TestFlight
-#        if: success()
-#        run: |
-#          xcrun altool --upload-app \
-#            -t ios \
-#            -f build/Runner.ipa \
-#            -u "${{ secrets.APPLE_ID }}" \
-#            -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
+      - name: Build IPA
+        run: flutter build ipa --release
+
+      - name: Upload to TestFlight
+        if: success()
+        run: |
+          xcrun altool --upload-app \
+            -t ios \
+            -f build/Runner.ipa \
+            -u "${{ secrets.APPLE_ID }}" \
+            -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
