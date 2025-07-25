@@ -11,10 +11,10 @@ class BLEGraph extends StatefulWidget {
   const BLEGraph({super.key, required this.ble});
 
   @override
-  _BLEGraphState createState() => _BLEGraphState();
+  BLEGraphState createState() => BLEGraphState();
 }
 
-class _BLEGraphState extends State<BLEGraph> {
+class BLEGraphState extends State<BLEGraph> {
   List<FlSpot> zData = [];
   double xValue = 0;
   static const maxPoints = 100;

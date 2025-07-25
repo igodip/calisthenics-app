@@ -17,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
     String errorText = '';
 
   Future<void> login() async {
+    final navigator = Navigator.of(context);
     setState(() {
         errorText = '';
     });
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
             // }
         }
 
-      Navigator.pushReplacementNamed(context, '/');
+        navigator.pushReplacementNamed('/');
     } on AuthException catch (e) {
       setState(() {
         errorText = e.message;

@@ -1,5 +1,4 @@
 // lib/profile.dart
-import 'package:calisync/login.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -40,6 +39,7 @@ Future<Map<String, String>> getUserData() async {
 
 
 Future<void> logout(BuildContext context) async {
+  final scaffoldMessenger = ScaffoldMessenger.of(context);
   try {
     await supabase.auth.signOut();
     if (context.mounted) {
@@ -49,7 +49,7 @@ Future<void> logout(BuildContext context) async {
       );
     }
   } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    scaffoldMessenger.showSnackBar(
       SnackBar(content: Text('Errore durante il logout: $e')),
     );
   }

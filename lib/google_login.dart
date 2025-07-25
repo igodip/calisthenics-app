@@ -31,6 +31,7 @@ class _GoogleLoginPageState extends State<GoogleLoginPage> {
   }
 
   Future<void> _signInWithGoogle() async {
+    final scaffoldMessenged = ScaffoldMessenger.of(context);
     try {
       setState(() => loading = true);
       await Supabase.instance.client.auth.signInWithOAuth(
@@ -38,7 +39,7 @@ class _GoogleLoginPageState extends State<GoogleLoginPage> {
         redirectTo: 'com.idipaolo.calisync://login-callback', // mobile deep link
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenged.showSnackBar(
         SnackBar(content: Text('Google Sign-In failed: $e')),
       );
     } finally {
