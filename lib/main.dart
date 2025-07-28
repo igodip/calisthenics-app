@@ -1,5 +1,6 @@
 // lib/main.dart
 import 'package:calisync/login.dart';
+import 'package:calisync/terminologia.dart';
 import 'package:flutter/material.dart';
 import 'package:calisync/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -49,11 +50,12 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
 
-    if (user != null) {
-      return const HomePage(title: 'Calisthenics');
-    } else {
-      return const GoogleLoginPage();
-    }
+    // if (user != null) {
+    //   return const HomePage(title: 'Calisthenics');
+    // } else {
+    //   return const GoogleLoginPage();
+    // }
+    return const HomePage(title: 'Calisthenics');
   }
 }
 
@@ -105,11 +107,12 @@ class _HomePageState extends State<HomePage> {
       HomeContent(),
       const Center(child: Text('Impostazioni')),
       const ProfilePage(),
+      const TerminologiaPage()
     ];
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: payed == null ? const Center(child: CircularProgressIndicator()) : pages[selectedIndex],
+      body: payed == null || payed == false ? const Center(child: CircularProgressIndicator()) : pages[selectedIndex],
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
@@ -122,6 +125,7 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Impostazioni'),
           BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profilo'),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Terminologia'),
         ],
       ),
     );
