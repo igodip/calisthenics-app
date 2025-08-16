@@ -123,6 +123,11 @@ jobs:
           BASE=$(echo $VERSION_LINE | cut -d'+' -f1 | cut -d':' -f2 | xargs)
           echo "base_version=$BASE" >> $GITHUB_OUTPUT
 
+      - name: Update Info.plist version
+        run: |
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ steps.version.outputs.base_version }}" ios/Runner/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" ios/Runner/Info.plist
+
       - name: Get Flutter packages
         run: |
           flutter pub get
