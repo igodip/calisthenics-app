@@ -53,6 +53,9 @@ jobs:
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
           ls -alh ~/Library/MobileDevice/Provisioning\ Profiles/
 
+      - name: Save Play Store JSON
+        run: echo "${{ secrets.PLAY_STORE_JSON }}" > android/playstore-key.json
+
       - name: Validate iOS Signing Setup
         shell: bash
         env:
@@ -198,3 +201,7 @@ jobs:
             -f build/ios/ipa/prova3.ipa \
             -u "${{ secrets.APPLE_ID }}" \
             -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
+
+      - name: Upload to Play Store
+        run: ./gradlew publishRelease
+        working-directory: android
