@@ -54,7 +54,17 @@ jobs:
           ls -alh ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Save Play Store JSON
-        run: echo "${{ secrets.PLAY_STORE_JSON }}" > android/playstore-key.json
+        run: echo "${{ secrets.PLAY_STORE_JSON }}" | base64 --decode > android/playstore-key.json
+
+      - name: Validate Play Store JSON keys
+        run: |
+          required_keys=(type project_id private_key client_email)
+          for key in "${required_keys[@]}"; do
+            if ! jq -e ".${key}" android/playstore-key.json >/dev/null; then
+              echo "❌ Missing required key: $key"
+              exit 1
+            fi
+          done
 
       - name: Validate iOS Signing Setup
         shell: bash
@@ -91,7 +101,7 @@ jobs:
           # Extract the certificate subject from the .p12
           P12_CERT_SUBJECT=$(openssl pkcs12 -in "$P12" -clcerts -nokeys \
             -passin pass:"$PASS" | openssl x509 -noout -subject)
-
+          
           # Get bundle ID from Info.plist
           INFO_BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" ios/Runner/Info.plist)
 
@@ -166,24 +176,34 @@ jobs:
           mkdir -p build
           tar -czvf build/ios_build.tar.gz -C build ios
 
-      # Get build number from workspace / work run
+      # 🔑 Decode and save keystore
+      - name: Decode keystore
+        run: echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > android/app/my-release-key.jks
+
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEYSTORE_ALIAS }}" >> android/key.properties
+          echo "storeFile=../app/my-release-key.jks" >> android/key.properties
+
       - name: Build app bundle
         run: |
           flutter build appbundle --release \
             --build-name=${{ steps.version.outputs.base_version }} \
             --build-number=${{ github.run_number }}
 
-      - name: Sign app bundle
-        id: sign_app
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: build/app/outputs/bundle/release
-          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-          alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
+#      - name: Sign app bundle
+#        id: sign_app
+#        uses: r0adkll/sign-android-release@v1
+#        with:
+#          releaseDirectory: build/app/outputs/bundle/release
+#          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+#          alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
+#          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+#          keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
+#        env:
+#          BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -203,5 +223,5 @@ jobs:
             -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
 
       - name: Upload to Play Store
-        run: ./gradlew publishRelease
+        run: ./gradlew publishReleaseBundle
         working-directory: android

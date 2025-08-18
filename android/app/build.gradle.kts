@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.github.triplet.play") version "3.8.4"
 }
 
 android {
@@ -31,14 +32,18 @@ android {
     }
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            // signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            isMinifyEnabled = true
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+play {
+    serviceAccountCredentials.set(rootProject.file("playstore-key.json"))
+    track.set(providers.gradleProperty("PLAY_TRACK").orElse("internal"))
+    defaultToAppBundles.set(true)
 }
