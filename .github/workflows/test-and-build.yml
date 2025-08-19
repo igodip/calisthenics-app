@@ -53,6 +53,18 @@ jobs:
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
           ls -alh ~/Library/MobileDevice/Provisioning\ Profiles/
 
+      - name: Validate Play Store JSON keys
+        run: |
+          required_keys=(type project_id private_key client_email)
+          for key in "${required_keys[@]}"; do
+            if ! jq -e ".${key}" playstore-key.json >/dev/null; then
+              echo "❌ Missing required key: $key"
+              exit 1
+            fi
+          done
+        env:
+          PLAY_STORE_JSON: ${{ secrets.PLAY_STORE_JSON }}
+
       - name: Save Play Store JSON
         run: echo "${{ secrets.PLAY_STORE_JSON }}" > android/playstore-key.json
 
