@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.github.triplet.play") version "3.8.4"
 }
 
 android {
@@ -43,5 +44,6 @@ flutter {
 
 play {
     serviceAccountCredentials.set(rootProject.file("playstore-key.json"))
-    track.set("internal") // change to "beta" or "production" as needed
+    track.set(providers.gradleProperty("PLAY_TRACK").orElse("internal"))
+    defaultToAppBundles.set(true)
 }
