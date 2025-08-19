@@ -203,5 +203,5 @@ jobs:
             -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
 
       - name: Upload to Play Store
-        run: ./gradlew publishRelease
+        run: ./gradlew publishReleaseBundle
         working-directory: android
