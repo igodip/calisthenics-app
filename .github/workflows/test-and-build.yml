@@ -101,6 +101,7 @@ jobs:
           # Extract the certificate subject from the .p12
           P12_CERT_SUBJECT=$(openssl pkcs12 -in "$P12" -clcerts -nokeys \
             -passin pass:"$PASS" | openssl x509 -noout -subject)
+          
           # Get bundle ID from Info.plist
           INFO_BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" ios/Runner/Info.plist)
 
