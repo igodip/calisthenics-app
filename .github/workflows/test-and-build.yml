@@ -58,7 +58,7 @@ jobs:
 
       - name: Validate Play Store JSON keys
         run: |
-          cat android/playstore-key.json 
+          cat android/playstore-key.json
           cat android/playstore-key.json | jq -r 'keys[]'
           required_keys=(type project_id private_key client_email)
           for key in "${required_keys[@]}"; do
