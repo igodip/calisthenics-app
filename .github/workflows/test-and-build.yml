@@ -54,12 +54,10 @@ jobs:
           ls -alh ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Save Play Store JSON
-        run: echo "${{ secrets.PLAY_STORE_JSON }}" > android/playstore-key.json
+        run: echo "${{ secrets.PLAY_STORE_JSON }}" | base64 --decode > android/playstore-key.json
 
       - name: Validate Play Store JSON keys
         run: |
-          cat android/playstore-key.json
-          cat android/playstore-key.json | jq -r 'keys[]'
           required_keys=(type project_id private_key client_email)
           for key in "${required_keys[@]}"; do
             if ! jq -e ".${key}" android/playstore-key.json >/dev/null; then
