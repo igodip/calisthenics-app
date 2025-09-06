@@ -20,6 +20,9 @@ jobs:
         run: |
           echo "Xcode path: $(xcode-select -p)"
           xcodebuild -version
+          xcode-select -p
+          xcrun --sdk iphoneos --show-sdk-version
+
       - name: Clone repository
         uses: actions/checkout@v4
 
