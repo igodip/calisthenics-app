@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest
+          xcode-version: latest-stable
       - name: Check Xcode Version
         run: |
           echo "Xcode path: $(xcode-select -p)"
