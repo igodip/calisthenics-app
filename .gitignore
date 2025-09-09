@@ -44,3 +44,16 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Apple signing
+*.p12
+*.pfx
+*.pem
+*.cer
+*.mobileprovision
+ios.key
+ios.csr
+
+# Android / Firebase (if present)
+android/app/google-services.json
+ios/**/GoogleService-Info.plist
