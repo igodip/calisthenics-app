@@ -82,14 +82,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    fetchPayedStatus();
-  }
-
-  Future<void> fetchPayedStatus() async {
-    final status = await getPayedStatus();
-    setState(() {
-      payed = status;
-    });
   }
 
   @override
@@ -103,7 +95,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: payed == null || payed == false ? const Center(child: CircularProgressIndicator()) : pages[selectedIndex],
+      body: pages[selectedIndex],
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
