@@ -42,6 +42,9 @@ dependencies:
   fl_chart: ^0.66.0
   change_app_package_name: ^1.5.0
   app_links: ^6.0.0
+  camera:
+  google_mlkit_pose_detection:
+  google_mlkit_commons:
 
 dev_dependencies:
   flutter_test:

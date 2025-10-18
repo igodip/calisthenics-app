@@ -1,3 +1,4 @@
+import 'package:calisync/position_estimation.dart';
 import 'package:calisync/selection_card.dart';
 import 'package:calisync/training.dart';
 import 'package:flutter/material.dart';
@@ -111,6 +112,19 @@ class _HomeContentState extends State<HomeContent> {
               ).showSnackBar(const SnackBar(content: Text('In arrivo...')));
             },
           ),
+          const SizedBox(height: 16),
+          SelectionCard(
+            title: "Pose estimation",
+            icon: Icons.man,
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                  builder:
+                  (context) => PoseCamPage()
+              ));
+            }
+          )
         ],
       ),
     );
