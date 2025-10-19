@@ -24,7 +24,7 @@ class AppColors extends ThemeExtension<AppColors> {
     warning: Color(0xFFFFA726),
     warningContainer: Color(0x33FFA726),
     primaryGradient: LinearGradient(
-      colors: [Color(0xFF1D1E33), Color(0xFF0A0B1E)],
+      colors: [Color(0xFF11113A), Color(0xFF020231)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
