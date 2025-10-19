@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:calisync/theme/app_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -98,6 +99,8 @@ class _LoginPageState extends State<LoginPage> {
           return;
         }
 
+        await _ensureUserEntry(user);
+
         if (!mounted) return;
         Navigator.of(context).pushReplacementNamed('/');
       } else {
@@ -107,6 +110,10 @@ class _LoginPageState extends State<LoginPage> {
         );
 
         final user = response.user ?? Supabase.instance.client.auth.currentUser;
+
+        if (user != null && Supabase.instance.client.auth.currentSession != null) {
+          await _ensureUserEntry(user);
+        }
 
         if (!mounted) return;
 
@@ -163,6 +170,36 @@ class _LoginPageState extends State<LoginPage> {
       feedbackMessage = message;
       isError = error;
     });
+  }
+
+  Future<void> _ensureUserEntry(User user) async {
+    try {
+      final existing = await supabase
+          .from('users')
+          .select('uuid')
+          .eq('uuid', user.id)
+          .limit(1)
+          .maybeSingle();
+
+      if (existing != null) {
+        return;
+      }
+
+      final email = user.email;
+      final metadata = user.userMetadata ?? {};
+      final username = email != null && email.isNotEmpty
+          ? email.split('@').first
+          : (metadata['username'] as String?) ?? '';
+
+      await supabase.from('users').insert({
+        'uuid': user.id,
+        if (email != null) 'email': email,
+        'username': username,
+      });
+    } catch (error, stackTrace) {
+      debugPrint('Failed to ensure user entry: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
   }
 
   @override
