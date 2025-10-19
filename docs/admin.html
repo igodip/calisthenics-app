@@ -152,8 +152,8 @@
       const { createApp, ref, computed, onMounted } = Vue;
 
       // === Configure your Supabase project ===
-      const SUPABASE_URL = 'https://<YOUR-PROJECT-REF>.supabase.co';
-      const SUPABASE_ANON = '<YOUR-ANON-KEY>';
+      const SUPABASE_URL = 'https://jrqjysycoqhlnyufhliy.supabase.co';
+      const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpycWp5c3ljb3FobG55dWZobGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0MzM0NTIsImV4cCI6MjA2ODAwOTQ1Mn0.3BVA-Ar9YtLGGO12Gt6NQkMl2cn18E_b48PGtlFxxCw';
       const g = window;
       const createClient = (g.supabase && g.supabase.createClient) || (g.Supabase && g.Supabase.createClient) || g.SUPABASE_CREATE_CLIENT;
       if (!createClient) {
