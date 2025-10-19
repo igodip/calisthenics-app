@@ -140,14 +140,6 @@
       }
     }
   },
-  "googleSignInFailed": "Google Sign-In fallito: {error}",
-  "@googleSignInFailed": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
   "loginGreeting": "Bentornato! Accedi per continuare il tuo allenamento.",
   "signupGreeting": "Crea un account per sbloccare tutti gli allenamenti.",
   "emailLabel": "Email",
@@ -157,9 +149,6 @@
   "signupButton": "Registrati",
   "noAccountPrompt": "Non hai un account? Registrati",
   "existingAccountPrompt": "Hai già un account? Accedi",
-  "orDivider": "oppure",
-  "connecting": "Connessione...",
-  "continueWithGoogle": "Continua con Google",
   "exerciseAddDialogTitle": "Aggiungi esercizio",
   "exerciseNameLabel": "Nome esercizio",
   "quickAddValuesLabel": "Valori rapidi",

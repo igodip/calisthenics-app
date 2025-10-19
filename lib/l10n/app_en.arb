@@ -140,14 +140,6 @@
       }
     }
   },
-  "googleSignInFailed": "Google Sign-In failed: {error}",
-  "@googleSignInFailed": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
   "loginGreeting": "Welcome back! Sign in to continue your training.",
   "signupGreeting": "Create an account to unlock all workouts.",
   "emailLabel": "Email",
@@ -157,9 +149,6 @@
   "signupButton": "Sign up",
   "noAccountPrompt": "Don't have an account? Sign up",
   "existingAccountPrompt": "Already have an account? Sign in",
-  "orDivider": "or",
-  "connecting": "Connecting...",
-  "continueWithGoogle": "Continue with Google",
   "exerciseAddDialogTitle": "Add exercise",
   "exerciseNameLabel": "Exercise name",
   "quickAddValuesLabel": "Quick add values",
