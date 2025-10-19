@@ -205,7 +205,7 @@
             if(!uid) return;
             const { data, error } = await supabase
               .from('shares')
-              .select('owner, role, profiles:owner ( id, full_name )')
+              .select('owner, role, owner:profiles( id, full_name )')
               .eq('target_user', uid);
             if(error){ console.error(error); alert('Failed to load athletes: '+error.message); return; }
             athletes.value = data || [];
