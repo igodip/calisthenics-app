@@ -1,7 +1,5 @@
 import 'package:calisync/model/workout_day.dart';
-import 'package:calisync/pages/rep_counter.dart';
-import 'package:calisync/pages/rep_timer.dart';
-import 'package:calisync/pages/timer.dart';
+import 'package:calisync/pages/exercise_tracker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -118,35 +116,28 @@ class Training extends StatelessWidget {
         : exercise.name!;
     final restDuration = exercise.restDuration;
     final reps = exercise.reps;
-    if (restDuration != null && reps != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => RepTimerWidget(
-            title: exerciseName,
-            countdownDuration: restDuration,
-            initialRepCount: 0,
-            targetRepCount: reps,
-          ),
-        ),
-      );
-    } else if (restDuration != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => TimerPage(
-            countdownDuration: restDuration,
-          ),
-        ),
-      );
-    } else if (reps != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => RepCounter(
-            title: exerciseName,
-            timerType: '',
-          ),
-        ),
-      );
+    final sets = exercise.sets;
+    final quickAdds = <int>{1};
+    if (reps != null && reps > 0) {
+      quickAdds.add(reps);
     }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ExerciseTrackerPage(
+          title: exercise.name,
+          initialExercises: [
+            ExerciseDefinition(
+              name: exercise.name,
+              color: Theme.of(context).colorScheme.primary,
+              icon: Icons.fitness_center,
+              quickAddValues: quickAdds.toList()..sort(),
+              restDuration: restDuration,
+              targetReps: reps != null && sets != null ? reps * sets : reps,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _cell(BuildContext context, dynamic value, {VoidCallback? onTap}) {
