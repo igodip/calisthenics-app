@@ -47,15 +47,7 @@ class _LoginPageState extends State<LoginPage> {
     Future<void> handleUri(Uri? uri) async {
       if (uri == null) return;
       try {
-        final response = await Supabase.instance.client.auth.getSessionFromUrl(uri);
-        final user = response.user;
-        if (user != null) {
-          await _ensureUserRecord(user);
-          if (mounted) {
-            _setFeedback('Accesso completato con Google!', false);
-            Navigator.of(context).pushReplacementNamed('/');
-          }
-        }
+        await Supabase.instance.client.auth.getSessionFromUrl(uri);
       } on AuthException catch (e) {
         _setFeedback(e.message, true);
       } catch (e) {
@@ -66,29 +58,6 @@ class _LoginPageState extends State<LoginPage> {
     _linkSubscription = appLinks.uriLinkStream.listen(handleUri, onError: (error) {
       _setFeedback('Errore collegamento: $error', true);
     });
-
-    appLinks.getInitialAppLink().then(handleUri).catchError((error) {
-      _setFeedback('Errore collegamento iniziale: $error', true);
-    });
-  }
-
-  Future<void> _ensureUserRecord(User user) async {
-    final existingUser = await supabase
-        .from('users')
-        .select('uuid')
-        .eq('uuid', user.id)
-        .limit(1)
-        .maybeSingle();
-
-    if (existingUser == null) {
-      await supabase.from('users').insert({
-        'uuid': user.id,
-        'email': user.email,
-        'username': (user.email ?? 'user').split('@').first,
-        'active': true,
-        'payed': false,
-      });
-    }
   }
 
   Future<void> _submit() async {
@@ -128,7 +97,6 @@ class _LoginPageState extends State<LoginPage> {
           return;
         }
 
-        await _ensureUserRecord(user);
         if (!mounted) return;
         Navigator.of(context).pushReplacementNamed('/');
       } else {
@@ -138,9 +106,6 @@ class _LoginPageState extends State<LoginPage> {
         );
 
         final user = response.user ?? Supabase.instance.client.auth.currentUser;
-        if (user != null) {
-          await _ensureUserRecord(user);
-        }
 
         if (!mounted) return;
 
