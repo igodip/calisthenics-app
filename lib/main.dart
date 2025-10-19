@@ -26,6 +26,13 @@ class CalisthenicsApp extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
         primaryColor: Colors.black,
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Colors.black,
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.white70,
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+        ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.black,
           brightness: Brightness.dark,

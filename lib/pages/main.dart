@@ -80,6 +80,7 @@ class _HomePageState extends State<HomePage> {
       body: pages[selectedIndex],
 
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: selectedIndex,
         onTap: (int index) {
           setState(() {
