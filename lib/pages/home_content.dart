@@ -1,6 +1,6 @@
-import 'package:calisync/position_estimation.dart';
-import 'package:calisync/selection_card.dart';
-import 'package:calisync/training.dart';
+import 'package:calisync/pages/position_estimation.dart';
+import 'package:calisync/pages/selection_card.dart';
+import 'package:calisync/pages/training.dart';
 import 'package:flutter/material.dart';
 
 class HomeContent extends StatefulWidget {

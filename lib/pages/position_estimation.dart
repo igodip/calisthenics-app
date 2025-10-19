@@ -1,7 +1,6 @@
 
 import 'dart:async';
 import 'dart:io' show Platform;
-import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -363,7 +362,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
           margin: const EdgeInsets.all(12),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.55),
+            color: Colors.black.withValues(alpha: 0.55),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -378,7 +377,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                   Text(status, style: const TextStyle(color: Colors.white)),
                   Text('fps: ${_fps.toStringAsFixed(1)}  ms: ${_avgMs.toStringAsFixed(0)}  lmks: $landmarks',
                       style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                  Text('rot: ${describeEnum(_rotation)}  cam: ${_useFrontCamera ? 'front' : 'back'}  fmt: $_fmt',
+                  Text('rot: $_rotation  cam: ${_useFrontCamera ? 'front' : 'back'}  fmt: $_fmt',
                       style: const TextStyle(color: Colors.white38, fontSize: 11)),
                 ],
               ),
@@ -455,7 +454,7 @@ class PosePainter extends CustomPainter {
     final double dx = (size.width - src.width * s) / 2.0;
     final double dy = (size.height - src.height * s) / 2.0;
 
-    Offset _transform(Offset p) {
+    Offset transform(Offset p) {
       double x = p.dx, y = p.dy;
 
       // Mirror after rotation space, so left/right match the on-screen preview
@@ -473,15 +472,15 @@ class PosePainter extends CustomPainter {
       final b = pose.landmarks[pair[1]];
       if (a == null || b == null) continue;
       if (a.likelihood < 0.5 || b.likelihood < 0.5) continue;
-      final p1 = _transform(Offset(a.x, a.y));
-      final p2 = _transform(Offset(b.x, b.y));
+      final p1 = transform(Offset(a.x, a.y));
+      final p2 = transform(Offset(b.x, b.y));
       canvas.drawLine(p1, p2, bonePaint);
     }
 
     // Draw points
     for (final entry in pose.landmarks.entries) {
       if (entry.value.likelihood < 0.8) continue;
-      final p = _transform(Offset(entry.value.x, entry.value.y));
+      final p = transform(Offset(entry.value.x, entry.value.y));
       var paintColor = Paint()
         ..color = Colors.lightBlueAccent
         ..style = PaintingStyle.fill
