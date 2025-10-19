@@ -68,6 +68,40 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {    
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final navigationItems = [
+      _NavigationItem(
+        icon: Icons.home,
+        label: 'Home',
+        gradient: LinearGradient(
+          colors: [colorScheme.primary, colorScheme.secondary],
+        ),
+      ),
+      _NavigationItem(
+        icon: Icons.settings,
+        label: 'Impostazioni',
+        gradient: LinearGradient(
+          colors: [colorScheme.secondary, colorScheme.tertiary],
+        ),
+      ),
+      _NavigationItem(
+        icon: Icons.account_circle,
+        label: 'Profilo',
+        gradient: LinearGradient(
+          colors: [colorScheme.tertiary, colorScheme.primary],
+        ),
+      ),
+      _NavigationItem(
+        icon: Icons.book,
+        label: 'Terminologia',
+        gradient: LinearGradient(
+          colors: [colorScheme.primary, colorScheme.error],
+        ),
+      ),
+    ];
+
     final List<Widget> pages = [
       HomeContent(),
       const Center(child: Text('Impostazioni')),
@@ -76,24 +110,163 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: pages[selectedIndex],
-
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: selectedIndex,
-        onTap: (int index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Impostazioni'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profilo'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Terminologia'),
-        ],
+      extendBody: true,
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        title: Text(
+          widget.title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onPrimary,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.8,
+          ),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colorScheme.primary, colorScheme.secondary],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              colorScheme.primaryContainer.withOpacity(0.12),
+              colorScheme.secondaryContainer.withOpacity(0.08),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeInOutCubic,
+            switchOutCurve: Curves.easeInOutCubic,
+            transitionBuilder: (child, animation) {
+              return FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.05, 0.02),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              );
+            },
+            child: Container(
+              key: ValueKey<int>(selectedIndex),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: theme.cardColor.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      offset: const Offset(0, 12),
+                      blurRadius: 24,
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: pages[selectedIndex],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                offset: const Offset(0, 10),
+                blurRadius: 32,
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BottomNavigationBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              type: BottomNavigationBarType.fixed,
+              currentIndex: selectedIndex,
+              selectedItemColor: colorScheme.primary,
+              unselectedItemColor: colorScheme.onSurfaceVariant,
+              showUnselectedLabels: true,
+              onTap: (int index) {
+                setState(() {
+                  selectedIndex = index;
+                });
+              },
+              items: [
+                for (final item in navigationItems)
+                  BottomNavigationBarItem(
+                    icon: _GradientIcon(
+                      icon: item.icon,
+                      gradient: item.gradient,
+                      isActive: navigationItems.indexOf(item) == selectedIndex,
+                      inactiveColor: colorScheme.onSurfaceVariant,
+                    ),
+                    label: item.label,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavigationItem {
+  const _NavigationItem({
+    required this.icon,
+    required this.label,
+    required this.gradient,
+  });
+
+  final IconData icon;
+  final String label;
+  final Gradient gradient;
+}
+
+class _GradientIcon extends StatelessWidget {
+  const _GradientIcon({
+    required this.icon,
+    required this.gradient,
+    required this.isActive,
+    required this.inactiveColor,
+  });
+
+  final IconData icon;
+  final Gradient gradient;
+  final bool isActive;
+  final Color inactiveColor;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isActive) {
+      return Icon(icon, color: inactiveColor);
+    }
+
+    return ShaderMask(
+      shaderCallback: (bounds) => gradient.createShader(bounds),
+      child: Icon(icon, color: Colors.white),
     );
   }
 }
