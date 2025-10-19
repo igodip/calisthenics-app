@@ -114,8 +114,41 @@ Future<void> logout(BuildContext context) async {
   }
 }
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late Future<UserProfileData> _profileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileFuture = getUserData();
+  }
+
+  void _refreshProfile() {
+    setState(() {
+      _profileFuture = getUserData();
+    });
+  }
+
+  Future<void> _showEditProfile(UserProfileData data) async {
+    final l10n = AppLocalizations.of(context)!;
+    final updated = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => _EditProfileBottomSheet(data: data),
+    );
+    if (updated == true && mounted) {
+      _refreshProfile();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.profileEditSuccess)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +156,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder<UserProfileData>(
-          future: getUserData(),
+          future: _profileFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -251,7 +284,7 @@ class ProfilePage extends StatelessWidget {
                         ListTile(
                           leading: const Icon(Icons.straighten),
                           title: Text(l10n.profileUnitSystem),
-                          subtitle: Text(data.unitSystem ?? l10n.profileNotSet),
+                          subtitle: Text(_unitSystemLabel(data.unitSystem, l10n)),
                         ),
                       ],
                     ),
@@ -262,12 +295,8 @@ class ProfilePage extends StatelessWidget {
                     child: ListTile(
                       leading: const Icon(Icons.edit_outlined),
                       title: Text(l10n.profileEdit),
-                      subtitle: Text(l10n.profileComingSoon),
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.featureUnavailable)),
-                        );
-                      },
+                      subtitle: Text(l10n.profileEditSubtitle),
+                      onTap: () => _showEditProfile(data),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -291,6 +320,199 @@ class ProfilePage extends StatelessWidget {
 
 String _formatDate(DateTime date) {
   return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+}
+
+String _unitSystemLabel(String? unitSystem, AppLocalizations l10n) {
+  switch (unitSystem) {
+    case 'metric':
+      return l10n.profileEditUnitSystemMetric;
+    case 'imperial':
+      return l10n.profileEditUnitSystemImperial;
+    default:
+      if (unitSystem == null || unitSystem.trim().isEmpty) {
+        return l10n.profileNotSet;
+      }
+      return unitSystem;
+  }
+}
+
+class _EditProfileBottomSheet extends StatefulWidget {
+  const _EditProfileBottomSheet({required this.data});
+
+  final UserProfileData data;
+
+  @override
+  State<_EditProfileBottomSheet> createState() => _EditProfileBottomSheetState();
+}
+
+class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _fullNameController;
+  late final TextEditingController _timezoneController;
+  String? _unitSystem;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fullNameController = TextEditingController(text: widget.data.profile?.fullName ?? '');
+    _timezoneController =
+        TextEditingController(text: widget.data.profile?.timezone ?? widget.data.timezone ?? '');
+    _unitSystem = widget.data.profile?.unitSystem ?? widget.data.unitSystem;
+  }
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _timezoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_isSubmitting) return;
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    final fullName = _fullNameController.text.trim();
+    final timezone = _timezoneController.text.trim();
+
+    final updates = <String, dynamic>{
+      'id': widget.data.userId,
+      'full_name': fullName.isEmpty ? null : fullName,
+      'timezone': timezone.isEmpty ? null : timezone,
+      'unit_system': _unitSystem,
+      'updated_at': DateTime.now().toIso8601String(),
+    };
+
+    try {
+      await supabase.from('profiles').upsert(updates, onConflict: 'id');
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+    } catch (error) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profileEditError(error.toString()))),
+      );
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: bottomInset + 24,
+      ),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.profileEditTitle,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _fullNameController,
+                  decoration: InputDecoration(
+                    labelText: l10n.profileEditFullNameLabel,
+                    hintText: l10n.profileEditFullNameHint,
+                  ),
+                  textCapitalization: TextCapitalization.words,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _timezoneController,
+                  decoration: InputDecoration(
+                    labelText: l10n.profileEditTimezoneLabel,
+                    hintText: l10n.profileEditTimezoneHint,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String?>(
+                  value: _unitSystem,
+                  items: [
+                    DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text(l10n.profileEditUnitSystemNotSet),
+                    ),
+                    DropdownMenuItem<String?>(
+                      value: 'metric',
+                      child: Text(l10n.profileEditUnitSystemMetric),
+                    ),
+                    DropdownMenuItem<String?>(
+                      value: 'imperial',
+                      child: Text(l10n.profileEditUnitSystemImperial),
+                    ),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: l10n.profileEditUnitSystemLabel,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _unitSystem = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _isSubmitting
+                            ? null
+                            : () {
+                                Navigator.of(context).pop(false);
+                              },
+                        child: Text(l10n.profileEditCancel),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: _isSubmitting ? null : _submit,
+                        child: _isSubmitting
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                ),
+                              )
+                            : Text(l10n.profileEditSave),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _ProfileAvatar extends StatelessWidget {
