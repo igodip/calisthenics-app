@@ -1,7 +1,6 @@
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/pages/rep_counter.dart';
 import 'package:calisync/pages/rep_timer.dart';
-import 'package:calisync/pages/result.dart';
 import 'package:calisync/pages/timer.dart';
 import 'package:flutter/material.dart';
 
