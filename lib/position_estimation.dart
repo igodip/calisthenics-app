@@ -56,7 +56,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _poseDetector = PoseDetector(
       options: PoseDetectorOptions(
-        model: PoseDetectionModel.base,
+        model: PoseDetectionModel.accurate,
         mode: PoseDetectionMode.stream,
       ),
     );
@@ -432,10 +432,6 @@ class PosePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final landmarkPaint = Paint()
-      ..color = Colors.lightBlueAccent
-      ..style = PaintingStyle.fill
-      ..strokeWidth = 3;
     final bonePaint = Paint()
       ..color = Colors.greenAccent
       ..style = PaintingStyle.stroke

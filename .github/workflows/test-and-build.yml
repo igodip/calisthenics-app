@@ -196,18 +196,6 @@ jobs:
             --build-name=${{ steps.version.outputs.base_version }} \
             --build-number=${{ github.run_number }}
 
-#      - name: Sign app bundle
-#        id: sign_app
-#        uses: r0adkll/sign-android-release@v1
-#        with:
-#          releaseDirectory: build/app/outputs/bundle/release
-#          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-#          alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
-#          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-#          keyPassword: ${{ secrets.ANDROID_KEYSTORE_ALIAS_PASSWORD }}
-#        env:
-#          BUILD_TOOLS_VERSION: "34.0.0"
-
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
