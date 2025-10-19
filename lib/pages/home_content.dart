@@ -1,10 +1,11 @@
+import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/pages/position_estimation.dart';
 import 'package:calisync/pages/selection_card.dart';
 import 'package:calisync/pages/training.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeContent extends StatefulWidget {
-
   const HomeContent({super.key});
 
   @override
@@ -12,121 +13,247 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
+  late Future<List<WorkoutDay>> _workoutDaysFuture;
+
   @override
   void initState() {
     super.initState();
+    _workoutDaysFuture = _loadWorkoutDays();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SelectionCard(
-            title: 'Giorno A',
-            icon: Icons.numbers,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => Training(
-                    data: [
-                      {
-                        "esercizio": "Chin up negativi",
-                        "settimana1": "5x2",
-                        "scarico": "-2serie",
-                        "recupero": "1-3'",
-                        "note":
-                        "6’ di negativa, se chiuse tutte le rep e serie, +1rep volta dopo",
-                        "timer": 15,
-                        "rep": 5,
-                      },
-                      {
-                        "esercizio": "Dip",
-                        "settimana1": "Armap2 15'",
-                        "scarico": "-2serie",
-                        "note":
-                        "Quando arrivi a 12 serie passa a triple volta dopo",
-                        "timer": 15,
-                        "rep": 12,
-                      },
-                      {
-                        "esercizio": "Pull up elastico viola",
-                        "settimana1": "Amrap1 12’",
-                        "scarico": "-2serie",
-                        "note": "Se arrivi a 12 singole, passa a doppie",
-                        "timer": 15,
-                        "rep": 12,
-                      },
-                      {
-                        "esercizio": "Push up",
-                        "settimana1": "4x8",
-                        "scarico": "-1serie",
-                        "recupero": "2-3'",
-                        "note":
-                        "Se chiuse tutte le rep e le serie bene, +1rep a tutte",
-                        "timer": 15,
-                      },
-                      {
-                        "esercizio": "Australian 30",
-                        "settimana1": "3xMax tecnico",
-                        "scarico": "-1serie",
-                        "recupero": "90\"",
-                        "note":
-                        "Se chiuse tutte le rep e le serie bene, +1rep a tutte",
-                        "rep": 3,
-                      },
-                      {
-                        "esercizio": "Plank + barchetta raccolta",
-                        "settimana1": "3x30\" + Max",
-                        "recupero": "60\" fra giri",
-                        "note": "",
-                        "timer": 15,
-                      },
-                    ],
-                  ),
-                ),
+      child: RefreshIndicator(
+        onRefresh: _refresh,
+        child: FutureBuilder<List<WorkoutDay>>(
+          future: _workoutDaysFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(height: 32),
+                  Center(child: CircularProgressIndicator()),
+                ],
               );
-            },
-          ),
-          const SizedBox(height: 16),
-          SelectionCard(
-            title: 'Giorno B',
-            icon: Icons.settings,
-            onTap: () {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('In arrivo...')));
-            },
-          ),
-          const SizedBox(height: 16),
-          SelectionCard(
-            title: 'Giorno C',
-            icon: Icons.info,
-            onTap: () {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('In arrivo...')));
-            },
-          ),
-          const SizedBox(height: 16),
-          SelectionCard(
-            title: "Pose estimation",
-            icon: Icons.man,
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                  builder:
-                  (context) => PoseCamPage()
-              ));
             }
-          )
-        ],
+
+            if (snapshot.hasError) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  const SizedBox(height: 32),
+                  Icon(
+                    Icons.error_outline,
+                    size: 56,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Impossibile caricare gli allenamenti',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${snapshot.error}',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _workoutDaysFuture = _loadWorkoutDays();
+                        });
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Riprova'),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            final days = snapshot.data ?? [];
+            if (days.isEmpty) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  const SizedBox(height: 32),
+                  Icon(
+                    Icons.fitness_center,
+                    size: 56,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Nessun allenamento disponibile',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Contatta il tuo coach per ricevere una nuova scheda.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              );
+            }
+
+            return ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: days.length + 1,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                if (index == days.length) {
+                  return SelectionCard(
+                    title: 'Pose estimation',
+                    icon: Icons.man,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PoseCamPage(),
+                        ),
+                      );
+                    },
+                  );
+                }
+
+                final day = days[index];
+                final title = _formatDayTitle(day);
+                return SelectionCard(
+                  title: title,
+                  icon: Icons.calendar_today,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Training(day: day),
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _workoutDaysFuture = _loadWorkoutDays();
+    });
+    await _workoutDaysFuture;
+  }
+
+  Future<List<WorkoutDay>> _loadWorkoutDays() async {
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      throw Exception('Utente non autenticato');
+    }
+
+    final plan = await client
+        .from('training_plans')
+        .select('id, name, goal, weeks')
+        .eq('owner', userId)
+        .is('deleted_at', null)
+        .order('created_at', ascending: false)
+        .limit(1)
+        .maybeSingle();
+
+    if (plan == null) {
+      return [];
+    }
+
+    final planId = plan['id'] as String;
+
+    final response = await client
+        .from('plan_workouts')
+        .select('''
+          id, week, dow, position,
+          workout_templates!plan_workouts_template_id_fkey (
+            id, name, notes,
+            template_exercises (
+              id, position, default_sets, default_reps, rest_seconds,
+              default_intensity, notes,
+              exercise_library ( id, name )
+            )
+          )
+        ''')
+        .eq('plan_id', planId)
+        .order('week', ascending: true)
+        .order('dow', ascending: true)
+        .order('position', ascending: true);
+
+    final data = (response as List<dynamic>? ?? [])
+        .cast<Map<String, dynamic>>();
+
+    return data.map((row) {
+      final template =
+          (row['workout_templates'] as Map<String, dynamic>?) ?? {};
+      final templateExercises =
+          (template['template_exercises'] as List<dynamic>? ?? [])
+              .cast<Map<String, dynamic>>();
+
+      final exercises = templateExercises.map((exercise) {
+        final exerciseLibrary =
+            (exercise['exercise_library'] as Map<String, dynamic>?) ?? {};
+        return WorkoutExercise(
+          id: exercise['id'] as String?,
+          name: (exerciseLibrary['name'] as String?) ?? 'Esercizio',
+          sets: (exercise['default_sets'] as num?)?.toInt(),
+          reps: (exercise['default_reps'] as num?)?.toInt(),
+          restSeconds: (exercise['rest_seconds'] as num?)?.toInt(),
+          intensity: exercise['default_intensity'] as String?,
+          notes: exercise['notes'] as String?,
+        );
+      }).toList();
+
+      return WorkoutDay(
+        id: row['id'] as String?,
+        week: (row['week'] as num?)?.toInt() ?? 0,
+        dow: (row['dow'] as num?)?.toInt() ?? 0,
+        name: template['name'] as String?,
+        notes: template['notes'] as String?,
+        exercises: exercises,
+      );
+    }).toList();
+  }
+
+  String _formatDayTitle(WorkoutDay day) {
+    final parts = <String>[];
+    if (day.week > 0) {
+      parts.add('Settimana ${day.week}');
+    }
+    final dowName = _dowLabel(day.dow);
+    if (dowName != null) {
+      parts.add(dowName);
+    }
+    if (day.name != null && day.name!.isNotEmpty) {
+      parts.add(day.name!);
+    }
+    return parts.isEmpty ? 'Allenamento' : parts.join(' · ');
+  }
+
+  String? _dowLabel(int dow) {
+    const labels = {
+      1: 'Lunedì',
+      2: 'Martedì',
+      3: 'Mercoledì',
+      4: 'Giovedì',
+      5: 'Venerdì',
+      6: 'Sabato',
+      7: 'Domenica',
+    };
+    return labels[dow];
   }
 }
