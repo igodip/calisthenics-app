@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'dart:math' as math;
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,14 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
   int _frames = 0;            // frames since last FPS tick
   DateTime? _lastFpsTick;
   String _fmt = '?';
+
+  // --- Exercise counting ---
+  int _repCount = 0;
+  bool _isDownPhase = false;
+  double? _currentKneeAngle;
+  String _exerciseStage = 'Top';
+  static const double _squatDownThreshold = 100; // degrees
+  static const double _squatUpThreshold = 160;   // degrees
 
   @override
   void initState() {
@@ -266,6 +275,14 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
       _lastPose = poses.isNotEmpty ? poses.first : null;
       _poseDetected = _lastPose != null;
 
+      if (_poseDetected) {
+        _updateExerciseCount(_lastPose!);
+      } else {
+        _exerciseStage = 'No pose';
+        _currentKneeAngle = null;
+        _isDownPhase = false;
+      }
+
       // --- timing and fps ---
       final dtMs = DateTime.now().difference(t0).inMilliseconds.toDouble();
       _avgMs = _avgMs == 0 ? dtMs : (_avgMs * 0.85 + dtMs * 0.15);
@@ -286,6 +303,80 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
       _isBusy = false;
       if (mounted) setState(() {});
     }
+  }
+
+  void _updateExerciseCount(Pose pose) {
+    double? _angleForLeg({
+      required PoseLandmarkType hip,
+      required PoseLandmarkType knee,
+      required PoseLandmarkType ankle,
+    }) {
+      final hipLm = pose.landmarks[hip];
+      final kneeLm = pose.landmarks[knee];
+      final ankleLm = pose.landmarks[ankle];
+
+      if (hipLm == null || kneeLm == null || ankleLm == null) return null;
+      if (hipLm.likelihood < 0.5 || kneeLm.likelihood < 0.5 || ankleLm.likelihood < 0.5) {
+        return null;
+      }
+
+      return _calculateAngle(hipLm, kneeLm, ankleLm);
+    }
+
+    final leftAngle = _angleForLeg(
+      hip: PoseLandmarkType.leftHip,
+      knee: PoseLandmarkType.leftKnee,
+      ankle: PoseLandmarkType.leftAnkle,
+    );
+    final rightAngle = _angleForLeg(
+      hip: PoseLandmarkType.rightHip,
+      knee: PoseLandmarkType.rightKnee,
+      ankle: PoseLandmarkType.rightAnkle,
+    );
+
+    double? kneeAngle;
+    if (leftAngle != null && rightAngle != null) {
+      kneeAngle = (leftAngle + rightAngle) / 2.0;
+    } else {
+      kneeAngle = leftAngle ?? rightAngle;
+    }
+
+    if (kneeAngle == null) {
+      _currentKneeAngle = null;
+      _exerciseStage = 'Tracking…';
+      return;
+    }
+
+    _currentKneeAngle = kneeAngle;
+
+    final isDown = kneeAngle < _squatDownThreshold;
+    final isUp = kneeAngle > _squatUpThreshold;
+
+    if (isDown && !_isDownPhase) {
+      _isDownPhase = true;
+      _exerciseStage = 'Bottom';
+    } else if (isUp && _isDownPhase) {
+      _isDownPhase = false;
+      _repCount += 1;
+      _exerciseStage = 'Top';
+    } else {
+      _exerciseStage = _isDownPhase ? 'Bottom' : 'Top';
+    }
+  }
+
+  double _calculateAngle(PoseLandmark a, PoseLandmark b, PoseLandmark c) {
+    final ab = Offset(a.x - b.x, a.y - b.y);
+    final cb = Offset(c.x - b.x, c.y - b.y);
+
+    final dot = ab.dx * cb.dx + ab.dy * cb.dy;
+    final magAb = math.sqrt(ab.dx * ab.dx + ab.dy * ab.dy);
+    final magCb = math.sqrt(cb.dx * cb.dx + cb.dy * cb.dy);
+    if (magAb == 0 || magCb == 0) {
+      return 180;
+    }
+    final cosAngle = (dot / (magAb * magCb)).clamp(-1.0, 1.0);
+    final angle = math.acos(cosAngle);
+    return angle * 180 / math.pi;
   }
 
   @override
@@ -342,6 +433,18 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          FloatingActionButton.small(
+            heroTag: 'resetReps',
+            onPressed: () {
+              setState(() {
+                _repCount = 0;
+                _isDownPhase = false;
+                _exerciseStage = 'Top';
+              });
+            },
+            child: const Icon(Icons.refresh),
+          ),
+          const SizedBox(height: 12),
           FloatingActionButton.small(
             heroTag: 'flip',
             onPressed: () async {
@@ -408,6 +511,21 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                       fontSize: 11,
                     ),
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Squat reps: $_repCount  stage: $_exerciseStage',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (_currentKneeAngle != null)
+                    Text(
+                      'knee angle: ${_currentKneeAngle!.toStringAsFixed(0)}°',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                 ],
               ),
             ],
