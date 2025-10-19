@@ -1,4 +1,5 @@
 import 'package:calisync/model/workout_day.dart';
+import 'package:calisync/pages/exercise_tracker.dart';
 import 'package:calisync/pages/position_estimation.dart';
 import 'package:calisync/components/cards/selection_card.dart';
 import 'package:calisync/pages/training.dart';
@@ -107,9 +108,23 @@ class _HomeContentState extends State<HomeContent> {
 
             return ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: days.length + 1,
+              itemCount: days.length + 2,
               separatorBuilder: (_, __) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
+                if (index == days.length + 1) {
+                  return SelectionCard(
+                    title: 'Exercise tracker',
+                    icon: Icons.checklist,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ExerciseTrackerPage(),
+                        ),
+                      );
+                    },
+                  );
+                }
                 if (index == days.length) {
                   return SelectionCard(
                     title: 'Pose estimation',
@@ -179,16 +194,16 @@ class _HomeContentState extends State<HomeContent> {
     final response = await client
         .from('plan_workouts')
         .select('''
-          id, week, dow, position,
-          workout_templates!plan_workouts_template_id_fkey (
-            id, name, notes,
-            template_exercises (
-              id, position, default_sets, default_reps, rest_seconds,
-              default_intensity, notes,
-              exercise_library ( id, name )
+            id, week, dow, position,
+            workout_templates!plan_workouts_template_id_fkey (
+              id, name, notes,
+              template_exercises (
+                id, position, default_sets, default_reps, rest_seconds,
+                default_intensity, notes,
+                exercise_library ( id, name )
+              )
             )
-          )
-        ''')
+          ''')
         .eq('plan_id', planId)
         .order('week', ascending: true)
         .order('dow', ascending: true)
@@ -201,8 +216,8 @@ class _HomeContentState extends State<HomeContent> {
       final template =
           (row['workout_templates'] as Map<String, dynamic>?) ?? {};
       final templateExercises =
-          (template['template_exercises'] as List<dynamic>? ?? [])
-              .cast<Map<String, dynamic>>();
+      (template['template_exercises'] as List<dynamic>? ?? [])
+          .cast<Map<String, dynamic>>();
 
       final exercises = templateExercises.map((exercise) {
         final exerciseLibrary =
