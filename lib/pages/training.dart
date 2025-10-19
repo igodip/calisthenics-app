@@ -25,7 +25,7 @@ class Training extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text(_buildTitle())),
+      appBar: AppBar(title: Text(day.formattedTitle())),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Padding(
@@ -105,21 +105,6 @@ class Training extends StatelessWidget {
     );
   }
 
-  String _buildTitle() {
-    final parts = <String>[];
-    if (day.week > 0) {
-      parts.add('Settimana ${day.week}');
-    }
-    final dowName = _dowLabel(day.dow);
-    if (dowName != null) {
-      parts.add(dowName);
-    }
-    if (day.name != null && day.name!.isNotEmpty) {
-      parts.add(day.name!);
-    }
-    return parts.isEmpty ? 'Allenamento' : parts.join(' · ');
-  }
-
   void _openTools(BuildContext context, WorkoutExercise exercise) {
     final restDuration = exercise.restDuration;
     final reps = exercise.reps;
@@ -184,18 +169,5 @@ class Training extends StatelessWidget {
       return '${minutes}m';
     }
     return '${seconds}s';
-  }
-
-  String? _dowLabel(int dow) {
-    const labels = {
-      1: 'Lunedì',
-      2: 'Martedì',
-      3: 'Mercoledì',
-      4: 'Giovedì',
-      5: 'Venerdì',
-      6: 'Sabato',
-      7: 'Domenica',
-    };
-    return labels[dow];
   }
 }
