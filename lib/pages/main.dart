@@ -23,7 +23,7 @@ class AuthGate extends StatelessWidget {
         final l10n = AppLocalizations.of(context)!;
 
         if (session != null) {
-          return HomePage(title: l10n.appTitle);
+          return HomePage(title: l10n.brandName);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
