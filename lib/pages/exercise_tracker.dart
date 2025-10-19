@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Definition of a trackable exercise.
 ///
@@ -22,46 +23,51 @@ class ExerciseDefinition {
 }
 
 class ExerciseTrackerPage extends StatefulWidget {
-  const ExerciseTrackerPage({super.key, List<ExerciseDefinition>? initialExercises})
-      : initialExercises = initialExercises ?? const [
-          ExerciseDefinition(
-            name: 'Push ups',
-            icon: Icons.front_hand,
-            color: Colors.orangeAccent,
-            quickAddValues: [1, 5, 10, 15],
-          ),
-          ExerciseDefinition(
-            name: 'Pull ups',
-            icon: Icons.fitness_center,
-            color: Colors.lightBlueAccent,
-            quickAddValues: [1, 3, 5, 8],
-          ),
-          ExerciseDefinition(
-            name: 'Chin ups',
-            icon: Icons.accessibility_new,
-            color: Colors.purpleAccent,
-            quickAddValues: [1, 3, 5, 8],
-          ),
-        ];
+  const ExerciseTrackerPage({super.key, this.initialExercises});
 
-  final List<ExerciseDefinition> initialExercises;
+  final List<ExerciseDefinition>? initialExercises;
 
   @override
   State<ExerciseTrackerPage> createState() => _ExerciseTrackerPageState();
 }
 
 class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
-  late final List<_TrackedExercise> _exercises;
+  late List<_TrackedExercise> _exercises;
   int _colorIndex = 0;
+  bool _initialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    _exercises = widget.initialExercises
-        .map((definition) => _TrackedExercise(definition))
-        .toList();
-    _colorIndex = widget.initialExercises.length;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      final l10n = AppLocalizations.of(context)!;
+      final definitions = widget.initialExercises ?? _defaultExercises(l10n);
+      _exercises = definitions.map((definition) => _TrackedExercise(definition)).toList();
+      _colorIndex = definitions.length;
+      _initialized = true;
+    }
   }
+
+  List<ExerciseDefinition> _defaultExercises(AppLocalizations l10n) => [
+        ExerciseDefinition(
+          name: l10n.exercisePushUps,
+          icon: Icons.front_hand,
+          color: Colors.orangeAccent,
+          quickAddValues: const [1, 5, 10, 15],
+        ),
+        ExerciseDefinition(
+          name: l10n.exercisePullUps,
+          icon: Icons.fitness_center,
+          color: Colors.lightBlueAccent,
+          quickAddValues: const [1, 3, 5, 8],
+        ),
+        ExerciseDefinition(
+          name: l10n.exerciseChinUps,
+          icon: Icons.accessibility_new,
+          color: Colors.purpleAccent,
+          quickAddValues: const [1, 3, 5, 8],
+        ),
+      ];
 
   void _addExercise(ExerciseDefinition definition) {
     setState(() {
@@ -72,27 +78,28 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
   void _showAddExerciseDialog() {
     final nameController = TextEditingController();
     final quickAddsController = TextEditingController(text: '1,5,10');
+    final l10n = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Add exercise'),
+          title: Text(l10n.exerciseAddDialogTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: 'Exercise name',
+                decoration: InputDecoration(
+                  labelText: l10n.exerciseNameLabel,
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: quickAddsController,
-                decoration: const InputDecoration(
-                  labelText: 'Quick add values',
-                  helperText: 'Comma separated repetitions (e.g. 1,5,10)',
+                decoration: InputDecoration(
+                  labelText: l10n.quickAddValuesLabel,
+                  helperText: l10n.quickAddValuesHelper,
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -101,14 +108,14 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
                 final name = nameController.text.trim();
                 if (name.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please provide a name.')),
+                    SnackBar(content: Text(l10n.exerciseNameMissing)),
                   );
                   return;
                 }
@@ -131,7 +138,7 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
                   ),
                 );
               },
-              child: const Text('Add'),
+              child: Text(l10n.add),
             ),
           ],
         );
@@ -141,13 +148,14 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Exercise tracker'),
+        title: Text(l10n.exerciseTrackerTitle),
       ),
       body: _exercises.isEmpty
-          ? const Center(
-              child: Text('No exercises yet. Tap + to add one!'),
+          ? Center(
+              child: Text(l10n.exerciseTrackerEmpty),
             )
           : ListView.separated(
               padding: const EdgeInsets.all(16),
@@ -161,7 +169,7 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddExerciseDialog,
         icon: const Icon(Icons.add),
-        label: const Text('Add exercise'),
+        label: Text(l10n.exerciseAddButton),
       ),
     );
   }
@@ -179,6 +187,7 @@ class _ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final definition = tracked.definition;
     final color = definition.color.withOpacity(0.15);
     return Card(
@@ -208,14 +217,14 @@ class _ExerciseCard extends StatelessWidget {
                         style: theme.textTheme.titleMedium,
                       ),
                       Text(
-                        '${tracked.totalReps} total reps',
+                        l10n.exerciseTotalReps(tracked.totalReps),
                         style: theme.textTheme.bodySmall,
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Undo last set',
+                  tooltip: l10n.undoLastSet,
                   onPressed: tracked.canUndo
                       ? () {
                           tracked.undoLast();
@@ -248,7 +257,7 @@ class _ExerciseCard extends StatelessWidget {
                     }
                   },
                   icon: const Icon(Icons.more_time),
-                  label: const Text('Custom'),
+                  label: Text(l10n.custom),
                 ),
                 if (tracked.totalReps > 0)
                   OutlinedButton(
@@ -256,7 +265,7 @@ class _ExerciseCard extends StatelessWidget {
                       tracked.reset();
                       onUpdated();
                     },
-                    child: const Text('Reset'),
+                    child: Text(l10n.reset),
                   ),
               ],
             ),
@@ -269,7 +278,7 @@ class _ExerciseCard extends StatelessWidget {
                   for (final set in tracked.sets.reversed)
                     Chip(
                       avatar: const Icon(Icons.check, size: 18),
-                      label: Text('${set.reps} reps'),
+                      label: Text(l10n.repsChip(set.reps)),
                       deleteIcon: const Icon(Icons.close),
                       onDeleted: () {
                         tracked.removeSet(set);
@@ -287,15 +296,16 @@ class _ExerciseCard extends StatelessWidget {
 
   Future<int?> _showCustomRepsDialog(BuildContext context) async {
     final controller = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<int>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Log reps'),
+          title: Text(l10n.logRepsTitle),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'Repetitions',
+            decoration: InputDecoration(
+              labelText: l10n.repetitionsLabel,
             ),
             keyboardType: TextInputType.number,
             autofocus: true,
@@ -303,20 +313,20 @@ class _ExerciseCard extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
                 final value = int.tryParse(controller.text);
                 if (value == null || value <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Enter a positive number.')),
+                    SnackBar(content: Text(l10n.positiveNumberError)),
                   );
                   return;
                 }
                 Navigator.of(context).pop(value);
               },
-              child: const Text('Add'),
+              child: Text(l10n.add),
             ),
           ],
         );

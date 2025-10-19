@@ -1,6 +1,7 @@
 // lib/main.dart
 import 'package:calisync/pages/terminologia.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:calisync/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -15,12 +16,13 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<AuthState>(
       stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
+        final l10n = AppLocalizations.of(context)!;
         final session = snapshot.hasData
             ? snapshot.data!.session
             : Supabase.instance.client.auth.currentSession;
 
         if (session != null) {
-          return const HomePage(title: 'Calisthenics');
+          return HomePage(title: l10n.appTitle);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -33,7 +35,7 @@ class AuthGate extends StatelessWidget {
           return Scaffold(
             body: Center(
               child: Text(
-                'Errore durante l\'autenticazione',
+                l10n.authErrorMessage,
                 style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
@@ -67,35 +69,36 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     final navigationItems = [
       _NavigationItem(
         icon: Icons.home,
-        label: 'Home',
+        label: l10n.navHome,
         gradient: LinearGradient(
           colors: [colorScheme.primary, colorScheme.secondary],
         ),
       ),
       _NavigationItem(
         icon: Icons.settings,
-        label: 'Impostazioni',
+        label: l10n.navSettings,
         gradient: LinearGradient(
           colors: [colorScheme.secondary, colorScheme.tertiary],
         ),
       ),
       _NavigationItem(
         icon: Icons.account_circle,
-        label: 'Profilo',
+        label: l10n.navProfile,
         gradient: LinearGradient(
           colors: [colorScheme.tertiary, colorScheme.primary],
         ),
       ),
       _NavigationItem(
         icon: Icons.book,
-        label: 'Terminologia',
+        label: l10n.navTerminology,
         gradient: LinearGradient(
           colors: [colorScheme.primary, colorScheme.error],
         ),
@@ -103,8 +106,8 @@ class _HomePageState extends State<HomePage> {
     ];
 
     final List<Widget> pages = [
-      HomeContent(),
-      const Center(child: Text('Impostazioni')),
+      const HomeContent(),
+      Center(child: Text(l10n.settingsComingSoon)),
       const ProfilePage(),
       const TerminologiaPage()
     ];

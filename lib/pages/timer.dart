@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TimerPage extends StatefulWidget {
   final Duration countdownDuration;
@@ -52,8 +53,9 @@ class _TimerPageState extends State<TimerPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text('Timer')),
+      appBar: AppBar(title: Text(l10n.timerTitle)),
       body: Center(
         child: Text(
           _formattedTime,

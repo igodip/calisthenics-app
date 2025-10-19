@@ -3,6 +3,7 @@ import 'package:calisync/model/profiles.dart';
 import 'package:characters/characters.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
@@ -26,7 +27,7 @@ class UserProfileData {
   final bool isPayed;
   final Profiles? profile;
 
-  String get displayName {
+  String displayName(AppLocalizations l10n) {
     final fullName = profile?.fullName?.trim();
     if (fullName != null && fullName.isNotEmpty) {
       return fullName;
@@ -37,11 +38,12 @@ class UserProfileData {
     if (email.trim().isNotEmpty) {
       return email.split('@').first;
     }
-    return 'Utente';
+    return l10n.profileFallbackName;
   }
 
-  String get initials {
-    final nameParts = displayName.trim().split(RegExp(r'\s+'));
+  String initials(AppLocalizations l10n) {
+    final name = displayName(l10n);
+    final nameParts = name.trim().split(RegExp(r'\s+'));
     if (nameParts.length == 1) {
       return nameParts.first.characters.take(2).toString().toUpperCase();
     }
@@ -77,7 +79,7 @@ Future<UserProfileData> getUserData() async {
       .maybeSingle();
 
   if (usersResponse == null && profileResponse == null) {
-    throw Exception('Utente non trovato nel database');
+    throw Exception('user-not-found');
   }
 
   final profile = profileResponse != null ? Profiles.fromMap(profileResponse) : null;
@@ -97,6 +99,7 @@ Future<UserProfileData> getUserData() async {
 
 Future<void> logout(BuildContext context) async {
   final scaffoldMessenger = ScaffoldMessenger.of(context);
+  final l10n = AppLocalizations.of(context)!;
   try {
     await supabase.auth.signOut();
     if (context.mounted) {
@@ -107,7 +110,7 @@ Future<void> logout(BuildContext context) async {
     }
   } catch (e) {
     scaffoldMessenger.showSnackBar(
-      SnackBar(content: Text('Errore durante il logout: $e')),
+      SnackBar(content: Text(l10n.logoutError('$e'))),
     );
   }
 }
@@ -117,6 +120,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder<UserProfileData>(
@@ -127,6 +131,9 @@ class ProfilePage extends StatelessWidget {
             }
 
             if (snapshot.hasError) {
+              final rawError = snapshot.error.toString();
+              final errorText =
+                  rawError.contains('user-not-found') ? l10n.userNotFound : rawError;
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -136,13 +143,13 @@ class ProfilePage extends StatelessWidget {
                       const Icon(Icons.error_outline, size: 48),
                       const SizedBox(height: 16),
                       Text(
-                        'Errore nel caricamento dati',
+                        l10n.profileLoadError,
                         style: Theme.of(context).textTheme.titleMedium,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        snapshot.error.toString(),
+                        errorText,
                         style: Theme.of(context).textTheme.bodySmall,
                         textAlign: TextAlign.center,
                       ),
@@ -154,7 +161,7 @@ class ProfilePage extends StatelessWidget {
 
             final data = snapshot.data;
             if (data == null) {
-              return const Center(child: Text('Nessun dato disponibile'));
+              return Center(child: Text(l10n.profileNoData));
             }
 
             final theme = Theme.of(context);
@@ -162,6 +169,8 @@ class ProfilePage extends StatelessWidget {
             final appColors = theme.extension<AppColors>()!;
             final statusChipTextStyle =
                 theme.textTheme.labelMedium?.copyWith(color: colorScheme.onPrimary);
+            final displayName = data.displayName(l10n);
+            final emailText = data.email.isEmpty ? l10n.profileEmailUnavailable : data.email;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -171,13 +180,13 @@ class ProfilePage extends StatelessWidget {
                   _ProfileAvatar(data: data),
                   const SizedBox(height: 16),
                   Text(
-                    data.displayName,
+                    displayName,
                     style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    data.email.isEmpty ? 'Email non disponibile' : data.email,
+                    emailText,
                     style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
@@ -193,7 +202,7 @@ class ProfilePage extends StatelessWidget {
                           color: colorScheme.onPrimary,
                         ),
                         label: Text(
-                          data.isActive ? 'Account attivo' : 'Account inattivo',
+                          data.isActive ? l10n.profileStatusActive : l10n.profileStatusInactive,
                           style: statusChipTextStyle,
                         ),
                         backgroundColor:
@@ -205,7 +214,7 @@ class ProfilePage extends StatelessWidget {
                           color: colorScheme.onPrimary,
                         ),
                         label: Text(
-                          data.isPayed ? 'Piano attivo' : 'Piano scaduto',
+                          data.isPayed ? l10n.profilePlanActive : l10n.profilePlanExpired,
                           style: statusChipTextStyle,
                         ),
                         backgroundColor:
@@ -220,30 +229,30 @@ class ProfilePage extends StatelessWidget {
                       children: [
                         ListTile(
                           leading: const Icon(Icons.badge_outlined),
-                          title: const Text('Username'),
+                          title: Text(l10n.profileUsername),
                           subtitle: Text(data.username.isEmpty ? '-' : data.username),
                         ),
                         const Divider(height: 0),
                         ListTile(
                           leading: const Icon(Icons.schedule),
-                          title: const Text('Ultimo aggiornamento'),
+                          title: Text(l10n.profileLastUpdated),
                           subtitle: Text(
                             data.updatedAt != null
                                 ? _formatDate(data.updatedAt!)
-                                : 'Non disponibile',
+                                : l10n.profileValueUnavailable,
                           ),
                         ),
                         const Divider(height: 0),
                         ListTile(
                           leading: const Icon(Icons.public),
-                          title: const Text('Fuso orario'),
-                          subtitle: Text(data.timezone ?? 'Non impostato'),
+                          title: Text(l10n.profileTimezone),
+                          subtitle: Text(data.timezone ?? l10n.profileNotSet),
                         ),
                         const Divider(height: 0),
                         ListTile(
                           leading: const Icon(Icons.straighten),
-                          title: const Text('Unità di misura'),
-                          subtitle: Text(data.unitSystem ?? 'Non impostato'),
+                          title: Text(l10n.profileUnitSystem),
+                          subtitle: Text(data.unitSystem ?? l10n.profileNotSet),
                         ),
                       ],
                     ),
@@ -253,11 +262,11 @@ class ProfilePage extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: ListTile(
                       leading: const Icon(Icons.edit_outlined),
-                      title: const Text('Modifica profilo'),
-                      subtitle: const Text('Presto disponibile'),
+                      title: Text(l10n.profileEdit),
+                      subtitle: Text(l10n.profileComingSoon),
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Funzionalità non ancora disponibile.')),
+                          SnackBar(content: Text(l10n.featureUnavailable)),
                         );
                       },
                     ),
@@ -268,7 +277,7 @@ class ProfilePage extends StatelessWidget {
                     child: FilledButton.icon(
                       onPressed: () => logout(context),
                       icon: const Icon(Icons.logout),
-                      label: const Text('Logout'),
+                      label: Text(l10n.logout),
                     ),
                   ),
                 ],
@@ -294,6 +303,7 @@ class _ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final avatarUrl = data.avatarUrl;
     final backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+    final l10n = AppLocalizations.of(context)!;
 
     return CircleAvatar(
       radius: 48,
@@ -303,7 +313,7 @@ class _ProfileAvatar extends StatelessWidget {
           : null,
       child: (avatarUrl == null || avatarUrl.isEmpty)
           ? Text(
-              data.initials,
+              data.initials(l10n),
               style: Theme.of(context)
                   .textTheme
                   .headlineSmall

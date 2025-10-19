@@ -1,0 +1,225 @@
+{
+  "appTitle": "Calisync",
+  "authErrorMessage": "Errore durante l'autenticazione",
+  "navHome": "Home",
+  "navSettings": "Impostazioni",
+  "navProfile": "Profilo",
+  "navTerminology": "Terminologia",
+  "settingsComingSoon": "Le impostazioni saranno presto disponibili.",
+  "exerciseTrackerTitle": "Tracker esercizi",
+  "poseEstimationTitle": "Stima postura",
+  "homeLoadErrorTitle": "Impossibile caricare gli allenamenti",
+  "retry": "Riprova",
+  "homeEmptyTitle": "Nessun allenamento disponibile",
+  "homeEmptyDescription": "Contatta il tuo coach per ricevere una nuova scheda.",
+  "unauthenticated": "Utente non autenticato",
+  "defaultExerciseName": "Esercizio",
+  "generalNotes": "Note generali",
+  "trainingHeaderExercise": "Esercizio",
+  "trainingHeaderSets": "Serie",
+  "trainingHeaderReps": "Ripetizioni",
+  "trainingHeaderRest": "Recupero",
+  "trainingHeaderIntensity": "Intensità",
+  "trainingHeaderNotes": "Note",
+  "logoutError": "Errore durante il logout: {error}",
+  "@logoutError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "profileFallbackName": "Utente",
+  "userNotFound": "Utente non trovato nel database",
+  "profileLoadError": "Errore nel caricamento dati",
+  "profileNoData": "Nessun dato disponibile",
+  "profileEmailUnavailable": "Email non disponibile",
+  "profileStatusActive": "Account attivo",
+  "profileStatusInactive": "Account inattivo",
+  "profilePlanActive": "Piano attivo",
+  "profilePlanExpired": "Piano scaduto",
+  "profileUsername": "Username",
+  "profileLastUpdated": "Ultimo aggiornamento",
+  "profileValueUnavailable": "Non disponibile",
+  "profileTimezone": "Fuso orario",
+  "profileNotSet": "Non impostato",
+  "profileUnitSystem": "Unità di misura",
+  "profileEdit": "Modifica profilo",
+  "profileComingSoon": "Presto disponibile",
+  "featureUnavailable": "Funzionalità non ancora disponibile.",
+  "logout": "Logout",
+  "redirectError": "Errore durante il reindirizzamento: {error}",
+  "@redirectError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "linkError": "Errore collegamento: {error}",
+  "@linkError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "missingFieldsError": "Compila tutti i campi richiesti.",
+  "passwordMismatch": "Le password non coincidono.",
+  "invalidCredentials": "Credenziali errate.",
+  "signupEmailCheck": "Registrazione completata! Controlla la tua email per confermare l'account.",
+  "unexpectedError": "Errore inatteso: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "googleSignInFailed": "Google Sign-In fallito: {error}",
+  "@googleSignInFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginGreeting": "Bentornato! Accedi per continuare il tuo allenamento.",
+  "signupGreeting": "Crea un account per sbloccare tutti gli allenamenti.",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "confirmPasswordLabel": "Conferma password",
+  "loginButton": "Accedi",
+  "signupButton": "Registrati",
+  "noAccountPrompt": "Non hai un account? Registrati",
+  "existingAccountPrompt": "Hai già un account? Accedi",
+  "orDivider": "oppure",
+  "connecting": "Connessione...",
+  "continueWithGoogle": "Continua con Google",
+  "exerciseAddDialogTitle": "Aggiungi esercizio",
+  "exerciseNameLabel": "Nome esercizio",
+  "quickAddValuesLabel": "Valori rapidi",
+  "quickAddValuesHelper": "Ripetizioni separate da virgola (es. 1,5,10)",
+  "cancel": "Annulla",
+  "add": "Aggiungi",
+  "exerciseNameMissing": "Inserisci un nome.",
+  "exerciseTrackerEmpty": "Ancora nessun esercizio. Tocca + per aggiungerne uno!",
+  "exerciseAddButton": "Aggiungi esercizio",
+  "exercisePushUps": "Push-up",
+  "exercisePullUps": "Trazioni alla sbarra",
+  "exerciseChinUps": "Trazioni a presa inversa",
+  "exerciseTotalReps": "{count} ripetizioni totali",
+  "@exerciseTotalReps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "undoLastSet": "Annulla ultima serie",
+  "custom": "Personalizzato",
+  "reset": "Reimposta",
+  "logRepsTitle": "Registra ripetizioni",
+  "repetitionsLabel": "Ripetizioni",
+  "positiveNumberError": "Inserisci un numero positivo.",
+  "repsChip": "{count} ripetizioni",
+  "@repsChip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "goalCount": "Obiettivo: {count}",
+  "@goalCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "repGoalReached": "Obiettivo ripetizioni raggiunto!",
+  "pause": "Pausa",
+  "start": "Avvia",
+  "seriesCount": "Serie: {count}",
+  "@seriesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resetReps": "Azzera ripetizioni",
+  "timerTitle": "Timer",
+  "weekdayMonday": "Lunedì",
+  "weekdayTuesday": "Martedì",
+  "weekdayWednesday": "Mercoledì",
+  "weekdayThursday": "Giovedì",
+  "weekdayFriday": "Venerdì",
+  "weekdaySaturday": "Sabato",
+  "weekdaySunday": "Domenica",
+  "weekNumber": "Settimana {week}",
+  "@weekNumber": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "defaultWorkoutTitle": "Allenamento",
+  "terminologyTitle": "Terminologia",
+  "termRepsTitle": "Reps (Ripetizioni)",
+  "termRepsDescription": "Numero di volte che esegui un esercizio consecutivamente.",
+  "termSetTitle": "Set (Serie)",
+  "termSetDescription": "Un gruppo di ripetizioni. Es: 3 serie da 10 reps significa 30 ripetizioni totali, divise in 3 gruppi.",
+  "termRtTitle": "RT",
+  "termRtDescription": "Ripetizioni Totali: indica che devi fare tutte quelle reps, con libera scelta di serie, ripetizioni e tempo (se non indicato).",
+  "termAmrapTitle": "AMRAP",
+  "termAmrapDescription": "As Many Reps As Possible: esegui quante più ripetizioni possibili in un tempo determinato.",
+  "termEmomTitle": "EMOM",
+  "termEmomDescription": "Every Minute On Minute: inizi un set ogni minuto. Il tempo restante serve per riposare.",
+  "termRampingTitle": "Ramping",
+  "termRampingDescription": "Metodo che prevede un incremento del peso ad ogni serie",
+  "termMavTitle": "MAV",
+  "termMavDescription": "Massima Alzata Veloce: si riferisce a una metodologia in cui si cerca di eseguire il maggior numero di ripetizioni possibili con un carico, mantenendo sempre il controllo del movimento e una buona velocità di esecuzione.",
+  "termIsocineticiTitle": "Isocinetici",
+  "termIsocineticiDescription": "Esercizi svolti a velocità costante.",
+  "termTutTitle": "TUT",
+  "termTutDescription": "Indica quanto deve durare una ripetizione. Puoi gestire tu la durata di ogni fase della rep.",
+  "termIsoTitle": "ISO",
+  "termIsoDescription": "Indica il fermo a un punto specifico dell'esecuzione della rep",
+  "termSomTitle": "SOM",
+  "termSomDescription": "Indica la durata di ogni fase della ripetizione.",
+  "termScaricoTitle": "Scarico",
+  "termScaricoDescription": "Ultima settimana della scheda per prepararsi ai massimali.",
+  "noCameras": "Nessuna fotocamera disponibile",
+  "cameraInitFailed": "Inizializzazione fotocamera fallita: {error}",
+  "@cameraInitFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "poseDetected": "Posa rilevata",
+  "processing": "Elaborazione…",
+  "idle": "In attesa",
+  "cameraFront": "frontale",
+  "cameraBack": "posteriore",
+  "hudMetrics": "fps: {fps}  ms: {milliseconds}  lmks: {landmarks}",
+  "@hudMetrics": {
+    "placeholders": {
+      "fps": {
+        "type": "String"
+      },
+      "milliseconds": {
+        "type": "String"
+      },
+      "landmarks": {
+        "type": "int"
+      }
+    }
+  },
+  "hudOrientation": "rot: {rotation}  cam: {camera}  fmt: {format}",
+  "@hudOrientation": {
+    "placeholders": {
+      "rotation": {
+        "type": "String"
+      },
+      "camera": {
+        "type": "String"
+      },
+      "format": {
+        "type": "String"
+      }
+    }
+  }
+}
