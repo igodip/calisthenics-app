@@ -24,7 +24,9 @@
   "logoutError": "Error while logging out: {error}",
   "@logoutError": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "profileFallbackName": "User",
@@ -49,13 +51,17 @@
   "redirectError": "Error during redirect: {error}",
   "@redirectError": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "linkError": "Link error: {error}",
   "@linkError": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "missingFieldsError": "Please fill out all required fields.",
@@ -65,13 +71,17 @@
   "unexpectedError": "Unexpected error: {error}",
   "@unexpectedError": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "googleSignInFailed": "Google Sign-In failed: {error}",
   "@googleSignInFailed": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "loginGreeting": "Welcome back! Sign in to continue your training.",
@@ -186,7 +196,9 @@
   "cameraInitFailed": "Camera init failed: {error}",
   "@cameraInitFailed": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "poseDetected": "Pose detected",

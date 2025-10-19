@@ -24,7 +24,9 @@
   "logoutError": "Errore durante il logout: {error}",
   "@logoutError": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "profileFallbackName": "Utente",
@@ -49,13 +51,17 @@
   "redirectError": "Errore durante il reindirizzamento: {error}",
   "@redirectError": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "linkError": "Errore collegamento: {error}",
   "@linkError": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "missingFieldsError": "Compila tutti i campi richiesti.",
@@ -65,13 +71,17 @@
   "unexpectedError": "Errore inatteso: {error}",
   "@unexpectedError": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "googleSignInFailed": "Google Sign-In fallito: {error}",
   "@googleSignInFailed": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "loginGreeting": "Bentornato! Accedi per continuare il tuo allenamento.",
@@ -186,7 +196,9 @@
   "cameraInitFailed": "Inizializzazione fotocamera fallita: {error}",
   "@cameraInitFailed": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "poseDetected": "Posa rilevata",
