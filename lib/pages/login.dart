@@ -25,7 +25,6 @@ class _LoginPageState extends State<LoginPage> {
 
   bool isLoginMode = true;
   bool loading = false;
-  bool oauthLoading = false;
 
   String? feedbackMessage;
   bool isError = false;
@@ -138,31 +137,6 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         setState(() {
           loading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _signInWithGoogle() async {
-    if (oauthLoading) return;
-    setState(() {
-      oauthLoading = true;
-    });
-    _setFeedback(null, false);
-
-    try {
-      await Supabase.instance.client.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: 'com.idipaolo.calisync://login-callback',
-      );
-    } on AuthException catch (e) {
-      _setFeedback(e.message, true);
-    } catch (e) {
-      _setFeedback(l10n.googleSignInFailed('$e'), true);
-    } finally {
-      if (mounted) {
-        setState(() {
-          oauthLoading = false;
         });
       }
     }
@@ -323,55 +297,6 @@ class _LoginPageState extends State<LoginPage> {
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: colorScheme.onBackground.withOpacity(0.7),
                                 ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  height: 1,
-                                  color: colorScheme.outlineVariant,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
-                                child: Text(
-                                  l10n.orDivider,
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    color: colorScheme.onBackground.withOpacity(0.6),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  height: 1,
-                                  color: colorScheme.outlineVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          OutlinedButton.icon(
-                            onPressed: oauthLoading ? null : _signInWithGoogle,
-                            icon: oauthLoading
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  )
-                                : Image.asset(
-                                    'assets/google_logo.png',
-                                    width: 18,
-                                    height: 18,
-                                    errorBuilder: (_, __, ___) => const Icon(Icons.login, size: 18),
-                                  ),
-                            label: Text(
-                              oauthLoading ? l10n.connecting : l10n.continueWithGoogle,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: colorScheme.onSurface,
-                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
