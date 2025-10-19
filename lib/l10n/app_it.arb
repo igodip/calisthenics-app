@@ -176,7 +176,12 @@
   "quickAddValuesHelper": "Ripetizioni separate da virgola (es. 1,5,10)",
   "cancel": "Annulla",
   "add": "Aggiungi",
+  "save": "Salva",
   "exerciseNameMissing": "Inserisci un nome.",
+  "exerciseTargetRepsLabel": "Ripetizioni obiettivo",
+  "exerciseTargetRepsHelper": "Obiettivo totale opzionale per la sessione",
+  "exerciseRestDurationLabel": "Durata recupero (secondi)",
+  "exerciseRestDurationHelper": "Preset opzionale per il conto alla rovescia",
   "exerciseTrackerEmpty": "Ancora nessun esercizio. Tocca + per aggiungerne uno!",
   "exerciseAddButton": "Aggiungi esercizio",
   "exercisePushUps": "Push-up",
@@ -190,6 +195,29 @@
       }
     }
   },
+  "exerciseGoalProgress": "{logged} / {goal} ripetizioni registrate",
+  "@exerciseGoalProgress": {
+    "placeholders": {
+      "logged": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseRestFinished": "Recupero terminato per {exercise}!",
+  "@exerciseRestFinished": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseSetRestDuration": "Imposta durata recupero",
+  "exerciseDurationSecondsLabel": "Durata (secondi)",
+  "restTimerLabel": "Timer di recupero",
+  "setDuration": "Imposta durata",
   "undoLastSet": "Annulla ultima serie",
   "custom": "Personalizzato",
   "reset": "Reimposta",
