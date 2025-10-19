@@ -170,6 +170,23 @@
   "signupButton": "Registrati",
   "noAccountPrompt": "Non hai un account? Registrati",
   "existingAccountPrompt": "Hai già un account? Accedi",
+  "forgotPasswordLink": "Forgot your password?",
+  "passwordResetEmailSent": "Link per reimpostare la password inviato a {email}. Controlla la posta.",
+  "@passwordResetEmailSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordResetEmailMissing": "Inserisci la tua email per ricevere il link di reimpostazione.",
+  "passwordResetDialogTitle": "Scegli una nuova password",
+  "passwordResetDialogDescription": "Inserisci una nuova password per mettere al sicuro il tuo account.",
+  "passwordResetNewPasswordLabel": "Nuova password",
+  "passwordResetConfirmPasswordLabel": "Conferma nuova password",
+  "passwordResetMismatch": "Le password non coincidono.",
+  "passwordResetSuccess": "Password aggiornata con successo. Puoi continuare a usare l'app.",
+  "passwordResetSubmit": "Aggiorna password",
   "exerciseAddDialogTitle": "Aggiungi esercizio",
   "exerciseNameLabel": "Nome esercizio",
   "quickAddValuesLabel": "Valori rapidi",

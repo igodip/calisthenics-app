@@ -170,6 +170,23 @@
   "signupButton": "Sign up",
   "noAccountPrompt": "Don't have an account? Sign up",
   "existingAccountPrompt": "Already have an account? Sign in",
+  "forgotPasswordLink": "Forgot your password?",
+  "passwordResetEmailSent": "Password reset link sent to {email}. Check your inbox.",
+  "@passwordResetEmailSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordResetEmailMissing": "Enter your email to receive a reset link.",
+  "passwordResetDialogTitle": "Choose a new password",
+  "passwordResetDialogDescription": "Enter a new password to secure your account.",
+  "passwordResetNewPasswordLabel": "New password",
+  "passwordResetConfirmPasswordLabel": "Confirm new password",
+  "passwordResetMismatch": "Passwords do not match.",
+  "passwordResetSuccess": "Password updated successfully. You can continue using the app.",
+  "passwordResetSubmit": "Update password",
   "exerciseAddDialogTitle": "Add exercise",
   "exerciseNameLabel": "Exercise name",
   "quickAddValuesLabel": "Quick add values",

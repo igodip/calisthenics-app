@@ -24,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool isLoginMode = true;
   bool loading = false;
+  bool passwordResetLoading = false;
 
   String? feedbackMessage;
   bool isError = false;
@@ -54,7 +55,15 @@ class _LoginPageState extends State<LoginPage> {
     Future<void> handleUri(Uri? uri) async {
       if (uri == null) return;
       try {
+        final isRecovery = uri.queryParameters['type'] == 'recovery';
         await Supabase.instance.client.auth.getSessionFromUrl(uri);
+        if (isRecovery && mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _showPasswordResetDialog();
+            }
+          });
+        }
       } on AuthException catch (e) {
         _setFeedback(e.message, true);
       } catch (e) {
@@ -147,6 +156,173 @@ class _LoginPageState extends State<LoginPage> {
       feedbackMessage = message;
       isError = error;
     });
+  }
+
+  Future<void> _sendPasswordResetEmail() async {
+    if (passwordResetLoading || loading) {
+      return;
+    }
+
+    final email = emailController.text.trim();
+
+    if (email.isEmpty) {
+      _setFeedback(l10n.passwordResetEmailMissing, true);
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      passwordResetLoading = true;
+    });
+    _setFeedback(null, false);
+
+    try {
+      await supabase.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'com.idipaolo.calisync://login-callback',
+      );
+      _setFeedback(l10n.passwordResetEmailSent(email), false);
+    } on AuthException catch (e) {
+      _setFeedback(e.message, true);
+    } catch (e) {
+      _setFeedback(l10n.unexpectedError('$e'), true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          passwordResetLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _showPasswordResetDialog() async {
+    final newPasswordController = TextEditingController();
+    final confirmController = TextEditingController();
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        bool submitting = false;
+        String? dialogError;
+
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            Future<void> submitWithState() async {
+              if (submitting) return;
+
+              final newPassword = newPasswordController.text;
+              final confirmPassword = confirmController.text;
+
+              if (newPassword.isEmpty || confirmPassword.isEmpty) {
+                setDialogState(() {
+                  dialogError = l10n.missingFieldsError;
+                });
+                return;
+              }
+
+              if (newPassword != confirmPassword) {
+                setDialogState(() {
+                  dialogError = l10n.passwordResetMismatch;
+                });
+                return;
+              }
+
+              FocusScope.of(dialogContext).unfocus();
+
+              setDialogState(() {
+                submitting = true;
+                dialogError = null;
+              });
+
+              try {
+                await supabase.auth.updateUser(
+                  UserAttributes(password: newPassword),
+                );
+                if (mounted) {
+                  Navigator.of(dialogContext).pop();
+                  _setFeedback(l10n.passwordResetSuccess, false);
+                }
+              } on AuthException catch (e) {
+                setDialogState(() {
+                  dialogError = e.message;
+                  submitting = false;
+                });
+              } catch (e) {
+                setDialogState(() {
+                  dialogError = l10n.unexpectedError('$e');
+                  submitting = false;
+                });
+              }
+            }
+
+            return AlertDialog(
+              title: Text(l10n.passwordResetDialogTitle),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l10n.passwordResetDialogDescription,
+                    style: Theme.of(dialogContext).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: newPasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.passwordResetNewPasswordLabel,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: confirmController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.passwordResetConfirmPasswordLabel,
+                    ),
+                  ),
+                  if (dialogError != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      dialogError!,
+                      style: Theme.of(dialogContext)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: Theme.of(dialogContext).colorScheme.error),
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: submitting
+                      ? null
+                      : () {
+                          Navigator.of(dialogContext).pop();
+                        },
+                  child: Text(l10n.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: submitting ? null : submitWithState,
+                  child: submitting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(l10n.passwordResetSubmit),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    newPasswordController.dispose();
+    confirmController.dispose();
   }
 
   Future<void> _ensureUserEntry(User user) async {
@@ -278,6 +454,22 @@ class _LoginPageState extends State<LoginPage> {
                                 : Text(isLoginMode ? l10n.loginButton : l10n.signupButton),
                           ),
                           const SizedBox(height: 12),
+                          if (isLoginMode)
+                            Center(
+                              child: TextButton(
+                                onPressed:
+                                    passwordResetLoading ? null : _sendPasswordResetEmail,
+                                child: passwordResetLoading
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child:
+                                            CircularProgressIndicator(strokeWidth: 2),
+                                      )
+                                    : Text(l10n.forgotPasswordLink),
+                              ),
+                            ),
+                          if (isLoginMode) const SizedBox(height: 12),
                           Center(
                             child: TextButton(
                               onPressed: loading
