@@ -1,6 +1,7 @@
 // lib/profile.dart
 import 'package:calisync/model/profiles.dart';
 import 'package:characters/characters.dart';
+import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -157,7 +158,10 @@ class ProfilePage extends StatelessWidget {
             }
 
             final theme = Theme.of(context);
-            final statusChipTextStyle = theme.textTheme.labelMedium?.copyWith(color: Colors.white);
+            final colorScheme = theme.colorScheme;
+            final appColors = theme.extension<AppColors>()!;
+            final statusChipTextStyle =
+                theme.textTheme.labelMedium?.copyWith(color: colorScheme.onPrimary);
 
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -186,26 +190,26 @@ class ProfilePage extends StatelessWidget {
                       Chip(
                         avatar: Icon(
                           data.isActive ? Icons.check_circle : Icons.pause_circle_filled,
-                          color: Colors.white,
+                          color: colorScheme.onPrimary,
                         ),
                         label: Text(
                           data.isActive ? 'Account attivo' : 'Account inattivo',
                           style: statusChipTextStyle,
                         ),
                         backgroundColor:
-                            data.isActive ? Colors.green.shade600 : Colors.grey.shade600,
+                            data.isActive ? appColors.success : colorScheme.outlineVariant,
                       ),
                       Chip(
                         avatar: Icon(
                           data.isPayed ? Icons.workspace_premium : Icons.lock_clock,
-                          color: Colors.white,
+                          color: colorScheme.onPrimary,
                         ),
                         label: Text(
                           data.isPayed ? 'Piano attivo' : 'Piano scaduto',
                           style: statusChipTextStyle,
                         ),
                         backgroundColor:
-                            data.isPayed ? Colors.blue.shade600 : Colors.orange.shade600,
+                            data.isPayed ? colorScheme.secondary : appColors.warning,
                       ),
                     ],
                   ),
@@ -259,12 +263,12 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  FilledButton.icon(
-                    onPressed: () => logout(context),
-                    icon: const Icon(Icons.logout),
-                    label: const Text('Logout'),
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(48),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () => logout(context),
+                      icon: const Icon(Icons.logout),
+                      label: const Text('Logout'),
                     ),
                   ),
                 ],

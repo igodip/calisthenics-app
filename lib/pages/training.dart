@@ -22,6 +22,9 @@ class Training extends StatelessWidget {
       'Note',
     ];
 
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(title: Text(_buildTitle())),
       body: SingleChildScrollView(
@@ -56,21 +59,22 @@ class Training extends StatelessWidget {
                 ),
               Table(
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                border: TableBorder.all(color: Colors.grey),
+                border: TableBorder.all(color: colorScheme.outline),
                 columnWidths: {
                   for (int i = 0; i < headers.length; i++)
                     i: const IntrinsicColumnWidth(),
                 },
                 children: [
                   TableRow(
-                    decoration: BoxDecoration(color: Colors.blue[300]),
+                    decoration: BoxDecoration(color: colorScheme.primaryContainer),
                     children: headers.map((header) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           header,
-                          style: const TextStyle(
+                          style: theme.textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.bold,
+                            color: colorScheme.onPrimaryContainer,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -81,14 +85,15 @@ class Training extends StatelessWidget {
                     return TableRow(
                       children: [
                         _cell(
+                          context,
                           exercise.name,
                           onTap: () => _openTools(context, exercise),
                         ),
-                        _cell(exercise.sets?.toString() ?? '-'),
-                        _cell(exercise.reps?.toString() ?? '-'),
-                        _cell(_formatRest(exercise)),
-                        _cell(exercise.intensity ?? '-'),
-                        _cell(exercise.notes ?? day.notes ?? ''),
+                        _cell(context, exercise.sets?.toString() ?? '-'),
+                        _cell(context, exercise.reps?.toString() ?? '-'),
+                        _cell(context, _formatRest(exercise)),
+                        _cell(context, exercise.intensity ?? '-'),
+                        _cell(context, exercise.notes ?? day.notes ?? ''),
                       ],
                     );
                   }),
@@ -96,13 +101,6 @@ class Training extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                ),
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const HistogramChart()),
@@ -166,8 +164,9 @@ class Training extends StatelessWidget {
     }
   }
 
-  Widget _cell(dynamic value, {VoidCallback? onTap}) {
+  Widget _cell(BuildContext context, dynamic value, {VoidCallback? onTap}) {
     final display = value?.toString().trim();
+    final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -175,7 +174,7 @@ class Training extends StatelessWidget {
         child: Text(
           (display == null || display.isEmpty) ? '-' : display,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 14),
+          style: theme.textTheme.bodyMedium,
         ),
       ),
     );

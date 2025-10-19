@@ -169,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
+                      color: theme.shadowColor.withOpacity(0.06),
                       offset: const Offset(0, 12),
                       blurRadius: 24,
                     ),
@@ -192,7 +192,7 @@ class _HomePageState extends State<HomePage> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: theme.shadowColor.withOpacity(0.08),
                 offset: const Offset(0, 10),
                 blurRadius: 32,
               ),
@@ -201,7 +201,7 @@ class _HomePageState extends State<HomePage> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: BottomNavigationBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: colorScheme.surface.withOpacity(0),
               elevation: 0,
               type: BottomNavigationBarType.fixed,
               currentIndex: selectedIndex,
@@ -266,7 +266,7 @@ class _GradientIcon extends StatelessWidget {
 
     return ShaderMask(
       shaderCallback: (bounds) => gradient.createShader(bounds),
-      child: Icon(icon, color: Colors.white),
+      child: Icon(icon, color: Theme.of(context).colorScheme.onPrimary),
     );
   }
 }

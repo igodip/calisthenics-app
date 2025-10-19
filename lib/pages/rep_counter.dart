@@ -45,25 +45,30 @@ class _RepCounterState extends State<RepCounter> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: Text("Timer")),
+      appBar: AppBar(title: Text(widget.title)),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               widget.title,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Text(
               '$_count',
-              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w600),
+              style: theme.textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             if (widget.targetCount != null)
               Text(
                 'Goal: ${widget.targetCount}',
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             const SizedBox(height: 16),
             Row(
