@@ -110,6 +110,27 @@
   "profileUnitSystem": "Unità di misura",
   "profileEdit": "Modifica profilo",
   "profileComingSoon": "Presto disponibile",
+  "profileEditSubtitle": "Aggiorna le tue informazioni personali",
+  "profileEditTitle": "Modifica profilo",
+  "profileEditFullNameLabel": "Nome completo",
+  "profileEditFullNameHint": "Come vuoi essere chiamato?",
+  "profileEditTimezoneLabel": "Fuso orario",
+  "profileEditTimezoneHint": "Esempio: Europe/Rome",
+  "profileEditUnitSystemLabel": "Unità di misura preferita",
+  "profileEditUnitSystemNotSet": "Non specificato",
+  "profileEditUnitSystemMetric": "Metrico (kg, cm)",
+  "profileEditUnitSystemImperial": "Imperiale (lb, in)",
+  "profileEditCancel": "Annulla",
+  "profileEditSave": "Salva modifiche",
+  "profileEditSuccess": "Profilo aggiornato correttamente",
+  "profileEditError": "Impossibile aggiornare il profilo: {error}",
+  "@profileEditError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "featureUnavailable": "Funzionalità non ancora disponibile.",
   "logout": "Logout",
   "redirectError": "Errore durante il reindirizzamento: {error}",

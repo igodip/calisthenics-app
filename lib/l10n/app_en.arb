@@ -110,6 +110,27 @@
   "profileUnitSystem": "Unit system",
   "profileEdit": "Edit profile",
   "profileComingSoon": "Coming soon",
+  "profileEditSubtitle": "Update your personal details",
+  "profileEditTitle": "Edit profile",
+  "profileEditFullNameLabel": "Full name",
+  "profileEditFullNameHint": "How should we call you?",
+  "profileEditTimezoneLabel": "Time zone",
+  "profileEditTimezoneHint": "Example: Europe/Rome",
+  "profileEditUnitSystemLabel": "Preferred unit system",
+  "profileEditUnitSystemNotSet": "Not specified",
+  "profileEditUnitSystemMetric": "Metric (kg, cm)",
+  "profileEditUnitSystemImperial": "Imperial (lb, in)",
+  "profileEditCancel": "Cancel",
+  "profileEditSave": "Save changes",
+  "profileEditSuccess": "Profile updated successfully",
+  "profileEditError": "Unable to update profile: {error}",
+  "@profileEditError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "featureUnavailable": "Feature not available yet.",
   "logout": "Log out",
   "redirectError": "Error during redirect: {error}",
