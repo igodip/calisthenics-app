@@ -65,7 +65,9 @@
   "settingsAppVersionValue": "Versione {version}",
   "@settingsAppVersionValue": {
     "placeholders": {
-      "version": {}
+      "version": {
+        "type": "Object"
+      }
     }
   },
   "exerciseTrackerTitle": "Tracker esercizi",
