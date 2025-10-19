@@ -1,6 +1,7 @@
 {
   "@@locale": "en",
   "appTitle": "Calisthenics",
+  "brandName": "Calisync",
   "authErrorMessage": "Authentication error",
   "homeTabLabel": "Home",
   "settingsTabLabel": "Settings",
