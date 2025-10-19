@@ -1,6 +1,8 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class WorkoutExercise {
   final String? id;
-  final String name;
+  final String? name;
   final int? sets;
   final int? reps;
   final int? restSeconds;
@@ -8,7 +10,7 @@ class WorkoutExercise {
   final String? notes;
 
   const WorkoutExercise({
-    required this.name,
+    this.name,
     this.id,
     this.sets,
     this.reps,
@@ -29,16 +31,6 @@ class WorkoutDay {
   final String? notes;
   final List<WorkoutExercise> exercises;
 
-  static const Map<int, String> _dowLabels = {
-    1: 'Lunedì',
-    2: 'Martedì',
-    3: 'Mercoledì',
-    4: 'Giovedì',
-    5: 'Venerdì',
-    6: 'Sabato',
-    7: 'Domenica',
-  };
-
   const WorkoutDay({
     required this.week,
     required this.dow,
@@ -48,20 +40,40 @@ class WorkoutDay {
     this.notes,
   });
 
-  String? get dowLabel => _dowLabels[dow];
+  String? dowLabel(AppLocalizations l10n) {
+    switch (dow) {
+      case 1:
+        return l10n.weekdayMonday;
+      case 2:
+        return l10n.weekdayTuesday;
+      case 3:
+        return l10n.weekdayWednesday;
+      case 4:
+        return l10n.weekdayThursday;
+      case 5:
+        return l10n.weekdayFriday;
+      case 6:
+        return l10n.weekdaySaturday;
+      case 7:
+        return l10n.weekdaySunday;
+      default:
+        return null;
+    }
+  }
 
-  String formattedTitle({String fallback = 'Allenamento'}) {
+  String formattedTitle(AppLocalizations l10n, {String? fallback}) {
     final parts = <String>[];
     if (week > 0) {
-      parts.add('Settimana $week');
+      parts.add(l10n.weekNumber(week));
     }
-    final dowName = dowLabel;
+    final dowName = dowLabel(l10n);
     if (dowName != null) {
       parts.add(dowName);
     }
     if (name != null && name!.isNotEmpty) {
       parts.add(name!);
     }
-    return parts.isEmpty ? fallback : parts.join(' · ');
+    final resolvedFallback = fallback ?? l10n.defaultWorkoutTitle;
+    return parts.isEmpty ? resolvedFallback : parts.join(' · ');
   }
 }

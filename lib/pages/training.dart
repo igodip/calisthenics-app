@@ -3,6 +3,7 @@ import 'package:calisync/pages/rep_counter.dart';
 import 'package:calisync/pages/rep_timer.dart';
 import 'package:calisync/pages/timer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Training extends StatelessWidget {
   final WorkoutDay day;
@@ -12,20 +13,21 @@ class Training extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final exercises = day.exercises;
-    final headers = const [
-      'Esercizio',
-      'Serie',
-      'Ripetizioni',
-      'Recupero',
-      'Intensità',
-      'Note',
+    final l10n = AppLocalizations.of(context)!;
+    final headers = [
+      l10n.trainingHeaderExercise,
+      l10n.trainingHeaderSets,
+      l10n.trainingHeaderReps,
+      l10n.trainingHeaderRest,
+      l10n.trainingHeaderIntensity,
+      l10n.trainingHeaderNotes,
     ];
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text(day.formattedTitle())),
+      appBar: AppBar(title: Text(day.formattedTitle(l10n))),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Padding(
@@ -45,7 +47,7 @@ class Training extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Note generali',
+                              l10n.generalNotes,
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             const SizedBox(height: 8),
@@ -81,11 +83,15 @@ class Training extends StatelessWidget {
                     }).toList(),
                   ),
                   ...exercises.map((exercise) {
+                    final exerciseName =
+                        exercise.name?.trim().isEmpty ?? true
+                            ? l10n.defaultExerciseName
+                            : exercise.name!;
                     return TableRow(
                       children: [
                         _cell(
                           context,
-                          exercise.name,
+                          exerciseName,
                           onTap: () => _openTools(context, exercise),
                         ),
                         _cell(context, exercise.sets?.toString() ?? '-'),
@@ -106,13 +112,17 @@ class Training extends StatelessWidget {
   }
 
   void _openTools(BuildContext context, WorkoutExercise exercise) {
+    final l10n = AppLocalizations.of(context)!;
+    final exerciseName = exercise.name?.trim().isEmpty ?? true
+        ? l10n.defaultExerciseName
+        : exercise.name!;
     final restDuration = exercise.restDuration;
     final reps = exercise.reps;
     if (restDuration != null && reps != null) {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => RepTimerWidget(
-            title: exercise.name,
+            title: exerciseName,
             countdownDuration: restDuration,
             initialRepCount: 0,
             targetRepCount: reps,
@@ -131,7 +141,7 @@ class Training extends StatelessWidget {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => RepCounter(
-            title: exercise.name,
+            title: exerciseName,
             timerType: '',
           ),
         ),

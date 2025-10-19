@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:calisync/theme/app_theme.dart';
 
@@ -137,8 +138,9 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
       final cameras = await availableCameras();
       if (cameras.isEmpty) {
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No cameras available')),
+            SnackBar(content: Text(l10n.noCameras)),
           );
         }
         return;
@@ -181,8 +183,9 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
       if (mounted) setState(() {});
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Camera init failed: $e')),
+          SnackBar(content: Text(l10n.cameraInitFailed('$e'))),
         );
       }
     }
@@ -383,6 +386,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
@@ -424,7 +428,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                     },
                   ),
                 ),
-              _buildHud(context),
+              _buildHud(context, l10n),
             ],
           );
         },
@@ -462,15 +466,24 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildHud(BuildContext context) {
+  Widget _buildHud(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final appColors = theme.extension<AppColors>()!;
     final status = _poseDetected
-        ? 'Pose detected'
-        : (_isBusy ? 'Processing…' : 'Idle');
+        ? l10n.poseDetected
+        : (_isBusy ? l10n.processing : l10n.idle);
 
     final landmarks = _lastPose?.landmarks.length ?? 0;
+    final cameraLabel = _useFrontCamera ? l10n.cameraFront : l10n.cameraBack;
+    final rotationLabel = _rotation.toString().split('.').last;
+    final metricsText = l10n.hudMetrics(
+      _fps.toStringAsFixed(1),
+      _avgMs.toStringAsFixed(0),
+      landmarks,
+    );
+    final orientationText =
+        l10n.hudOrientation(rotationLabel, cameraLabel, _fmt);
 
     return SafeArea(
       child: Align(
@@ -499,13 +512,13 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                     ),
                   ),
                   Text(
-                    'fps: ${_fps.toStringAsFixed(1)}  ms: ${_avgMs.toStringAsFixed(0)}  lmks: $landmarks',
+                    metricsText,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   Text(
-                    'rot: $_rotation  cam: ${_useFrontCamera ? 'front' : 'back'}  fmt: $_fmt',
+                    orientationText,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onSurfaceVariant.withOpacity(0.7),
                       fontSize: 11,

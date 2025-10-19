@@ -1,0 +1,225 @@
+{
+  "appTitle": "Calisync",
+  "authErrorMessage": "Authentication error",
+  "navHome": "Home",
+  "navSettings": "Settings",
+  "navProfile": "Profile",
+  "navTerminology": "Terminology",
+  "settingsComingSoon": "Settings coming soon.",
+  "exerciseTrackerTitle": "Exercise tracker",
+  "poseEstimationTitle": "Pose estimation",
+  "homeLoadErrorTitle": "Unable to load workouts",
+  "retry": "Retry",
+  "homeEmptyTitle": "No workouts available",
+  "homeEmptyDescription": "Contact your coach to receive a new plan.",
+  "unauthenticated": "User not authenticated",
+  "defaultExerciseName": "Exercise",
+  "generalNotes": "General notes",
+  "trainingHeaderExercise": "Exercise",
+  "trainingHeaderSets": "Sets",
+  "trainingHeaderReps": "Repetitions",
+  "trainingHeaderRest": "Rest",
+  "trainingHeaderIntensity": "Intensity",
+  "trainingHeaderNotes": "Notes",
+  "logoutError": "Error while logging out: {error}",
+  "@logoutError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "profileFallbackName": "User",
+  "userNotFound": "User not found in the database",
+  "profileLoadError": "Error loading data",
+  "profileNoData": "No data available",
+  "profileEmailUnavailable": "Email not available",
+  "profileStatusActive": "Active account",
+  "profileStatusInactive": "Inactive account",
+  "profilePlanActive": "Active plan",
+  "profilePlanExpired": "Plan expired",
+  "profileUsername": "Username",
+  "profileLastUpdated": "Last updated",
+  "profileValueUnavailable": "Not available",
+  "profileTimezone": "Time zone",
+  "profileNotSet": "Not set",
+  "profileUnitSystem": "Unit system",
+  "profileEdit": "Edit profile",
+  "profileComingSoon": "Coming soon",
+  "featureUnavailable": "Feature not available yet.",
+  "logout": "Log out",
+  "redirectError": "Error during redirect: {error}",
+  "@redirectError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "linkError": "Link error: {error}",
+  "@linkError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "missingFieldsError": "Please fill out all required fields.",
+  "passwordMismatch": "Passwords do not match.",
+  "invalidCredentials": "Invalid credentials.",
+  "signupEmailCheck": "Sign-up complete! Check your email to confirm your account.",
+  "unexpectedError": "Unexpected error: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "googleSignInFailed": "Google Sign-In failed: {error}",
+  "@googleSignInFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginGreeting": "Welcome back! Sign in to continue your training.",
+  "signupGreeting": "Create an account to unlock all workouts.",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "confirmPasswordLabel": "Confirm password",
+  "loginButton": "Sign in",
+  "signupButton": "Sign up",
+  "noAccountPrompt": "Don't have an account? Sign up",
+  "existingAccountPrompt": "Already have an account? Sign in",
+  "orDivider": "or",
+  "connecting": "Connecting...",
+  "continueWithGoogle": "Continue with Google",
+  "exerciseAddDialogTitle": "Add exercise",
+  "exerciseNameLabel": "Exercise name",
+  "quickAddValuesLabel": "Quick add values",
+  "quickAddValuesHelper": "Comma separated repetitions (e.g. 1,5,10)",
+  "cancel": "Cancel",
+  "add": "Add",
+  "exerciseNameMissing": "Please provide a name.",
+  "exerciseTrackerEmpty": "No exercises yet. Tap + to add one!",
+  "exerciseAddButton": "Add exercise",
+  "exercisePushUps": "Push-ups",
+  "exercisePullUps": "Pull-ups",
+  "exerciseChinUps": "Chin-ups",
+  "exerciseTotalReps": "{count} total reps",
+  "@exerciseTotalReps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "undoLastSet": "Undo last set",
+  "custom": "Custom",
+  "reset": "Reset",
+  "logRepsTitle": "Log reps",
+  "repetitionsLabel": "Repetitions",
+  "positiveNumberError": "Enter a positive number.",
+  "repsChip": "{count} reps",
+  "@repsChip": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "goalCount": "Goal: {count}",
+  "@goalCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "repGoalReached": "Rep goal reached!",
+  "pause": "Pause",
+  "start": "Start",
+  "seriesCount": "Sets: {count}",
+  "@seriesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resetReps": "Reset reps",
+  "timerTitle": "Timer",
+  "weekdayMonday": "Monday",
+  "weekdayTuesday": "Tuesday",
+  "weekdayWednesday": "Wednesday",
+  "weekdayThursday": "Thursday",
+  "weekdayFriday": "Friday",
+  "weekdaySaturday": "Saturday",
+  "weekdaySunday": "Sunday",
+  "weekNumber": "Week {week}",
+  "@weekNumber": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "defaultWorkoutTitle": "Workout",
+  "terminologyTitle": "Terminology",
+  "termRepsTitle": "Reps",
+  "termRepsDescription": "Number of times you perform an exercise consecutively.",
+  "termSetTitle": "Set",
+  "termSetDescription": "A group of repetitions. For example: 3 sets of 10 reps means 30 repetitions total divided into 3 groups.",
+  "termRtTitle": "RT",
+  "termRtDescription": "Total Repetitions: perform all the reps with your preferred sets, reps, and tempo (if not specified).",
+  "termAmrapTitle": "AMRAP",
+  "termAmrapDescription": "As Many Reps As Possible: perform as many reps as you can in a given time.",
+  "termEmomTitle": "EMOM",
+  "termEmomDescription": "Every Minute on the Minute: start a set every minute. Rest during the remaining time.",
+  "termRampingTitle": "Ramping",
+  "termRampingDescription": "Method where the load increases with each set.",
+  "termMavTitle": "MAV",
+  "termMavDescription": "Massima Alzata Veloce: perform as many reps as possible with a load while keeping control and good speed.",
+  "termIsocineticiTitle": "Isokinetic",
+  "termIsocineticiDescription": "Exercises performed at a constant speed.",
+  "termTutTitle": "TUT",
+  "termTutDescription": "Indicates how long a repetition should last. You can manage the duration of each phase.",
+  "termIsoTitle": "ISO",
+  "termIsoDescription": "Indicates a pause at a specific point of the repetition.",
+  "termSomTitle": "SOM",
+  "termSomDescription": "Indicates the duration of each phase of the repetition.",
+  "termScaricoTitle": "Deload",
+  "termScaricoDescription": "Last week of the program to prepare for max attempts.",
+  "noCameras": "No cameras available",
+  "cameraInitFailed": "Camera init failed: {error}",
+  "@cameraInitFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "poseDetected": "Pose detected",
+  "processing": "Processing…",
+  "idle": "Idle",
+  "cameraFront": "front",
+  "cameraBack": "back",
+  "hudMetrics": "fps: {fps}  ms: {milliseconds}  lmks: {landmarks}",
+  "@hudMetrics": {
+    "placeholders": {
+      "fps": {
+        "type": "String"
+      },
+      "milliseconds": {
+        "type": "String"
+      },
+      "landmarks": {
+        "type": "int"
+      }
+    }
+  },
+  "hudOrientation": "rot: {rotation}  cam: {camera}  fmt: {format}",
+  "@hudOrientation": {
+    "placeholders": {
+      "rotation": {
+        "type": "String"
+      },
+      "camera": {
+        "type": "String"
+      },
+      "format": {
+        "type": "String"
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@ import 'package:calisync/pages/position_estimation.dart';
 import 'package:calisync/components/cards/selection_card.dart';
 import 'package:calisync/pages/training.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeContent extends StatefulWidget {
@@ -24,6 +25,7 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: RefreshIndicator(
@@ -53,7 +55,7 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Impossibile caricare gli allenamenti',
+                    l10n.homeLoadErrorTitle,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
@@ -72,7 +74,7 @@ class _HomeContentState extends State<HomeContent> {
                         });
                       },
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Riprova'),
+                      label: Text(l10n.retry),
                     ),
                   ),
                 ],
@@ -92,13 +94,13 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Nessun allenamento disponibile',
+                    l10n.homeEmptyTitle,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Contatta il tuo coach per ricevere una nuova scheda.',
+                    l10n.homeEmptyDescription,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
@@ -113,7 +115,7 @@ class _HomeContentState extends State<HomeContent> {
               itemBuilder: (context, index) {
                 if (index == days.length + 1) {
                   return SelectionCard(
-                    title: 'Exercise tracker',
+                    title: l10n.exerciseTrackerTitle,
                     icon: Icons.checklist,
                     onTap: () {
                       Navigator.push(
@@ -127,7 +129,7 @@ class _HomeContentState extends State<HomeContent> {
                 }
                 if (index == days.length) {
                   return SelectionCard(
-                    title: 'Pose estimation',
+                    title: l10n.poseEstimationTitle,
                     icon: Icons.man,
                     onTap: () {
                       Navigator.push(
@@ -142,7 +144,7 @@ class _HomeContentState extends State<HomeContent> {
 
                 final day = days[index];
                 return SelectionCard(
-                  title: day.formattedTitle(),
+                  title: day.formattedTitle(l10n),
                   icon: Icons.calendar_today,
                   onTap: () {
                     Navigator.push(
@@ -172,7 +174,7 @@ class _HomeContentState extends State<HomeContent> {
     final client = Supabase.instance.client;
     final userId = client.auth.currentUser?.id;
     if (userId == null) {
-      throw Exception('Utente non autenticato');
+      throw Exception(AppLocalizations.of(context)!.unauthenticated);
     }
 
     final plan = await client
@@ -222,7 +224,7 @@ class _HomeContentState extends State<HomeContent> {
             (exercise['exercise_library'] as Map<String, dynamic>?) ?? {};
         return WorkoutExercise(
           id: exercise['id'] as String?,
-          name: (exerciseLibrary['name'] as String?) ?? 'Esercizio',
+          name: exerciseLibrary['name'] as String?,
           sets: (exercise['default_sets'] as num?)?.toInt(),
           reps: (exercise['default_reps'] as num?)?.toInt(),
           restSeconds: (exercise['rest_seconds'] as num?)?.toInt(),

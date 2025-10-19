@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RepTimerWidget extends StatefulWidget {
   final String title;
@@ -68,7 +69,9 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
         // Optionally do something on reaching goal
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Rep goal reached!')));
+        ).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.repGoalReached)),
+        );
       }
     });
   }
@@ -100,6 +103,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -134,26 +138,26 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
                     children: [
                       ElevatedButton(
                         onPressed: _isRunning ? _stopTimer : _startTimer,
-                        child: Text(_isRunning ? 'Pause' : 'Start'),
+                        child: Text(_isRunning ? l10n.pause : l10n.start),
                       ),
                       const SizedBox(width: 16),
                       ElevatedButton(
                         onPressed: _resetTimer,
-                        child: const Text('Reset'),
+                        child: Text(l10n.reset),
                       ),
                     ],
                   ),
                   const Divider(height: 40),
                   // Rep counter section
                   Text(
-                    'Serie: $_repCount',
+                    l10n.seriesCount(_repCount),
                     style: theme.textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   if (widget.targetRepCount != null)
                     Text(
-                      'Goal: ${widget.targetRepCount}',
+                      l10n.goalCount(widget.targetRepCount!),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -177,7 +181,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
                   ),
                   TextButton(
                     onPressed: _resetRep,
-                    child: const Text('Reset Reps'),
+                    child: Text(l10n.resetReps),
                   ),
                 ],
               ),

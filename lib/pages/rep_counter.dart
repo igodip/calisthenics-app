@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RepCounter extends StatefulWidget {
   final String title;
@@ -47,6 +48,7 @@ class _RepCounterState extends State<RepCounter> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
@@ -65,7 +67,7 @@ class _RepCounterState extends State<RepCounter> {
             ),
             if (widget.targetCount != null)
               Text(
-                'Goal: ${widget.targetCount}',
+                l10n.goalCount(widget.targetCount!),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -85,7 +87,7 @@ class _RepCounterState extends State<RepCounter> {
             const SizedBox(height: 8),
             TextButton(
               onPressed: _reset,
-              child: const Text('Reset'),
+              child: Text(l10n.reset),
             ),
           ],
         ),
