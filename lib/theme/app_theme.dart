@@ -80,19 +80,17 @@ class AppTheme {
   static final ColorScheme colorScheme = ColorScheme.fromSeed(
     seedColor: _primary,
     brightness: Brightness.dark,
-    background: _background,
     surface: _surface,
   ).copyWith(
     secondary: _secondary,
     tertiary: _tertiary,
     primaryContainer: _surfaceVariant,
-    secondaryContainer: _secondary.withOpacity(0.2),
+    secondaryContainer: _secondary.withValues(alpha: 0.2),
     onPrimary: Colors.white,
     onSecondary: Colors.white,
     onTertiary: Colors.black,
     onError: Colors.white,
     onSurface: Colors.white,
-    onBackground: Colors.white,
     onSurfaceVariant: Colors.white70,
     error: _error,
     surfaceTint: const Color(0x26FFFFFF),
@@ -165,14 +163,14 @@ class AppTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.white.withOpacity(0.04),
+      fillColor: Colors.white.withValues(alpha: 0.04),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),

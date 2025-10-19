@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:calisync/theme/app_theme.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -154,8 +153,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final existing = await supabase
           .from('users')
-          .select('uuid')
-          .eq('uuid', user.id)
+          .select('id')
+          .eq('id', user.id)
           .limit(1)
           .maybeSingle();
 
@@ -170,7 +169,6 @@ class _LoginPageState extends State<LoginPage> {
           : (metadata['username'] as String?) ?? '';
 
       await supabase.from('users').insert({
-        'uuid': user.id,
         if (email != null) 'email': email,
         'username': username,
       });
@@ -210,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
                       l10n.appTitle,
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.onBackground,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -220,19 +218,19 @@ class _LoginPageState extends State<LoginPage> {
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium
-                          ?.copyWith(color: colorScheme.onBackground.withOpacity(0.72)),
+                          ?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.72)),
                     ),
                     const SizedBox(height: 32),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: colorScheme.surface.withOpacity(0.78),
+                        color: colorScheme.surface.withValues(alpha: 0.78),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(color: colorScheme.outlineVariant),
                         boxShadow: [
                           BoxShadow(
-                            color: theme.shadowColor.withOpacity(0.45),
+                            color: theme.shadowColor.withValues(alpha: 0.45),
                             blurRadius: 28,
                             offset: const Offset(0, 18),
                           ),
@@ -295,7 +293,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ? l10n.noAccountPrompt
                                     : l10n.existingAccountPrompt,
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onBackground.withOpacity(0.7),
+                                  color: colorScheme.onSurface.withValues(alpha: 0.7),
                                 ),
                               ),
                             ),

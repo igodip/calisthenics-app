@@ -627,13 +627,13 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
       return Scaffold(
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.onSurface,
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.onSurface,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final preview = CameraPreview(controller);
@@ -726,7 +726,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
           margin: const EdgeInsets.all(12),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.65),
+            color: colorScheme.surface.withValues(alpha: 0.65),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -780,7 +780,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                   Text(
                     orientationText,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       fontSize: 11,
                     ),
                   ),

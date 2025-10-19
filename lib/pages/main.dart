@@ -140,8 +140,8 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              colorScheme.primaryContainer.withOpacity(0.12),
-              colorScheme.secondaryContainer.withOpacity(0.08),
+              colorScheme.primaryContainer.withValues(alpha: 0.12),
+              colorScheme.secondaryContainer.withValues(alpha: 0.08),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -169,11 +169,11 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: theme.cardColor.withOpacity(0.9),
+                  color: theme.cardColor.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.shadowColor.withOpacity(0.06),
+                      color: theme.shadowColor.withValues(alpha: 0.06),
                       offset: const Offset(0, 12),
                       blurRadius: 24,
                     ),
@@ -196,7 +196,7 @@ class _HomePageState extends State<HomePage> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: theme.shadowColor.withOpacity(0.08),
+                color: theme.shadowColor.withValues(alpha: 0.08),
                 offset: const Offset(0, 10),
                 blurRadius: 32,
               ),
@@ -205,7 +205,7 @@ class _HomePageState extends State<HomePage> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: BottomNavigationBar(
-              backgroundColor: colorScheme.surface.withOpacity(0),
+              backgroundColor: colorScheme.surface.withValues(alpha: 0),
               elevation: 0,
               type: BottomNavigationBarType.fixed,
               currentIndex: selectedIndex,

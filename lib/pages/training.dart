@@ -124,10 +124,10 @@ class Training extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ExerciseTrackerPage(
-          title: exercise.name,
+          title: exerciseName,
           initialExercises: [
             ExerciseDefinition(
-              name: exercise.name,
+              name: exerciseName,
               color: Theme.of(context).colorScheme.primary,
               icon: Icons.fitness_center,
               quickAddValues: quickAdds.toList()..sort(),

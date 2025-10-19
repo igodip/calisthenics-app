@@ -1,6 +1,5 @@
 // lib/profile.dart
 import 'package:calisync/model/profiles.dart';
-import 'package:characters/characters.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -65,8 +64,8 @@ Future<UserProfileData> getUserData() async {
 
   final usersResponse = await supabase
       .from('users')
-      .select('uuid, email, username, active, payed')
-      .eq('uuid', user.id)
+      .select('id, email, username, active, paid')
+      .eq('id', user.id)
       .limit(1)
       .maybeSingle();
 

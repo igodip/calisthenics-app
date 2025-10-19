@@ -70,34 +70,12 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      final l10n = AppLocalizations.of(context)!;
-      final definitions = widget.initialExercises ?? _defaultExercises(l10n);
+      final definitions = widget.initialExercises;
       _exercises = definitions.map((definition) => _TrackedExercise(definition)).toList();
       _colorIndex = definitions.length;
       _initialized = true;
     }
   }
-
-  List<ExerciseDefinition> _defaultExercises(AppLocalizations l10n) => [
-        ExerciseDefinition(
-          name: l10n.exercisePushUps,
-          icon: Icons.front_hand,
-          color: Colors.orangeAccent,
-          quickAddValues: const [1, 5, 10, 15],
-        ),
-        ExerciseDefinition(
-          name: l10n.exercisePullUps,
-          icon: Icons.fitness_center,
-          color: Colors.lightBlueAccent,
-          quickAddValues: const [1, 3, 5, 8],
-        ),
-        ExerciseDefinition(
-          name: l10n.exerciseChinUps,
-          icon: Icons.accessibility_new,
-          color: Colors.purpleAccent,
-          quickAddValues: const [1, 3, 5, 8],
-        ),
-      ];
 
   void _addExercise(ExerciseDefinition definition) {
     setState(() {
@@ -172,7 +150,7 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
                 final values = quickAddsController.text
                     .split(',')
                     .map((s) => int.tryParse(s.trim()))
-                    .where((value) => value != null && value! > 0)
+                    .where((value) => value != null && value > 0)
                     .map((value) => value!)
                     .toList();
                 final targetReps = int.tryParse(targetController.text.trim());
@@ -370,7 +348,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final definition = widget.tracked.definition;
-    final color = definition.color.withOpacity(0.15);
+    final color = definition.color.withValues(alpha: 0.15);
     final goal = definition.targetReps;
     final totalReps = widget.tracked.totalReps;
     return Card(
@@ -386,7 +364,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: definition.color.withOpacity(0.2),
+                  backgroundColor: definition.color.withValues(alpha: 0.2),
                   foregroundColor: definition.color.darken(),
                   child: Icon(definition.icon),
                 ),
