@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calisync Coach Portal</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <style>
+        :root{--bg:#0b0c10;--card:#121318;--ink:#e6e6e6;--muted:#9aa0a6;--accent:#6ee7b7;--line:#252732}
+        html,body{height:100%}
+        body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+        .wrap{max-width:1100px;margin:0 auto;padding:24px}
+        .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 2px 24px rgba(0,0,0,.25)}
+        .row{display:flex;gap:16px;flex-wrap:wrap}
+        .col{flex:1 1 320px}
+        h1{font-size:28px;margin:0 0 12px}
+        h2{font-size:20px;margin:16px 0 8px}
+        h3{font-size:16px;margin:12px 0 6px;color:var(--muted)}
+        input,select,button{background:#0e0f14;border:1px solid var(--line);color:var(--ink);padding:10px 12px;border-radius:10px}
+        input:focus,select:focus{outline:1px solid var(--accent)}
+        button{cursor:pointer}
+        .btn{background:linear-gradient(180deg,#0f172a,#0b1320);border:1px solid #1f2937}
+        .btn:hover{filter:brightness(1.1)}
+        .badge{display:inline-flex;align-items:center;gap:6px;background:#0e1a14;border:1px solid #1c2b23;color:#b7f5d8;padding:2px 8px;border-radius:999px;font-size:12px}
+        .muted{color:var(--muted)}
+        .list{display:flex;flex-direction:column;gap:8px}
+        .kpi{display:flex;gap:10px;align-items:center}
+        .kpi > div{background:#0e0f14;border:1px solid var(--line);padding:10px 12px;border-radius:12px}
+        .pill{border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted);font-size:12px}
+        .toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}
+        .danger{color:#ff9797}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+        .small{font-size:12px}
+        .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+    </style>
+</head>
+<body>
+<div id="app" class="wrap">
+    <div v-if="!session" class="card" style="max-width:460px;margin:60px auto;">
+        <h1>Calisync Coach Portal</h1>
+        <p class="muted">Sign in with your Supabase account to see your athletes and manage their plans & sessions.</p>
+        <form @submit.prevent="emailPasswordSignIn" style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+            <input v-model="email" type="email" placeholder="Email" required>
+            <input v-model="password" type="password" placeholder="Password" required>
+            <button class="btn">Sign in</button>
+        </form>
+        <p class="small muted">Tip: create a coach account in Supabase Auth and add <span class="mono">shares</span> rows from athletes to this coach with role <span class="mono">coach</span>.</p>
+    </div>
+
+    <div v-else>
+        <div class="toolbar">
+            <div class="kpi">
+                <div>👤 <strong>{{ user?.email }}</strong></div>
+                <div class="pill">Coach</div>
+            </div>
+            <div style="display:flex;gap:8px">
+                <input v-model="search" placeholder="Search athletes..." />
+                <button class="btn" @click="signOut">Sign out</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <h2>Athletes</h2>
+                    <div class="list">
+                        <div v-for="a in filteredAthletes" :key="a.owner" class="card" style="padding:12px">
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+                                <div>
+                                    <strong>{{ a.profiles?.full_name || shortId(a.owner) }}</strong>
+                                    <div class="muted small">Role: {{ a.role }}</div>
+                                </div>
+                                <span class="badge">linked</span>
+                            </div>
+                            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+                                <button class="btn" @click="selectAthlete(a)">Open</button>
+                                <button class="btn" @click="loadRecentSessions(a)">Recent Sessions</button>
+                                <button class="btn" @click="loadLatestPlan(a)">Latest Plan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col" v-if="current">
+                <div class="card">
+                    <h2>Dashboard • {{ current.profiles?.full_name || shortId(current.owner) }}</h2>
+                    <div class="grid">
+                        <div class="card">
+                            <h3>Latest Plan</h3>
+                            <div v-if="!plan">—</div>
+                            <div v-else>
+                                <div><strong>{{ plan.name }}</strong></div>
+                                <div class="muted small">{{ plan.goal }} • {{ plan.weeks }} weeks</div>
+                                <div style="margin-top:8px">
+                                    <div v-for="w in planItems" :key="w.id" class="card small">
+                                        Week {{ w.week }} · {{ dowName(w.dow) }} · {{ w.workout_templates?.name || 'Template' }}
+                                        <div class="muted">Exercises: {{ (w.workout_templates?.template_exercises||[]).length }}</div>
+                                        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+                                            <button class="btn small" @click="startSessionFromTemplate(w.workout_templates?.id)">Start session</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>Recent Sessions</h3>
+                            <div v-if="sessions.length===0">—</div>
+                            <div v-else class="list">
+                                <div v-for="s in sessions" :key="s.id" class="card small">
+                                    <div><strong>{{ new Date(s.start_time).toLocaleString() }}</strong></div>
+                                    <div class="muted">Session ID: {{ shortId(s.id) }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vue 3 & Supabase JS v2 (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.38/dist/vue.global.prod.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+    // Fallback loader if CDNs are blocked
+    (function(){
+      function add(src){ var s=document.createElement('script'); s.src=src; s.crossOrigin='anonymous'; document.head.appendChild(s); }
+      // Vue fallback
+      window.addEventListener('error', function(){}, true);
+      setTimeout(function(){
+        if(!window.Vue){
+          add('https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.38/vue.global.prod.min.js');
+        }
+        if(!window.supabase || !window.supabase.createClient){
+          add('https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.45.4/supabase.min.js');
+        }
+      }, 300);
+    })();
+</script>
+<!-- ESM fallback: import supabase-js as a module and expose a global factory -->
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    window.SUPABASE_CREATE_CLIENT = createClient;
+</script>
+<script>
+    (() => {
+      const { createApp, ref, computed, onMounted } = Vue;
+
+      // === Configure your Supabase project ===
+      const SUPABASE_URL = 'https://<YOUR-PROJECT-REF>.supabase.co';
+      const SUPABASE_ANON = '<YOUR-ANON-KEY>';
+      const g = window;
+      const createClient = (g.supabase && g.supabase.createClient) || (g.Supabase && g.Supabase.createClient) || g.SUPABASE_CREATE_CLIENT;
+      if (!createClient) {
+        console.error('Supabase JS failed to load from all CDNs (jsDelivr/ESM).');
+        alert('Supabase library failed to load. Check your network or replace with local copies.');
+        return; // stop bootstrapping
+      }
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+      createApp({
+        setup(){
+          const session = ref(null);
+          const user = ref(null);
+          const email = ref('');
+          const password = ref('');
+          const search = ref('');
+
+          const athletes = ref([]); // rows from shares: { owner, role, profiles: { full_name, id } }
+          const current = ref(null); // selected athlete row
+          const plan = ref(null);
+          const planItems = ref([]);
+          const sessions = ref([]);
+
+          const filteredAthletes = computed(() => {
+            const q = search.value.trim().toLowerCase();
+            if(!q) return athletes.value;
+            return athletes.value.filter(a => (a.profiles?.full_name||'').toLowerCase().includes(q) || a.owner?.includes(q));
+          });
+
+          const shortId = (id) => id ? id.toString().slice(0,8)+'…' : '';
+          const dowName = (d) => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][Math.max(0, Math.min(6, d))];
+
+          async function emailPasswordSignIn(){
+            const { data, error } = await supabase.auth.signInWithPassword({ email: email.value, password: password.value });
+            if(error){ alert(error.message); return; }
+            session.value = data.session; user.value = data.user;
+            await bootstrap();
+          }
+          async function signOut(){ await supabase.auth.signOut(); location.reload(); }
+
+          async function bootstrap(){
+            // load athletes linked to this coach via shares
+            await loadAthletes();
+            if(athletes.value.length){ selectAthlete(athletes.value[0]); }
+          }
+
+          async function loadAthletes(){
+            const uid = (await supabase.auth.getUser()).data.user?.id;
+            if(!uid) return;
+            const { data, error } = await supabase
+              .from('shares')
+              .select('owner, role, profiles:owner ( id, full_name )')
+              .eq('target_user', uid);
+            if(error){ console.error(error); alert('Failed to load athletes: '+error.message); return; }
+            athletes.value = data || [];
+          }
+
+          function selectAthlete(a){ current.value = a; plan.value=null; planItems.value=[]; sessions.value=[]; }
+
+          async function loadLatestPlan(a=current.value){
+            if(!a) return;
+            const { data: plans, error } = await supabase
+              .from('training_plans')
+              .select('id, name, goal, weeks, created_at')
+              .eq('owner', a.owner)
+              .is('deleted_at', null)
+              .order('created_at', { ascending:false })
+              .limit(1);
+            if(error){ alert('Load plan failed: '+error.message); return; }
+            plan.value = (plans && plans[0]) || null;
+            if(plan.value){ await loadPlanItems(plan.value.id); }
+          }
+
+          async function loadPlanItems(planId){
+            const { data, error } = await supabase
+              .from('plan_workouts')
+              .select(`
+                id, week, dow, position,
+                workout_templates!plan_workouts_template_id_fkey (
+                  id, name, notes,
+                  template_exercises (
+                    id, position, default_sets, default_reps, rest_seconds, default_intensity,
+                    exercise_library ( id, name )
+                  )
+                )
+              `)
+              .eq('plan_id', planId)
+              .order('week', { ascending:true })
+              .order('dow', { ascending:true })
+              .order('position', { ascending:true });
+            if(error){ alert('Load plan items failed: '+error.message); return; }
+            planItems.value = data || [];
+          }
+
+          async function loadRecentSessions(a=current.value){
+            if(!a) return;
+            const { data, error } = await supabase
+              .from('workout_sessions')
+              .select('id, start_time, end_time, notes')
+              .eq('owner', a.owner)
+              .is('deleted_at', null)
+              .order('start_time', { ascending:false })
+              .limit(10);
+            if(error){ alert('Load sessions failed: '+error.message); return; }
+            sessions.value = data || [];
+          }
+
+          async function startSessionFromTemplate(templateId){
+            if(!templateId){ alert('No template on this plan item'); return; }
+            const { data, error } = await supabase
+              .rpc('start_session_from_template', { p_template: templateId })
+              .select('*')
+              .single();
+            if(error){ alert('Start session failed: '+error.message); return; }
+            alert('Session started: '+shortId(data.id));
+            // refresh recent sessions for current athlete if we are the owner; as coach, the RPC runs as coach.
+            // Coaches typically shouldn’t start sessions on behalf of athlete unless RLS allows via share role.
+            await loadRecentSessions();
+          }
+
+          onMounted(async () => {
+            const { data: { session: sess } } = await supabase.auth.getSession();
+            session.value = sess; user.value = sess?.user || null;
+            if(session.value) await bootstrap();
+
+            supabase.auth.onAuthStateChange((_e, s) => { session.value = s; user.value = s?.user || null; if(s) bootstrap(); });
+          });
+
+          return { session, user, email, password, search, athletes, filteredAthletes, current, plan, planItems, sessions,
+                   emailPasswordSignIn, signOut, selectAthlete, loadRecentSessions, loadLatestPlan, startSessionFromTemplate,
+                   shortId, dowName };
+        }
+      }).mount('#app');
+    })();
+</script>
+</body>
+</html>
