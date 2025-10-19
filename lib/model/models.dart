@@ -9,5 +9,6 @@ export './set_logs.dart';
 export './shares.dart';
 export './template_exercises.dart';
 export './training_plans.dart';
+export './workout_day.dart';
 export './workout_sessions.dart';
 export './workout_templates.dart';
