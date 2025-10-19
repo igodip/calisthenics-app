@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'home_content.dart';
 import 'login.dart';
+import 'settings.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -107,7 +108,7 @@ class _HomePageState extends State<HomePage> {
 
     final List<Widget> pages = [
       const HomeContent(),
-      Center(child: Text(l10n.settingsComingSoon)),
+      const SettingsPage(),
       const ProfilePage(),
       const TerminologiaPage()
     ];
