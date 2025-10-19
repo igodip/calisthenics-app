@@ -1,5 +1,5 @@
 import 'package:calisync/pages/position_estimation.dart';
-import 'package:calisync/pages/selection_card.dart';
+import 'package:calisync/components/cards/selection_card.dart';
 import 'package:calisync/pages/training.dart';
 import 'package:flutter/material.dart';
 
