@@ -51,12 +51,13 @@ class _TimerPageState extends State<TimerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Timer")),
+      appBar: AppBar(title: Text('Timer')),
       body: Center(
         child: Text(
           _formattedTime,
-          style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
+          style: theme.textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
     );

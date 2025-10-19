@@ -98,6 +98,9 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -106,10 +109,6 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
         child: Center(
           child: Card(
             margin: const EdgeInsets.all(16),
-            elevation: 6,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -117,8 +116,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
                 children: [
                   Text(
                     widget.title,
-                    style: const TextStyle(
-                      fontSize: 22,
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -126,8 +124,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
                   // Timer section
                   Text(
                     _formattedTime,
-                    style: const TextStyle(
-                      fontSize: 60,
+                    style: theme.textTheme.displayLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -150,15 +147,16 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
                   // Rep counter section
                   Text(
                     'Serie: $_repCount',
-                    style: const TextStyle(
-                      fontSize: 40,
+                    style: theme.textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   if (widget.targetRepCount != null)
                     Text(
                       'Goal: ${widget.targetRepCount}',
-                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   const SizedBox(height: 12),
                   Row(

@@ -1,5 +1,6 @@
 
 import 'package:calisync/pages/main.dart';
+import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,25 +21,9 @@ class CalisthenicsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Calisthenics',
-      theme: ThemeData(
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-        ),
-        primaryColor: Colors.black,
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Colors.black,
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.white70,
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-        ),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.black,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.theme,
+      darkTheme: AppTheme.theme,
+      themeMode: ThemeMode.dark,
       home: const AuthGate(),
       debugShowCheckedModeBanner: false,
     );

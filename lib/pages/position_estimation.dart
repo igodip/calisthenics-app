@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
+import 'package:calisync/theme/app_theme.dart';
+
 class PoseCamPage extends StatefulWidget {
   const PoseCamPage({super.key});
 
@@ -288,16 +290,19 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
-      return const Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: colorScheme.background,
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: colorScheme.background,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final preview = CameraPreview(controller);
@@ -320,9 +325,15 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                     imageSize: _imageSize!,
                     rotation: _rotation,
                     isFrontCamera: _useFrontCamera,
+                    boneColor: colorScheme.secondary,
+                    jointColor: colorScheme.primary,
+                    landmarkColors: {
+                      PoseLandmarkType.leftEye: colorScheme.error,
+                      PoseLandmarkType.rightEye: colorScheme.error,
+                    },
                   ),
                 ),
-              _buildHud(),
+              _buildHud(context),
             ],
           );
         },
@@ -348,7 +359,10 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildHud() {
+  Widget _buildHud(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final appColors = theme.extension<AppColors>()!;
     final status = _poseDetected
         ? 'Pose detected'
         : (_isBusy ? 'Processing…' : 'Idle');
@@ -362,23 +376,38 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
           margin: const EdgeInsets.all(12),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.55),
+            color: colorScheme.surface.withOpacity(0.65),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _StatusDot(color: _poseDetected ? Colors.greenAccent : Colors.orangeAccent),
+              _StatusDot(color: _poseDetected ? appColors.success : appColors.warning),
               const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(status, style: const TextStyle(color: Colors.white)),
-                  Text('fps: ${_fps.toStringAsFixed(1)}  ms: ${_avgMs.toStringAsFixed(0)}  lmks: $landmarks',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                  Text('rot: $_rotation  cam: ${_useFrontCamera ? 'front' : 'back'}  fmt: $_fmt',
-                      style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                  Text(
+                    status,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    'fps: ${_fps.toStringAsFixed(1)}  ms: ${_avgMs.toStringAsFixed(0)}  lmks: $landmarks',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  Text(
+                    'rot: $_rotation  cam: ${_useFrontCamera ? 'front' : 'back'}  fmt: $_fmt',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                      fontSize: 11,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -394,12 +423,18 @@ class PosePainter extends CustomPainter {
   final Size imageSize; // raw camera image size (unrotated)
   final InputImageRotation rotation;
   final bool isFrontCamera;
+  final Color boneColor;
+  final Color jointColor;
+  final Map<PoseLandmarkType, Color> landmarkColors;
 
   PosePainter({
     required this.pose,
     required this.imageSize,
     required this.rotation,
     required this.isFrontCamera,
+    required this.boneColor,
+    required this.jointColor,
+    required this.landmarkColors,
   });
 
   // Pairs of landmarks to draw bones
@@ -427,12 +462,10 @@ class PosePainter extends CustomPainter {
     [PoseLandmarkType.nose, PoseLandmarkType.rightEye],
   ];
 
-  final _colors = {PoseLandmarkType.leftEye : Colors.red, PoseLandmarkType.rightEye: Colors.red};
-
   @override
   void paint(Canvas canvas, Size size) {
     final bonePaint = Paint()
-      ..color = Colors.greenAccent
+      ..color = boneColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
 
@@ -482,11 +515,11 @@ class PosePainter extends CustomPainter {
       if (entry.value.likelihood < 0.8) continue;
       final p = transform(Offset(entry.value.x, entry.value.y));
       var paintColor = Paint()
-        ..color = Colors.lightBlueAccent
+        ..color = jointColor
         ..style = PaintingStyle.fill
         ..strokeWidth = 3;
-      if (_colors.containsKey(entry.value.type)) {
-        paintColor.color = _colors[entry.value.type] as Color;
+      if (landmarkColors.containsKey(entry.value.type)) {
+        paintColor.color = landmarkColors[entry.value.type]!;
       }
       canvas.drawCircle(p, 4, paintColor);
       debugPrint("${entry.value.type} ${entry.value.likelihood}");

@@ -17,6 +17,8 @@ class HistogramChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Convert bins to BarData
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Histogram Chart')),
@@ -30,18 +32,16 @@ class HistogramChart extends StatelessWidget {
                   frequency: 1.0,
                   max: 13.0,
                   min: 7.0,
-                  textStyle: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10.0,
+                  textStyle: theme.textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 y: ChartAxisSettingsAxis(
                   frequency: 100.0,
                   max: 300.0,
                   min: 0.0,
-                  textStyle: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10.0,
+                  textStyle: theme.textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -51,8 +51,8 @@ class HistogramChart extends StatelessWidget {
             ChartBarLayer(
               items: List.generate(
                 13 - 7 + 1,
-                    (index) => ChartBarDataItem(
-                  color: const Color(0xFF8043F9),
+                (index) => ChartBarDataItem(
+                  color: colorScheme.secondary,
                   value: Random().nextInt(280) + 20,
                   x: index.toDouble() + 7,
                 ),

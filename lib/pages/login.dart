@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
+import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -166,14 +167,14 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final appColors = theme.extension<AppColors>()!;
+
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1D1E33), Color(0xFF0A0B1E)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+        decoration: BoxDecoration(
+          gradient: appColors.primaryGradient,
         ),
         child: SafeArea(
           child: Center(
@@ -184,17 +185,17 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.fitness_center,
                       size: 64,
-                      color: Colors.white,
+                      color: colorScheme.primary,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Calisync',
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: colorScheme.onBackground,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -206,21 +207,21 @@ class _LoginPageState extends State<LoginPage> {
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium
-                          ?.copyWith(color: Colors.white70),
+                          ?.copyWith(color: colorScheme.onBackground.withOpacity(0.72)),
                     ),
                     const SizedBox(height: 32),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.08),
+                        color: colorScheme.surface.withOpacity(0.78),
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: Colors.white.withOpacity(0.12)),
-                        boxShadow: const [
+                        border: Border.all(color: colorScheme.outlineVariant),
+                        boxShadow: [
                           BoxShadow(
-                            color: Colors.black54,
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
+                            color: theme.shadowColor.withOpacity(0.45),
+                            blurRadius: 28,
+                            offset: const Offset(0, 18),
                           ),
                         ],
                       ),
@@ -257,19 +258,11 @@ class _LoginPageState extends State<LoginPage> {
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: loading ? null : _submit,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              backgroundColor: const Color(0xFF5A62FF),
-                              foregroundColor: Colors.white,
-                            ),
                             child: loading
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                    child: CircularProgressIndicator(strokeWidth: 2),
                                   )
                                 : Text(isLoginMode ? 'Accedi' : 'Registrati'),
                           ),
@@ -288,7 +281,9 @@ class _LoginPageState extends State<LoginPage> {
                                 isLoginMode
                                     ? 'Non hai un account? Registrati'
                                     : 'Hai già un account? Accedi',
-                                style: const TextStyle(color: Colors.white70),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onBackground.withOpacity(0.7),
+                                ),
                               ),
                             ),
                           ),
@@ -298,20 +293,22 @@ class _LoginPageState extends State<LoginPage> {
                               Expanded(
                                 child: Container(
                                   height: 1,
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: colorScheme.outlineVariant,
                                 ),
                               ),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
                                 child: Text(
                                   'oppure',
-                                  style: TextStyle(color: Colors.white60),
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    color: colorScheme.onBackground.withOpacity(0.6),
+                                  ),
                                 ),
                               ),
                               Expanded(
                                 child: Container(
                                   height: 1,
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: colorScheme.outlineVariant,
                                 ),
                               ),
                             ],
@@ -333,16 +330,10 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                             label: Text(
                               oauthLoading ? 'Connessione...' : 'Continua con Google',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeight.w600,
                               ),
-                              side: BorderSide(color: Colors.white.withOpacity(0.3)),
-                              backgroundColor: Colors.white.withOpacity(0.05),
-                              foregroundColor: Colors.white,
                             ),
                           ),
                           if (feedbackMessage != null) ...[
@@ -351,17 +342,17 @@ class _LoginPageState extends State<LoginPage> {
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: isError
-                                    ? Colors.red.withOpacity(0.15)
-                                    : Colors.green.withOpacity(0.15),
+                                    ? colorScheme.errorContainer
+                                    : appColors.successContainer,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: isError ? Colors.redAccent : Colors.greenAccent,
+                                  color: isError ? colorScheme.error : appColors.success,
                                 ),
                               ),
                               child: Text(
                                 feedbackMessage!,
                                 style: TextStyle(
-                                  color: isError ? Colors.redAccent : Colors.greenAccent,
+                                  color: isError ? colorScheme.error : appColors.success,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 textAlign: TextAlign.center,
@@ -407,25 +398,24 @@ class _AuthTextFieldState extends State<_AuthTextField> {
   @override
   Widget build(BuildContext context) {
     final isPassword = widget.isPassword;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return TextField(
       controller: widget.controller,
       obscureText: isPassword ? obscure : false,
       keyboardType: widget.keyboardType,
-      style: const TextStyle(color: Colors.white),
+      style: theme.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
       decoration: InputDecoration(
         labelText: widget.label,
-        labelStyle: const TextStyle(color: Colors.white70),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.05),
         prefixIcon: widget.icon != null
-            ? Icon(widget.icon, color: Colors.white70)
+            ? Icon(widget.icon, color: colorScheme.onSurfaceVariant)
             : null,
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
                   obscure ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.white70,
+                  color: colorScheme.onSurfaceVariant,
                 ),
                 onPressed: () {
                   setState(() {
@@ -434,16 +424,8 @@ class _AuthTextFieldState extends State<_AuthTextField> {
                 },
               )
             : null,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF5A62FF)),
-        ),
       ),
-      cursorColor: const Color(0xFF5A62FF),
+      cursorColor: colorScheme.primary,
     );
   }
 }
