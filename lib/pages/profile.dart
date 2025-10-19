@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'google_login.dart';
+import 'login.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -43,9 +43,9 @@ Future<void> logout(BuildContext context) async {
   try {
     await supabase.auth.signOut();
     if (context.mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => GoogleLoginPage()),
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+        (route) => false,
       );
     }
   } catch (e) {
