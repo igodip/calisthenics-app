@@ -21,37 +21,34 @@ class TerminologiaPage extends StatelessWidget {
       {'termine': l10n.termSomTitle, 'descrizione': l10n.termSomDescription},
       {'termine': l10n.termScaricoTitle, 'descrizione': l10n.termScaricoDescription},
     ];
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.terminologyTitle)),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: termini.length,
-        itemBuilder: (context, index) {
-          final termine = termini[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    termine['termine']!,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    termine['descrizione']!,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: termini.length,
+      itemBuilder: (context, index) {
+        final termine = termini[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  termine['termine']!,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  termine['descrizione']!,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
