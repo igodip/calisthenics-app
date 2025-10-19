@@ -165,7 +165,7 @@ class _HomeContentState extends State<HomeContent> {
         .from('training_plans')
         .select('id, name, goal, weeks')
         .eq('owner', userId)
-        .is('deleted_at', null)
+        .isFilter('deleted_at', null)
         .order('created_at', ascending: false)
         .limit(1)
         .maybeSingle();
