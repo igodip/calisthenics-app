@@ -99,15 +99,6 @@ class Training extends StatelessWidget {
                   }),
                 ],
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const HistogramChart()),
-                  );
-                },
-                child: const Text('Check progress'),
-              ),
             ],
           ),
         ),
