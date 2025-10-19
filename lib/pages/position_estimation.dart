@@ -11,6 +11,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:calisync/theme/app_theme.dart';
 
+enum ExerciseType { squat, pushUp, pullUp, dip }
+
 class PoseCamPage extends StatefulWidget {
   const PoseCamPage({super.key});
 
@@ -54,12 +56,21 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
   String _fmt = '?';
 
   // --- Exercise counting ---
+  ExerciseType _selectedExercise = ExerciseType.squat;
   int _repCount = 0;
-  bool _isDownPhase = false;
+  bool _isContractedPosition = false;
   double? _currentKneeAngle;
+  double? _currentElbowAngle;
+  double? _currentPullUpRatio;
   String _exerciseStage = 'Top';
   static const double _squatDownThreshold = 100; // degrees
   static const double _squatUpThreshold = 160;   // degrees
+  static const double _pushUpDownThreshold = 80; // degrees
+  static const double _pushUpUpThreshold = 155;  // degrees
+  static const double _dipDownThreshold = 85;    // degrees
+  static const double _dipUpThreshold = 160;     // degrees
+  static const double _pullUpTopThreshold = 0.15;    // ratio of torso length
+  static const double _pullUpBottomThreshold = 0.6;  // ratio of torso length
 
   @override
   void initState() {
@@ -283,7 +294,9 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
       } else {
         _exerciseStage = 'No pose';
         _currentKneeAngle = null;
-        _isDownPhase = false;
+        _currentElbowAngle = null;
+        _currentPullUpRatio = null;
+        _isContractedPosition = false;
       }
 
       // --- timing and fps ---
@@ -309,32 +322,55 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
   }
 
   void _updateExerciseCount(Pose pose) {
-    double? _angleForLeg({
-      required PoseLandmarkType hip,
-      required PoseLandmarkType knee,
-      required PoseLandmarkType ankle,
-    }) {
-      final hipLm = pose.landmarks[hip];
-      final kneeLm = pose.landmarks[knee];
-      final ankleLm = pose.landmarks[ankle];
+    switch (_selectedExercise) {
+      case ExerciseType.squat:
+        _updateSquatCount(pose);
+        break;
+      case ExerciseType.pushUp:
+        _updatePushUpCount(pose);
+        break;
+      case ExerciseType.pullUp:
+        _updatePullUpCount(pose);
+        break;
+      case ExerciseType.dip:
+        _updateDipCount(pose);
+        break;
+    }
+  }
 
-      if (hipLm == null || kneeLm == null || ankleLm == null) return null;
-      if (hipLm.likelihood < 0.5 || kneeLm.likelihood < 0.5 || ankleLm.likelihood < 0.5) {
-        return null;
-      }
+  double? _angleForJoints(
+    Pose pose, {
+    required PoseLandmarkType first,
+    required PoseLandmarkType middle,
+    required PoseLandmarkType last,
+    double minLikelihood = 0.5,
+  }) {
+    final firstLm = pose.landmarks[first];
+    final middleLm = pose.landmarks[middle];
+    final lastLm = pose.landmarks[last];
 
-      return _calculateAngle(hipLm, kneeLm, ankleLm);
+    if (firstLm == null || middleLm == null || lastLm == null) return null;
+    if (firstLm.likelihood < minLikelihood ||
+        middleLm.likelihood < minLikelihood ||
+        lastLm.likelihood < minLikelihood) {
+      return null;
     }
 
-    final leftAngle = _angleForLeg(
-      hip: PoseLandmarkType.leftHip,
-      knee: PoseLandmarkType.leftKnee,
-      ankle: PoseLandmarkType.leftAnkle,
+    return _calculateAngle(firstLm, middleLm, lastLm);
+  }
+
+  void _updateSquatCount(Pose pose) {
+    final leftAngle = _angleForJoints(
+      pose,
+      first: PoseLandmarkType.leftHip,
+      middle: PoseLandmarkType.leftKnee,
+      last: PoseLandmarkType.leftAnkle,
     );
-    final rightAngle = _angleForLeg(
-      hip: PoseLandmarkType.rightHip,
-      knee: PoseLandmarkType.rightKnee,
-      ankle: PoseLandmarkType.rightAnkle,
+    final rightAngle = _angleForJoints(
+      pose,
+      first: PoseLandmarkType.rightHip,
+      middle: PoseLandmarkType.rightKnee,
+      last: PoseLandmarkType.rightAnkle,
     );
 
     double? kneeAngle;
@@ -351,20 +387,220 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
     }
 
     _currentKneeAngle = kneeAngle;
+    _currentElbowAngle = null;
+    _currentPullUpRatio = null;
 
     final isDown = kneeAngle < _squatDownThreshold;
     final isUp = kneeAngle > _squatUpThreshold;
 
-    if (isDown && !_isDownPhase) {
-      _isDownPhase = true;
+    if (isDown && !_isContractedPosition) {
+      _isContractedPosition = true;
       _exerciseStage = 'Bottom';
-    } else if (isUp && _isDownPhase) {
-      _isDownPhase = false;
+    } else if (isUp && _isContractedPosition) {
+      _isContractedPosition = false;
       _repCount += 1;
       _exerciseStage = 'Top';
     } else {
-      _exerciseStage = _isDownPhase ? 'Bottom' : 'Top';
+      _exerciseStage = _isContractedPosition ? 'Bottom' : 'Top';
     }
+  }
+
+  void _updatePushUpCount(Pose pose) {
+    final leftAngle = _angleForJoints(
+      pose,
+      first: PoseLandmarkType.leftShoulder,
+      middle: PoseLandmarkType.leftElbow,
+      last: PoseLandmarkType.leftWrist,
+    );
+    final rightAngle = _angleForJoints(
+      pose,
+      first: PoseLandmarkType.rightShoulder,
+      middle: PoseLandmarkType.rightElbow,
+      last: PoseLandmarkType.rightWrist,
+    );
+
+    double? elbowAngle;
+    if (leftAngle != null && rightAngle != null) {
+      elbowAngle = (leftAngle + rightAngle) / 2.0;
+    } else {
+      elbowAngle = leftAngle ?? rightAngle;
+    }
+
+    if (elbowAngle == null) {
+      _currentElbowAngle = null;
+      _exerciseStage = 'Tracking…';
+      return;
+    }
+
+    _currentElbowAngle = elbowAngle;
+    _currentKneeAngle = null;
+    _currentPullUpRatio = null;
+
+    final isDown = elbowAngle < _pushUpDownThreshold;
+    final isUp = elbowAngle > _pushUpUpThreshold;
+
+    if (isDown && !_isContractedPosition) {
+      _isContractedPosition = true;
+      _exerciseStage = 'Down';
+    } else if (isUp && _isContractedPosition) {
+      _isContractedPosition = false;
+      _repCount += 1;
+      _exerciseStage = 'Up';
+    } else {
+      _exerciseStage = _isContractedPosition ? 'Down' : 'Up';
+    }
+  }
+
+  double? _torsoLength(Pose pose) {
+    final leftShoulder = pose.landmarks[PoseLandmarkType.leftShoulder];
+    final rightShoulder = pose.landmarks[PoseLandmarkType.rightShoulder];
+    final leftHip = pose.landmarks[PoseLandmarkType.leftHip];
+    final rightHip = pose.landmarks[PoseLandmarkType.rightHip];
+
+    final lengths = <double>[];
+    if (leftShoulder != null && leftHip != null &&
+        leftShoulder.likelihood > 0.4 && leftHip.likelihood > 0.4) {
+      lengths.add((leftHip.y - leftShoulder.y).abs());
+    }
+    if (rightShoulder != null && rightHip != null &&
+        rightShoulder.likelihood > 0.4 && rightHip.likelihood > 0.4) {
+      lengths.add((rightHip.y - rightShoulder.y).abs());
+    }
+
+    if (lengths.isEmpty) {
+      return null;
+    }
+    return lengths.reduce((a, b) => a + b) / lengths.length;
+  }
+
+  void _updatePullUpCount(Pose pose) {
+    final leftShoulder = pose.landmarks[PoseLandmarkType.leftShoulder];
+    final rightShoulder = pose.landmarks[PoseLandmarkType.rightShoulder];
+    final leftWrist = pose.landmarks[PoseLandmarkType.leftWrist];
+    final rightWrist = pose.landmarks[PoseLandmarkType.rightWrist];
+
+    final ratios = <double>[];
+    final torso = _torsoLength(pose);
+
+    void addRatio(PoseLandmark? shoulder, PoseLandmark? wrist) {
+      if (shoulder == null || wrist == null) return;
+      if (torso == null || torso < 1) return;
+      if (shoulder.likelihood < 0.4 || wrist.likelihood < 0.4) return;
+      ratios.add((wrist.y - shoulder.y) / torso);
+    }
+
+    addRatio(leftShoulder, leftWrist);
+    addRatio(rightShoulder, rightWrist);
+
+    if (ratios.isEmpty) {
+      _currentPullUpRatio = null;
+      _exerciseStage = 'Tracking…';
+      return;
+    }
+
+    final ratio = ratios.reduce((a, b) => a + b) / ratios.length;
+    _currentPullUpRatio = ratio;
+    _currentKneeAngle = null;
+    _currentElbowAngle = null;
+
+    final isTop = ratio < _pullUpTopThreshold;
+    final isBottom = ratio > _pullUpBottomThreshold;
+
+    if (isTop && !_isContractedPosition) {
+      _isContractedPosition = true;
+      _exerciseStage = 'Top';
+    } else if (isBottom && _isContractedPosition) {
+      _isContractedPosition = false;
+      _repCount += 1;
+      _exerciseStage = 'Bottom';
+    } else {
+      _exerciseStage = _isContractedPosition ? 'Top' : 'Bottom';
+    }
+  }
+
+  void _updateDipCount(Pose pose) {
+    final leftAngle = _angleForJoints(
+      pose,
+      first: PoseLandmarkType.leftShoulder,
+      middle: PoseLandmarkType.leftElbow,
+      last: PoseLandmarkType.leftWrist,
+      minLikelihood: 0.4,
+    );
+    final rightAngle = _angleForJoints(
+      pose,
+      first: PoseLandmarkType.rightShoulder,
+      middle: PoseLandmarkType.rightElbow,
+      last: PoseLandmarkType.rightWrist,
+      minLikelihood: 0.4,
+    );
+
+    double? elbowAngle;
+    if (leftAngle != null && rightAngle != null) {
+      elbowAngle = (leftAngle + rightAngle) / 2.0;
+    } else {
+      elbowAngle = leftAngle ?? rightAngle;
+    }
+
+    if (elbowAngle == null) {
+      _currentElbowAngle = null;
+      _exerciseStage = 'Tracking…';
+      return;
+    }
+
+    _currentElbowAngle = elbowAngle;
+    _currentKneeAngle = null;
+    _currentPullUpRatio = null;
+
+    final isDown = elbowAngle < _dipDownThreshold;
+    final isUp = elbowAngle > _dipUpThreshold;
+
+    if (isDown && !_isContractedPosition) {
+      _isContractedPosition = true;
+      _exerciseStage = 'Down';
+    } else if (isUp && _isContractedPosition) {
+      _isContractedPosition = false;
+      _repCount += 1;
+      _exerciseStage = 'Up';
+    } else {
+      _exerciseStage = _isContractedPosition ? 'Down' : 'Up';
+    }
+  }
+
+  String _exerciseDisplayName(ExerciseType exercise) {
+    switch (exercise) {
+      case ExerciseType.squat:
+        return 'Squat';
+      case ExerciseType.pushUp:
+        return 'Push-up';
+      case ExerciseType.pullUp:
+        return 'Pull-up';
+      case ExerciseType.dip:
+        return 'Dip';
+    }
+  }
+
+  String _defaultStageForExercise(ExerciseType exercise) {
+    switch (exercise) {
+      case ExerciseType.squat:
+        return 'Top';
+      case ExerciseType.pushUp:
+        return 'Up';
+      case ExerciseType.pullUp:
+        return 'Bottom';
+      case ExerciseType.dip:
+        return 'Up';
+    }
+  }
+
+  void _resetExerciseState({bool resetReps = true}) {
+    if (resetReps) {
+      _repCount = 0;
+    }
+    _isContractedPosition = false;
+    _currentKneeAngle = null;
+    _currentElbowAngle = null;
+    _currentPullUpRatio = null;
+    _exerciseStage = _defaultStageForExercise(_selectedExercise);
   }
 
   double _calculateAngle(PoseLandmark a, PoseLandmark b, PoseLandmark c) {
@@ -441,9 +677,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
             heroTag: 'resetReps',
             onPressed: () {
               setState(() {
-                _repCount = 0;
-                _isDownPhase = false;
-                _exerciseStage = 'Top';
+                _resetExerciseState(resetReps: true);
               });
             },
             child: const Icon(Icons.refresh),
@@ -504,6 +738,32 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton<ExerciseType>(
+                      value: _selectedExercise,
+                      dropdownColor: colorScheme.surface,
+                      items: ExerciseType.values
+                          .map(
+                            (exercise) => DropdownMenuItem(
+                              value: exercise,
+                              child: Text(
+                                _exerciseDisplayName(exercise),
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        if (value == null || value == _selectedExercise) return;
+                        setState(() {
+                          _selectedExercise = value;
+                          _resetExerciseState(resetReps: true);
+                        });
+                      },
+                    ),
+                  ),
                   Text(
                     status,
                     style: theme.textTheme.labelLarge?.copyWith(
@@ -526,7 +786,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Squat reps: $_repCount  stage: $_exerciseStage',
+                    '${_exerciseDisplayName(_selectedExercise)} reps: $_repCount  stage: $_exerciseStage',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
@@ -535,6 +795,20 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                   if (_currentKneeAngle != null)
                     Text(
                       'knee angle: ${_currentKneeAngle!.toStringAsFixed(0)}°',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  if (_currentElbowAngle != null)
+                    Text(
+                      'elbow angle: ${_currentElbowAngle!.toStringAsFixed(0)}°',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  if (_currentPullUpRatio != null)
+                    Text(
+                      'arm extension: ${(_currentPullUpRatio! * 100).clamp(0, 300).toStringAsFixed(0)}%',
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
