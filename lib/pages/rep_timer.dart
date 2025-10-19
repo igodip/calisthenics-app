@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RepTimerWidget extends StatefulWidget {
   final String title;
@@ -61,6 +62,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
   }
 
   void _incrementRep() {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _repCount++;
       if (widget.targetRepCount != null &&
@@ -68,7 +70,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
         // Optionally do something on reaching goal
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Rep goal reached!')));
+        ).showSnackBar(SnackBar(content: Text(l10n.repGoalReachedMessage)));
       }
     });
   }
@@ -98,6 +100,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -137,19 +140,19 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
                     children: [
                       ElevatedButton(
                         onPressed: _isRunning ? _stopTimer : _startTimer,
-                        child: Text(_isRunning ? 'Pause' : 'Start'),
+                        child: Text(_isRunning ? l10n.repTimerPause : l10n.repTimerStart),
                       ),
                       const SizedBox(width: 16),
                       ElevatedButton(
                         onPressed: _resetTimer,
-                        child: const Text('Reset'),
+                        child: Text(l10n.resetButtonLabel),
                       ),
                     ],
                   ),
                   const Divider(height: 40),
                   // Rep counter section
                   Text(
-                    'Serie: $_repCount',
+                    l10n.repTimerSeriesLabel(_repCount),
                     style: const TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.w600,
@@ -157,7 +160,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
                   ),
                   if (widget.targetRepCount != null)
                     Text(
-                      'Goal: ${widget.targetRepCount}',
+                      l10n.repTimerGoalLabel(widget.targetRepCount!),
                       style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   const SizedBox(height: 12),
@@ -179,7 +182,7 @@ class _RepTimerWidgetState extends State<RepTimerWidget> {
                   ),
                   TextButton(
                     onPressed: _resetRep,
-                    child: const Text('Reset Reps'),
+                    child: Text(l10n.resetRepsButtonLabel),
                   ),
                 ],
               ),

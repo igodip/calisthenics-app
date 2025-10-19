@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
@@ -52,23 +53,29 @@ class _LoginPageState extends State<LoginPage> {
         if (user != null) {
           await _ensureUserRecord(user);
           if (mounted) {
-            _setFeedback('Accesso completato con Google!', false);
+            _setFeedback(AppLocalizations.of(context)!.loginGoogleSuccess, false);
             Navigator.of(context).pushReplacementNamed('/');
           }
         }
       } on AuthException catch (e) {
-        _setFeedback(e.message, true);
+        if (mounted) {
+          _setFeedback(e.message, true);
+        }
       } catch (e) {
-        _setFeedback('Errore durante il reindirizzamento: $e', true);
+        if (mounted) {
+          _setFeedback(AppLocalizations.of(context)!.loginRedirectError(e.toString()), true);
+        }
       }
     }
 
     _linkSubscription = appLinks.uriLinkStream.listen(handleUri, onError: (error) {
-      _setFeedback('Errore collegamento: $error', true);
+      if (!mounted) return;
+      _setFeedback(AppLocalizations.of(context)!.loginLinkError(error.toString()), true);
     });
 
     appLinks.getInitialAppLink().then(handleUri).catchError((error) {
-      _setFeedback('Errore collegamento iniziale: $error', true);
+      if (!mounted) return;
+      _setFeedback(AppLocalizations.of(context)!.loginInitialLinkError(error.toString()), true);
     });
   }
 
@@ -97,14 +104,15 @@ class _LoginPageState extends State<LoginPage> {
     final email = emailController.text.trim();
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
+    final l10n = AppLocalizations.of(context)!;
 
     if (email.isEmpty || password.isEmpty || (!isLoginMode && confirmPassword.isEmpty)) {
-      _setFeedback('Compila tutti i campi richiesti.', true);
+      _setFeedback(l10n.loginFillAllFields, true);
       return;
     }
 
     if (!isLoginMode && password != confirmPassword) {
-      _setFeedback('Le password non coincidono.', true);
+      _setFeedback(l10n.loginPasswordsMismatch, true);
       return;
     }
 
@@ -124,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
 
         final user = response.user;
         if (user == null) {
-          _setFeedback('Credenziali errate.', true);
+          _setFeedback(l10n.loginInvalidCredentials, true);
           return;
         }
 
@@ -147,16 +155,13 @@ class _LoginPageState extends State<LoginPage> {
         if (Supabase.instance.client.auth.currentSession != null) {
           Navigator.of(context).pushReplacementNamed('/');
         } else {
-          _setFeedback(
-            'Registrazione completata! Controlla la tua email per confermare l\'account.',
-            false,
-          );
+          _setFeedback(l10n.loginSignupConfirmation, false);
         }
       }
     } on AuthException catch (e) {
       _setFeedback(e.message, true);
     } catch (e) {
-      _setFeedback('Errore inatteso: $e', true);
+      _setFeedback(l10n.unexpectedError(e.toString()), true);
     } finally {
       if (mounted) {
         setState(() {
@@ -168,6 +173,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _signInWithGoogle() async {
     if (oauthLoading) return;
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       oauthLoading = true;
     });
@@ -181,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
     } on AuthException catch (e) {
       _setFeedback(e.message, true);
     } catch (e) {
-      _setFeedback('Google Sign-In fallito: $e', true);
+      _setFeedback(l10n.googleSignInFailed(e.toString()), true);
     } finally {
       if (mounted) {
         setState(() {
@@ -201,6 +207,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -235,8 +242,8 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 8),
                     Text(
                       isLoginMode
-                          ? 'Bentornato! Accedi per continuare il tuo allenamento.'
-                          : 'Crea un account per sbloccare tutti gli allenamenti.',
+                          ? l10n.loginWelcomeHeadline
+                          : l10n.loginCreateAccountHeadline,
                       textAlign: TextAlign.center,
                       style: Theme.of(context)
                           .textTheme
@@ -264,14 +271,14 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           _AuthTextField(
                             controller: emailController,
-                            label: 'Email',
+                            label: l10n.emailLabel,
                             keyboardType: TextInputType.emailAddress,
                             icon: Icons.mail_outline,
                           ),
                           const SizedBox(height: 16),
                           _AuthTextField(
                             controller: passwordController,
-                            label: 'Password',
+                            label: l10n.passwordLabel,
                             isPassword: true,
                             icon: Icons.lock_outline,
                           ),
@@ -283,7 +290,7 @@ class _LoginPageState extends State<LoginPage> {
                                     padding: const EdgeInsets.only(top: 16),
                                     child: _AuthTextField(
                                       controller: confirmPasswordController,
-                                      label: 'Conferma Password',
+                                      label: l10n.confirmPasswordLabel,
                                       isPassword: true,
                                       icon: Icons.lock_reset,
                                     ),
@@ -306,7 +313,7 @@ class _LoginPageState extends State<LoginPage> {
                                     height: 20,
                                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                   )
-                                : Text(isLoginMode ? 'Accedi' : 'Registrati'),
+                                : Text(isLoginMode ? l10n.signInButton : l10n.signUpButton),
                           ),
                           const SizedBox(height: 12),
                           Center(
@@ -321,8 +328,8 @@ class _LoginPageState extends State<LoginPage> {
                                     },
                               child: Text(
                                 isLoginMode
-                                    ? 'Non hai un account? Registrati'
-                                    : 'Hai già un account? Accedi',
+                                    ? l10n.noAccountCallToAction
+                                    : l10n.haveAccountCallToAction,
                                 style: const TextStyle(color: Colors.white70),
                               ),
                             ),
@@ -336,11 +343,11 @@ class _LoginPageState extends State<LoginPage> {
                                   color: Colors.white.withOpacity(0.2),
                                 ),
                               ),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
                                 child: Text(
-                                  'oppure',
-                                  style: TextStyle(color: Colors.white60),
+                                  l10n.orLabel,
+                                  style: const TextStyle(color: Colors.white60),
                                 ),
                               ),
                               Expanded(
@@ -367,7 +374,7 @@ class _LoginPageState extends State<LoginPage> {
                                     errorBuilder: (_, __, ___) => const Icon(Icons.login, size: 18),
                                   ),
                             label: Text(
-                              oauthLoading ? 'Connessione...' : 'Continua con Google',
+                              oauthLoading ? l10n.connectingStatus : l10n.continueWithGoogle,
                               style: const TextStyle(color: Colors.white),
                             ),
                             style: OutlinedButton.styleFrom(

@@ -2,6 +2,7 @@ import 'package:calisync/pages/position_estimation.dart';
 import 'package:calisync/pages/selection_card.dart';
 import 'package:calisync/pages/training.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeContent extends StatefulWidget {
 
@@ -19,20 +20,20 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SelectionCard(
-            title: 'Giorno A',
+            title: l10n.homeDayATitle,
             icon: Icons.numbers,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder:
-                      (context) => Training(
+                  builder: (context) => Training(
                     data: [
                       {
                         "esercizio": "Chin up negativi",
@@ -94,36 +95,38 @@ class _HomeContentState extends State<HomeContent> {
           ),
           const SizedBox(height: 16),
           SelectionCard(
-            title: 'Giorno B',
+            title: l10n.homeDayBTitle,
             icon: Icons.settings,
             onTap: () {
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(const SnackBar(content: Text('In arrivo...')));
+              ).showSnackBar(
+                SnackBar(content: Text(l10n.comingSoonMessage)),
+              );
             },
           ),
           const SizedBox(height: 16),
           SelectionCard(
-            title: 'Giorno C',
+            title: l10n.homeDayCTitle,
             icon: Icons.info,
             onTap: () {
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(const SnackBar(content: Text('In arrivo...')));
+              ).showSnackBar(
+                SnackBar(content: Text(l10n.comingSoonMessage)),
+              );
             },
           ),
           const SizedBox(height: 16),
           SelectionCard(
-            title: "Pose estimation",
+            title: l10n.poseEstimationCardTitle,
             icon: Icons.man,
             onTap: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                  builder:
-                  (context) => PoseCamPage()
-              ));
-            }
+                context,
+                MaterialPageRoute(builder: (context) => const PoseCamPage()),
+              );
+            },
           )
         ],
       ),

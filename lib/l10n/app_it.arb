@@ -1,0 +1,171 @@
+{
+  "@@locale": "it",
+  "appTitle": "Calisthenics",
+  "authErrorMessage": "Errore durante l'autenticazione",
+  "homeTabLabel": "Home",
+  "settingsTabLabel": "Impostazioni",
+  "profileTabLabel": "Profilo",
+  "terminologyTabLabel": "Terminologia",
+  "settingsPlaceholderMessage": "Impostazioni",
+  "homeDayATitle": "Giorno A",
+  "homeDayBTitle": "Giorno B",
+  "homeDayCTitle": "Giorno C",
+  "comingSoonMessage": "In arrivo...",
+  "poseEstimationCardTitle": "Pose estimation",
+  "trainingPageTitle": "Allenamento",
+  "trainingHeaderExercises": "Esercizi",
+  "trainingHeaderWeek": "Settimana {weekNumber}",
+  "@trainingHeaderWeek": {
+    "placeholders": {
+      "weekNumber": {}
+    }
+  },
+  "trainingHeaderDeload": "Scarico",
+  "trainingHeaderRest": "Recupero",
+  "trainingHeaderNotes": "Note",
+  "checkProgressButtonLabel": "Controlla i progressi",
+  "timerTitle": "Timer",
+  "repCounterGoalLabel": "Obiettivo: {count}",
+  "@repCounterGoalLabel": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "resetButtonLabel": "Azzera",
+  "repTimerPause": "Pausa",
+  "repTimerStart": "Avvia",
+  "repTimerSeriesLabel": "Serie: {count}",
+  "@repTimerSeriesLabel": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "repTimerGoalLabel": "Obiettivo: {count}",
+  "@repTimerGoalLabel": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "resetRepsButtonLabel": "Azzera ripetizioni",
+  "repGoalReachedMessage": "Obiettivo di ripetizioni raggiunto!",
+  "histogramChartTitle": "Grafico a istogramma",
+  "loginGoogleSuccess": "Accesso completato con Google!",
+  "loginRedirectError": "Errore durante il reindirizzamento: {error}",
+  "@loginRedirectError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginLinkError": "Errore collegamento: {error}",
+  "@loginLinkError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginInitialLinkError": "Errore collegamento iniziale: {error}",
+  "@loginInitialLinkError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginFillAllFields": "Compila tutti i campi richiesti.",
+  "loginPasswordsMismatch": "Le password non coincidono.",
+  "loginInvalidCredentials": "Credenziali errate.",
+  "loginSignupConfirmation": "Registrazione completata! Controlla la tua email per confermare l'account.",
+  "unexpectedError": "Errore inatteso: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "googleSignInFailed": "Google Sign-In fallito: {error}",
+  "@googleSignInFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginWelcomeHeadline": "Bentornato! Accedi per continuare il tuo allenamento.",
+  "loginCreateAccountHeadline": "Crea un account per sbloccare tutti gli allenamenti.",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "confirmPasswordLabel": "Conferma password",
+  "signInButton": "Accedi",
+  "signUpButton": "Registrati",
+  "noAccountCallToAction": "Non hai un account? Registrati",
+  "haveAccountCallToAction": "Hai già un account? Accedi",
+  "orLabel": "oppure",
+  "connectingStatus": "Connessione...",
+  "continueWithGoogle": "Continua con Google",
+  "profileNotAuthenticated": "Utente non autenticato",
+  "profileUserNotFound": "Utente non trovato nel database",
+  "profileUnknownName": "Nome sconosciuto",
+  "profileUnknownEmail": "Email sconosciuta",
+  "profileLoadingError": "Errore nel caricamento dati",
+  "logoutError": "Errore durante il logout: {error}",
+  "@logoutError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "editProfile": "Modifica profilo",
+  "logout": "Logout",
+  "poseNoCamera": "Nessuna fotocamera disponibile",
+  "poseCameraInitFailed": "Inizializzazione fotocamera fallita: {error}",
+  "@poseCameraInitFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "poseStatusDetected": "Pose rilevata",
+  "poseStatusProcessing": "Elaborazione...",
+  "poseStatusIdle": "In attesa",
+  "poseHudMetrics": "fps: {fps}  ms: {ms}  punti: {landmarks}",
+  "@poseHudMetrics": {
+    "placeholders": {
+      "fps": {
+        "type": "double"
+      },
+      "ms": {
+        "type": "double"
+      },
+      "landmarks": {
+        "type": "int"
+      }
+    }
+  },
+  "poseHudCameraFront": "frontale",
+  "poseHudCameraBack": "posteriore",
+  "poseHudRotation": "rot: {rotation}  cam: {camera}  fmt: {format}",
+  "@poseHudRotation": {
+    "placeholders": {
+      "rotation": {},
+      "camera": {},
+      "format": {}
+    }
+  },
+  "terminologyTitle": "Terminologia",
+  "terminologyRepsTerm": "Reps (Ripetizioni)",
+  "terminologyRepsDescription": "Numero di volte che esegui un esercizio consecutivamente.",
+  "terminologySetTerm": "Set (Serie)",
+  "terminologySetDescription": "Un gruppo di ripetizioni. Es: 3 serie da 10 reps significa 30 ripetizioni totali, divise in 3 gruppi.",
+  "terminologyRtTerm": "RT",
+  "terminologyRtDescription": "Ripetizioni Totali: indica che devi fare tutte quelle reps, con libera scelta di serie, ripetizioni e tempo (se non indicato).",
+  "terminologyAmrapTerm": "AMRAP",
+  "terminologyAmrapDescription": "As Many Reps As Possible: esegui quante più ripetizioni possibili in un tempo determinato.",
+  "terminologyEmomTerm": "EMOM",
+  "terminologyEmomDescription": "Every Minute On Minute: inizi un set ogni minuto. Il tempo restante serve per riposare.",
+  "terminologyRampingTerm": "Ramping",
+  "terminologyRampingDescription": "Metodo che prevede un incremento del peso ad ogni serie",
+  "terminologyMavTerm": "MAV",
+  "terminologyMavDescription": "Massima Alzata Veloce: Si riferisce a una metodologia in cui si cerca di eseguire il maggior numero di ripetizioni possibili con un carico, mantenendo sempre il controllo del movimento e una buona velocità di esecuzione.",
+  "terminologyIsocineticiTerm": "Isocinetici",
+  "terminologyIsocineticiDescription": "Esercizi svolti a velocità costante.",
+  "terminologyTutTerm": "TUT",
+  "terminologyTutDescription": "Indica quanto deve durare una ripetizione. Puoi gestire tu la durata di ogni fase della rep.",
+  "terminologyIsoTerm": "ISO",
+  "terminologyIsoDescription": "Indica il fermo a un punto specifico dell'esecuzione della rep",
+  "terminologySomTerm": "SOM",
+  "terminologySomDescription": "Indica la durata di ogni fase della ripetizione.",
+  "terminologyScaricoTerm": "Scarico",
+  "terminologyScaricoDescription": "Ultima settimana della scheda per prepararsi ai massimali."
+}

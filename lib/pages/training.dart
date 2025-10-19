@@ -3,6 +3,7 @@ import 'package:calisync/pages/rep_timer.dart';
 import 'package:calisync/pages/result.dart';
 import 'package:calisync/pages/timer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Training extends StatelessWidget {
   final List<Map<String, dynamic>> data;
@@ -11,18 +12,19 @@ class Training extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final headers = [
-      'Esercizi',
-      'Settimana 1',
-      'Settimana 2',
-      'Settimana 3',
-      'Settimana 4',
-      'Scarico',
-      'Recupero',
-      'Note',
+      l10n.trainingHeaderExercises,
+      l10n.trainingHeaderWeek(1),
+      l10n.trainingHeaderWeek(2),
+      l10n.trainingHeaderWeek(3),
+      l10n.trainingHeaderWeek(4),
+      l10n.trainingHeaderDeload,
+      l10n.trainingHeaderRest,
+      l10n.trainingHeaderNotes,
     ];
     return Scaffold(
-      appBar: AppBar(title: Text('Allenamento')),
+      appBar: AppBar(title: Text(l10n.trainingPageTitle)),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Padding(
@@ -124,7 +126,7 @@ class Training extends StatelessWidget {
                     context,
                   ).push(MaterialPageRoute(builder: (_) => HistogramChart()));
                 },
-                child: const Text('Check progress'),
+                child: Text(l10n.checkProgressButtonLabel),
               ),
             ],
           ),

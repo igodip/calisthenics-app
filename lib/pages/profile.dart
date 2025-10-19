@@ -1,5 +1,6 @@
 // lib/profile.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login.dart';
@@ -7,34 +8,27 @@ import 'login.dart';
 final supabase = Supabase.instance.client;
 
 Future<Map<String, String>> getUserData() async {
-  try {
-    final user = supabase.auth.currentUser;
-    if (user == null) throw Exception('Utente non autenticato');
+  final user = supabase.auth.currentUser;
+  if (user == null) throw Exception('not_authenticated');
 
-    final response = await supabase
+  final response = await supabase
       .from('users')
       .select()
       .eq('uuid', user.id)
       .limit(1)
       .maybeSingle();
 
-    if (response == null) {
-      throw Exception('Utente non trovato nel database');
-    }
-
-    final username = response['username'] ?? 'Nome sconosciuto';
-    final email = response['email'] ?? 'Email sconosciuta';
-
-    return {
-      'username': username,
-      'email': email,
-    };
-  } catch (e) {
-    return {
-      'username': 'Errore nel caricamento',
-      'email': 'Errore nel caricamento',
-    };
+  if (response == null) {
+    throw Exception('not_found');
   }
+
+  final username = response['username'] as String?;
+  final email = response['email'] as String?;
+
+  return {
+    'username': username ?? '',
+    'email': email ?? '',
+  };
 }
 
 
@@ -50,7 +44,7 @@ Future<void> logout(BuildContext context) async {
     }
   } catch (e) {
     scaffoldMessenger.showSnackBar(
-      SnackBar(content: Text('Errore durante il logout: $e')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.logoutError(e.toString()))),
     );
   }
 }
@@ -60,6 +54,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -82,14 +77,28 @@ class ProfilePage extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
                 } else if (snapshot.hasError || !snapshot.hasData) {
-                  return const Text('Errore nel caricamento dati');
+                  var message = l10n.profileLoadingError;
+                  final error = snapshot.error;
+                  final errorText = error?.toString() ?? '';
+                  if (errorText.contains('not_authenticated')) {
+                    message = l10n.profileNotAuthenticated;
+                  } else if (errorText.contains('not_found')) {
+                    message = l10n.profileUserNotFound;
+                  }
+                  return Text(message);
                 }
 
                 final data = snapshot.data!;
                 return Column(
                   children: [
-                    Text(data['username']!, style: const TextStyle(fontSize: 22)),
-                    Text(data['email']!, style: const TextStyle(color: Colors.grey)),
+                    Text(
+                      data['username']!.isEmpty ? l10n.profileUnknownName : data['username']!,
+                      style: const TextStyle(fontSize: 22),
+                    ),
+                    Text(
+                      data['email']!.isEmpty ? l10n.profileUnknownEmail : data['email']!,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                     const SizedBox(height: 4),
                   ],
                 );
@@ -100,7 +109,7 @@ class ProfilePage extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: ListTile(
                 leading: const Icon(Icons.edit),
-                title: const Text('Modifica profilo'),
+                title: Text(l10n.editProfile),
                 onTap: () {
                   // Azione Modifica profilo
                 },
@@ -110,7 +119,7 @@ class ProfilePage extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: ListTile(
                 leading: const Icon(Icons.logout),
-                title: const Text('Logout'),
+                title: Text(l10n.logout),
                 onTap: () => logout(context),
               ),
             ),

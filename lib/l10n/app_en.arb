@@ -1,0 +1,171 @@
+{
+  "@@locale": "en",
+  "appTitle": "Calisthenics",
+  "authErrorMessage": "Authentication error",
+  "homeTabLabel": "Home",
+  "settingsTabLabel": "Settings",
+  "profileTabLabel": "Profile",
+  "terminologyTabLabel": "Terminology",
+  "settingsPlaceholderMessage": "Settings",
+  "homeDayATitle": "Day A",
+  "homeDayBTitle": "Day B",
+  "homeDayCTitle": "Day C",
+  "comingSoonMessage": "Coming soon...",
+  "poseEstimationCardTitle": "Pose estimation",
+  "trainingPageTitle": "Workout",
+  "trainingHeaderExercises": "Exercises",
+  "trainingHeaderWeek": "Week {weekNumber}",
+  "@trainingHeaderWeek": {
+    "placeholders": {
+      "weekNumber": {}
+    }
+  },
+  "trainingHeaderDeload": "Deload",
+  "trainingHeaderRest": "Rest",
+  "trainingHeaderNotes": "Notes",
+  "checkProgressButtonLabel": "Check progress",
+  "timerTitle": "Timer",
+  "repCounterGoalLabel": "Goal: {count}",
+  "@repCounterGoalLabel": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "resetButtonLabel": "Reset",
+  "repTimerPause": "Pause",
+  "repTimerStart": "Start",
+  "repTimerSeriesLabel": "Sets: {count}",
+  "@repTimerSeriesLabel": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "repTimerGoalLabel": "Goal: {count}",
+  "@repTimerGoalLabel": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "resetRepsButtonLabel": "Reset reps",
+  "repGoalReachedMessage": "Repetition goal reached!",
+  "histogramChartTitle": "Histogram chart",
+  "loginGoogleSuccess": "Signed in with Google!",
+  "loginRedirectError": "Error during redirect: {error}",
+  "@loginRedirectError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginLinkError": "Link error: {error}",
+  "@loginLinkError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginInitialLinkError": "Initial link error: {error}",
+  "@loginInitialLinkError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginFillAllFields": "Please fill in all required fields.",
+  "loginPasswordsMismatch": "Passwords do not match.",
+  "loginInvalidCredentials": "Invalid credentials.",
+  "loginSignupConfirmation": "Registration complete! Check your email to confirm the account.",
+  "unexpectedError": "Unexpected error: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "googleSignInFailed": "Google sign-in failed: {error}",
+  "@googleSignInFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "loginWelcomeHeadline": "Welcome back! Sign in to continue your training.",
+  "loginCreateAccountHeadline": "Create an account to unlock every workout.",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "confirmPasswordLabel": "Confirm password",
+  "signInButton": "Sign in",
+  "signUpButton": "Sign up",
+  "noAccountCallToAction": "Don't have an account? Sign up",
+  "haveAccountCallToAction": "Already have an account? Sign in",
+  "orLabel": "or",
+  "connectingStatus": "Connecting...",
+  "continueWithGoogle": "Continue with Google",
+  "profileNotAuthenticated": "User not authenticated",
+  "profileUserNotFound": "User not found in the database",
+  "profileUnknownName": "Unknown name",
+  "profileUnknownEmail": "Unknown email",
+  "profileLoadingError": "Error loading data",
+  "logoutError": "Error while signing out: {error}",
+  "@logoutError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "editProfile": "Edit profile",
+  "logout": "Log out",
+  "poseNoCamera": "No cameras available",
+  "poseCameraInitFailed": "Camera initialization failed: {error}",
+  "@poseCameraInitFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "poseStatusDetected": "Pose detected",
+  "poseStatusProcessing": "Processing…",
+  "poseStatusIdle": "Idle",
+  "poseHudMetrics": "fps: {fps}  ms: {ms}  landmarks: {landmarks}",
+  "@poseHudMetrics": {
+    "placeholders": {
+      "fps": {
+        "type": "double"
+      },
+      "ms": {
+        "type": "double"
+      },
+      "landmarks": {
+        "type": "int"
+      }
+    }
+  },
+  "poseHudCameraFront": "front",
+  "poseHudCameraBack": "back",
+  "poseHudRotation": "rot: {rotation}  cam: {camera}  fmt: {format}",
+  "@poseHudRotation": {
+    "placeholders": {
+      "rotation": {},
+      "camera": {},
+      "format": {}
+    }
+  },
+  "terminologyTitle": "Terminology",
+  "terminologyRepsTerm": "Reps (Repetitions)",
+  "terminologyRepsDescription": "Number of times you perform an exercise consecutively.",
+  "terminologySetTerm": "Set",
+  "terminologySetDescription": "A group of repetitions. Example: 3 sets of 10 reps means 30 total reps split into 3 groups.",
+  "terminologyRtTerm": "RT",
+  "terminologyRtDescription": "Total repetitions: do all the reps with any distribution of sets, reps, and tempo (if not specified).",
+  "terminologyAmrapTerm": "AMRAP",
+  "terminologyAmrapDescription": "As Many Reps As Possible: perform as many repetitions as you can in a set time.",
+  "terminologyEmomTerm": "EMOM",
+  "terminologyEmomDescription": "Every Minute on the Minute: start a set every minute. Use the remaining time to rest.",
+  "terminologyRampingTerm": "Ramping",
+  "terminologyRampingDescription": "Method that increases the weight with each set.",
+  "terminologyMavTerm": "MAV",
+  "terminologyMavDescription": "Massima Alzata Veloce: perform as many reps as possible with control and good speed.",
+  "terminologyIsocineticiTerm": "Isokinetic",
+  "terminologyIsocineticiDescription": "Exercises performed at a constant speed.",
+  "terminologyTutTerm": "TUT",
+  "terminologyTutDescription": "Indicates how long a repetition should last. You can control each phase of the rep.",
+  "terminologyIsoTerm": "ISO",
+  "terminologyIsoDescription": "Indicates a hold at a specific point of the rep.",
+  "terminologySomTerm": "SOM",
+  "terminologySomDescription": "Indicates the duration of each phase of the repetition.",
+  "terminologyScaricoTerm": "Deload",
+  "terminologyScaricoDescription": "Final week of the program to prepare for max attempts."
+}

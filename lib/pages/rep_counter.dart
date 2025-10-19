@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RepCounter extends StatefulWidget {
   final String title;
@@ -45,8 +46,9 @@ class _RepCounterState extends State<RepCounter> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text("Timer")),
+      appBar: AppBar(title: Text(l10n.timerTitle)),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -62,7 +64,7 @@ class _RepCounterState extends State<RepCounter> {
             ),
             if (widget.targetCount != null)
               Text(
-                'Goal: ${widget.targetCount}',
+                l10n.repCounterGoalLabel(widget.targetCount!),
                 style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
             const SizedBox(height: 16),
@@ -80,7 +82,7 @@ class _RepCounterState extends State<RepCounter> {
             const SizedBox(height: 8),
             TextButton(
               onPressed: _reset,
-              child: const Text('Reset'),
+              child: Text(l10n.resetButtonLabel),
             ),
           ],
         ),

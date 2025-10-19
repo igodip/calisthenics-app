@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mrx_charts/mrx_charts.dart';
 
 class HistogramBin {
@@ -18,8 +19,9 @@ class HistogramChart extends StatelessWidget {
   Widget build(BuildContext context) {
     // Convert bins to BarData
 
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Histogram Chart')),
+      appBar: AppBar(title: Text(l10n.histogramChartTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Chart(

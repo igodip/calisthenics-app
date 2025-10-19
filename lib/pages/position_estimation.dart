@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
 class PoseCamPage extends StatefulWidget {
@@ -127,7 +128,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
       if (cameras.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No cameras available')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.poseNoCamera)),
           );
         }
         return;
@@ -171,7 +172,7 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Camera init failed: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.poseCameraInitFailed(e.toString()))),
         );
       }
     }
@@ -349,11 +350,15 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
   }
 
   Widget _buildHud() {
+    final l10n = AppLocalizations.of(context)!;
     final status = _poseDetected
-        ? 'Pose detected'
-        : (_isBusy ? 'Processing…' : 'Idle');
+        ? l10n.poseStatusDetected
+        : (_isBusy ? l10n.poseStatusProcessing : l10n.poseStatusIdle);
 
     final landmarks = _lastPose?.landmarks.length ?? 0;
+    final cameraLabel = _useFrontCamera ? l10n.poseHudCameraFront : l10n.poseHudCameraBack;
+    final fps = _fps.isFinite ? double.parse(_fps.toStringAsFixed(1)) : 0;
+    final ms = _avgMs.isFinite ? double.parse(_avgMs.toStringAsFixed(0)) : 0;
 
     return SafeArea(
       child: Align(
@@ -375,9 +380,9 @@ class _PoseCamPageState extends State<PoseCamPage> with WidgetsBindingObserver {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(status, style: const TextStyle(color: Colors.white)),
-                  Text('fps: ${_fps.toStringAsFixed(1)}  ms: ${_avgMs.toStringAsFixed(0)}  lmks: $landmarks',
+                  Text(l10n.poseHudMetrics(fps, ms, landmarks),
                       style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                  Text('rot: $_rotation  cam: ${_useFrontCamera ? 'front' : 'back'}  fmt: $_fmt',
+                  Text(l10n.poseHudRotation(_rotation, cameraLabel, _fmt),
                       style: const TextStyle(color: Colors.white38, fontSize: 11)),
                 ],
               ),

@@ -1,6 +1,7 @@
 // lib/main.dart
 import 'package:calisync/pages/terminologia.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:calisync/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -19,8 +20,10 @@ class AuthGate extends StatelessWidget {
             ? snapshot.data!.session
             : Supabase.instance.client.auth.currentSession;
 
+        final l10n = AppLocalizations.of(context)!;
+
         if (session != null) {
-          return const HomePage(title: 'Calisthenics');
+          return HomePage(title: l10n.appTitle);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -33,7 +36,7 @@ class AuthGate extends StatelessWidget {
           return Scaffold(
             body: Center(
               child: Text(
-                'Errore durante l\'autenticazione',
+                l10n.authErrorMessage,
                 style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
@@ -68,9 +71,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {    
+    final l10n = AppLocalizations.of(context)!;
     final List<Widget> pages = [
-      HomeContent(),
-      const Center(child: Text('Impostazioni')),
+      const HomeContent(),
+      Center(child: Text(l10n.settingsPlaceholderMessage)),
       const ProfilePage(),
       const TerminologiaPage()
     ];
@@ -86,11 +90,11 @@ class _HomePageState extends State<HomePage> {
             selectedIndex = index;
           });
         },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Impostazioni'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profilo'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Terminologia'),
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: const Icon(Icons.home), label: l10n.homeTabLabel),
+          BottomNavigationBarItem(icon: const Icon(Icons.settings), label: l10n.settingsTabLabel),
+          BottomNavigationBarItem(icon: const Icon(Icons.account_circle), label: l10n.profileTabLabel),
+          BottomNavigationBarItem(icon: const Icon(Icons.book), label: l10n.terminologyTabLabel),
         ],
       ),
     );
