@@ -5,13 +5,45 @@ import 'package:calisync/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'home_content.dart';
+import 'login.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const HomePage(title: 'Calisthenics');
+    return StreamBuilder<AuthState>(
+      stream: Supabase.instance.client.auth.onAuthStateChange,
+      builder: (context, snapshot) {
+        final session = snapshot.hasData
+            ? snapshot.data!.session
+            : Supabase.instance.client.auth.currentSession;
+
+        if (session != null) {
+          return const HomePage(title: 'Calisthenics');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(
+              child: Text(
+                'Errore durante l\'autenticazione',
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+
+        return const LoginPage();
+      },
+    );
   }
 }
 
@@ -28,21 +60,6 @@ class _HomePageState extends State<HomePage> {
   bool? payed;
   
   final supabase = Supabase.instance.client;
-
-  Future<bool?> getPayedStatus() async {
-    final user = supabase.auth.currentUser;
-    if (user == null) return null;
-
-    final response = await supabase
-        .from('users')
-        .select('payed')
-        .eq('uuid', user.id)
-        .maybeSingle();
-
-    if (response == null) return null;
-
-    return response['payed'] == true;
-  }
 
   @override
   void initState() {
