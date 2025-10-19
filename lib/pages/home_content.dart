@@ -198,8 +198,7 @@ class _HomeContentState extends State<HomeContent> {
               id, name, notes,
               template_exercises (
                 id, position, default_sets, default_reps, rest_seconds,
-                default_intensity, notes,
-                exercise_library ( id, name )
+                default_intensity, exercise_library ( id, name )
               )
             )
           ''')
