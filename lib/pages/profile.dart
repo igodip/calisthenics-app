@@ -62,14 +62,14 @@ Future<UserProfileData> getUserData() async {
 
   final usersResponse = await supabase
       .from('users')
-      .select<Map<String, dynamic>>('uuid, email, username, active, payed')
+      .select('uuid, email, username, active, payed')
       .eq('uuid', user.id)
       .limit(1)
       .maybeSingle();
 
   final profileResponse = await supabase
       .from('profiles')
-      .select<Map<String, dynamic>>(
+      .select(
           'id, full_name, avatar_url, unit_system, timezone, created_at, updated_at')
       .eq('id', user.id)
       .limit(1)
