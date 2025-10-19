@@ -126,9 +126,8 @@ class _HomeContentState extends State<HomeContent> {
                 }
 
                 final day = days[index];
-                final title = _formatDayTitle(day);
                 return SelectionCard(
-                  title: title,
+                  title: day.formattedTitle(),
                   icon: Icons.calendar_today,
                   onTap: () {
                     Navigator.push(
@@ -229,31 +228,4 @@ class _HomeContentState extends State<HomeContent> {
     }).toList();
   }
 
-  String _formatDayTitle(WorkoutDay day) {
-    final parts = <String>[];
-    if (day.week > 0) {
-      parts.add('Settimana ${day.week}');
-    }
-    final dowName = _dowLabel(day.dow);
-    if (dowName != null) {
-      parts.add(dowName);
-    }
-    if (day.name != null && day.name!.isNotEmpty) {
-      parts.add(day.name!);
-    }
-    return parts.isEmpty ? 'Allenamento' : parts.join(' · ');
-  }
-
-  String? _dowLabel(int dow) {
-    const labels = {
-      1: 'Lunedì',
-      2: 'Martedì',
-      3: 'Mercoledì',
-      4: 'Giovedì',
-      5: 'Venerdì',
-      6: 'Sabato',
-      7: 'Domenica',
-    };
-    return labels[dow];
-  }
 }

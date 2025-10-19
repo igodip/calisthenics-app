@@ -29,6 +29,16 @@ class WorkoutDay {
   final String? notes;
   final List<WorkoutExercise> exercises;
 
+  static const Map<int, String> _dowLabels = {
+    1: 'Lunedì',
+    2: 'Martedì',
+    3: 'Mercoledì',
+    4: 'Giovedì',
+    5: 'Venerdì',
+    6: 'Sabato',
+    7: 'Domenica',
+  };
+
   const WorkoutDay({
     required this.week,
     required this.dow,
@@ -37,4 +47,21 @@ class WorkoutDay {
     this.name,
     this.notes,
   });
+
+  String? get dowLabel => _dowLabels[dow];
+
+  String formattedTitle({String fallback = 'Allenamento'}) {
+    final parts = <String>[];
+    if (week > 0) {
+      parts.add('Settimana $week');
+    }
+    final dowName = dowLabel;
+    if (dowName != null) {
+      parts.add(dowName);
+    }
+    if (name != null && name!.isNotEmpty) {
+      parts.add(name!);
+    }
+    return parts.isEmpty ? fallback : parts.join(' · ');
+  }
 }
