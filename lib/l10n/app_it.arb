@@ -6,6 +6,68 @@
   "navProfile": "Profilo",
   "navTerminology": "Terminologia",
   "settingsComingSoon": "Le impostazioni saranno presto disponibili.",
+  "settingsGeneralSection": "Generali",
+  "settingsDailyReminder": "Promemoria allenamento quotidiano",
+  "settingsDailyReminderDescription": "Ricevi un promemoria per iniziare ad allenarti ogni giorno.",
+  "settingsReminderTime": "Orario promemoria",
+  "settingsReminderNotSet": "Non impostato",
+  "settingsSoundEffects": "Effetti sonori",
+  "settingsSoundEffectsDescription": "Riproduci brevi suoni durante la registrazione delle ripetizioni.",
+  "settingsHapticFeedback": "Feedback aptico",
+  "settingsHapticFeedbackDescription": "Leggera vibrazione per le azioni importanti.",
+  "settingsTrainingSection": "Preferenze di allenamento",
+  "settingsUnitSystem": "Sistema di unità",
+  "settingsUnitsMetric": "Metrico (kg)",
+  "settingsUnitsImperial": "Imperiale (lb)",
+  "settingsRestTimer": "Timer di recupero predefinito",
+  "settingsRestTimerDescription": "Usato quando avvii un timer di recupero dagli allenamenti.",
+  "settingsRestTimerMinutes": "{count, plural, one {# minuto} other {# minuti}}",
+  "@settingsRestTimerMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsRestTimerMinutesSeconds": "{minutes, plural, one {# minuto} other {# minuti}} e {seconds, plural, one {# secondo} other {# secondi}}",
+  "@settingsRestTimerMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsRestTimerSeconds": "{count, plural, one {# secondo} other {# secondi}}",
+  "@settingsRestTimerSeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsDataSection": "Dati e privacy",
+  "settingsClearCache": "Cancella allenamenti salvati",
+  "settingsClearCacheDescription": "Rimuovi gli allenamenti memorizzati su questo dispositivo.",
+  "settingsClearCacheSuccess": "Allenamenti locali rimossi.",
+  "settingsExportData": "Esporta riepilogo allenamenti",
+  "settingsExportDataDescription": "Ricevi via email un CSV delle ultime sessioni.",
+  "settingsExportDataSuccess": "Richiesta di esportazione inviata. Controlla la casella di posta a breve.",
+  "settingsSupportSection": "Supporto",
+  "settingsContactCoach": "Contatta il tuo coach",
+  "settingsContactCoachDescription": "Invia un messaggio rapido per chiedere modifiche.",
+  "settingsContactCoachHint": "Dicci come possiamo aiutarti.",
+  "settingsContactCoachSuccess": "Messaggio inviato al coach.",
+  "settingsSendMessage": "Invia messaggio",
+  "settingsAppVersion": "Versione app",
+  "settingsAppVersionValue": "Versione {version}",
+  "@settingsAppVersionValue": {
+    "placeholders": {
+      "version": {}
+    }
+  },
   "exerciseTrackerTitle": "Tracker esercizi",
   "poseEstimationTitle": "Stima postura",
   "homeLoadErrorTitle": "Impossibile caricare gli allenamenti",

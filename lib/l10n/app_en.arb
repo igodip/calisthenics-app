@@ -6,6 +6,68 @@
   "navProfile": "Profile",
   "navTerminology": "Terminology",
   "settingsComingSoon": "Settings coming soon.",
+  "settingsGeneralSection": "General",
+  "settingsDailyReminder": "Daily workout reminder",
+  "settingsDailyReminderDescription": "Get a gentle nudge to start training each day.",
+  "settingsReminderTime": "Reminder time",
+  "settingsReminderNotSet": "Not set",
+  "settingsSoundEffects": "Sound effects",
+  "settingsSoundEffectsDescription": "Play short sounds when logging repetitions.",
+  "settingsHapticFeedback": "Haptic feedback",
+  "settingsHapticFeedbackDescription": "Vibrate briefly on important actions.",
+  "settingsTrainingSection": "Training preferences",
+  "settingsUnitSystem": "Unit system",
+  "settingsUnitsMetric": "Metric (kg)",
+  "settingsUnitsImperial": "Imperial (lb)",
+  "settingsRestTimer": "Default rest timer",
+  "settingsRestTimerDescription": "Used when starting a rest timer from workouts.",
+  "settingsRestTimerMinutes": "{count, plural, one {# minute} other {# minutes}}",
+  "@settingsRestTimerMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsRestTimerMinutesSeconds": "{minutes, plural, one {# minute} other {# minutes}} and {seconds, plural, one {# second} other {# seconds}}",
+  "@settingsRestTimerMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsRestTimerSeconds": "{count, plural, one {# second} other {# seconds}}",
+  "@settingsRestTimerSeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsDataSection": "Data & privacy",
+  "settingsClearCache": "Clear cached workouts",
+  "settingsClearCacheDescription": "Remove workouts saved on this device.",
+  "settingsClearCacheSuccess": "Local workouts cleared.",
+  "settingsExportData": "Export training summary",
+  "settingsExportDataDescription": "Receive a CSV of your recent sessions via email.",
+  "settingsExportDataSuccess": "Export request submitted. Check your inbox soon.",
+  "settingsSupportSection": "Support",
+  "settingsContactCoach": "Contact your coach",
+  "settingsContactCoachDescription": "Send a quick message for adjustments.",
+  "settingsContactCoachHint": "Let us know how we can help.",
+  "settingsContactCoachSuccess": "Message sent to your coach.",
+  "settingsSendMessage": "Send message",
+  "settingsAppVersion": "App version",
+  "settingsAppVersionValue": "Version {version}",
+  "@settingsAppVersionValue": {
+    "placeholders": {
+      "version": {}
+    }
+  },
   "exerciseTrackerTitle": "Exercise tracker",
   "poseEstimationTitle": "Pose estimation",
   "homeLoadErrorTitle": "Unable to load workouts",
