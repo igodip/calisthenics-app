@@ -176,7 +176,12 @@
   "quickAddValuesHelper": "Comma separated repetitions (e.g. 1,5,10)",
   "cancel": "Cancel",
   "add": "Add",
+  "save": "Save",
   "exerciseNameMissing": "Please provide a name.",
+  "exerciseTargetRepsLabel": "Target reps",
+  "exerciseTargetRepsHelper": "Optional total goal for the session",
+  "exerciseRestDurationLabel": "Rest duration (seconds)",
+  "exerciseRestDurationHelper": "Optional countdown timer preset",
   "exerciseTrackerEmpty": "No exercises yet. Tap + to add one!",
   "exerciseAddButton": "Add exercise",
   "exercisePushUps": "Push-ups",
@@ -190,6 +195,29 @@
       }
     }
   },
+  "exerciseGoalProgress": "{logged} / {goal} reps logged",
+  "@exerciseGoalProgress": {
+    "placeholders": {
+      "logged": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseRestFinished": "Rest finished for {exercise}!",
+  "@exerciseRestFinished": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseSetRestDuration": "Set rest duration",
+  "exerciseDurationSecondsLabel": "Duration (seconds)",
+  "restTimerLabel": "Rest timer",
+  "setDuration": "Set duration",
   "undoLastSet": "Undo last set",
   "custom": "Custom",
   "reset": "Reset",

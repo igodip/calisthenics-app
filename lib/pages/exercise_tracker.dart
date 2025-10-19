@@ -31,31 +31,12 @@ class ExerciseDefinition {
 class ExerciseTrackerPage extends StatefulWidget {
   const ExerciseTrackerPage({
     super.key,
-    this.title = 'Exercise tracker',
-    List<ExerciseDefinition>? initialExercises,
-  }) : initialExercises = initialExercises ?? const [
-          ExerciseDefinition(
-            name: 'Push ups',
-            icon: Icons.front_hand,
-            color: Colors.orangeAccent,
-            quickAddValues: [1, 5, 10, 15],
-          ),
-          ExerciseDefinition(
-            name: 'Pull ups',
-            icon: Icons.fitness_center,
-            color: Colors.lightBlueAccent,
-            quickAddValues: [1, 3, 5, 8],
-          ),
-          ExerciseDefinition(
-            name: 'Chin ups',
-            icon: Icons.accessibility_new,
-            color: Colors.purpleAccent,
-            quickAddValues: [1, 3, 5, 8],
-          ),
-        ];
+    this.title,
+    this.initialExercises,
+  });
 
-  final String title;
-  final List<ExerciseDefinition> initialExercises;
+  final String? title;
+  final List<ExerciseDefinition>? initialExercises;
 
   @override
   State<ExerciseTrackerPage> createState() => _ExerciseTrackerPageState();
@@ -70,8 +51,29 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      final definitions = widget.initialExercises;
-      _exercises = definitions.map((definition) => _TrackedExercise(definition)).toList();
+      final l10n = AppLocalizations.of(context)!;
+      final definitions = widget.initialExercises ?? [
+        ExerciseDefinition(
+          name: l10n.exercisePushUps,
+          icon: Icons.front_hand,
+          color: Colors.orangeAccent,
+          quickAddValues: const [1, 5, 10, 15],
+        ),
+        ExerciseDefinition(
+          name: l10n.exercisePullUps,
+          icon: Icons.fitness_center,
+          color: Colors.lightBlueAccent,
+          quickAddValues: const [1, 3, 5, 8],
+        ),
+        ExerciseDefinition(
+          name: l10n.exerciseChinUps,
+          icon: Icons.accessibility_new,
+          color: Colors.purpleAccent,
+          quickAddValues: const [1, 3, 5, 8],
+        ),
+      ];
+      _exercises =
+          definitions.map((definition) => _TrackedExercise(definition)).toList();
       _colorIndex = definitions.length;
       _initialized = true;
     }
@@ -116,18 +118,18 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
               const SizedBox(height: 12),
               TextField(
                 controller: targetController,
-                decoration: const InputDecoration(
-                  labelText: 'Target reps',
-                  helperText: 'Optional total goal for the session',
+                decoration: InputDecoration(
+                  labelText: l10n.exerciseTargetRepsLabel,
+                  helperText: l10n.exerciseTargetRepsHelper,
                 ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: restController,
-                decoration: const InputDecoration(
-                  labelText: 'Rest duration (seconds)',
-                  helperText: 'Optional countdown timer preset',
+                decoration: InputDecoration(
+                  labelText: l10n.exerciseRestDurationLabel,
+                  helperText: l10n.exerciseRestDurationHelper,
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -185,7 +187,7 @@ class _ExerciseTrackerPageState extends State<ExerciseTrackerPage> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title ?? l10n.exerciseTrackerTitle),
       ),
       body: _exercises.isEmpty
           ? Center(
@@ -271,8 +273,13 @@ class _ExerciseCardState extends State<_ExerciseCard> {
           _timer?.cancel();
           _timer = null;
         });
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Rest finished for ${widget.tracked.definition.name}!')),
+          SnackBar(
+            content: Text(
+              l10n.exerciseRestFinished(widget.tracked.definition.name),
+            ),
+          ),
         );
       } else {
         setState(() {
@@ -302,12 +309,13 @@ class _ExerciseCardState extends State<_ExerciseCard> {
     final duration = await showDialog<Duration>(
       context: context,
       builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
-          title: const Text('Set rest duration'),
+          title: Text(l10n.exerciseSetRestDuration),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'Duration (seconds)',
+            decoration: InputDecoration(
+              labelText: l10n.exerciseDurationSecondsLabel,
             ),
             keyboardType: TextInputType.number,
             autofocus: true,
@@ -315,20 +323,20 @@ class _ExerciseCardState extends State<_ExerciseCard> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
                 final seconds = int.tryParse(controller.text.trim());
                 if (seconds == null || seconds <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Enter a positive number.')),
+                    SnackBar(content: Text(l10n.positiveNumberError)),
                   );
                   return;
                 }
                 Navigator.of(context).pop(Duration(seconds: seconds));
               },
-              child: const Text('Save'),
+              child: Text(l10n.save),
             ),
           ],
         );
@@ -379,7 +387,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                       ),
                       Text(
                         goal != null
-                            ? '$totalReps / $goal reps logged'
+                            ? l10n.exerciseGoalProgress(totalReps, goal)
                             : l10n.exerciseTotalReps(widget.tracked.totalReps),
                         style: theme.textTheme.bodySmall,
                       ),
@@ -387,7 +395,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Undo last set',
+                  tooltip: l10n.undoLastSet,
                   onPressed: widget.tracked.canUndo
                       ? () {
                           widget.tracked.undoLast();
@@ -536,6 +544,8 @@ class _TimerControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -546,27 +556,25 @@ class _TimerControls extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Rest timer',
-                    style: Theme.of(context).textTheme.titleSmall,
+                    l10n.restTimerLabel,
+                    style: theme.textTheme.titleSmall,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _formattedTime,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium
+                    style: theme.textTheme.headlineMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
             IconButton(
-              tooltip: isRunning ? 'Pause' : 'Start',
+              tooltip: isRunning ? l10n.pause : l10n.start,
               onPressed: isRunning ? onPause : onStart,
               icon: Icon(isRunning ? Icons.pause : Icons.play_arrow),
             ),
             IconButton(
-              tooltip: 'Reset',
+              tooltip: l10n.reset,
               onPressed: onReset,
               icon: const Icon(Icons.restart_alt),
             ),
@@ -575,7 +583,7 @@ class _TimerControls extends StatelessWidget {
         TextButton.icon(
           onPressed: onSetDuration,
           icon: const Icon(Icons.timer_outlined),
-          label: const Text('Set duration'),
+          label: Text(l10n.setDuration),
         ),
       ],
     );
