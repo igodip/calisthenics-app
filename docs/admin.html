@@ -17,11 +17,13 @@
         h1{font-size:28px;margin:0 0 12px}
         h2{font-size:20px;margin:16px 0 8px}
         h3{font-size:16px;margin:12px 0 6px;color:var(--muted)}
-        input,select,button{background:#0e0f14;border:1px solid var(--line);color:var(--ink);padding:10px 12px;border-radius:10px}
-        input:focus,select:focus{outline:1px solid var(--accent)}
+        input,select,button,textarea{background:#0e0f14;border:1px solid var(--line);color:var(--ink);padding:10px 12px;border-radius:10px;font:inherit}
+        textarea{min-height:88px;resize:vertical}
+        input:focus,select:focus,textarea:focus{outline:1px solid var(--accent)}
         button{cursor:pointer}
         .btn{background:linear-gradient(180deg,#0f172a,#0b1320);border:1px solid #1f2937}
         .btn:hover{filter:brightness(1.1)}
+        button:disabled{opacity:.6;cursor:not-allowed}
         .badge{display:inline-flex;align-items:center;gap:6px;background:#0e1a14;border:1px solid #1c2b23;color:#b7f5d8;padding:2px 8px;border-radius:999px;font-size:12px}
         .muted{color:var(--muted)}
         .list{display:flex;flex-direction:column;gap:8px}
@@ -88,7 +90,38 @@
                     <h2>Dashboard • {{ current.profiles?.full_name || shortId(current.owner) }}</h2>
                     <div class="grid">
                         <div class="card">
-                            <h3>Latest Plan</h3>
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+                                <h3>Latest Plan</h3>
+                                <button
+                                    class="btn small"
+                                    v-if="plan"
+                                    @click="toggleAddWorkout"
+                                    :disabled="addingWorkout"
+                                >{{ showAddWorkout ? 'Cancel' : 'Add workout' }}</button>
+                            </div>
+                            <div v-if="showAddWorkout && plan" class="card small" style="margin-top:8px">
+                                <form @submit.prevent="addWorkoutToPlan" style="display:flex;flex-direction:column;gap:8px">
+                                    <input v-model="newWorkoutName" placeholder="Workout name" required>
+                                    <textarea v-model="newWorkoutNotes" placeholder="Notes (optional)"></textarea>
+                                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                        <label class="small" style="display:flex;flex-direction:column;gap:4px">
+                                            Week
+                                            <input type="number" min="1" :max="plan?.weeks || 1" v-model.number="newWorkoutWeek" required>
+                                        </label>
+                                        <label class="small" style="display:flex;flex-direction:column;gap:4px">
+                                            Day
+                                            <select v-model.number="newWorkoutDow" required>
+                                                <option v-for="opt in dowOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                        <button class="btn small" type="submit" :disabled="addingWorkout">Save workout</button>
+                                        <button class="small" type="button" @click="resetAddWorkoutForm" :disabled="addingWorkout">Reset</button>
+                                    </div>
+                                    <div v-if="addingWorkout" class="muted small">Saving workout…</div>
+                                </form>
+                            </div>
                             <div v-if="!plan">—</div>
                             <div v-else>
                                 <div><strong>{{ plan.name }}</strong></div>
@@ -176,6 +209,21 @@
           const plan = ref(null);
           const planItems = ref([]);
           const sessions = ref([]);
+          const showAddWorkout = ref(false);
+          const addingWorkout = ref(false);
+          const newWorkoutName = ref('');
+          const newWorkoutNotes = ref('');
+          const newWorkoutWeek = ref(1);
+          const newWorkoutDow = ref(1);
+          const dowOptions = [
+            { value: 0, label: 'Sunday' },
+            { value: 1, label: 'Monday' },
+            { value: 2, label: 'Tuesday' },
+            { value: 3, label: 'Wednesday' },
+            { value: 4, label: 'Thursday' },
+            { value: 5, label: 'Friday' },
+            { value: 6, label: 'Saturday' },
+          ];
 
           const filteredAthletes = computed(() => {
             const q = search.value.trim().toLowerCase();
@@ -185,6 +233,78 @@
 
           const shortId = (id) => id ? id.toString().slice(0,8)+'…' : '';
           const dowName = (d) => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][Math.max(0, Math.min(6, d))];
+
+          function resetAddWorkoutForm(){
+            newWorkoutName.value='';
+            newWorkoutNotes.value='';
+            newWorkoutWeek.value=1;
+            newWorkoutDow.value=1;
+          }
+
+          function toggleAddWorkout(){
+            if(!plan.value){ alert('Load a plan before adding workouts.'); return; }
+            if(!showAddWorkout.value){
+              resetAddWorkoutForm();
+              const planWeeks = Number(plan.value?.weeks) || 1;
+              newWorkoutWeek.value=Math.min(Math.max(1,newWorkoutWeek.value||1), planWeeks);
+              showAddWorkout.value = true;
+            } else {
+              showAddWorkout.value = false;
+              resetAddWorkoutForm();
+            }
+          }
+
+          async function addWorkoutToPlan(){
+            if(!plan.value || !current.value){ alert('Select an athlete and load a plan first.'); return; }
+            const name = newWorkoutName.value.trim();
+            if(!name){ alert('Workout name is required.'); return; }
+            const week = Number(newWorkoutWeek.value || 1);
+            const dow = Number(newWorkoutDow.value || 0);
+            addingWorkout.value = true;
+            try {
+              const planWeeks = Number(plan.value?.weeks);
+              const normalizedWeek = planWeeks ? Math.min(Math.max(1, week), planWeeks) : Math.max(1, week);
+              const normalizedDow = Math.min(Math.max(0, dow), 6);
+              const { data: template, error: templateError } = await supabase
+                .from('workout_templates')
+                .insert({
+                  owner: current.value.owner,
+                  name,
+                  notes: newWorkoutNotes.value.trim() || null,
+                })
+                .select('id')
+                .single();
+              if(templateError){ throw new Error('Create workout failed: '+templateError.message); }
+              const templateId = template?.id;
+              if(!templateId){ throw new Error('Create workout failed: missing template ID.'); }
+              const siblingPositions = planItems.value
+                .filter(item => Number(item.week) === normalizedWeek && Number(item.dow) === normalizedDow)
+                .map(item => typeof item.position === 'number' ? item.position : Number(item.position) || 0);
+              const nextPosition = (siblingPositions.length ? Math.max(...siblingPositions) : 0) + 1;
+              const { error: planError } = await supabase
+                .from('plan_workouts')
+                .insert({
+                  plan_id: plan.value.id,
+                  template_id: templateId,
+                  week: normalizedWeek,
+                  dow: normalizedDow,
+                  position: nextPosition,
+                });
+              if(planError){
+                await supabase.from('workout_templates').delete().eq('id', templateId);
+                throw new Error('Attach workout failed: '+planError.message);
+              }
+              alert('Workout added to plan!');
+              await loadPlanItems(plan.value.id);
+              resetAddWorkoutForm();
+              showAddWorkout.value = false;
+            } catch(err){
+              console.error(err);
+              alert(err.message || 'Failed to add workout.');
+            } finally {
+              addingWorkout.value = false;
+            }
+          }
 
           async function emailPasswordSignIn(){
             const { data, error } = await supabase.auth.signInWithPassword({ email: email.value, password: password.value });
@@ -224,7 +344,15 @@
               .limit(1);
             if(error){ alert('Load plan failed: '+error.message); return; }
             plan.value = (plans && plans[0]) || null;
-            if(plan.value){ await loadPlanItems(plan.value.id); }
+            if(plan.value){
+              await loadPlanItems(plan.value.id);
+              resetAddWorkoutForm();
+              showAddWorkout.value = false;
+            } else {
+              planItems.value = [];
+              resetAddWorkoutForm();
+              showAddWorkout.value = false;
+            }
           }
 
           async function loadPlanItems(planId){
@@ -283,7 +411,9 @@
           });
 
           return { session, user, email, password, search, athletes, filteredAthletes, current, plan, planItems, sessions,
+                   showAddWorkout, addingWorkout, newWorkoutName, newWorkoutNotes, newWorkoutWeek, newWorkoutDow, dowOptions,
                    emailPasswordSignIn, signOut, selectAthlete, loadRecentSessions, loadLatestPlan, startSessionFromTemplate,
+                   toggleAddWorkout, resetAddWorkoutForm, addWorkoutToPlan,
                    shortId, dowName };
         }
       }).mount('#app');
