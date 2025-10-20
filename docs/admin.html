@@ -203,12 +203,27 @@
           async function loadAthletes(){
             const uid = (await supabase.auth.getUser()).data.user?.id;
             if(!uid) return;
-            const { data, error } = await supabase
+            const { data: shareRows, error } = await supabase
               .from('shares')
-              .select('owner, role, owner:profiles( id, full_name )')
+              .select('owner, role')
               .eq('target_user', uid);
             if(error){ console.error(error); alert('Failed to load athletes: '+error.message); return; }
-            athletes.value = data || [];
+
+            const owners = Array.from(new Set((shareRows||[]).map(s => s.owner).filter(Boolean)));
+            let profilesById = {};
+            if(owners.length){
+              const { data: profileRows, error: profileError } = await supabase
+                .from('profiles')
+                .select('id, full_name')
+                .in('id', owners);
+              if(profileError){ console.error(profileError); alert('Failed to load athlete profiles: '+profileError.message); return; }
+              profilesById = Object.fromEntries((profileRows||[]).map(p => [p.id, p]));
+            }
+
+            athletes.value = (shareRows || []).map(row => ({
+              ...row,
+              profiles: profilesById[row.owner] || null,
+            }));
           }
 
           function selectAthlete(a){ current.value = a; plan.value=null; planItems.value=[]; sessions.value=[]; }
