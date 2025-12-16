@@ -155,11 +155,11 @@ class _EmomTrackerPageState extends State<EmomTrackerPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.emomTrackerTitle)),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(title: Text(l10n.emomTrackerTitle)),
+          body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -325,43 +325,43 @@ class _EmomTrackerPageState extends State<EmomTrackerPage> {
               ],
             ),
           ),
-          if (_prepSecondsLeft != null)
-            Positioned.fill(
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.75),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        l10n.emomPrepHeadline(_currentSet),
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+        ),
+        if (_prepSecondsLeft != null)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withValues(alpha: 0.75),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.emomPrepHeadline(_currentSet),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 24),
-                      Text(
-                        '${_prepSecondsLeft ?? 0}',
-                        style: theme.textTheme.displayLarge?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      '${_prepSecondsLeft ?? 0}',
+                      style: theme.textTheme.displayLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        l10n.emomPrepSubhead,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: Colors.white70,
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.emomPrepSubhead,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: Colors.white70,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
