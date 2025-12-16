@@ -85,6 +85,19 @@
   "trainingHeaderRest": "Rest",
   "trainingHeaderIntensity": "Intensity",
   "trainingHeaderNotes": "Notes",
+  "trainingNotesLabel": "Exercise notes",
+  "trainingNotesSave": "Save notes",
+  "trainingNotesSaved": "Notes saved",
+  "trainingNotesError": "Unable to save notes: {error}",
+  "@trainingNotesError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trainingNotesUnavailable": "Cannot update notes for this exercise.",
+  "trainingOpenTracker": "Open tracker",
   "logoutError": "Error while logging out: {error}",
   "@logoutError": {
     "placeholders": {

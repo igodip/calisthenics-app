@@ -428,6 +428,42 @@ abstract class AppLocalizations {
   /// **'Note'**
   String get trainingHeaderNotes;
 
+  /// No description provided for @trainingNotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise notes'**
+  String get trainingNotesLabel;
+
+  /// No description provided for @trainingNotesSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save notes'**
+  String get trainingNotesSave;
+
+  /// No description provided for @trainingNotesSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes saved'**
+  String get trainingNotesSaved;
+
+  /// No description provided for @trainingNotesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to save notes: {error}'**
+  String trainingNotesError(Object error);
+
+  /// No description provided for @trainingNotesUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot update notes for this exercise.'**
+  String get trainingNotesUnavailable;
+
+  /// No description provided for @trainingOpenTracker.
+  ///
+  /// In en, this message translates to:
+  /// **'Open tracker'**
+  String get trainingOpenTracker;
+
   /// No description provided for @logoutError.
   ///
   /// In it, this message translates to:
