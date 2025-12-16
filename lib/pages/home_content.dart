@@ -163,58 +163,34 @@ class _HomeContentState extends State<HomeContent> {
       throw Exception(AppLocalizations.of(context)!.unauthenticated);
     }
 
-    final plan = await client
-        .from('training_plans')
-        .select('id, name, goal, weeks')
-        .eq('owner', userId)
-        .isFilter('deleted_at', null)
-        .order('created_at', ascending: false)
-        .limit(1)
-        .maybeSingle();
-
-    if (plan == null) {
-      return [];
-    }
-
-    final planId = plan['id'] as String;
-
     final response = await client
-        .from('plan_workouts')
+        .from('days')
         .select('''
-            id, week, dow, position,
-            workout_templates!plan_workouts_template_id_fkey (
-              id, name, notes,
-              template_exercises (
-                id, position, default_sets, default_reps, rest_seconds,
-                default_intensity, exercise_library ( id, name )
-              )
+            id, week, day_code, title, notes,
+            day_exercises (
+              id, position, notes,
+              exercises ( id, name )
             )
           ''')
-        .eq('plan_id', planId)
+        .eq('trainee_id', userId)
         .order('week', ascending: true)
-        .order('dow', ascending: true)
-        .order('position', ascending: true);
+        .order('day_code', ascending: true)
+        .order('position', referencedTable: 'day_exercises', ascending: true);
 
     final data = (response as List<dynamic>? ?? [])
         .cast<Map<String, dynamic>>();
 
     return data.map((row) {
-      final template =
-          (row['workout_templates'] as Map<String, dynamic>?) ?? {};
-      final templateExercises =
-      (template['template_exercises'] as List<dynamic>? ?? [])
-          .cast<Map<String, dynamic>>();
+      final dayExercises =
+          (row['day_exercises'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
 
-      final exercises = templateExercises.map((exercise) {
-        final exerciseLibrary =
-            (exercise['exercise_library'] as Map<String, dynamic>?) ?? {};
+      final exercises = dayExercises.map((exercise) {
+        final exerciseDetails =
+            (exercise['exercises'] as Map<String, dynamic>?) ?? {};
         return WorkoutExercise(
           id: exercise['id'] as String?,
-          name: exerciseLibrary['name'] as String?,
-          sets: (exercise['default_sets'] as num?)?.toInt(),
-          reps: (exercise['default_reps'] as num?)?.toInt(),
-          restSeconds: (exercise['rest_seconds'] as num?)?.toInt(),
-          intensity: exercise['default_intensity'] as String?,
+          name: exerciseDetails['name'] as String?,
+          position: (exercise['position'] as num?)?.toInt(),
           notes: exercise['notes'] as String?,
         );
       }).toList();
@@ -222,9 +198,9 @@ class _HomeContentState extends State<HomeContent> {
       return WorkoutDay(
         id: row['id'] as String?,
         week: (row['week'] as num?)?.toInt() ?? 0,
-        dow: (row['dow'] as num?)?.toInt() ?? 0,
-        name: template['name'] as String?,
-        notes: template['notes'] as String?,
+        dayCode: (row['day_code'] as String? ?? '').trim(),
+        title: row['title'] as String?,
+        notes: row['notes'] as String?,
         exercises: exercises,
       );
     }).toList();
