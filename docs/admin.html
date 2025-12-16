@@ -10,7 +10,7 @@
         :root{--bg:#0b0c10;--card:#121318;--ink:#e6e6e6;--muted:#9aa0a6;--accent:#6ee7b7;--line:#252732}
         html,body{height:100%}
         body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-        .wrap{max-width:1200px;margin:0 auto;padding:24px}
+        .wrap{max-width:1200px;margin:0 auto;padding:24px;min-height:100vh;display:flex;flex-direction:column;gap:16px}
         .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 2px 24px rgba(0,0,0,.25)}
         .row{display:flex;gap:16px;flex-wrap:wrap}
         .col{flex:1 1 360px}
@@ -33,6 +33,16 @@
         .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
         .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
         .stack{display:flex;flex-direction:column;gap:6px}
+        .pill-menu{display:flex;gap:8px;flex-wrap:wrap}
+        .pill-menu button{border-radius:999px;padding:8px 14px;border:1px solid var(--line);background:transparent;color:var(--ink)}
+        .pill-menu button.active{background:var(--accent);color:#04120c;border-color:transparent}
+        .section-panel{display:none}
+        .section-panel.active{display:block}
+        .scroll-area{max-height:320px;overflow:auto;padding-right:4px}
+        .toolbar-secondary{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+        .suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+        .chip{border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#0e0f14;cursor:pointer}
+        .chip:hover{border-color:var(--accent);color:var(--accent)}
     </style>
 </head>
 <body>
@@ -53,14 +63,19 @@
                 <div class="pill">{{ user?.email }}</div>
                 <span class="pill">Admin</span>
             </div>
-            <div style="display:flex;gap:8px">
-                <input v-model="search" placeholder="Search trainees..." />
+            <div class="pill-menu">
+                <button :class="{active: activeSection==='exercises'}" @click="activeSection='exercises'">Exercises</button>
+                <button :class="{active: activeSection==='trainees'}" @click="activeSection='trainees'">Trainees</button>
+                <button :class="{active: activeSection==='schedule'}" @click="activeSection='schedule'" :disabled="!current">Schedule</button>
+            </div>
+            <div class="toolbar-secondary">
+                <input v-model="search" placeholder="Search trainees..." style="min-width:200px" />
                 <button class="btn" @click="signOut">Sign out</button>
             </div>
         </div>
 
-        <div class="card" style="margin-bottom:16px">
-            <h2>Exercises</h2>
+        <div class="card section-panel" :class="{active: activeSection==='exercises'}">
+            <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Exercises <span class="pill">{{ exerciseOptions.length }} total</span></h2>
             <div class="row">
                 <div class="col">
                     <form @submit.prevent="addExerciseDefinition" style="display:flex;flex-direction:column;gap:8px">
@@ -78,7 +93,7 @@
                 <div class="col">
                     <h3 style="margin-top:0">Available exercises</h3>
                     <div v-if="exerciseOptions.length===0" class="muted small">No exercises loaded yet.</div>
-                    <div v-else class="list" style="max-height:240px;overflow:auto">
+                    <div v-else class="list scroll-area">
                         <div v-for="ex in exerciseOptions" :key="ex.id" class="card small stack">
                             <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
                                 <strong>{{ ex.name }}</strong>
@@ -96,36 +111,45 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row section-panel" :class="{active: activeSection==='trainees'}">
             <div class="col">
                 <div class="card">
-                    <h2>Trainees</h2>
-                    <div class="list">
+                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Trainees <span class="pill">{{ filteredUsers.length }} shown</span></h2>
+                    <div class="list scroll-area">
                         <div v-for="u in filteredUsers" :key="u.id" class="card" style="padding:12px">
                             <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
                                 <div>
                                     <strong>{{ u.displayName || shortId(u.id) }}</strong>
-                                    <div class="muted small">{{ u.id }}</div>
+                                    <div class="muted small mono">{{ u.id }}</div>
                                 </div>
                                 <span class="badge">trainee</span>
                             </div>
                             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-                                <button class="btn" @click="selectUser(u)">Open</button>
-                                <button class="btn" @click="loadDays(u)">Load days</button>
+                                <button class="btn" @click="selectUser(u); activeSection='schedule'">Open schedule</button>
+                                <button class="btn" @click="loadDays(u); activeSection='schedule'">Load days</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="row section-panel" :class="{active: activeSection==='schedule'}">
+            <div class="col" v-if="!current">
+                <div class="card">
+                    <h2>Schedule</h2>
+                    <p class="muted">Pick a trainee from the Trainees tab to manage their schedule.</p>
+                </div>
+            </div>
 
             <div class="col" v-if="current">
                 <div class="card">
-                    <h2>Schedule • {{ current.displayName || shortId(current.id) }}</h2>
+                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Schedule • {{ current.displayName || shortId(current.id) }} <span class="pill">{{ days.length }} days</span></h2>
                     <div class="grid">
                         <div class="card">
                             <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-                                <h3>Add Day</h3>
-                                <span class="pill">{{ days.length }} days</span>
+                                <h3 style="margin:0">Add Day</h3>
+                                <span class="pill">Next: week {{ nextWeek }}</span>
                             </div>
                             <form @submit.prevent="addDay" style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
                                 <label class="small" style="display:flex;flex-direction:column;gap:4px">
@@ -153,9 +177,9 @@
                         </div>
 
                         <div class="card">
-                            <h3>Days & Exercises</h3>
+                            <h3 style="margin-top:0">Days & Exercises</h3>
                             <div v-if="days.length===0">No days yet.</div>
-                            <div v-else class="list">
+                            <div v-else class="list scroll-area">
                                 <div v-for="d in days" :key="d.id" class="card small stack">
                                     <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
                                         <div>
@@ -213,12 +237,19 @@
                                     <div class="card small" style="margin-top:8px">
                                         <h4 style="margin:0 0 6px">Add exercise</h4>
                                         <div style="display:flex;flex-direction:column;gap:6px">
-                                            <select v-model="exerciseSelection[d.id].exercise_id">
-                                                <option value="">Choose exercise…</option>
-                                                <option v-for="opt in exerciseOptions" :key="opt.id" :value="opt.id">{{ opt.name }}</option>
-                                            </select>
+                                            <label class="small stack">
+                                                Search & select
+                                                <input v-model="exerciseSelection[d.id].query" @input="matchExercise(d)" placeholder="Type to filter exercises" :list="'dl-'+d.id">
+                                            </label>
+                                            <datalist :id="'dl-'+d.id">
+                                                <option v-for="opt in filteredExerciseOptions(d)" :key="opt.id" :value="opt.name"></option>
+                                            </datalist>
+                                            <div class="suggestions">
+                                                <span class="chip" v-for="opt in filteredExerciseOptions(d).slice(0,5)" :key="opt.id" @click="pickExercise(d, opt)">{{ opt.name }}</span>
+                                            </div>
                                             <textarea v-model="exerciseSelection[d.id].notes" placeholder="Notes (optional)"></textarea>
                                             <button class="btn small" @click="addExerciseToDay(d)" :disabled="addingExercise">Add</button>
+                                            <div class="muted small" v-if="!exerciseSelection[d.id].exercise_id">Start typing to auto-complete and click a suggestion.</div>
                                         </div>
                                     </div>
                                 </div>
@@ -278,6 +309,7 @@
           const email = ref('');
           const password = ref('');
           const search = ref('');
+          const activeSection = ref('exercises');
 
           const users = ref([]);
           const current = ref(null);
@@ -295,6 +327,12 @@
           const newDayTitle = ref('');
           const newDayNotes = ref('');
           const newExerciseName = ref('');
+
+          const nextWeek = computed(() => {
+            if(!days.value.length) return 1;
+            const weeks = days.value.map(d => Number(d.week||0));
+            return Math.max(...weeks) + 1;
+          });
 
           const filteredUsers = computed(() => {
             const q = search.value.trim().toLowerCase();
@@ -326,8 +364,30 @@
 
           function ensureSelection(dayId){
             if(!exerciseSelection.value[dayId]){
-              exerciseSelection.value = { ...exerciseSelection.value, [dayId]: { exercise_id: '', notes: '' } };
+              exerciseSelection.value = { ...exerciseSelection.value, [dayId]: { exercise_id: '', notes: '', query: '' } };
+              return;
             }
+            if(exerciseSelection.value[dayId] && typeof exerciseSelection.value[dayId].query !== 'string'){
+              exerciseSelection.value = { ...exerciseSelection.value, [dayId]: { ...exerciseSelection.value[dayId], query: '' } };
+            }
+          }
+
+          function filteredExerciseOptions(day){
+            const q = (exerciseSelection.value[day.id]?.query || '').toLowerCase();
+            if(!q) return exerciseOptions.value || [];
+            return (exerciseOptions.value||[]).filter(opt => opt.name.toLowerCase().includes(q));
+          }
+
+          function pickExercise(day, opt){
+            ensureSelection(day.id);
+            exerciseSelection.value = { ...exerciseSelection.value, [day.id]: { ...exerciseSelection.value[day.id], exercise_id: opt.id, query: opt.name } };
+          }
+
+          function matchExercise(day){
+            ensureSelection(day.id);
+            const query = (exerciseSelection.value[day.id].query || '').toLowerCase();
+            const match = (exerciseOptions.value||[]).find(opt => opt.name.toLowerCase() === query);
+            exerciseSelection.value = { ...exerciseSelection.value, [day.id]: { ...exerciseSelection.value[day.id], exercise_id: match?.id || '' } };
           }
 
           function setExerciseEdit(exercise){
@@ -608,12 +668,12 @@
             supabase.auth.onAuthStateChange((_e, s) => { session.value = s; user.value = s?.user || null; if(s) bootstrap(); });
           });
 
-          return { session, user, email, password, search, users, filteredUsers, current, days, exerciseOptions, exerciseSelection,
-                   exerciseEdits, dayEdits, dayExerciseEdits,
+          return { session, user, email, password, search, activeSection, users, filteredUsers, current, days, exerciseOptions, exerciseSelection,
+                   exerciseEdits, dayEdits, dayExerciseEdits, nextWeek,
                    newDayWeek, newDayCode, newDayTitle, newDayNotes, addingDay, addingExercise, savingExercise,
                    newExerciseName,
                    emailPasswordSignIn, signOut, selectUser, loadDays, addDay, resetDayForm, resetExerciseForm, addExerciseDefinition, addExerciseToDay,
-                   updateExercise, deleteExercise, resetExerciseEdit,
+                   updateExercise, deleteExercise, resetExerciseEdit, filteredExerciseOptions, pickExercise, matchExercise,
                    saveDay, resetDayEdit, deleteDay,
                    saveDayExercise, resetDayExerciseEdit, deleteDayExercise,
                    shortId };
