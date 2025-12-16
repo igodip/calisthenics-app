@@ -348,7 +348,7 @@ class _LoginPageState extends State<LoginPage> {
 
       await supabase.from('users').insert({
         if (email != null) 'email': email,
-        'username': username,
+        'name': username,
       });
     } catch (error, stackTrace) {
       debugPrint('Failed to ensure user entry: $error');
