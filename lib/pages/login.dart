@@ -238,11 +238,12 @@ class _LoginPageState extends State<LoginPage> {
               });
 
               try {
+                final dialogNavigator = Navigator.of(dialogContext);
                 await supabase.auth.updateUser(
                   UserAttributes(password: newPassword),
                 );
                 if (mounted) {
-                  Navigator.of(dialogContext).pop();
+                  dialogNavigator.pop();
                   _setFeedback(l10n.passwordResetSuccess, false);
                 }
               } on AuthException catch (e) {
