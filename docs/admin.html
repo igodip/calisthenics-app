@@ -43,6 +43,14 @@
         .suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
         .chip{border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#0e0f14;cursor:pointer}
         .chip:hover{border-color:var(--accent);color:var(--accent)}
+        .day-list{display:flex;flex-direction:column;gap:10px}
+        .day-card{border:1px solid var(--line);border-radius:12px;background:#0f1118;padding:12px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+        .day-header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+        .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+        .tag{padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:#0c0d12;font-size:12px;color:var(--muted)}
+        .tag.accent{background:#0d2219;color:#b7f5d8;border-color:#1c2b23}
+        .day-body{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+        .inline-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
     </style>
 </head>
 <body>
@@ -179,77 +187,85 @@
                         <div class="card">
                             <h3 style="margin-top:0">Days & Exercises</h3>
                             <div v-if="days.length===0">No days yet.</div>
-                            <div v-else class="list scroll-area">
-                                <div v-for="d in days" :key="d.id" class="card small stack">
-                                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
-                                        <div>
-                                            <strong>Week {{ d.week }} · {{ d.day_code?.toUpperCase() }}</strong>
+                            <div v-else class="day-list scroll-area">
+                                <div v-for="d in days" :key="d.id" class="day-card">
+                                    <div class="day-header">
+                                        <div class="stack">
+                                            <div class="meta">
+                                                <strong>Week {{ d.week }}</strong>
+                                                <span class="tag accent">{{ d.day_code?.toUpperCase() }}</span>
+                                                <span class="tag">{{ (d.day_exercises||[]).length }} exercises</span>
+                                            </div>
                                             <div class="muted">{{ d.title || 'Untitled' }}</div>
                                         </div>
-                                        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                                        <div class="inline-actions">
+                                            <button class="small" type="button" @click="toggleDay(d)">{{ isDayOpen(d) ? 'Collapse' : 'Expand' }}</button>
                                             <button class="btn small" @click="saveDay(d)">Save</button>
                                             <button class="small" type="button" @click="resetDayEdit(d)">Reset</button>
                                             <button class="small" type="button" @click="deleteDay(d)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
                                         </div>
                                     </div>
-                                    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
-                                        <label class="small stack">
-                                            Week
-                                            <input type="number" min="1" v-model.number="dayEdits[d.id].week" />
-                                        </label>
-                                        <label class="small stack">
-                                            Day code
-                                            <input v-model="dayEdits[d.id].day_code" />
-                                        </label>
-                                        <label class="small stack">
-                                            Title
-                                            <input v-model="dayEdits[d.id].title" />
-                                        </label>
-                                    </div>
-                                    <label class="small stack">
-                                        Notes
-                                        <textarea v-model="dayEdits[d.id].notes" placeholder="Optional notes"></textarea>
-                                    </label>
 
-                                    <div v-if="(d.day_exercises||[]).length" class="list">
-                                        <div v-for="ex in d.day_exercises" :key="ex.id" class="card small stack">
-                                            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
-                                                <strong>{{ ex.exercises?.name || 'Exercise' }}</strong>
-                                                <div style="display:flex;gap:6px;flex-wrap:wrap">
-                                                    <button class="btn small" @click="saveDayExercise(ex)">Save</button>
-                                                    <button class="small" type="button" @click="resetDayExerciseEdit(ex)">Reset</button>
-                                                    <button class="small" type="button" @click="deleteDayExercise(ex)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
+                                    <div class="day-body" v-show="isDayOpen(d)">
+                                        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
+                                            <label class="small stack">
+                                                Week
+                                                <input type="number" min="1" v-model.number="dayEdits[d.id].week" />
+                                            </label>
+                                            <label class="small stack">
+                                                Day code
+                                                <input v-model="dayEdits[d.id].day_code" />
+                                            </label>
+                                            <label class="small stack">
+                                                Title
+                                                <input v-model="dayEdits[d.id].title" />
+                                            </label>
+                                        </div>
+                                        <label class="small stack">
+                                            Notes
+                                            <textarea v-model="dayEdits[d.id].notes" placeholder="Optional notes"></textarea>
+                                        </label>
+
+                                        <div v-if="(d.day_exercises||[]).length" class="list">
+                                            <div v-for="ex in d.day_exercises" :key="ex.id" class="card small stack">
+                                                <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
+                                                    <strong>{{ ex.exercises?.name || 'Exercise' }}</strong>
+                                                    <div style="display:flex;gap:6px;flex-wrap:wrap">
+                                                        <button class="btn small" @click="saveDayExercise(ex)">Save</button>
+                                                        <button class="small" type="button" @click="resetDayExerciseEdit(ex)">Reset</button>
+                                                        <button class="small" type="button" @click="deleteDayExercise(ex)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
+                                                    </div>
+                                                </div>
+                                                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
+                                                    <label class="small stack">
+                                                        Position
+                                                        <input type="number" min="1" v-model.number="dayExerciseEdits[ex.id].position" />
+                                                    </label>
+                                                    <label class="small stack">
+                                                        Notes
+                                                        <textarea v-model="dayExerciseEdits[ex.id].notes" placeholder="Optional notes"></textarea>
+                                                    </label>
                                                 </div>
                                             </div>
-                                            <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
-                                                <label class="small stack">
-                                                    Position
-                                                    <input type="number" min="1" v-model.number="dayExerciseEdits[ex.id].position" />
-                                                </label>
-                                                <label class="small stack">
-                                                    Notes
-                                                    <textarea v-model="dayExerciseEdits[ex.id].notes" placeholder="Optional notes"></textarea>
-                                                </label>
-                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div class="card small" style="margin-top:8px">
-                                        <h4 style="margin:0 0 6px">Add exercise</h4>
-                                        <div style="display:flex;flex-direction:column;gap:6px">
-                                            <label class="small stack">
-                                                Search & select
-                                                <input v-model="exerciseSelection[d.id].query" @input="matchExercise(d)" placeholder="Type to filter exercises" :list="'dl-'+d.id">
-                                            </label>
-                                            <datalist :id="'dl-'+d.id">
-                                                <option v-for="opt in filteredExerciseOptions(d)" :key="opt.id" :value="opt.name"></option>
-                                            </datalist>
-                                            <div class="suggestions">
-                                                <span class="chip" v-for="opt in filteredExerciseOptions(d).slice(0,5)" :key="opt.id" @click="pickExercise(d, opt)">{{ opt.name }}</span>
+                                        <div class="card small" style="margin-top:8px">
+                                            <h4 style="margin:0 0 6px">Add exercise</h4>
+                                            <div style="display:flex;flex-direction:column;gap:6px">
+                                                <label class="small stack">
+                                                    Search & select
+                                                    <input v-model="exerciseSelection[d.id].query" @input="matchExercise(d)" placeholder="Type to filter exercises" :list="'dl-'+d.id">
+                                                </label>
+                                                <datalist :id="'dl-'+d.id">
+                                                    <option v-for="opt in filteredExerciseOptions(d)" :key="opt.id" :value="opt.name"></option>
+                                                </datalist>
+                                                <div class="suggestions">
+                                                    <span class="chip" v-for="opt in filteredExerciseOptions(d).slice(0,5)" :key="opt.id" @click="pickExercise(d, opt)">{{ opt.name }}</span>
+                                                </div>
+                                                <textarea v-model="exerciseSelection[d.id].notes" placeholder="Notes (optional)"></textarea>
+                                                <button class="btn small" @click="addExerciseToDay(d)" :disabled="addingExercise">Add</button>
+                                                <div class="muted small" v-if="!exerciseSelection[d.id].exercise_id">Start typing to auto-complete and click a suggestion.</div>
                                             </div>
-                                            <textarea v-model="exerciseSelection[d.id].notes" placeholder="Notes (optional)"></textarea>
-                                            <button class="btn small" @click="addExerciseToDay(d)" :disabled="addingExercise">Add</button>
-                                            <div class="muted small" v-if="!exerciseSelection[d.id].exercise_id">Start typing to auto-complete and click a suggestion.</div>
                                         </div>
                                     </div>
                                 </div>
@@ -319,6 +335,7 @@
           const exerciseEdits = ref({});
           const dayEdits = ref({});
           const dayExerciseEdits = ref({});
+          const expandedDays = ref({});
           const addingDay = ref(false);
           const addingExercise = ref(false);
           const savingExercise = ref(false);
@@ -370,6 +387,18 @@
             if(exerciseSelection.value[dayId] && typeof exerciseSelection.value[dayId].query !== 'string'){
               exerciseSelection.value = { ...exerciseSelection.value, [dayId]: { ...exerciseSelection.value[dayId], query: '' } };
             }
+          }
+
+          function setDayExpansion(dayId, open=true){
+            expandedDays.value = { ...expandedDays.value, [dayId]: open };
+          }
+
+          function isDayOpen(day){
+            return !!expandedDays.value[day.id];
+          }
+
+          function toggleDay(day){
+            setDayExpansion(day.id, !isDayOpen(day));
           }
 
           function filteredExerciseOptions(day){
@@ -449,7 +478,7 @@
             }));
           }
 
-          function selectUser(u){ current.value = u; days.value = []; }
+          function selectUser(u){ current.value = u; days.value = []; expandedDays.value = {}; }
 
           async function loadExercises(){
             const { data, error } = await supabase
@@ -542,6 +571,11 @@
             (days.value||[]).forEach(d => ensureSelection(d.id));
             (days.value||[]).forEach(setDayEdit);
             (days.value||[]).forEach(d => (d.day_exercises||[]).forEach(setDayExerciseEdit));
+            (days.value||[]).forEach((d, idx) => {
+              if(expandedDays.value[d.id] === undefined){
+                setDayExpansion(d.id, idx === 0);
+              }
+            });
           }
 
           async function addDay(){
@@ -669,11 +703,11 @@
           });
 
           return { session, user, email, password, search, activeSection, users, filteredUsers, current, days, exerciseOptions, exerciseSelection,
-                   exerciseEdits, dayEdits, dayExerciseEdits, nextWeek,
+                   exerciseEdits, dayEdits, dayExerciseEdits, expandedDays, nextWeek,
                    newDayWeek, newDayCode, newDayTitle, newDayNotes, addingDay, addingExercise, savingExercise,
                    newExerciseName,
                    emailPasswordSignIn, signOut, selectUser, loadDays, addDay, resetDayForm, resetExerciseForm, addExerciseDefinition, addExerciseToDay,
-                   updateExercise, deleteExercise, resetExerciseEdit, filteredExerciseOptions, pickExercise, matchExercise,
+                   updateExercise, deleteExercise, resetExerciseEdit, filteredExerciseOptions, pickExercise, matchExercise, toggleDay, isDayOpen,
                    saveDay, resetDayEdit, deleteDay,
                    saveDayExercise, resetDayExerciseEdit, deleteDayExercise,
                    shortId };
