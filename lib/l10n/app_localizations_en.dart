@@ -215,6 +215,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingHeaderNotes => 'Notes';
 
   @override
+  String get trainingNotesLabel => 'Exercise notes';
+
+  @override
+  String get trainingNotesSave => 'Save notes';
+
+  @override
+  String get trainingNotesSaved => 'Notes saved';
+
+  @override
+  String trainingNotesError(Object error) {
+    return 'Unable to save notes: $error';
+  }
+
+  @override
+  String get trainingNotesUnavailable => 'Cannot update notes for this exercise.';
+
+  @override
+  String get trainingOpenTracker => 'Open tracker';
+
+  @override
   String logoutError(Object error) {
     return 'Error while logging out: $error';
   }

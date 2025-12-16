@@ -1,112 +1,140 @@
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/pages/exercise_tracker.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 
-class Training extends StatelessWidget {
+class Training extends StatefulWidget {
   final WorkoutDay day;
 
   const Training({super.key, required this.day});
 
   @override
+  State<Training> createState() => _TrainingState();
+}
+
+class _TrainingState extends State<Training> {
+  late final List<WorkoutExercise> _exercises;
+  late final Map<int, TextEditingController> _noteControllers;
+  final Set<int> _savingNotes = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _exercises = List<WorkoutExercise>.from(widget.day.exercises);
+    _noteControllers = {
+      for (int i = 0; i < _exercises.length; i++)
+        i: TextEditingController(text: _exercises[i].notes ?? '')
+    };
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _noteControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final exercises = day.exercises;
     final l10n = AppLocalizations.of(context)!;
-    final headers = [
-      l10n.trainingHeaderExercise,
-      l10n.trainingHeaderNotes,
-    ];
-
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Scaffold(
-      appBar: AppBar(title: Text(day.formattedTitle(l10n))),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if ((day.notes ?? '').isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 420),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.generalNotes,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(day.notes!.trim()),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              Table(
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                border: TableBorder.all(color: colorScheme.outline),
-                columnWidths: {
-                  for (int i = 0; i < headers.length; i++)
-                    i: const IntrinsicColumnWidth(),
-                },
-                children: [
-                  TableRow(
-                    decoration: BoxDecoration(color: colorScheme.primaryContainer),
-                    children: headers.map((header) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          header,
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onPrimaryContainer,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  ...exercises.map((exercise) {
-                    final exerciseName =
-                        exercise.name?.trim().isEmpty ?? true
-                            ? l10n.defaultExerciseName
-                            : exercise.name!;
-                    return TableRow(
-                      children: [
-                        _cell(
-                          context,
-                          exerciseName,
-                          onTap: () => _openTools(context, exercise),
-                        ),
-                        _cell(context, exercise.notes ?? day.notes ?? ''),
-                      ],
-                    );
-                  }),
-                ],
+      appBar: AppBar(title: Text(widget.day.formattedTitle(l10n))),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if ((widget.day.notes ?? '').trim().isNotEmpty)
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
-          ),
-        ),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.generalNotes,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(widget.day.notes!.trim()),
+                  ],
+                ),
+              ),
+            ),
+          for (int index = 0; index < _exercises.length; index++)
+            _ExerciseCard(
+              exercise: _exercises[index],
+              notesController: _noteControllers[index]!,
+              saving: _savingNotes.contains(index),
+              onSaveNotes: () => _saveNotes(index),
+              onOpenTracker: () =>
+                  _openTools(context, _exercises[index]),
+            ),
+        ],
       ),
     );
   }
 
+  Future<void> _saveNotes(int index) async {
+    final exercise = _exercises[index];
+    final note = _noteControllers[index]!.text.trim();
+    final l10n = AppLocalizations.of(context)!;
+
+    if (exercise.id == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingNotesUnavailable)),
+      );
+      return;
+    }
+
+    setState(() => _savingNotes.add(index));
+
+    try {
+      await Supabase.instance.client
+          .from('day_exercises')
+          .update({'notes': note.isEmpty ? null : note})
+          .eq('id', exercise.id!);
+
+      if (!mounted) return;
+
+      setState(() {
+        _exercises[index] = WorkoutExercise(
+          id: exercise.id,
+          name: exercise.name,
+          notes: note.isEmpty ? null : note,
+          position: exercise.position,
+        );
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingNotesSaved)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingNotesError('$error'))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _savingNotes.remove(index));
+      }
+    }
+  }
+
   void _openTools(BuildContext context, WorkoutExercise exercise) {
     final l10n = AppLocalizations.of(context)!;
-    final exerciseName = exercise.name?.trim().isEmpty ?? true
-        ? l10n.defaultExerciseName
-        : exercise.name!;
+    final exerciseName = exercise.name?.trim().isNotEmpty == true
+        ? exercise.name!
+        : l10n.defaultExerciseName;
     final quickAdds = <int>{1};
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -124,18 +152,84 @@ class Training extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _cell(BuildContext context, dynamic value, {VoidCallback? onTap}) {
-    final display = value?.toString().trim();
-    final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap,
+class _ExerciseCard extends StatelessWidget {
+  final WorkoutExercise exercise;
+  final TextEditingController notesController;
+  final bool saving;
+  final VoidCallback onSaveNotes;
+  final VoidCallback onOpenTracker;
+
+  const _ExerciseCard({
+    required this.exercise,
+    required this.notesController,
+    required this.saving,
+    required this.onSaveNotes,
+    required this.onOpenTracker,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final exerciseName = exercise.name?.trim().isNotEmpty == true
+        ? exercise.name!
+        : l10n.defaultExerciseName;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          (display == null || display.isEmpty) ? '-' : display,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    exerciseName,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: onOpenTracker,
+                  icon: const Icon(Icons.fitness_center),
+                  tooltip: l10n.trainingOpenTracker,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: notesController,
+              maxLines: null,
+              decoration: InputDecoration(
+                labelText: l10n.trainingNotesLabel,
+                hintText: l10n.trainingHeaderNotes,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton.icon(
+                onPressed: saving ? null : onSaveNotes,
+                icon: saving
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.save),
+                label: Text(l10n.trainingNotesSave),
+              ),
+            ),
+          ],
         ),
       ),
     );

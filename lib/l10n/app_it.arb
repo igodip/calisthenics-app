@@ -85,6 +85,19 @@
   "trainingHeaderRest": "Recupero",
   "trainingHeaderIntensity": "Intensità",
   "trainingHeaderNotes": "Note",
+  "trainingNotesLabel": "Note dell'esercizio",
+  "trainingNotesSave": "Salva note",
+  "trainingNotesSaved": "Note salvate",
+  "trainingNotesError": "Impossibile salvare le note: {error}",
+  "@trainingNotesError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trainingNotesUnavailable": "Impossibile aggiornare le note per questo esercizio.",
+  "trainingOpenTracker": "Apri tracker",
   "logoutError": "Errore durante il logout: {error}",
   "@logoutError": {
     "placeholders": {
