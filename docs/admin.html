@@ -58,6 +58,32 @@
             </div>
         </div>
 
+        <div class="card" style="margin-bottom:16px">
+            <h2>Exercises</h2>
+            <div class="row">
+                <div class="col">
+                    <form @submit.prevent="addExerciseDefinition" style="display:flex;flex-direction:column;gap:8px">
+                        <label class="small" style="display:flex;flex-direction:column;gap:4px">
+                            Name
+                            <input v-model="newExerciseName" placeholder="e.g. Push-ups" required />
+                        </label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <button class="btn small" type="submit" :disabled="savingExercise">Add exercise</button>
+                            <button class="small" type="button" @click="resetExerciseForm" :disabled="savingExercise">Reset</button>
+                        </div>
+                        <div v-if="savingExercise" class="muted small">Saving exercise…</div>
+                    </form>
+                </div>
+                <div class="col">
+                    <h3 style="margin-top:0">Available exercises</h3>
+                    <div v-if="exerciseOptions.length===0" class="muted small">No exercises loaded yet.</div>
+                    <div v-else class="list" style="max-height:220px;overflow:auto">
+                        <div v-for="ex in exerciseOptions" :key="ex.id" class="card small">{{ ex.name }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col">
                 <div class="card">
@@ -210,10 +236,12 @@
           const exerciseSelection = ref({});
           const addingDay = ref(false);
           const addingExercise = ref(false);
+          const savingExercise = ref(false);
           const newDayWeek = ref(1);
           const newDayCode = ref('MON');
           const newDayTitle = ref('');
           const newDayNotes = ref('');
+          const newExerciseName = ref('');
 
           const filteredUsers = computed(() => {
             const q = search.value.trim().toLowerCase();
@@ -231,6 +259,10 @@
             newDayCode.value = 'MON';
             newDayTitle.value = '';
             newDayNotes.value = '';
+          }
+
+          function resetExerciseForm(){
+            newExerciseName.value = '';
           }
 
           function ensureSelection(dayId){
@@ -275,6 +307,25 @@
               .order('name', { ascending: true });
             if(error){ console.error(error); alert('Failed to load exercises: '+error.message); return; }
             exerciseOptions.value = data || [];
+          }
+
+          async function addExerciseDefinition(){
+            const name = newExerciseName.value.trim();
+            if(!name){ alert('Exercise name is required.'); return; }
+            savingExercise.value = true;
+            try {
+              const { error } = await supabase
+                .from('exercises')
+                .insert({ name });
+              if(error){ throw new Error('Create exercise failed: '+error.message); }
+              resetExerciseForm();
+              await loadExercises();
+            } catch(err){
+              console.error(err);
+              alert(err.message || 'Failed to create exercise.');
+            } finally {
+              savingExercise.value = false;
+            }
           }
 
           async function loadDays(u=current.value){
@@ -363,8 +414,9 @@
           });
 
           return { session, user, email, password, search, users, filteredUsers, current, days, exerciseOptions, exerciseSelection,
-                   newDayWeek, newDayCode, newDayTitle, newDayNotes, addingDay, addingExercise,
-                   emailPasswordSignIn, signOut, selectUser, loadDays, addDay, resetDayForm, addExerciseToDay,
+                   newDayWeek, newDayCode, newDayTitle, newDayNotes, addingDay, addingExercise, savingExercise,
+                   newExerciseName,
+                   emailPasswordSignIn, signOut, selectUser, loadDays, addDay, resetDayForm, resetExerciseForm, addExerciseDefinition, addExerciseToDay,
                    shortId };
         }
       }).mount('#app');
