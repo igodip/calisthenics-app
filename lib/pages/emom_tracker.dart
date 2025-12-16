@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 
@@ -64,16 +65,29 @@ class _EmomTrackerPageState extends State<EmomTrackerPage> {
     });
 
     _prepTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_prepSecondsLeft != null && _prepSecondsLeft! > 1) {
-          _prepSecondsLeft = _prepSecondsLeft! - 1;
-        } else {
-          _prepSecondsLeft = null;
-          timer.cancel();
-          _startIntervalTimer();
+      final secondsLeft = _prepSecondsLeft;
+
+      if (secondsLeft != null && secondsLeft > 1) {
+        final nextValue = secondsLeft - 1;
+        if (nextValue == 3) {
+          _playPrepWarning();
         }
-      });
+
+        setState(() {
+          _prepSecondsLeft = nextValue;
+        });
+      } else {
+        setState(() {
+          _prepSecondsLeft = null;
+        });
+        timer.cancel();
+        _startIntervalTimer();
+      }
     });
+  }
+
+  void _playPrepWarning() {
+    SystemSound.play(SystemSoundType.alert);
   }
 
   void _startIntervalTimer() {
