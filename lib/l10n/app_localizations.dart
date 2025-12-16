@@ -1010,6 +1010,96 @@ abstract class AppLocalizations {
   /// **'Azzera ripetizioni'**
   String get resetReps;
 
+  /// No description provided for @emomTrackerTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Tracker EMOM'**
+  String get emomTrackerTitle;
+
+  /// No description provided for @emomTrackerSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Serie ogni minuto con conto alla rovescia.'**
+  String get emomTrackerSubtitle;
+
+  /// No description provided for @emomTrackerDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Configura serie, ripetizioni e intervalli per restare sul ritmo ogni minuto.'**
+  String get emomTrackerDescription;
+
+  /// No description provided for @emomSetsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Serie totali'**
+  String get emomSetsLabel;
+
+  /// No description provided for @emomRepsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripetizioni per serie'**
+  String get emomRepsLabel;
+
+  /// No description provided for @emomIntervalLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Intervallo (secondi)'**
+  String get emomIntervalLabel;
+
+  /// No description provided for @emomStartButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvia EMOM'**
+  String get emomStartButton;
+
+  /// No description provided for @emomResetButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Reimposta sessione'**
+  String get emomResetButton;
+
+  /// No description provided for @emomSessionComplete.
+  ///
+  /// In it, this message translates to:
+  /// **'EMOM completato'**
+  String get emomSessionComplete;
+
+  /// No description provided for @emomCurrentSet.
+  ///
+  /// In it, this message translates to:
+  /// **'Serie {current} di {total}'**
+  String emomCurrentSet(int current, int total);
+
+  /// No description provided for @emomRepsPerSet.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} ripetizioni per serie'**
+  String emomRepsPerSet(int count);
+
+  /// No description provided for @emomFinishedMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Ottimo lavoro! Hai rispettato ogni minuto.'**
+  String get emomFinishedMessage;
+
+  /// No description provided for @emomTimeRemainingLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Tempo rimanente in questo minuto'**
+  String get emomTimeRemainingLabel;
+
+  /// No description provided for @emomPrepHeadline.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparati per la serie {set}'**
+  String emomPrepHeadline(int set);
+
+  /// No description provided for @emomPrepSubhead.
+  ///
+  /// In it, this message translates to:
+  /// **'La prossima serie parte alla fine del conto alla rovescia.'**
+  String get emomPrepSubhead;
+
   /// No description provided for @timerTitle.
   ///
   /// In it, this message translates to:

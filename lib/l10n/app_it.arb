@@ -269,6 +269,45 @@
     }
   },
   "resetReps": "Azzera ripetizioni",
+  "emomTrackerTitle": "Tracker EMOM",
+  "emomTrackerSubtitle": "Serie ogni minuto con conto alla rovescia.",
+  "emomTrackerDescription": "Configura serie, ripetizioni e intervalli per restare sul ritmo ogni minuto.",
+  "emomSetsLabel": "Serie totali",
+  "emomRepsLabel": "Ripetizioni per serie",
+  "emomIntervalLabel": "Intervallo (secondi)",
+  "emomStartButton": "Avvia EMOM",
+  "emomResetButton": "Reimposta sessione",
+  "emomSessionComplete": "EMOM completato",
+  "emomCurrentSet": "Serie {current} di {total}",
+  "@emomCurrentSet": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "emomRepsPerSet": "{count} ripetizioni per serie",
+  "@emomRepsPerSet": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "emomFinishedMessage": "Ottimo lavoro! Hai rispettato ogni minuto.",
+  "emomTimeRemainingLabel": "Tempo rimanente in questo minuto",
+  "emomPrepHeadline": "Preparati per la serie {set}",
+  "@emomPrepHeadline": {
+    "placeholders": {
+      "set": {
+        "type": "int"
+      }
+    }
+  },
+  "emomPrepSubhead": "La prossima serie parte alla fine del conto alla rovescia.",
   "timerTitle": "Timer",
   "weekdayMonday": "Lunedì",
   "weekdayTuesday": "Martedì",

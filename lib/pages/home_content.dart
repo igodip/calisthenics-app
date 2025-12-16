@@ -1,6 +1,7 @@
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/pages/exercise_tracker.dart';
 import 'package:calisync/components/cards/selection_card.dart';
+import 'package:calisync/pages/emom_tracker.dart';
 import 'package:calisync/pages/training.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,6 +27,33 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final extraTools = [
+      SelectionCard(
+        title: l10n.exerciseTrackerTitle,
+        icon: Icons.checklist,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ExerciseTrackerPage(),
+            ),
+          );
+        },
+      ),
+      SelectionCard(
+        title: l10n.emomTrackerTitle,
+        subtitle: l10n.emomTrackerSubtitle,
+        icon: Icons.timer,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const EmomTrackerPage(),
+            ),
+          );
+        },
+      ),
+    ];
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: RefreshIndicator(
@@ -105,40 +133,18 @@ class _HomeContentState extends State<HomeContent> {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 24),
-                  SelectionCard(
-                    title: l10n.exerciseTrackerTitle,
-                    icon: Icons.checklist,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ExerciseTrackerPage(),
-                        ),
-                      );
-                    },
-                  ),
+                  ...extraTools,
                 ],
               );
             }
 
             return ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: days.length + 1,
+              itemCount: days.length + extraTools.length,
               separatorBuilder: (_, __) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
-                if (index == days.length) {
-                  return SelectionCard(
-                    title: l10n.exerciseTrackerTitle,
-                    icon: Icons.checklist,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ExerciseTrackerPage(),
-                        ),
-                      );
-                    },
-                  );
+                if (index >= days.length) {
+                  return extraTools[index - days.length];
                 }
 
                 final day = days[index];
