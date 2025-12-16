@@ -449,7 +449,7 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String?>(
-                  value: _unitSystem,
+                  initialValue: _unitSystem,
                   items: [
                     DropdownMenuItem<String?>(
                       value: null,
