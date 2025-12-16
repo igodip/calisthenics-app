@@ -196,7 +196,7 @@ jobs:
         run: |
           xcrun altool --upload-app \
             -t ios \
-            -f build/ios/ipa/prova3.ipa \
+            -f build/ios/ipa/calisync.ipa \
             -u "${{ secrets.APPLE_ID }}" \
             -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
 
