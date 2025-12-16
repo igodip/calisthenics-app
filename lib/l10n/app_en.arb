@@ -269,6 +269,45 @@
     }
   },
   "resetReps": "Reset reps",
+  "emomTrackerTitle": "EMOM tracker",
+  "emomTrackerSubtitle": "Guided every-minute sets with prep countdown.",
+  "emomTrackerDescription": "Configure sets, reps, and intervals to stay on pace each minute.",
+  "emomSetsLabel": "Total sets",
+  "emomRepsLabel": "Reps per set",
+  "emomIntervalLabel": "Interval (seconds)",
+  "emomStartButton": "Start EMOM",
+  "emomResetButton": "Reset session",
+  "emomSessionComplete": "EMOM complete",
+  "emomCurrentSet": "Set {current} of {total}",
+  "@emomCurrentSet": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "emomRepsPerSet": "{count} reps per set",
+  "@emomRepsPerSet": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "emomFinishedMessage": "Nice work! You hit every minute.",
+  "emomTimeRemainingLabel": "Time remaining this minute",
+  "emomPrepHeadline": "Get ready for set {set}",
+  "@emomPrepHeadline": {
+    "placeholders": {
+      "set": {
+        "type": "int"
+      }
+    }
+  },
+  "emomPrepSubhead": "The next set starts after this countdown.",
   "timerTitle": "Timer",
   "weekdayMonday": "Monday",
   "weekdayTuesday": "Tuesday",

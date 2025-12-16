@@ -541,6 +541,60 @@ class AppLocalizationsIt extends AppLocalizations {
   String get resetReps => 'Azzera ripetizioni';
 
   @override
+  String get emomTrackerTitle => 'Tracker EMOM';
+
+  @override
+  String get emomTrackerSubtitle =>
+      'Serie ogni minuto con conto alla rovescia.';
+
+  @override
+  String get emomTrackerDescription =>
+      'Configura serie, ripetizioni e intervalli per restare sul ritmo ogni minuto.';
+
+  @override
+  String get emomSetsLabel => 'Serie totali';
+
+  @override
+  String get emomRepsLabel => 'Ripetizioni per serie';
+
+  @override
+  String get emomIntervalLabel => 'Intervallo (secondi)';
+
+  @override
+  String get emomStartButton => 'Avvia EMOM';
+
+  @override
+  String get emomResetButton => 'Reimposta sessione';
+
+  @override
+  String get emomSessionComplete => 'EMOM completato';
+
+  @override
+  String emomCurrentSet(int current, int total) {
+    return 'Serie $current di $total';
+  }
+
+  @override
+  String emomRepsPerSet(int count) {
+    return '$count ripetizioni per serie';
+  }
+
+  @override
+  String get emomFinishedMessage => 'Ottimo lavoro! Hai rispettato ogni minuto.';
+
+  @override
+  String get emomTimeRemainingLabel => 'Tempo rimanente in questo minuto';
+
+  @override
+  String emomPrepHeadline(int set) {
+    return 'Preparati per la serie $set';
+  }
+
+  @override
+  String get emomPrepSubhead =>
+      'La prossima serie parte alla fine del conto alla rovescia.';
+
+  @override
   String get timerTitle => 'Timer';
 
   @override

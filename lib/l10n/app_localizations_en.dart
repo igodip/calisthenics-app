@@ -536,6 +536,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetReps => 'Reset reps';
 
   @override
+  String get emomTrackerTitle => 'EMOM tracker';
+
+  @override
+  String get emomTrackerSubtitle =>
+      'Guided every-minute sets with prep countdown.';
+
+  @override
+  String get emomTrackerDescription =>
+      'Configure sets, reps, and intervals to stay on pace each minute.';
+
+  @override
+  String get emomSetsLabel => 'Total sets';
+
+  @override
+  String get emomRepsLabel => 'Reps per set';
+
+  @override
+  String get emomIntervalLabel => 'Interval (seconds)';
+
+  @override
+  String get emomStartButton => 'Start EMOM';
+
+  @override
+  String get emomResetButton => 'Reset session';
+
+  @override
+  String get emomSessionComplete => 'EMOM complete';
+
+  @override
+  String emomCurrentSet(int current, int total) {
+    return 'Set $current of $total';
+  }
+
+  @override
+  String emomRepsPerSet(int count) {
+    return '$count reps per set';
+  }
+
+  @override
+  String get emomFinishedMessage => 'Nice work! You hit every minute.';
+
+  @override
+  String get emomTimeRemainingLabel => 'Time remaining this minute';
+
+  @override
+  String emomPrepHeadline(int set) {
+    return 'Get ready for set $set';
+  }
+
+  @override
+  String get emomPrepSubhead => 'The next set starts after this countdown.';
+
+  @override
   String get timerTitle => 'Timer';
 
   @override
