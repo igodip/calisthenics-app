@@ -174,11 +174,6 @@ jobs:
             -verbose
           ls -alh build/ios/ipa
 
-      - name: Create tar.gz of iOS build
-        run: |
-          mkdir -p build
-          tar -czvf build/ios_build.tar.gz -C build ios
-
       # 🔑 Decode and save keystore
       - name: Decode keystore
         run: echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > android/app/my-release-key.jks
@@ -195,14 +190,6 @@ jobs:
           flutter build appbundle --release \
             --build-name=${{ steps.version.outputs.base_version }} \
             --build-number=${{ github.run_number }}
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Releases
-          path: |
-            ${{steps.sign_app.outputs.signedReleaseFile}}
-            build/ios_build.tar.gz
 
       - name: Upload to TestFlight
         if: success()
