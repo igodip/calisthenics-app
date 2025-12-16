@@ -15,10 +15,6 @@ class Training extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final headers = [
       l10n.trainingHeaderExercise,
-      l10n.trainingHeaderSets,
-      l10n.trainingHeaderReps,
-      l10n.trainingHeaderRest,
-      l10n.trainingHeaderIntensity,
       l10n.trainingHeaderNotes,
     ];
 
@@ -93,10 +89,6 @@ class Training extends StatelessWidget {
                           exerciseName,
                           onTap: () => _openTools(context, exercise),
                         ),
-                        _cell(context, exercise.sets?.toString() ?? '-'),
-                        _cell(context, exercise.reps?.toString() ?? '-'),
-                        _cell(context, _formatRest(exercise)),
-                        _cell(context, exercise.intensity ?? '-'),
                         _cell(context, exercise.notes ?? day.notes ?? ''),
                       ],
                     );
@@ -115,13 +107,7 @@ class Training extends StatelessWidget {
     final exerciseName = exercise.name?.trim().isEmpty ?? true
         ? l10n.defaultExerciseName
         : exercise.name!;
-    final restDuration = exercise.restDuration;
-    final reps = exercise.reps;
-    final sets = exercise.sets;
     final quickAdds = <int>{1};
-    if (reps != null && reps > 0) {
-      quickAdds.add(reps);
-    }
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ExerciseTrackerPage(
@@ -132,8 +118,6 @@ class Training extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
               icon: Icons.fitness_center,
               quickAddValues: quickAdds.toList()..sort(),
-              restDuration: restDuration,
-              targetReps: reps != null && sets != null ? reps * sets : reps,
             ),
           ],
         ),
@@ -155,21 +139,5 @@ class Training extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatRest(WorkoutExercise exercise) {
-    final restSeconds = exercise.restSeconds;
-    if (restSeconds == null || restSeconds <= 0) {
-      return '-';
-    }
-    final minutes = restSeconds ~/ 60;
-    final seconds = restSeconds % 60;
-    if (minutes > 0 && seconds > 0) {
-      return '${minutes}m ${seconds}s';
-    }
-    if (minutes > 0) {
-      return '${minutes}m';
-    }
-    return '${seconds}s';
   }
 }
