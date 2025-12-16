@@ -19,16 +19,16 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color surfaceTint;
 
   static const AppColors dark = AppColors(
-    success: Color(0xFF22C55E),
-    successContainer: Color(0x3322C55E),
+    success: Color(0xFF6C9C48),
+    successContainer: Color(0x336C9C48),
     warning: Color(0xFFFFA726),
     warningContainer: Color(0x33FFA726),
     primaryGradient: LinearGradient(
-      colors: [Color(0xFF11113A), Color(0xFF020231)],
+      colors: [Color(0xFF759858), Color(0xFF5A7D3E)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
-    surfaceTint: Color(0x26FFFFFF),
+    surfaceTint: Color(0x26EDE8DF),
   );
 
   @override
@@ -69,12 +69,12 @@ class AppColors extends ThemeExtension<AppColors> {
 class AppTheme {
   AppTheme._();
 
-  static const Color _primary = Color(0xFF5A62FF);
-  static const Color _secondary = Color(0xFF8043F9);
-  static const Color _background = Color(0xFF0A0B1E);
-  static const Color _surface = Color(0xFF121327);
-  static const Color _surfaceVariant = Color(0xFF1C1D33);
-  static const Color _tertiary = Color(0xFF28C9F5);
+  static const Color _primary = Color(0xFF759858);
+  static const Color _secondary = Color(0xFF6C9C48);
+  static const Color _background = Color(0xFF332F2C);
+  static const Color _surface = Color(0xFF3D3732);
+  static const Color _surfaceVariant = Color(0xFF47403A);
+  static const Color _tertiary = Color(0xFFEDE8DF);
   static const Color _error = Color(0xFFFF5C5C);
 
   static final ColorScheme colorScheme = ColorScheme.fromSeed(
@@ -93,7 +93,7 @@ class AppTheme {
     onSurface: Colors.white,
     onSurfaceVariant: Colors.white70,
     error: _error,
-    surfaceTint: const Color(0x26FFFFFF),
+    surfaceTint: const Color(0x26EDE8DF),
     outline: Colors.white24,
     outlineVariant: Colors.white12,
     shadow: Colors.black,
