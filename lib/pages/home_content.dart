@@ -104,6 +104,19 @@ class _HomeContentState extends State<HomeContent> {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
+                  const SizedBox(height: 24),
+                  SelectionCard(
+                    title: l10n.exerciseTrackerTitle,
+                    icon: Icons.checklist,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ExerciseTrackerPage(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               );
             }
