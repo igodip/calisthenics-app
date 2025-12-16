@@ -116,7 +116,7 @@ class AppTheme {
         letterSpacing: 0.5,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: _surfaceVariant,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

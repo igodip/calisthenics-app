@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../l10n/app_localizations.dart';
 
 final supabase = Supabase.instance.client;
 

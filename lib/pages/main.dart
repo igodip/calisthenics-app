@@ -1,10 +1,10 @@
 // lib/main.dart
-import 'package:calisync/pages/terminologia.dart';
+import 'package:calisync/pages/terminology.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:calisync/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../l10n/app_localizations.dart';
 import 'home_content.dart';
 import 'login.dart';
 import 'settings.dart';

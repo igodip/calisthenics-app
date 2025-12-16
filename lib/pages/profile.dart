@@ -2,9 +2,9 @@
 import 'package:calisync/model/profiles.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../l10n/app_localizations.dart';
 import 'login.dart';
 
 final supabase = Supabase.instance.client;

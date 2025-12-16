@@ -1,11 +1,11 @@
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/pages/exercise_tracker.dart';
-import 'package:calisync/pages/position_estimation.dart';
 import 'package:calisync/components/cards/selection_card.dart';
 import 'package:calisync/pages/training.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../l10n/app_localizations.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -110,10 +110,10 @@ class _HomeContentState extends State<HomeContent> {
 
             return ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: days.length + 2,
+              itemCount: days.length + 1,
               separatorBuilder: (_, __) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
-                if (index == days.length + 1) {
+                if (index == days.length) {
                   return SelectionCard(
                     title: l10n.exerciseTrackerTitle,
                     icon: Icons.checklist,
@@ -122,20 +122,6 @@ class _HomeContentState extends State<HomeContent> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const ExerciseTrackerPage(),
-                        ),
-                      );
-                    },
-                  );
-                }
-                if (index == days.length) {
-                  return SelectionCard(
-                    title: l10n.poseEstimationTitle,
-                    icon: Icons.man,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PoseCamPage(),
                         ),
                       );
                     },
