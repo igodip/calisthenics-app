@@ -67,9 +67,9 @@
                             <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
                                 <div>
                                     <strong>{{ u.displayName || shortId(u.id) }}</strong>
-                                    <div class="muted small">{{ u.email || 'No email' }}</div>
+                                    <div class="muted small">{{ u.id }}</div>
                                 </div>
-                                <span class="badge">{{ u.active ? 'active' : 'inactive' }}</span>
+                                <span class="badge">trainee</span>
                             </div>
                             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
                                 <button class="btn" @click="selectUser(u)">Open</button>
@@ -220,8 +220,7 @@
             if(!q) return users.value;
             return users.value.filter(u =>
               (u.displayName || '').toLowerCase().includes(q) ||
-              (u.email || '').toLowerCase().includes(q) ||
-              (u.username || '').toLowerCase().includes(q)
+              (u.id || '').toLowerCase().includes(q)
             );
           });
 
@@ -255,25 +254,15 @@
           }
 
           async function loadUsers(){
-            const { data: userRows, error } = await supabase
-              .from('users')
-              .select('id, email, username, active, paid');
-            if(error){ console.error(error); alert('Failed to load users: '+error.message); return; }
+            const { data: traineeRows, error } = await supabase
+              .from('trainees')
+              .select('id, name')
+              .order('name', { ascending: true });
+            if(error){ console.error(error); alert('Failed to load trainees: '+error.message); return; }
 
-            const ids = (userRows||[]).map(u => u.id).filter(Boolean);
-            let profileById = {};
-            if(ids.length){
-              const { data: profileRows, error: profileError } = await supabase
-                .from('profiles')
-                .select('id, full_name')
-                .in('id', ids);
-              if(profileError){ console.error(profileError); alert('Failed to load profiles: '+profileError.message); }
-              profileById = Object.fromEntries((profileRows||[]).map(p => [p.id, p]));
-            }
-
-            users.value = (userRows||[]).map(row => ({
+            users.value = (traineeRows||[]).map(row => ({
               ...row,
-              displayName: profileById[row.id]?.full_name || row.username || row.email,
+              displayName: row.name || shortId(row.id),
             }));
           }
 
