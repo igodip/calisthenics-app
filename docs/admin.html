@@ -32,6 +32,7 @@
         .small{font-size:12px}
         .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
         .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+        .stack{display:flex;flex-direction:column;gap:6px}
     </style>
 </head>
 <body>
@@ -77,8 +78,19 @@
                 <div class="col">
                     <h3 style="margin-top:0">Available exercises</h3>
                     <div v-if="exerciseOptions.length===0" class="muted small">No exercises loaded yet.</div>
-                    <div v-else class="list" style="max-height:220px;overflow:auto">
-                        <div v-for="ex in exerciseOptions" :key="ex.id" class="card small">{{ ex.name }}</div>
+                    <div v-else class="list" style="max-height:240px;overflow:auto">
+                        <div v-for="ex in exerciseOptions" :key="ex.id" class="card small stack">
+                            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+                                <strong>{{ ex.name }}</strong>
+                                <span class="pill">#{{ ex.id.slice(0,4) }}</span>
+                            </div>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap">
+                                <input v-model="exerciseEdits[ex.id].name" placeholder="Exercise name" style="flex:1 1 160px" />
+                                <button class="btn small" @click="updateExercise(ex)" :disabled="savingExercise">Save</button>
+                                <button class="small" type="button" @click="resetExerciseEdit(ex)" :disabled="savingExercise">Reset</button>
+                                <button class="small" type="button" @click="deleteExercise(ex)" :disabled="savingExercise" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -144,22 +156,60 @@
                             <h3>Days & Exercises</h3>
                             <div v-if="days.length===0">No days yet.</div>
                             <div v-else class="list">
-                                <div v-for="d in days" :key="d.id" class="card small">
-                                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+                                <div v-for="d in days" :key="d.id" class="card small stack">
+                                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
                                         <div>
                                             <strong>Week {{ d.week }} · {{ d.day_code?.toUpperCase() }}</strong>
                                             <div class="muted">{{ d.title || 'Untitled' }}</div>
                                         </div>
-                                        <span class="pill">{{ (d.day_exercises||[]).length }} exercises</span>
-                                    </div>
-                                    <div class="muted small" v-if="d.notes">{{ d.notes }}</div>
-                                    <div v-if="(d.day_exercises||[]).length" style="margin-top:8px" class="list">
-                                        <div v-for="ex in d.day_exercises" :key="ex.id" class="card small">
-                                            <div><strong>{{ ex.exercises?.name || 'Exercise' }}</strong></div>
-                                            <div class="muted">Position: {{ ex.position ?? '—' }}</div>
-                                            <div v-if="ex.notes" class="muted small">{{ ex.notes }}</div>
+                                        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                                            <button class="btn small" @click="saveDay(d)">Save</button>
+                                            <button class="small" type="button" @click="resetDayEdit(d)">Reset</button>
+                                            <button class="small" type="button" @click="deleteDay(d)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
                                         </div>
                                     </div>
+                                    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
+                                        <label class="small stack">
+                                            Week
+                                            <input type="number" min="1" v-model.number="dayEdits[d.id].week" />
+                                        </label>
+                                        <label class="small stack">
+                                            Day code
+                                            <input v-model="dayEdits[d.id].day_code" />
+                                        </label>
+                                        <label class="small stack">
+                                            Title
+                                            <input v-model="dayEdits[d.id].title" />
+                                        </label>
+                                    </div>
+                                    <label class="small stack">
+                                        Notes
+                                        <textarea v-model="dayEdits[d.id].notes" placeholder="Optional notes"></textarea>
+                                    </label>
+
+                                    <div v-if="(d.day_exercises||[]).length" class="list">
+                                        <div v-for="ex in d.day_exercises" :key="ex.id" class="card small stack">
+                                            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
+                                                <strong>{{ ex.exercises?.name || 'Exercise' }}</strong>
+                                                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                                                    <button class="btn small" @click="saveDayExercise(ex)">Save</button>
+                                                    <button class="small" type="button" @click="resetDayExerciseEdit(ex)">Reset</button>
+                                                    <button class="small" type="button" @click="deleteDayExercise(ex)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
+                                                </div>
+                                            </div>
+                                            <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
+                                                <label class="small stack">
+                                                    Position
+                                                    <input type="number" min="1" v-model.number="dayExerciseEdits[ex.id].position" />
+                                                </label>
+                                                <label class="small stack">
+                                                    Notes
+                                                    <textarea v-model="dayExerciseEdits[ex.id].notes" placeholder="Optional notes"></textarea>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="card small" style="margin-top:8px">
                                         <h4 style="margin:0 0 6px">Add exercise</h4>
                                         <div style="display:flex;flex-direction:column;gap:6px">
@@ -234,6 +284,9 @@
           const days = ref([]);
           const exerciseOptions = ref([]);
           const exerciseSelection = ref({});
+          const exerciseEdits = ref({});
+          const dayEdits = ref({});
+          const dayExerciseEdits = ref({});
           const addingDay = ref(false);
           const addingExercise = ref(false);
           const savingExercise = ref(false);
@@ -265,10 +318,48 @@
             newExerciseName.value = '';
           }
 
+          function resetExerciseEdit(ex){ setExerciseEdit(ex); }
+
+          function resetDayEdit(day){ setDayEdit(day); }
+
+          function resetDayExerciseEdit(ex){ setDayExerciseEdit(ex); }
+
           function ensureSelection(dayId){
             if(!exerciseSelection.value[dayId]){
               exerciseSelection.value = { ...exerciseSelection.value, [dayId]: { exercise_id: '', notes: '' } };
             }
+          }
+
+          function setExerciseEdit(exercise){
+            if(!exercise?.id) return;
+            exerciseEdits.value = {
+              ...exerciseEdits.value,
+              [exercise.id]: { name: exercise.name || '' }
+            };
+          }
+
+          function setDayEdit(day){
+            if(!day?.id) return;
+            dayEdits.value = {
+              ...dayEdits.value,
+              [day.id]: {
+                week: day.week ?? 1,
+                day_code: day.day_code || '',
+                title: day.title || '',
+                notes: day.notes || ''
+              }
+            };
+          }
+
+          function setDayExerciseEdit(exercise){
+            if(!exercise?.id) return;
+            dayExerciseEdits.value = {
+              ...dayExerciseEdits.value,
+              [exercise.id]: {
+                position: exercise.position ?? 1,
+                notes: exercise.notes || ''
+              }
+            };
           }
 
           async function emailPasswordSignIn(){
@@ -307,6 +398,7 @@
               .order('name', { ascending: true });
             if(error){ console.error(error); alert('Failed to load exercises: '+error.message); return; }
             exerciseOptions.value = data || [];
+            (exerciseOptions.value||[]).forEach(setExerciseEdit);
           }
 
           async function addExerciseDefinition(){
@@ -323,6 +415,48 @@
             } catch(err){
               console.error(err);
               alert(err.message || 'Failed to create exercise.');
+            } finally {
+              savingExercise.value = false;
+            }
+          }
+
+          async function updateExercise(ex){
+            if(!ex?.id) return;
+            const name = (exerciseEdits.value[ex.id]?.name || '').trim();
+            if(!name){ alert('Exercise name cannot be empty.'); return; }
+            savingExercise.value = true;
+            try {
+              const { error } = await supabase
+                .from('exercises')
+                .update({ name })
+                .eq('id', ex.id);
+              if(error){ throw new Error('Update exercise failed: '+error.message); }
+              await loadExercises();
+              await loadDays();
+            } catch(err){
+              console.error(err);
+              alert(err.message || 'Failed to update exercise.');
+            } finally {
+              savingExercise.value = false;
+            }
+          }
+
+          async function deleteExercise(ex){
+            if(!ex?.id) return;
+            const confirmed = confirm('Delete exercise "'+(ex.name||ex.id)+'"?');
+            if(!confirmed) return;
+            savingExercise.value = true;
+            try {
+              const { error } = await supabase
+                .from('exercises')
+                .delete()
+                .eq('id', ex.id);
+              if(error){ throw new Error('Delete exercise failed: '+error.message); }
+              await loadExercises();
+              await loadDays();
+            } catch(err){
+              console.error(err);
+              alert(err.message || 'Failed to delete exercise.');
             } finally {
               savingExercise.value = false;
             }
@@ -346,6 +480,8 @@
             if(error){ alert('Failed to load days: '+error.message); return; }
             days.value = data || [];
             (days.value||[]).forEach(d => ensureSelection(d.id));
+            (days.value||[]).forEach(setDayEdit);
+            (days.value||[]).forEach(d => (d.day_exercises||[]).forEach(setDayExerciseEdit));
           }
 
           async function addDay(){
@@ -405,6 +541,65 @@
             }
           }
 
+          async function saveDay(day){
+            if(!day?.id){ alert('Missing day.'); return; }
+            const form = dayEdits.value[day.id] || {};
+            const week = Number(form.week || 1);
+            const dayCode = (form.day_code || '').trim();
+            if(!dayCode){ alert('Day code is required.'); return; }
+            const payload = {
+              week,
+              day_code: dayCode,
+              title: (form.title||'').trim() || null,
+              notes: (form.notes||'').trim() || null,
+            };
+            const { error } = await supabase
+              .from('days')
+              .update(payload)
+              .eq('id', day.id);
+            if(error){ alert('Failed to update day: '+error.message); return; }
+            await loadDays();
+          }
+
+          async function deleteDay(day){
+            if(!day?.id) return;
+            const confirmed = confirm('Delete this day and its exercises?');
+            if(!confirmed) return;
+            const { error } = await supabase
+              .from('days')
+              .delete()
+              .eq('id', day.id);
+            if(error){ alert('Failed to delete day: '+error.message); return; }
+            await loadDays();
+          }
+
+          async function saveDayExercise(ex){
+            if(!ex?.id){ alert('Missing day exercise.'); return; }
+            const form = dayExerciseEdits.value[ex.id] || {};
+            const payload = {
+              position: Number(form.position || 1),
+              notes: (form.notes||'').trim() || null,
+            };
+            const { error } = await supabase
+              .from('day_exercises')
+              .update(payload)
+              .eq('id', ex.id);
+            if(error){ alert('Failed to update exercise: '+error.message); return; }
+            await loadDays();
+          }
+
+          async function deleteDayExercise(ex){
+            if(!ex?.id) return;
+            const confirmed = confirm('Remove exercise from day?');
+            if(!confirmed) return;
+            const { error } = await supabase
+              .from('day_exercises')
+              .delete()
+              .eq('id', ex.id);
+            if(error){ alert('Failed to delete exercise: '+error.message); return; }
+            await loadDays();
+          }
+
           onMounted(async () => {
             const { data: { session: sess } } = await supabase.auth.getSession();
             session.value = sess; user.value = sess?.user || null;
@@ -414,9 +609,13 @@
           });
 
           return { session, user, email, password, search, users, filteredUsers, current, days, exerciseOptions, exerciseSelection,
+                   exerciseEdits, dayEdits, dayExerciseEdits,
                    newDayWeek, newDayCode, newDayTitle, newDayNotes, addingDay, addingExercise, savingExercise,
                    newExerciseName,
                    emailPasswordSignIn, signOut, selectUser, loadDays, addDay, resetDayForm, resetExerciseForm, addExerciseDefinition, addExerciseToDay,
+                   updateExercise, deleteExercise, resetExerciseEdit,
+                   saveDay, resetDayEdit, deleteDay,
+                   saveDayExercise, resetDayExerciseEdit, deleteDayExercise,
                    shortId };
         }
       }).mount('#app');
