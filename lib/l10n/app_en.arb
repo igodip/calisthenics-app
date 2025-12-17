@@ -98,6 +98,18 @@
   },
   "trainingNotesUnavailable": "Cannot update notes for this exercise.",
   "trainingOpenTracker": "Open tracker",
+  "trainingMarkComplete": "Mark day as complete",
+  "trainingMarkIncomplete": "Mark day as incomplete",
+  "trainingCompletionSaved": "Workout day updated",
+  "trainingCompletionError": "Unable to update workout: {error}",
+  "@trainingCompletionError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trainingCompletionUnavailable": "Cannot update this workout day.",
   "logoutError": "Error while logging out: {error}",
   "@logoutError": {
     "placeholders": {

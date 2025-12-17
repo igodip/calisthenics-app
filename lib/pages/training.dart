@@ -18,11 +18,15 @@ class _TrainingState extends State<Training> {
   late final List<WorkoutExercise> _exercises;
   late final Map<int, TextEditingController> _noteControllers;
   final Set<int> _savingNotes = {};
+  late bool _isCompleted;
+  bool _updatingCompletion = false;
+  bool _completionChanged = false;
 
   @override
   void initState() {
     super.initState();
     _exercises = List<WorkoutExercise>.from(widget.day.exercises);
+    _isCompleted = widget.day.isCompleted;
     _noteControllers = {
       for (int i = 0; i < _exercises.length; i++)
         i: TextEditingController(text: _exercises[i].notes ?? '')
@@ -40,46 +44,70 @@ class _TrainingState extends State<Training> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.day.formattedTitle(l10n))),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if ((widget.day.notes ?? '').trim().isNotEmpty)
-            Card(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.generalNotes,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(widget.day.notes!.trim()),
-                  ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pop(_completionChanged);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text(widget.day.formattedTitle(l10n))),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            if ((widget.day.notes ?? '').trim().isNotEmpty)
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.generalNotes,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(widget.day.notes!.trim()),
+                    ],
+                  ),
                 ),
               ),
+            for (int index = 0; index < _exercises.length; index++)
+              _ExerciseCard(
+                exercise: _exercises[index],
+                notesController: _noteControllers[index]!,
+                saving: _savingNotes.contains(index),
+                onSaveNotes: () => _saveNotes(index),
+                onOpenTracker: () =>
+                    _openTools(context, _exercises[index]),
+              ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: _updatingCompletion ? null : _toggleCompletion,
+              icon: _updatingCompletion
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
+                      _isCompleted ? Icons.undo : Icons.check_circle_outline,
+                    ),
+              label: Text(
+                _isCompleted
+                    ? l10n.trainingMarkIncomplete
+                    : l10n.trainingMarkComplete,
+              ),
             ),
-          for (int index = 0; index < _exercises.length; index++)
-            _ExerciseCard(
-              exercise: _exercises[index],
-              notesController: _noteControllers[index]!,
-              saving: _savingNotes.contains(index),
-              onSaveNotes: () => _saveNotes(index),
-              onOpenTracker: () =>
-                  _openTools(context, _exercises[index]),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -126,6 +154,53 @@ class _TrainingState extends State<Training> {
     } finally {
       if (mounted) {
         setState(() => _savingNotes.remove(index));
+      }
+    }
+  }
+
+  Future<void> _toggleCompletion() async {
+    final dayId = widget.day.id;
+    final l10n = AppLocalizations.of(context)!;
+
+    if (dayId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingCompletionUnavailable)),
+      );
+      return;
+    }
+
+    final newValue = !_isCompleted;
+
+    setState(() {
+      _updatingCompletion = true;
+    });
+
+    try {
+      await Supabase.instance.client
+          .from('days')
+          .update({'completed': newValue})
+          .eq('id', dayId);
+
+      if (!mounted) return;
+
+      setState(() {
+        _isCompleted = newValue;
+        _completionChanged = true;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingCompletionSaved)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingCompletionError('$error'))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _updatingCompletion = false;
+        });
       }
     }
   }

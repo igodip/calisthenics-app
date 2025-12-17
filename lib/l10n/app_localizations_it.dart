@@ -237,6 +237,24 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainingOpenTracker => 'Apri tracker';
 
   @override
+  String get trainingMarkComplete => 'Segna giorno come completato';
+
+  @override
+  String get trainingMarkIncomplete => 'Segna giorno come incompleto';
+
+  @override
+  String get trainingCompletionSaved => 'Allenamento aggiornato';
+
+  @override
+  String trainingCompletionError(Object error) {
+    return "Impossibile aggiornare l'allenamento: $error";
+  }
+
+  @override
+  String get trainingCompletionUnavailable =>
+      'Impossibile aggiornare questo giorno di allenamento.';
+
+  @override
   String logoutError(Object error) {
     return 'Errore durante il logout: $error';
   }

@@ -464,6 +464,36 @@ abstract class AppLocalizations {
   /// **'Apri tracker'**
   String get trainingOpenTracker;
 
+  /// No description provided for @trainingMarkComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark day as complete'**
+  String get trainingMarkComplete;
+
+  /// No description provided for @trainingMarkIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark day as incomplete'**
+  String get trainingMarkIncomplete;
+
+  /// No description provided for @trainingCompletionSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout day updated'**
+  String get trainingCompletionSaved;
+
+  /// No description provided for @trainingCompletionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to update workout: {error}'**
+  String trainingCompletionError(Object error);
+
+  /// No description provided for @trainingCompletionUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot update this workout day.'**
+  String get trainingCompletionUnavailable;
+
   /// No description provided for @logoutError.
   ///
   /// In it, this message translates to:
