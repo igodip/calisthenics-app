@@ -16,7 +16,7 @@ class Training extends StatefulWidget {
 
 class _TrainingState extends State<Training> {
   late final List<WorkoutExercise> _exercises;
-  late final Map<int, TextEditingController> _noteControllers;
+  late final Map<int, TextEditingController> _personalNoteControllers;
   final Set<int> _savingNotes = {};
   late bool _isCompleted;
   bool _updatingCompletion = false;
@@ -27,15 +27,15 @@ class _TrainingState extends State<Training> {
     super.initState();
     _exercises = List<WorkoutExercise>.from(widget.day.exercises);
     _isCompleted = widget.day.isCompleted;
-    _noteControllers = {
+    _personalNoteControllers = {
       for (int i = 0; i < _exercises.length; i++)
-        i: TextEditingController(text: _exercises[i].notes ?? '')
+        i: TextEditingController(text: _exercises[i].traineeNotes ?? '')
     };
   }
 
   @override
   void dispose() {
-    for (final controller in _noteControllers.values) {
+    for (final controller in _personalNoteControllers.values) {
       controller.dispose();
     }
     super.dispose();
@@ -82,7 +82,7 @@ class _TrainingState extends State<Training> {
             for (int index = 0; index < _exercises.length; index++)
               _ExerciseCard(
                 exercise: _exercises[index],
-                notesController: _noteControllers[index]!,
+                traineeNotesController: _personalNoteControllers[index]!,
                 saving: _savingNotes.contains(index),
                 onSaveNotes: () => _saveNotes(index),
                 onOpenTracker: () =>
@@ -114,7 +114,7 @@ class _TrainingState extends State<Training> {
 
   Future<void> _saveNotes(int index) async {
     final exercise = _exercises[index];
-    final note = _noteControllers[index]!.text.trim();
+    final note = _personalNoteControllers[index]!.text.trim();
     final l10n = AppLocalizations.of(context)!;
 
     if (exercise.id == null) {
@@ -129,7 +129,7 @@ class _TrainingState extends State<Training> {
     try {
       await Supabase.instance.client
           .from('day_exercises')
-          .update({'notes': note.isEmpty ? null : note})
+          .update({'trainee_notes': note.isEmpty ? null : note})
           .eq('id', exercise.id!);
 
       if (!mounted) return;
@@ -138,7 +138,8 @@ class _TrainingState extends State<Training> {
         _exercises[index] = WorkoutExercise(
           id: exercise.id,
           name: exercise.name,
-          notes: note.isEmpty ? null : note,
+          notes: exercise.notes,
+          traineeNotes: note.isEmpty ? null : note,
           position: exercise.position,
         );
       });
@@ -231,14 +232,14 @@ class _TrainingState extends State<Training> {
 
 class _ExerciseCard extends StatelessWidget {
   final WorkoutExercise exercise;
-  final TextEditingController notesController;
+  final TextEditingController traineeNotesController;
   final bool saving;
   final VoidCallback onSaveNotes;
   final VoidCallback onOpenTracker;
 
   const _ExerciseCard({
     required this.exercise,
-    required this.notesController,
+    required this.traineeNotesController,
     required this.saving,
     required this.onSaveNotes,
     required this.onOpenTracker,
@@ -256,7 +257,7 @@ class _ExerciseCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -272,31 +273,54 @@ class _ExerciseCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                IconButton(
+                  onPressed: onOpenTracker,
+                  icon: const Icon(Icons.playlist_add_check),
+                ),
               ],
             ),
-            const SizedBox(height: 12),
+            if ((exercise.notes ?? '').trim().isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  exercise.notes!.trim(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
+              ),
+            ],
+            const SizedBox(height: 8),
             TextField(
-              controller: notesController,
+              controller: traineeNotesController,
               maxLines: null,
               decoration: InputDecoration(
                 labelText: l10n.trainingNotesLabel,
                 hintText: l10n.trainingHeaderNotes,
                 border: const OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton.icon(
-                onPressed: saving ? null : onSaveNotes,
-                icon: saving
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                suffixIcon: saving
+                    ? const Padding(
+                        padding: EdgeInsets.all(10),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       )
-                    : const Icon(Icons.save),
-                label: Text(l10n.trainingNotesSave),
+                    : IconButton(
+                        icon: const Icon(Icons.save),
+                        tooltip: l10n.trainingNotesSave,
+                        onPressed: onSaveNotes,
+                      ),
               ),
             ),
           ],

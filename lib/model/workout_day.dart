@@ -5,12 +5,14 @@ class WorkoutExercise {
   final String? id;
   final String? name;
   final String? notes;
+  final String? traineeNotes;
   final int? position;
 
   const WorkoutExercise({
     this.name,
     this.id,
     this.notes,
+    this.traineeNotes,
     this.position,
   });
 }
