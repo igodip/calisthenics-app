@@ -21,6 +21,7 @@ class WorkoutDay {
   final String dayCode;
   final String? title;
   final String? notes;
+  final bool isCompleted;
   final List<WorkoutExercise> exercises;
 
   const WorkoutDay({
@@ -30,6 +31,7 @@ class WorkoutDay {
     this.id,
     this.title,
     this.notes,
+    this.isCompleted = false,
   });
 
   String formattedTitle(AppLocalizations l10n, {String? fallback}) {

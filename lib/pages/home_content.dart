@@ -138,26 +138,57 @@ class _HomeContentState extends State<HomeContent> {
               );
             }
 
+            final sortedDays = [...days]
+              ..sort((a, b) {
+                if (a.isCompleted == b.isCompleted) {
+                  return 0;
+                }
+                return a.isCompleted ? 1 : -1;
+              });
+
             return ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: days.length + extraTools.length,
+              itemCount: sortedDays.length + extraTools.length,
               separatorBuilder: (_, __) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
-                if (index >= days.length) {
-                  return extraTools[index - days.length];
+                if (index >= sortedDays.length) {
+                  return extraTools[index - sortedDays.length];
                 }
 
-                final day = days[index];
+                final day = sortedDays[index];
+                final isCompleted = day.isCompleted;
+                final theme = Theme.of(context);
                 return SelectionCard(
                   title: day.formattedTitle(l10n),
                   icon: Icons.calendar_today,
+                  iconColor: isCompleted
+                      ? theme.colorScheme.secondary
+                      : theme.colorScheme.primary,
+                  tileColor:
+                      isCompleted ? theme.colorScheme.surfaceVariant : null,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isCompleted)
+                        Icon(Icons.check_circle,
+                            color: theme.colorScheme.secondary),
+                      if (isCompleted)
+                        const SizedBox(
+                            width: 6),
+                      const Icon(Icons.arrow_forward_ios),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => Training(day: day),
                       ),
-                    );
+                    ).then((updated) {
+                      if (updated == true) {
+                        _refresh();
+                      }
+                    });
                   },
                 );
               },
@@ -185,7 +216,7 @@ class _HomeContentState extends State<HomeContent> {
     final response = await client
         .from('days')
         .select('''
-            id, week, day_code, title, notes,
+            id, week, day_code, title, notes, completed,
             day_exercises (
               id, position, notes,
               exercises ( id, name )
@@ -220,6 +251,7 @@ class _HomeContentState extends State<HomeContent> {
         dayCode: (row['day_code'] as String? ?? '').trim(),
         title: row['title'] as String?,
         notes: row['notes'] as String?,
+        isCompleted: row['completed'] as bool? ?? false,
         exercises: exercises,
       );
     }).toList();

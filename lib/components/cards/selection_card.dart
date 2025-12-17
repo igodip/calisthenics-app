@@ -7,12 +7,18 @@ class SelectionCard extends StatelessWidget {
     required this.icon,
     this.onTap,
     this.subtitle,
+    this.iconColor,
+    this.tileColor,
+    this.trailing,
   });
 
   final String title;
   final IconData icon;
   final VoidCallback? onTap;
   final String? subtitle;
+  final Color? iconColor;
+  final Color? tileColor;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +33,14 @@ class SelectionCard extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           icon,
-          color: theme.colorScheme.primary,
+          color: iconColor ?? theme.colorScheme.primary,
         ),
         title: Text(title),
         subtitle: subtitle != null ? Text(subtitle!) : null,
-        trailing: onTap != null ? const Icon(Icons.arrow_forward_ios) : null,
+        trailing:
+            trailing ?? (onTap != null ? const Icon(Icons.arrow_forward_ios) : null),
         onTap: onTap,
+        tileColor: tileColor,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       ),
     );

@@ -98,6 +98,18 @@
   },
   "trainingNotesUnavailable": "Impossibile aggiornare le note per questo esercizio.",
   "trainingOpenTracker": "Apri tracker",
+  "trainingMarkComplete": "Segna giorno come completato",
+  "trainingMarkIncomplete": "Segna giorno come incompleto",
+  "trainingCompletionSaved": "Allenamento aggiornato",
+  "trainingCompletionError": "Impossibile aggiornare l'allenamento: {error}",
+  "@trainingCompletionError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trainingCompletionUnavailable": "Impossibile aggiornare questo giorno di allenamento.",
   "logoutError": "Errore durante il logout: {error}",
   "@logoutError": {
     "placeholders": {
