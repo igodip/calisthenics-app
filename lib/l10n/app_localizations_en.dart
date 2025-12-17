@@ -264,6 +264,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingCompletionUnavailable => 'Cannot update this workout day.';
 
   @override
+  String get trainingExerciseCompletedLabel => 'Exercise completed';
+
+  @override
+  String get trainingExerciseCompletionSaved => 'Exercise updated';
+
+  @override
+  String trainingExerciseCompletionError(Object error) {
+    return 'Unable to update exercise: $error';
+  }
+
+  @override
+  String get trainingExerciseCompletionUnavailable =>
+      'Cannot update this exercise.';
+
+  @override
   String logoutError(Object error) {
     return 'Error while logging out: $error';
   }

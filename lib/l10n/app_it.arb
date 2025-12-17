@@ -120,6 +120,17 @@
     }
   },
   "trainingCompletionUnavailable": "Impossibile aggiornare questo giorno di allenamento.",
+  "trainingExerciseCompletedLabel": "Esercizio completato",
+  "trainingExerciseCompletionSaved": "Esercizio aggiornato",
+  "trainingExerciseCompletionError": "Impossibile aggiornare l'esercizio: {error}",
+  "@trainingExerciseCompletionError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trainingExerciseCompletionUnavailable": "Impossibile aggiornare questo esercizio.",
   "logoutError": "Errore durante il logout: {error}",
   "@logoutError": {
     "placeholders": {

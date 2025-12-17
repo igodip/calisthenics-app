@@ -512,6 +512,30 @@ abstract class AppLocalizations {
   /// **'Cannot update this workout day.'**
   String get trainingCompletionUnavailable;
 
+  /// No description provided for @trainingExerciseCompletedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise completed'**
+  String get trainingExerciseCompletedLabel;
+
+  /// No description provided for @trainingExerciseCompletionSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise updated'**
+  String get trainingExerciseCompletionSaved;
+
+  /// No description provided for @trainingExerciseCompletionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to update exercise: {error}'**
+  String trainingExerciseCompletionError(Object error);
+
+  /// No description provided for @trainingExerciseCompletionUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot update this exercise.'**
+  String get trainingExerciseCompletionUnavailable;
+
   /// No description provided for @logoutError.
   ///
   /// In it, this message translates to:
