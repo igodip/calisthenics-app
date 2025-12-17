@@ -74,7 +74,7 @@ Future<UserProfileData> getUserData() async {
 
   return UserProfileData(
     userId: user.id,
-    email: '',
+    email: user.email ?? '',
     username: name,
     isActive: true,
     isPayed: profile.paid ?? false,
@@ -293,8 +293,6 @@ class _EditProfileBottomSheet extends StatefulWidget {
 class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _fullNameController;
-  late final TextEditingController _timezoneController;
-  String? _unitSystem;
   bool _isSubmitting = false;
 
   @override
@@ -306,7 +304,6 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
   @override
   void dispose() {
     _fullNameController.dispose();
-    _timezoneController.dispose();
     super.dispose();
   }
 
@@ -319,18 +316,10 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     });
 
     final fullName = _fullNameController.text.trim();
-    final timezone = _timezoneController.text.trim();
-
-    final updates = <String, dynamic>{
-      'id': widget.data.userId,
-      'full_name': fullName.isEmpty ? null : fullName,
-      'timezone': timezone.isEmpty ? null : timezone,
-      'unit_system': _unitSystem,
-      'updated_at': DateTime.now().toIso8601String(),
-    };
+    final updates = <String, dynamic>{'name': fullName.isEmpty ? null : fullName};
 
     try {
-      await supabase.from('profiles').upsert(updates, onConflict: 'id');
+      await supabase.from('trainees').update(updates).eq('id', widget.data.userId);
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (error) {
@@ -380,39 +369,11 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
                     hintText: l10n.profileEditFullNameHint,
                   ),
                   textCapitalization: TextCapitalization.words,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _timezoneController,
-                  decoration: InputDecoration(
-                    labelText: l10n.profileEditTimezoneLabel,
-                    hintText: l10n.profileEditTimezoneHint,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String?>(
-                  initialValue: _unitSystem,
-                  items: [
-                    DropdownMenuItem<String?>(
-                      value: null,
-                      child: Text(l10n.profileEditUnitSystemNotSet),
-                    ),
-                    DropdownMenuItem<String?>(
-                      value: 'metric',
-                      child: Text(l10n.profileEditUnitSystemMetric),
-                    ),
-                    DropdownMenuItem<String?>(
-                      value: 'imperial',
-                      child: Text(l10n.profileEditUnitSystemImperial),
-                    ),
-                  ],
-                  decoration: InputDecoration(
-                    labelText: l10n.profileEditUnitSystemLabel,
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _unitSystem = value;
-                    });
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return l10n.profileEditFullNameHint;
+                    }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 24),
@@ -456,4 +417,3 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     );
   }
 }
-
