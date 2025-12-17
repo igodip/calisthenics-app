@@ -218,7 +218,7 @@ class _HomeContentState extends State<HomeContent> {
         .select('''
             id, week, day_code, title, notes, completed,
             day_exercises (
-              id, position, notes,
+              id, position, notes, trainee_notes,
               exercises ( id, name )
             )
           ''')
@@ -242,6 +242,7 @@ class _HomeContentState extends State<HomeContent> {
           name: exerciseDetails['name'] as String?,
           position: (exercise['position'] as num?)?.toInt(),
           notes: exercise['notes'] as String?,
+          traineeNotes: exercise['trainee_notes'] as String?,
         );
       }).toList();
 
