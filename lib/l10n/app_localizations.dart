@@ -374,6 +374,24 @@ abstract class AppLocalizations {
   /// **'Contatta il tuo coach per ricevere una nuova scheda.'**
   String get homeEmptyDescription;
 
+  /// No description provided for @homePlanDefaultTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Piano di allenamento'**
+  String get homePlanDefaultTitle;
+
+  /// No description provided for @homePlanLatestLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimo piano'**
+  String get homePlanLatestLabel;
+
+  /// No description provided for @homePlanStartedLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Iniziato il {date}'**
+  String homePlanStartedLabel(String date);
+
   /// No description provided for @unauthenticated.
   ///
   /// In it, this message translates to:

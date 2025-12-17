@@ -76,6 +76,16 @@
   "retry": "Retry",
   "homeEmptyTitle": "No workouts available",
   "homeEmptyDescription": "Contact your coach to receive a new plan.",
+  "homePlanDefaultTitle": "Workout plan",
+  "homePlanLatestLabel": "Latest plan",
+  "homePlanStartedLabel": "Started {date}",
+  "@homePlanStartedLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "unauthenticated": "User not authenticated",
   "defaultExerciseName": "Exercise",
   "generalNotes": "General notes",

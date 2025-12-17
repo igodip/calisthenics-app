@@ -189,6 +189,17 @@ class AppLocalizationsIt extends AppLocalizations {
       'Contatta il tuo coach per ricevere una nuova scheda.';
 
   @override
+  String get homePlanDefaultTitle => 'Piano di allenamento';
+
+  @override
+  String get homePlanLatestLabel => 'Ultimo piano';
+
+  @override
+  String homePlanStartedLabel(String date) {
+    return 'Iniziato il $date';
+  }
+
+  @override
   String get unauthenticated => 'Utente non autenticato';
 
   @override
