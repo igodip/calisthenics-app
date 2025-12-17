@@ -374,6 +374,54 @@ abstract class AppLocalizations {
   /// **'Contatta il tuo coach per ricevere una nuova scheda.'**
   String get homeEmptyDescription;
 
+  /// No description provided for @homePlansSectionTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Piani di allenamento'**
+  String get homePlansSectionTitle;
+
+  /// No description provided for @homePlansSectionSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Piani assegnati e il loro stato attuale.'**
+  String get homePlansSectionSubtitle;
+
+  /// No description provided for @homePlansEmptyTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun piano di allenamento'**
+  String get homePlansEmptyTitle;
+
+  /// No description provided for @homePlansEmptyDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiedi al tuo coach di assegnarti un piano per vederlo qui.'**
+  String get homePlansEmptyDescription;
+
+  /// No description provided for @homePlanStatusDraft.
+  ///
+  /// In it, this message translates to:
+  /// **'Bozza'**
+  String get homePlanStatusDraft;
+
+  /// No description provided for @homePlanStatusArchived.
+  ///
+  /// In it, this message translates to:
+  /// **'Archiviato'**
+  String get homePlanStatusArchived;
+
+  /// No description provided for @homePlanStatusUpcoming.
+  ///
+  /// In it, this message translates to:
+  /// **'In arrivo'**
+  String get homePlanStatusUpcoming;
+
+  /// No description provided for @homePlanStatusUnknown.
+  ///
+  /// In it, this message translates to:
+  /// **'Stato sconosciuto'**
+  String get homePlanStatusUnknown;
+
   /// No description provided for @homePlanDefaultTitle.
   ///
   /// In it, this message translates to:

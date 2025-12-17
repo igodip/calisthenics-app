@@ -1,7 +1,8 @@
-import 'package:calisync/model/workout_day.dart';
-import 'package:calisync/pages/exercise_tracker.dart';
 import 'package:calisync/components/cards/selection_card.dart';
+import 'package:calisync/model/workout_day.dart';
+import 'package:calisync/model/workout_plan.dart';
 import 'package:calisync/pages/emom_tracker.dart';
+import 'package:calisync/pages/exercise_tracker.dart';
 import 'package:calisync/pages/training.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -17,12 +18,12 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  late Future<List<WorkoutDay>> _workoutDaysFuture;
+  late Future<_HomeData> _homeDataFuture;
 
   @override
   void initState() {
     super.initState();
-    _workoutDaysFuture = _loadWorkoutDays();
+    _homeDataFuture = _loadHomeData();
   }
 
   @override
@@ -59,8 +60,8 @@ class _HomeContentState extends State<HomeContent> {
       padding: const EdgeInsets.all(16.0),
       child: RefreshIndicator(
         onRefresh: _refresh,
-        child: FutureBuilder<List<WorkoutDay>>(
-          future: _workoutDaysFuture,
+        child: FutureBuilder<_HomeData>(
+          future: _homeDataFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return ListView(
@@ -99,7 +100,7 @@ class _HomeContentState extends State<HomeContent> {
                     child: FilledButton.icon(
                       onPressed: () {
                         setState(() {
-                          _workoutDaysFuture = _loadWorkoutDays();
+                          _homeDataFuture = _loadHomeData();
                         });
                       },
                       icon: const Icon(Icons.refresh),
@@ -110,7 +111,13 @@ class _HomeContentState extends State<HomeContent> {
               );
             }
 
-            final days = snapshot.data ?? [];
+            final homeData = snapshot.data ?? const _HomeData.empty();
+            final days = homeData.days;
+            final plans = homeData.plans;
+            final planOverview = _WorkoutPlanOverview(
+              plans: plans,
+              onRefresh: _refresh,
+            );
             if (days.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -134,6 +141,8 @@ class _HomeContentState extends State<HomeContent> {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 24),
+                  planOverview,
+                  const SizedBox(height: 24),
                   ...extraTools,
                 ],
               );
@@ -143,6 +152,8 @@ class _HomeContentState extends State<HomeContent> {
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
+                planOverview,
+                const SizedBox(height: 16),
                 ...planGroups
                     .asMap()
                     .entries
@@ -169,18 +180,58 @@ class _HomeContentState extends State<HomeContent> {
 
   Future<void> _refresh() async {
     setState(() {
-      _workoutDaysFuture = _loadWorkoutDays();
+      _homeDataFuture = _loadHomeData();
     });
-    await _workoutDaysFuture;
+    await _homeDataFuture;
   }
 
-  Future<List<WorkoutDay>> _loadWorkoutDays() async {
+  Future<_HomeData> _loadHomeData() async {
     final client = Supabase.instance.client;
     final userId = client.auth.currentUser?.id;
     if (userId == null) {
       throw Exception(AppLocalizations.of(context)!.unauthenticated);
     }
 
+    final results = await Future.wait([
+      _loadWorkoutPlans(client, userId),
+      _loadWorkoutDays(client, userId),
+    ]);
+
+    return _HomeData(
+      plans: results[0] as List<WorkoutPlan>,
+      days: results[1] as List<WorkoutDay>,
+    );
+  }
+
+  Future<List<WorkoutPlan>> _loadWorkoutPlans(
+    SupabaseClient client,
+    String userId,
+  ) async {
+    final response = await client
+        .from('workout_plans')
+        .select()
+        .eq('trainee_id', userId)
+        .order('starts_at', ascending: false)
+        .order('created_at', ascending: false);
+
+    final data = (response as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+    return data
+        .map(WorkoutPlan.fromJson)
+        .toList()
+      ..sort((a, b) {
+        final aDate = a.startsAt ?? a.createdAt;
+        final bDate = b.startsAt ?? b.createdAt;
+        if (aDate == null && bDate == null) return 0;
+        if (aDate == null) return 1;
+        if (bDate == null) return -1;
+        return bDate.compareTo(aDate);
+      });
+  }
+
+  Future<List<WorkoutDay>> _loadWorkoutDays(
+    SupabaseClient client,
+    String userId,
+  ) async {
     final response = await client
         .from('days')
         .select(
@@ -328,6 +379,195 @@ class _HomeContentState extends State<HomeContent> {
         _refresh();
       }
     });
+  }
+}
+
+class _HomeData {
+  final List<WorkoutPlan> plans;
+  final List<WorkoutDay> days;
+
+  const _HomeData({
+    required this.plans,
+    required this.days,
+  });
+
+  const _HomeData.empty()
+      : plans = const [],
+        days = const [];
+}
+
+class _WorkoutPlanOverview extends StatelessWidget {
+  final List<WorkoutPlan> plans;
+  final Future<void> Function() onRefresh;
+
+  const _WorkoutPlanOverview({
+    required this.plans,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final dateFormat = DateFormat.yMMMd(l10n.localeName);
+
+    final planCards = plans.map(
+      (plan) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: _WorkoutPlanCard(
+          plan: plan,
+          dateFormat: dateFormat,
+        ),
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.homePlansSectionTitle,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.homePlansSectionSubtitle,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: onRefresh,
+              tooltip: l10n.retry,
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (plans.isEmpty)
+          Card(
+            color: theme.colorScheme.surfaceVariant.withOpacity(0.7),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.assignment,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.homePlansEmptyTitle,
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.homePlansEmptyDescription,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          ...planCards,
+      ],
+    );
+  }
+}
+
+class _WorkoutPlanCard extends StatelessWidget {
+  final WorkoutPlan plan;
+  final DateFormat dateFormat;
+
+  const _WorkoutPlanCard({
+    required this.plan,
+    required this.dateFormat,
+  });
+
+  String _statusLabel(AppLocalizations l10n) {
+    final normalized = plan.status?.trim().toLowerCase();
+    switch (normalized) {
+      case 'active':
+        return l10n.profilePlanActive;
+      case 'expired':
+        return l10n.profilePlanExpired;
+      case 'archived':
+        return l10n.homePlanStatusArchived;
+      case 'draft':
+        return l10n.homePlanStatusDraft;
+      case 'upcoming':
+        return l10n.homePlanStatusUpcoming;
+      default:
+        return normalized != null && normalized.isNotEmpty
+            ? normalized[0].toUpperCase() + normalized.substring(1)
+            : l10n.homePlanStatusUnknown;
+    }
+  }
+
+  Color _statusColor(ThemeData theme) {
+    final normalized = plan.status?.trim().toLowerCase();
+    switch (normalized) {
+      case 'active':
+        return theme.colorScheme.primary;
+      case 'expired':
+      case 'archived':
+        return theme.colorScheme.error;
+      case 'upcoming':
+        return theme.colorScheme.tertiary;
+      default:
+        return theme.colorScheme.secondary;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final title = plan.name.isNotEmpty
+        ? plan.name
+        : l10n.homePlanDefaultTitle;
+    final dateRange = plan.dateRangeLabel(dateFormat);
+    final subtitleParts = <String>[];
+    if (dateRange != null) {
+      subtitleParts.add(dateRange);
+    }
+    if ((plan.notes ?? '').trim().isNotEmpty) {
+      subtitleParts.add((plan.notes ?? '').trim());
+    }
+    return SelectionCard(
+      title: title,
+      subtitle: subtitleParts.isEmpty ? null : subtitleParts.join(' • '),
+      icon: Icons.assignment,
+      trailing: Chip(
+        label: Text(_statusLabel(l10n)),
+        backgroundColor: _statusColor(theme).withOpacity(0.15),
+        labelStyle: TextStyle(
+          color: _statusColor(theme),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 }
 

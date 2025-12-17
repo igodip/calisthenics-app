@@ -189,6 +189,32 @@ class AppLocalizationsIt extends AppLocalizations {
       'Contatta il tuo coach per ricevere una nuova scheda.';
 
   @override
+  String get homePlansSectionTitle => 'Piani di allenamento';
+
+  @override
+  String get homePlansSectionSubtitle =>
+      'Piani assegnati e il loro stato attuale.';
+
+  @override
+  String get homePlansEmptyTitle => 'Nessun piano di allenamento';
+
+  @override
+  String get homePlansEmptyDescription =>
+      'Chiedi al tuo coach di assegnarti un piano per vederlo qui.';
+
+  @override
+  String get homePlanStatusDraft => 'Bozza';
+
+  @override
+  String get homePlanStatusArchived => 'Archiviato';
+
+  @override
+  String get homePlanStatusUpcoming => 'In arrivo';
+
+  @override
+  String get homePlanStatusUnknown => 'Stato sconosciuto';
+
+  @override
   String get homePlanDefaultTitle => 'Piano di allenamento';
 
   @override
