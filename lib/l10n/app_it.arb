@@ -76,6 +76,16 @@
   "retry": "Riprova",
   "homeEmptyTitle": "Nessun allenamento disponibile",
   "homeEmptyDescription": "Contatta il tuo coach per ricevere una nuova scheda.",
+  "homePlanDefaultTitle": "Piano di allenamento",
+  "homePlanLatestLabel": "Ultimo piano",
+  "homePlanStartedLabel": "Iniziato il {date}",
+  "@homePlanStartedLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "unauthenticated": "Utente non autenticato",
   "defaultExerciseName": "Esercizio",
   "generalNotes": "Note generali",

@@ -188,6 +188,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Contact your coach to receive a new plan.';
 
   @override
+  String get homePlanDefaultTitle => 'Workout plan';
+
+  @override
+  String get homePlanLatestLabel => 'Latest plan';
+
+  @override
+  String homePlanStartedLabel(String date) {
+    return 'Started $date';
+  }
+
+  @override
   String get unauthenticated => 'User not authenticated';
 
   @override
