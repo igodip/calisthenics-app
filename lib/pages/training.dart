@@ -1,5 +1,4 @@
 import 'package:calisync/model/workout_day.dart';
-import 'package:calisync/pages/exercise_tracker.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,9 +15,9 @@ class Training extends StatefulWidget {
 
 class _TrainingState extends State<Training> {
   late final List<WorkoutExercise> _exercises;
-  late final Map<int, TextEditingController> _personalNoteControllers;
-  final Set<int> _savingNotes = {};
-  final Set<int> _togglingExerciseCompletion = {};
+  late final Map<String, TextEditingController> _personalNoteControllers;
+  final Set<String> _savingNotes = {};
+  final Set<String> _togglingExerciseCompletion = {};
   late bool _isCompleted;
   bool _updatingCompletion = false;
   bool _completionChanged = false;
@@ -27,11 +26,14 @@ class _TrainingState extends State<Training> {
   void initState() {
     super.initState();
     _exercises = List<WorkoutExercise>.from(widget.day.exercises);
+    _sortExercises();
     _isCompleted = widget.day.isCompleted;
-    _personalNoteControllers = {
-      for (int i = 0; i < _exercises.length; i++)
-        i: TextEditingController(text: _exercises[i].traineeNotes ?? '')
-    };
+    _personalNoteControllers = {};
+    for (int i = 0; i < _exercises.length; i++) {
+      final key = _controllerKey(_exercises[i], i);
+      _personalNoteControllers[key] =
+          TextEditingController(text: _exercises[i].traineeNotes ?? '');
+    }
   }
 
   @override
@@ -83,13 +85,15 @@ class _TrainingState extends State<Training> {
             for (int index = 0; index < _exercises.length; index++)
               _ExerciseCard(
                 exercise: _exercises[index],
-                traineeNotesController: _personalNoteControllers[index]!,
-                saving: _savingNotes.contains(index),
-                updatingCompletion:
-                    _togglingExerciseCompletion.contains(index),
+                traineeNotesController: _personalNoteControllers.putIfAbsent(
+                  _controllerKey(_exercises[index], index),
+                  () =>
+                      TextEditingController(text: _exercises[index].traineeNotes ?? ''),
+                ),
+                saving: _savingNotes.contains(_exercises[index].id),
+                updatingCompletion: _togglingExerciseCompletion
+                    .contains(_exercises[index].id),
                 onSaveNotes: () => _saveNotes(index),
-                onOpenTracker: () =>
-                    _openTools(context, _exercises[index]),
                 onToggleCompletion: () => _toggleExerciseCompletion(index),
               ),
             const SizedBox(height: 24),
@@ -118,7 +122,9 @@ class _TrainingState extends State<Training> {
 
   Future<void> _saveNotes(int index) async {
     final exercise = _exercises[index];
-    final note = _personalNoteControllers[index]!.text.trim();
+    final note = _personalNoteControllers[_controllerKey(exercise, index)]!
+        .text
+        .trim();
     final l10n = AppLocalizations.of(context)!;
 
     if (exercise.id == null) {
@@ -128,7 +134,7 @@ class _TrainingState extends State<Training> {
       return;
     }
 
-    setState(() => _savingNotes.add(index));
+    setState(() => _savingNotes.add(exercise.id!));
 
     try {
       await Supabase.instance.client
@@ -159,7 +165,7 @@ class _TrainingState extends State<Training> {
       );
     } finally {
       if (mounted) {
-        setState(() => _savingNotes.remove(index));
+        setState(() => _savingNotes.remove(exercise.id));
       }
     }
   }
@@ -178,7 +184,7 @@ class _TrainingState extends State<Training> {
     final newValue = !exercise.isCompleted;
 
     setState(() {
-      _togglingExerciseCompletion.add(index);
+      _togglingExerciseCompletion.add(exercise.id!);
     });
 
     try {
@@ -199,6 +205,7 @@ class _TrainingState extends State<Training> {
           isCompleted: newValue,
         );
         _completionChanged = true;
+        _sortExercises();
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -212,7 +219,7 @@ class _TrainingState extends State<Training> {
     } finally {
       if (mounted) {
         setState(() {
-          _togglingExerciseCompletion.remove(index);
+          _togglingExerciseCompletion.remove(exercise.id);
         });
       }
     }
@@ -265,28 +272,32 @@ class _TrainingState extends State<Training> {
     }
   }
 
-  void _openTools(BuildContext context, WorkoutExercise exercise) {
-    final l10n = AppLocalizations.of(context)!;
-    final exerciseName = exercise.name?.trim().isNotEmpty == true
-        ? exercise.name!
-        : l10n.defaultExerciseName;
-    final quickAdds = <int>{1};
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ExerciseTrackerPage(
-          title: exerciseName,
-          initialExercises: [
-            ExerciseDefinition(
-              name: exerciseName,
-              color: Theme.of(context).colorScheme.primary,
-              icon: Icons.fitness_center,
-              quickAddValues: quickAdds.toList()..sort(),
-            ),
-          ],
-        ),
-      ),
-    );
+  void _sortExercises() {
+    _exercises.sort((a, b) {
+      if (a.isCompleted != b.isCompleted) {
+        return a.isCompleted ? 1 : -1;
+      }
+      return _exerciseOrderValue(a).compareTo(_exerciseOrderValue(b));
+    });
   }
+
+  int _exerciseOrderValue(WorkoutExercise exercise) {
+    if (exercise.position != null) return exercise.position!;
+
+    final matchIndex = widget.day.exercises.indexWhere(
+      (original) => original.id != null && original.id == exercise.id,
+    );
+    if (matchIndex != -1) return matchIndex;
+
+    final currentIndex = _exercises.indexOf(exercise);
+    if (currentIndex != -1) return currentIndex;
+
+    final fallbackIndex = widget.day.exercises.indexOf(exercise);
+    return fallbackIndex < 0 ? 0 : fallbackIndex;
+  }
+
+  String _controllerKey(WorkoutExercise exercise, int fallbackIndex) =>
+      exercise.id ?? 'local-$fallbackIndex';
 }
 
 class _ExerciseCard extends StatelessWidget {
@@ -295,7 +306,6 @@ class _ExerciseCard extends StatelessWidget {
   final bool saving;
   final bool updatingCompletion;
   final VoidCallback onSaveNotes;
-  final VoidCallback onOpenTracker;
   final VoidCallback onToggleCompletion;
 
   const _ExerciseCard({
@@ -304,7 +314,6 @@ class _ExerciseCard extends StatelessWidget {
     required this.saving,
     required this.updatingCompletion,
     required this.onSaveNotes,
-    required this.onOpenTracker,
     required this.onToggleCompletion,
   });
 
@@ -314,11 +323,22 @@ class _ExerciseCard extends StatelessWidget {
     final exerciseName = exercise.name?.trim().isNotEmpty == true
         ? exercise.name!
         : l10n.defaultExerciseName;
+    final colorScheme = Theme.of(context).colorScheme;
+    final isCompleted = exercise.isCompleted;
+    final cardColor =
+        isCompleted ? colorScheme.primaryContainer : Theme.of(context).cardColor;
+    final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          decoration:
+              isCompleted ? TextDecoration.lineThrough : TextDecoration.none,
+          color: isCompleted ? colorScheme.onPrimaryContainer : null,
+        );
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,
+      color: cardColor,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -330,37 +350,30 @@ class _ExerciseCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     exerciseName,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: titleStyle,
                   ),
                 ),
                 IconButton(
-                  onPressed: onOpenTracker,
-                  icon: const Icon(Icons.playlist_add_check),
+                  onPressed: updatingCompletion ? null : onToggleCompletion,
+                  tooltip: l10n.trainingExerciseCompletedLabel,
+                  icon: updatingCompletion
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Icon(
+                          isCompleted
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: isCompleted
+                              ? colorScheme.primary
+                              : Theme.of(context).iconTheme.color,
+                        ),
                 ),
               ],
             ),
             const SizedBox(height: 4),
-            Row(
-              children: [
-                Checkbox(
-                  value: exercise.isCompleted,
-                  onChanged:
-                      updatingCompletion ? null : (_) => onToggleCompletion(),
-                ),
-                Text(l10n.trainingExerciseCompletedLabel),
-                if (updatingCompletion) ...[
-                  const SizedBox(width: 8),
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ],
-              ],
-            ),
             if ((exercise.notes ?? '').trim().isNotEmpty) ...[
               const SizedBox(height: 8),
               Container(
