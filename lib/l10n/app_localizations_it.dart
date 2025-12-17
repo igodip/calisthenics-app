@@ -266,6 +266,21 @@ class AppLocalizationsIt extends AppLocalizations {
       'Impossibile aggiornare questo giorno di allenamento.';
 
   @override
+  String get trainingExerciseCompletedLabel => 'Esercizio completato';
+
+  @override
+  String get trainingExerciseCompletionSaved => 'Esercizio aggiornato';
+
+  @override
+  String trainingExerciseCompletionError(Object error) {
+    return "Impossibile aggiornare l'esercizio: $error";
+  }
+
+  @override
+  String get trainingExerciseCompletionUnavailable =>
+      'Impossibile aggiornare questo esercizio.';
+
+  @override
   String logoutError(Object error) {
     return 'Errore durante il logout: $error';
   }

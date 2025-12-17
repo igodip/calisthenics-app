@@ -183,7 +183,8 @@ class _HomeContentState extends State<HomeContent> {
 
     final response = await client
         .from('days')
-        .select('*, day_exercises ( id, position, notes, exercises ( id, name ) )')
+        .select(
+            '*, day_exercises ( id, position, notes, completed, trainee_notes, exercises ( id, name ) )')
         .eq('trainee_id', userId)
         .order('week', ascending: true)
         .order('day_code', ascending: true)
@@ -223,6 +224,7 @@ class _HomeContentState extends State<HomeContent> {
           position: (exercise['position'] as num?)?.toInt(),
           notes: exercise['notes'] as String?,
           traineeNotes: exercise['trainee_notes'] as String?,
+          isCompleted: exercise['completed'] as bool? ?? false,
         );
       }).toList();
 

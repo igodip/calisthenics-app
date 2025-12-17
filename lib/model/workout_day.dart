@@ -7,6 +7,7 @@ class WorkoutExercise {
   final String? notes;
   final String? traineeNotes;
   final int? position;
+  final bool isCompleted;
 
   const WorkoutExercise({
     this.name,
@@ -14,6 +15,7 @@ class WorkoutExercise {
     this.notes,
     this.traineeNotes,
     this.position,
+    this.isCompleted = false,
   });
 }
 

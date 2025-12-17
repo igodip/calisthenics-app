@@ -18,6 +18,7 @@ class _TrainingState extends State<Training> {
   late final List<WorkoutExercise> _exercises;
   late final Map<int, TextEditingController> _personalNoteControllers;
   final Set<int> _savingNotes = {};
+  final Set<int> _togglingExerciseCompletion = {};
   late bool _isCompleted;
   bool _updatingCompletion = false;
   bool _completionChanged = false;
@@ -84,9 +85,12 @@ class _TrainingState extends State<Training> {
                 exercise: _exercises[index],
                 traineeNotesController: _personalNoteControllers[index]!,
                 saving: _savingNotes.contains(index),
+                updatingCompletion:
+                    _togglingExerciseCompletion.contains(index),
                 onSaveNotes: () => _saveNotes(index),
                 onOpenTracker: () =>
                     _openTools(context, _exercises[index]),
+                onToggleCompletion: () => _toggleExerciseCompletion(index),
               ),
             const SizedBox(height: 24),
             FilledButton.icon(
@@ -141,6 +145,7 @@ class _TrainingState extends State<Training> {
           notes: exercise.notes,
           traineeNotes: note.isEmpty ? null : note,
           position: exercise.position,
+          isCompleted: exercise.isCompleted,
         );
       });
 
@@ -155,6 +160,60 @@ class _TrainingState extends State<Training> {
     } finally {
       if (mounted) {
         setState(() => _savingNotes.remove(index));
+      }
+    }
+  }
+
+  Future<void> _toggleExerciseCompletion(int index) async {
+    final exercise = _exercises[index];
+    final l10n = AppLocalizations.of(context)!;
+
+    if (exercise.id == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseCompletionUnavailable)),
+      );
+      return;
+    }
+
+    final newValue = !exercise.isCompleted;
+
+    setState(() {
+      _togglingExerciseCompletion.add(index);
+    });
+
+    try {
+      await Supabase.instance.client
+          .from('day_exercises')
+          .update({'completed': newValue})
+          .eq('id', exercise.id!);
+
+      if (!mounted) return;
+
+      setState(() {
+        _exercises[index] = WorkoutExercise(
+          id: exercise.id,
+          name: exercise.name,
+          notes: exercise.notes,
+          traineeNotes: exercise.traineeNotes,
+          position: exercise.position,
+          isCompleted: newValue,
+        );
+        _completionChanged = true;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseCompletionSaved)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseCompletionError('$error'))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _togglingExerciseCompletion.remove(index);
+        });
       }
     }
   }
@@ -234,15 +293,19 @@ class _ExerciseCard extends StatelessWidget {
   final WorkoutExercise exercise;
   final TextEditingController traineeNotesController;
   final bool saving;
+  final bool updatingCompletion;
   final VoidCallback onSaveNotes;
   final VoidCallback onOpenTracker;
+  final VoidCallback onToggleCompletion;
 
   const _ExerciseCard({
     required this.exercise,
     required this.traineeNotesController,
     required this.saving,
+    required this.updatingCompletion,
     required this.onSaveNotes,
     required this.onOpenTracker,
+    required this.onToggleCompletion,
   });
 
   @override
@@ -277,6 +340,25 @@ class _ExerciseCard extends StatelessWidget {
                   onPressed: onOpenTracker,
                   icon: const Icon(Icons.playlist_add_check),
                 ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Checkbox(
+                  value: exercise.isCompleted,
+                  onChanged:
+                      updatingCompletion ? null : (_) => onToggleCompletion(),
+                ),
+                Text(l10n.trainingExerciseCompletedLabel),
+                if (updatingCompletion) ...[
+                  const SizedBox(width: 8),
+                  const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ],
               ],
             ),
             if ((exercise.notes ?? '').trim().isNotEmpty) ...[
