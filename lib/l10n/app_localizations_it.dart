@@ -284,7 +284,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String trainingCompletionError(Object error) {
-    return "Impossibile aggiornare l'allenamento: $error";
+    return 'Impossibile aggiornare l\'allenamento: $error';
   }
 
   @override
@@ -299,7 +299,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String trainingExerciseCompletionError(Object error) {
-    return "Impossibile aggiornare l'esercizio: $error";
+    return 'Impossibile aggiornare l\'esercizio: $error';
   }
 
   @override

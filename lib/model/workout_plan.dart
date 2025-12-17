@@ -5,7 +5,7 @@ class WorkoutPlan {
   final String name;
   final String? status;
   final String? notes;
-  final DateTime? startsAt;
+  final DateTime? startsOn;
   final DateTime? endsAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -15,7 +15,7 @@ class WorkoutPlan {
     this.id,
     this.status,
     this.notes,
-    this.startsAt,
+    this.startsOn,
     this.endsAt,
     this.createdAt,
     this.updatedAt,
@@ -35,7 +35,7 @@ class WorkoutPlan {
       name: (json['name'] as String? ?? '').trim(),
       status: (json['status'] as String? ?? '').trim(),
       notes: json['notes'] as String?,
-      startsAt: parseDate(json['starts_at']),
+      startsOn: parseDate(json['starts_on']),
       endsAt: parseDate(json['ends_at']),
       createdAt: parseDate(json['created_at']),
       updatedAt: parseDate(json['updated_at']),
@@ -53,12 +53,12 @@ class WorkoutPlan {
   }
 
   String? dateRangeLabel(DateFormat formatter) {
-    if (startsAt == null && endsAt == null) return null;
-    if (startsAt != null && endsAt != null) {
-      return '${formatter.format(startsAt!)} — ${formatter.format(endsAt!)}';
+    if (startsOn == null && endsAt == null) return null;
+    if (startsOn != null && endsAt != null) {
+      return '${formatter.format(startsOn!)} — ${formatter.format(endsAt!)}';
     }
-    if (startsAt != null) {
-      return formatter.format(startsAt!);
+    if (startsOn != null) {
+      return formatter.format(startsOn!);
     }
     return formatter.format(endsAt!);
   }

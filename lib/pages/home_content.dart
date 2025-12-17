@@ -166,8 +166,7 @@ class _HomeContentState extends State<HomeContent> {
                           onOpenDay: _openDay,
                         ),
                       ),
-                    )
-                    .toList(),
+                    ),
                 const SizedBox(height: 8),
                 ...extraTools,
               ],
@@ -211,7 +210,7 @@ class _HomeContentState extends State<HomeContent> {
         .from('workout_plans')
         .select()
         .eq('trainee_id', userId)
-        .order('starts_at', ascending: false)
+        .order('starts_on', ascending: false)
         .order('created_at', ascending: false);
 
     final data = (response as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
@@ -219,8 +218,8 @@ class _HomeContentState extends State<HomeContent> {
         .map(WorkoutPlan.fromJson)
         .toList()
       ..sort((a, b) {
-        final aDate = a.startsAt ?? a.createdAt;
-        final bDate = b.startsAt ?? b.createdAt;
+        final aDate = a.startsOn ?? a.createdAt;
+        final bDate = b.startsOn ?? b.createdAt;
         if (aDate == null && bDate == null) return 0;
         if (aDate == null) return 1;
         if (bDate == null) return -1;
@@ -258,7 +257,7 @@ class _HomeContentState extends State<HomeContent> {
 
       final createdAt = _parseDate(row['created_at']);
       final planStartedAt = _parseDate(
-        row['plan_started_at'] ?? row['plan_start'] ?? row['starts_at'],
+        row['plan_started_at'] ?? row['plan_start'] ?? row['starts_on'],
       );
       final planId = row['plan_id'] as String? ??
           row['workout_plan_id'] as String? ??
@@ -286,8 +285,8 @@ class _HomeContentState extends State<HomeContent> {
         title: row['title'] as String?,
         notes: row['notes'] as String?,
         isCompleted: row['completed'] as bool? ?? false,
-        planId: planId as String?,
-        planName: planName as String?,
+        planId: planId,
+        planName: planName ,
         planStartedAt: planStartedAt,
         createdAt: createdAt,
         exercises: exercises,
@@ -456,7 +455,7 @@ class _WorkoutPlanOverview extends StatelessWidget {
         const SizedBox(height: 12),
         if (plans.isEmpty)
           Card(
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.7),
+            color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.7),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(

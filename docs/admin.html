@@ -221,7 +221,7 @@
                                 </label>
                                 <label class="small stack">
                                     Starts at
-                                    <input type="date" v-model="planEdits[plan.id].starts_at" />
+                                    <input type="date" v-model="planEdits[plan.id].starts_on" />
                                 </label>
                                 <label class="small stack">
                                     Ends at
@@ -511,7 +511,7 @@
               [plan.id]: {
                 name: plan.name || '',
                 status: plan.status || planStatuses[0],
-                starts_at: normalizeDateInput(plan.starts_at),
+                starts_on: normalizeDateInput(plan.starts_on),
                 ends_at: normalizeDateInput(plan.ends_at),
                 notes: plan.notes || ''
               }
@@ -645,9 +645,9 @@
             if(!u) return;
             const { data, error } = await supabase
               .from('workout_plans')
-              .select('id, name, status, starts_at, ends_at, notes, trainee_id, created_at')
+              .select('id, name, status, starts_on, ends_at, notes, trainee_id, created_at')
               .eq('trainee_id', u.id)
-              .order('starts_at', { ascending:false, nullsLast:false })
+              .order('starts_on', { ascending:false, nullsLast:false })
               .order('created_at', { ascending:false });
             if(error){ console.error(error); alert('Failed to load plans: '+error.message); return; }
             plans.value = data || [];
@@ -753,7 +753,7 @@
                 trainee_id: current.value.id,
                 name,
                 status: (newPlanStatus.value || '').trim() || null,
-                starts_at: newPlanStartsAt.value || null,
+                starts_on: newPlanStartsAt.value || null,
                 ends_at: newPlanEndsAt.value || null,
                 notes: (newPlanNotes.value || '').trim() || null,
               };
@@ -808,7 +808,7 @@
               const payload = {
                 name,
                 status: (form.status || '').trim() || null,
-                starts_at: form.starts_at || null,
+                starts_on: form.starts_on || null,
                 ends_at: form.ends_at || null,
                 notes: (form.notes || '').trim() || null,
               };

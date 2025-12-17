@@ -532,56 +532,56 @@ abstract class AppLocalizations {
 
   /// No description provided for @trainingMarkComplete.
   ///
-  /// In en, this message translates to:
-  /// **'Mark day as complete'**
+  /// In it, this message translates to:
+  /// **'Segna giorno come completato'**
   String get trainingMarkComplete;
 
   /// No description provided for @trainingMarkIncomplete.
   ///
-  /// In en, this message translates to:
-  /// **'Mark day as incomplete'**
+  /// In it, this message translates to:
+  /// **'Segna giorno come incompleto'**
   String get trainingMarkIncomplete;
 
   /// No description provided for @trainingCompletionSaved.
   ///
-  /// In en, this message translates to:
-  /// **'Workout day updated'**
+  /// In it, this message translates to:
+  /// **'Allenamento aggiornato'**
   String get trainingCompletionSaved;
 
   /// No description provided for @trainingCompletionError.
   ///
-  /// In en, this message translates to:
-  /// **'Unable to update workout: {error}'**
+  /// In it, this message translates to:
+  /// **'Impossibile aggiornare l\'allenamento: {error}'**
   String trainingCompletionError(Object error);
 
   /// No description provided for @trainingCompletionUnavailable.
   ///
-  /// In en, this message translates to:
-  /// **'Cannot update this workout day.'**
+  /// In it, this message translates to:
+  /// **'Impossibile aggiornare questo giorno di allenamento.'**
   String get trainingCompletionUnavailable;
 
   /// No description provided for @trainingExerciseCompletedLabel.
   ///
-  /// In en, this message translates to:
-  /// **'Exercise completed'**
+  /// In it, this message translates to:
+  /// **'Esercizio completato'**
   String get trainingExerciseCompletedLabel;
 
   /// No description provided for @trainingExerciseCompletionSaved.
   ///
-  /// In en, this message translates to:
-  /// **'Exercise updated'**
+  /// In it, this message translates to:
+  /// **'Esercizio aggiornato'**
   String get trainingExerciseCompletionSaved;
 
   /// No description provided for @trainingExerciseCompletionError.
   ///
-  /// In en, this message translates to:
-  /// **'Unable to update exercise: {error}'**
+  /// In it, this message translates to:
+  /// **'Impossibile aggiornare l\'esercizio: {error}'**
   String trainingExerciseCompletionError(Object error);
 
   /// No description provided for @trainingExerciseCompletionUnavailable.
   ///
-  /// In en, this message translates to:
-  /// **'Cannot update this exercise.'**
+  /// In it, this message translates to:
+  /// **'Impossibile aggiornare questo esercizio.'**
   String get trainingExerciseCompletionUnavailable;
 
   /// No description provided for @logoutError.
