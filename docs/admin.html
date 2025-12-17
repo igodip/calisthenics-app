@@ -51,6 +51,11 @@
         .tag.accent{background:#0d2219;color:#b7f5d8;border-color:#1c2b23}
         .day-body{display:flex;flex-direction:column;gap:10px;margin-top:10px}
         .inline-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+        .exercise-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+        .exercise-item{border:1px solid var(--line);border-radius:12px;background:#0f1118;padding:10px;display:flex;flex-direction:column;gap:6px}
+        .exercise-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        .exercise-head input{flex:1 1 160px;min-width:0}
+        .exercise-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
     </style>
 </head>
 <body>
@@ -101,14 +106,13 @@
                 <div class="col">
                     <h3 style="margin-top:0">Available exercises</h3>
                     <div v-if="exerciseOptions.length===0" class="muted small">No exercises loaded yet.</div>
-                    <div v-else class="list scroll-area">
-                        <div v-for="ex in exerciseOptions" :key="ex.id" class="card small stack">
-                            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-                                <strong>{{ ex.name }}</strong>
+                    <div v-else class="exercise-list scroll-area">
+                        <div v-for="ex in exerciseOptions" :key="ex.id" class="exercise-item small">
+                            <div class="exercise-head">
+                                <input v-model="exerciseEdits[ex.id].name" placeholder="Exercise name" />
                                 <span class="pill">#{{ ex.id.slice(0,4) }}</span>
                             </div>
-                            <div style="display:flex;gap:6px;flex-wrap:wrap">
-                                <input v-model="exerciseEdits[ex.id].name" placeholder="Exercise name" style="flex:1 1 160px" />
+                            <div class="exercise-actions">
                                 <button class="btn small" @click="updateExercise(ex)" :disabled="savingExercise">Save</button>
                                 <button class="small" type="button" @click="resetExerciseEdit(ex)" :disabled="savingExercise">Reset</button>
                                 <button class="small" type="button" @click="deleteExercise(ex)" :disabled="savingExercise" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
