@@ -188,6 +188,32 @@ class AppLocalizationsEn extends AppLocalizations {
       'Contact your coach to receive a new plan.';
 
   @override
+  String get homePlansSectionTitle => 'Workout plans';
+
+  @override
+  String get homePlansSectionSubtitle =>
+      'Plans assigned to you and their current status.';
+
+  @override
+  String get homePlansEmptyTitle => 'No workout plans yet';
+
+  @override
+  String get homePlansEmptyDescription =>
+      'Ask your coach to assign a plan to see it here.';
+
+  @override
+  String get homePlanStatusDraft => 'Draft';
+
+  @override
+  String get homePlanStatusArchived => 'Archived';
+
+  @override
+  String get homePlanStatusUpcoming => 'Upcoming';
+
+  @override
+  String get homePlanStatusUnknown => 'Unknown status';
+
+  @override
   String get homePlanDefaultTitle => 'Workout plan';
 
   @override

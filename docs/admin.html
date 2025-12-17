@@ -79,6 +79,7 @@
             <div class="pill-menu">
                 <button :class="{active: activeSection==='exercises'}" @click="activeSection='exercises'">Exercises</button>
                 <button :class="{active: activeSection==='trainees'}" @click="activeSection='trainees'">Trainees</button>
+                <button :class="{active: activeSection==='plans'}" @click="activeSection='plans'" :disabled="!current">Plans</button>
                 <button :class="{active: activeSection==='schedule'}" @click="activeSection='schedule'" :disabled="!current">Schedule</button>
             </div>
             <div class="toolbar-secondary">
@@ -139,7 +140,98 @@
                             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
                                 <button class="btn" @click="selectUser(u); activeSection='schedule'">Open schedule</button>
                                 <button class="btn" @click="loadDays(u); activeSection='schedule'">Load days</button>
+                                <button class="btn" @click="loadPlans(u); activeSection='plans'">Load plans</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row section-panel" :class="{active: activeSection==='plans'}">
+            <div class="col" v-if="!current">
+                <div class="card">
+                    <h2>Workout plans</h2>
+                    <p class="muted">Select a trainee from the Trainees tab to manage their plans.</p>
+                </div>
+            </div>
+
+            <div class="col" v-else>
+                <div class="card">
+                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Add workout plan <span class="pill">{{ current.displayName || shortId(current.id) }}</span></h2>
+                    <form @submit.prevent="addPlan" style="display:flex;flex-direction:column;gap:8px">
+                        <label class="small stack">
+                            Name
+                            <input v-model="newPlanName" placeholder="e.g. Summer Strength" required />
+                        </label>
+                        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+                            <label class="small stack">
+                                Status
+                                <select v-model="newPlanStatus">
+                                    <option v-for="status in planStatuses" :key="status" :value="status">{{ status }}</option>
+                                </select>
+                            </label>
+                            <label class="small stack">
+                                Starts at
+                                <input type="date" v-model="newPlanStartsAt" />
+                            </label>
+                            <label class="small stack">
+                                Ends at
+                                <input type="date" v-model="newPlanEndsAt" />
+                            </label>
+                        </div>
+                        <label class="small stack">
+                            Notes
+                            <textarea v-model="newPlanNotes" placeholder="Optional notes for the trainee"></textarea>
+                        </label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <button class="btn small" type="submit" :disabled="savingPlan">Save plan</button>
+                            <button class="small" type="button" @click="resetPlanForm" :disabled="savingPlan">Reset</button>
+                        </div>
+                        <div v-if="savingPlan" class="muted small">Saving plan…</div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Plans <span class="pill">{{ plans.length }} total</span></h2>
+                    <div v-if="plans.length===0" class="muted small">No plans for this trainee yet.</div>
+                    <div v-else class="list scroll-area">
+                        <div v-for="plan in plans" :key="plan.id" class="card stack small">
+                            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+                                <div class="stack">
+                                    <strong>{{ planEdits[plan.id]?.name || plan.name }}</strong>
+                                    <span class="muted mono small">#{{ shortId(plan.id) }}</span>
+                                </div>
+                                <div class="inline-actions">
+                                    <button class="btn small" @click="savePlan(plan)" :disabled="savingPlan">Save</button>
+                                    <button class="small" type="button" @click="resetPlanEdit(plan)" :disabled="savingPlan">Reset</button>
+                                    <button class="small" type="button" @click="deletePlan(plan)" :disabled="savingPlan" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
+                                </div>
+                            </div>
+                            <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">
+                                <label class="small stack">
+                                    Name
+                                    <input v-model="planEdits[plan.id].name" />
+                                </label>
+                                <label class="small stack">
+                                    Status
+                                    <select v-model="planEdits[plan.id].status">
+                                        <option v-for="status in planStatuses" :key="status" :value="status">{{ status }}</option>
+                                    </select>
+                                </label>
+                                <label class="small stack">
+                                    Starts at
+                                    <input type="date" v-model="planEdits[plan.id].starts_at" />
+                                </label>
+                                <label class="small stack">
+                                    Ends at
+                                    <input type="date" v-model="planEdits[plan.id].ends_at" />
+                                </label>
+                            </div>
+                            <label class="small stack">
+                                Notes
+                                <textarea v-model="planEdits[plan.id].notes" placeholder="Optional notes"></textarea>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -334,20 +426,29 @@
           const users = ref([]);
           const current = ref(null);
           const days = ref([]);
+          const plans = ref([]);
           const exerciseOptions = ref([]);
           const exerciseSelection = ref({});
           const exerciseEdits = ref({});
           const dayEdits = ref({});
           const dayExerciseEdits = ref({});
+          const planEdits = ref({});
           const expandedDays = ref({});
           const addingDay = ref(false);
           const addingExercise = ref(false);
           const savingExercise = ref(false);
+          const savingPlan = ref(false);
           const newDayWeek = ref(1);
           const newDayCode = ref('MON');
           const newDayTitle = ref('');
           const newDayNotes = ref('');
           const newExerciseName = ref('');
+          const planStatuses = ['active','upcoming','draft','archived'];
+          const newPlanName = ref('');
+          const newPlanStatus = ref(planStatuses[0]);
+          const newPlanStartsAt = ref('');
+          const newPlanEndsAt = ref('');
+          const newPlanNotes = ref('');
 
           const nextWeek = computed(() => {
             if(!days.value.length) return 1;
@@ -382,6 +483,42 @@
           function resetDayEdit(day){ setDayEdit(day); }
 
           function resetDayExerciseEdit(ex){ setDayExerciseEdit(ex); }
+
+          function resetPlanForm(){
+            newPlanName.value = '';
+            newPlanStatus.value = planStatuses[0];
+            newPlanStartsAt.value = '';
+            newPlanEndsAt.value = '';
+            newPlanNotes.value = '';
+          }
+
+          function normalizeDateInput(value){
+            if(!value) return '';
+            if(typeof value === 'string'){
+              return value.split('T')[0];
+            }
+            try {
+              return new Date(value).toISOString().slice(0,10);
+            } catch(_e){
+              return '';
+            }
+          }
+
+          function setPlanEdit(plan){
+            if(!plan?.id) return;
+            planEdits.value = {
+              ...planEdits.value,
+              [plan.id]: {
+                name: plan.name || '',
+                status: plan.status || planStatuses[0],
+                starts_at: normalizeDateInput(plan.starts_at),
+                ends_at: normalizeDateInput(plan.ends_at),
+                notes: plan.notes || ''
+              }
+            };
+          }
+
+          function resetPlanEdit(plan){ setPlanEdit(plan); }
 
           function ensureSelection(dayId){
             if(!exerciseSelection.value[dayId]){
@@ -466,7 +603,11 @@
           async function bootstrap(){
             await loadUsers();
             await loadExercises();
-            if(users.value.length){ selectUser(users.value[0]); await loadDays(users.value[0]); }
+            if(users.value.length){
+              selectUser(users.value[0]);
+              await loadPlans(users.value[0]);
+              await loadDays(users.value[0]);
+            }
           }
 
           async function loadUsers(){
@@ -482,7 +623,13 @@
             }));
           }
 
-          function selectUser(u){ current.value = u; days.value = []; expandedDays.value = {}; }
+          function selectUser(u){
+            current.value = u;
+            days.value = [];
+            plans.value = [];
+            planEdits.value = {};
+            expandedDays.value = {};
+          }
 
           async function loadExercises(){
             const { data, error } = await supabase
@@ -492,6 +639,20 @@
             if(error){ console.error(error); alert('Failed to load exercises: '+error.message); return; }
             exerciseOptions.value = data || [];
             (exerciseOptions.value||[]).forEach(setExerciseEdit);
+          }
+
+          async function loadPlans(u=current.value){
+            if(!u) return;
+            const { data, error } = await supabase
+              .from('workout_plans')
+              .select('id, name, status, starts_at, ends_at, notes, trainee_id, created_at')
+              .eq('trainee_id', u.id)
+              .order('starts_at', { ascending:false, nullsLast:false })
+              .order('created_at', { ascending:false });
+            if(error){ console.error(error); alert('Failed to load plans: '+error.message); return; }
+            plans.value = data || [];
+            planEdits.value = {};
+            (plans.value||[]).forEach(setPlanEdit);
           }
 
           async function addExerciseDefinition(){
@@ -582,6 +743,34 @@
             });
           }
 
+          async function addPlan(){
+            if(!current.value){ alert('Select a trainee first.'); return; }
+            const name = (newPlanName.value || '').trim();
+            if(!name){ alert('Plan name is required.'); return; }
+            savingPlan.value = true;
+            try {
+              const payload = {
+                trainee_id: current.value.id,
+                name,
+                status: (newPlanStatus.value || '').trim() || null,
+                starts_at: newPlanStartsAt.value || null,
+                ends_at: newPlanEndsAt.value || null,
+                notes: (newPlanNotes.value || '').trim() || null,
+              };
+              const { error } = await supabase
+                .from('workout_plans')
+                .insert(payload);
+              if(error){ throw new Error('Create plan failed: '+error.message); }
+              resetPlanForm();
+              await loadPlans();
+            } catch(err){
+              console.error(err);
+              alert(err.message || 'Failed to create plan.');
+            } finally {
+              savingPlan.value = false;
+            }
+          }
+
           async function addDay(){
             if(!current.value){ alert('Select a trainee first.'); return; }
             const week = Number(newDayWeek.value || 1);
@@ -606,6 +795,54 @@
               alert(err.message || 'Failed to create day.');
             } finally {
               addingDay.value = false;
+            }
+          }
+
+          async function savePlan(plan){
+            if(!plan?.id){ alert('Missing plan.'); return; }
+            const form = planEdits.value[plan.id] || {};
+            const name = (form.name || '').trim();
+            if(!name){ alert('Plan name is required.'); return; }
+            savingPlan.value = true;
+            try {
+              const payload = {
+                name,
+                status: (form.status || '').trim() || null,
+                starts_at: form.starts_at || null,
+                ends_at: form.ends_at || null,
+                notes: (form.notes || '').trim() || null,
+              };
+              const { error } = await supabase
+                .from('workout_plans')
+                .update(payload)
+                .eq('id', plan.id);
+              if(error){ throw new Error('Update plan failed: '+error.message); }
+              await loadPlans();
+            } catch(err){
+              console.error(err);
+              alert(err.message || 'Failed to update plan.');
+            } finally {
+              savingPlan.value = false;
+            }
+          }
+
+          async function deletePlan(plan){
+            if(!plan?.id) return;
+            const confirmed = confirm('Delete this plan?');
+            if(!confirmed) return;
+            savingPlan.value = true;
+            try {
+              const { error } = await supabase
+                .from('workout_plans')
+                .delete()
+                .eq('id', plan.id);
+              if(error){ throw new Error('Delete plan failed: '+error.message); }
+              await loadPlans();
+            } catch(err){
+              console.error(err);
+              alert(err.message || 'Failed to delete plan.');
+            } finally {
+              savingPlan.value = false;
             }
           }
 
@@ -707,12 +944,12 @@
           });
 
           return { session, user, email, password, search, activeSection, users, filteredUsers, current, days, exerciseOptions, exerciseSelection,
-                   exerciseEdits, dayEdits, dayExerciseEdits, expandedDays, nextWeek,
-                   newDayWeek, newDayCode, newDayTitle, newDayNotes, addingDay, addingExercise, savingExercise,
-                   newExerciseName,
-                   emailPasswordSignIn, signOut, selectUser, loadDays, addDay, resetDayForm, resetExerciseForm, addExerciseDefinition, addExerciseToDay,
+                   exerciseEdits, dayEdits, dayExerciseEdits, expandedDays, nextWeek, plans, planEdits, planStatuses,
+                   newDayWeek, newDayCode, newDayTitle, newDayNotes, addingDay, addingExercise, savingExercise, savingPlan,
+                   newExerciseName, newPlanName, newPlanStatus, newPlanStartsAt, newPlanEndsAt, newPlanNotes,
+                   emailPasswordSignIn, signOut, selectUser, loadDays, loadPlans, addPlan, addDay, resetDayForm, resetExerciseForm, resetPlanForm, addExerciseDefinition, addExerciseToDay,
                    updateExercise, deleteExercise, resetExerciseEdit, filteredExerciseOptions, pickExercise, matchExercise, toggleDay, isDayOpen,
-                   saveDay, resetDayEdit, deleteDay,
+                   saveDay, resetDayEdit, deleteDay, resetPlanEdit, savePlan, deletePlan,
                    saveDayExercise, resetDayExerciseEdit, deleteDayExercise,
                    shortId };
         }
