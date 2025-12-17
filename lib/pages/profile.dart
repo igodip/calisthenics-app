@@ -1,5 +1,5 @@
 // lib/profile.dart
-import 'package:calisync/model/profiles.dart';
+import 'package:calisync/model/trainee.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -24,10 +24,10 @@ class UserProfileData {
   final String username;
   final bool isActive;
   final bool isPayed;
-  final Profiles? profile;
+  final Trainee? profile;
 
   String displayName(AppLocalizations l10n) {
-    final fullName = profile?.fullName?.trim();
+    final fullName = profile?.name?.trim();
     if (fullName != null && fullName.isNotEmpty) {
       return fullName;
     }
@@ -48,12 +48,6 @@ class UserProfileData {
     }
     return nameParts.take(2).map((part) => part.characters.first).join().toUpperCase();
   }
-
-  String? get avatarUrl => profile?.avatarUrl;
-  String? get timezone => profile?.timezone;
-  String? get unitSystem => profile?.unitSystem;
-  DateTime? get createdAt => profile?.createdAt;
-  DateTime? get updatedAt => profile?.updatedAt;
 }
 
 Future<UserProfileData> getUserData() async {
@@ -62,36 +56,28 @@ Future<UserProfileData> getUserData() async {
     throw Exception('Utente non autenticato');
   }
 
-  final usersResponse = await supabase
-      .from('users')
-      .select('id, email, username, active, paid')
-      .eq('id', user.id)
-      .limit(1)
-      .maybeSingle();
-
   final profileResponse = await supabase
-      .from('profiles')
+      .from('trainees')
       .select(
-          'id, full_name, avatar_url, unit_system, timezone, created_at, updated_at')
+          'id, name, paid')
       .eq('id', user.id)
       .limit(1)
       .maybeSingle();
 
-  if (usersResponse == null && profileResponse == null) {
+  if (profileResponse == null) {
     throw Exception('user-not-found');
   }
 
-  final profile = profileResponse != null ? Profiles.fromMap(profileResponse) : null;
-  final email = (usersResponse?['email'] as String?) ?? user.email ?? '';
-  final username = (usersResponse?['username'] as String?) ??
+  final profile = Trainee.fromMap(profileResponse);
+  final name = profile.name ??
       (user.email != null ? user.email!.split('@').first : '');
 
   return UserProfileData(
     userId: user.id,
-    email: email,
-    username: username,
-    isActive: (usersResponse?['active'] as bool?) ?? false,
-    isPayed: (usersResponse?['payed'] as bool?) ?? false,
+    email: '',
+    username: name,
+    isActive: true,
+    isPayed: profile.paid ?? false,
     profile: profile,
   );
 }
@@ -209,7 +195,6 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _ProfileAvatar(data: data),
                   const SizedBox(height: 16),
                   Text(
                     displayName,
@@ -264,28 +249,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           title: Text(l10n.profileUsername),
                           subtitle: Text(data.username.isEmpty ? '-' : data.username),
                         ),
-                        const Divider(height: 0),
-                        ListTile(
-                          leading: const Icon(Icons.schedule),
-                          title: Text(l10n.profileLastUpdated),
-                          subtitle: Text(
-                            data.updatedAt != null
-                                ? _formatDate(data.updatedAt!)
-                                : l10n.profileValueUnavailable,
-                          ),
-                        ),
-                        const Divider(height: 0),
-                        ListTile(
-                          leading: const Icon(Icons.public),
-                          title: Text(l10n.profileTimezone),
-                          subtitle: Text(data.timezone ?? l10n.profileNotSet),
-                        ),
-                        const Divider(height: 0),
-                        ListTile(
-                          leading: const Icon(Icons.straighten),
-                          title: Text(l10n.profileUnitSystem),
-                          subtitle: Text(_unitSystemLabel(data.unitSystem, l10n)),
-                        ),
                       ],
                     ),
                   ),
@@ -318,24 +281,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-String _formatDate(DateTime date) {
-  return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-}
-
-String _unitSystemLabel(String? unitSystem, AppLocalizations l10n) {
-  switch (unitSystem) {
-    case 'metric':
-      return l10n.profileEditUnitSystemMetric;
-    case 'imperial':
-      return l10n.profileEditUnitSystemImperial;
-    default:
-      if (unitSystem == null || unitSystem.trim().isEmpty) {
-        return l10n.profileNotSet;
-      }
-      return unitSystem;
-  }
-}
-
 class _EditProfileBottomSheet extends StatefulWidget {
   const _EditProfileBottomSheet({required this.data});
 
@@ -355,10 +300,7 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _fullNameController = TextEditingController(text: widget.data.profile?.fullName ?? '');
-    _timezoneController =
-        TextEditingController(text: widget.data.profile?.timezone ?? widget.data.timezone ?? '');
-    _unitSystem = widget.data.profile?.unitSystem ?? widget.data.unitSystem;
+    _fullNameController = TextEditingController(text: widget.data.profile?.name ?? '');
   }
 
   @override
@@ -515,32 +457,3 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
   }
 }
 
-class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar({required this.data});
-
-  final UserProfileData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final avatarUrl = data.avatarUrl;
-    final backgroundColor = Theme.of(context).colorScheme.primaryContainer;
-    final l10n = AppLocalizations.of(context)!;
-
-    return CircleAvatar(
-      radius: 48,
-      backgroundColor: backgroundColor,
-      backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
-          ? NetworkImage(avatarUrl)
-          : null,
-      child: (avatarUrl == null || avatarUrl.isEmpty)
-          ? Text(
-              data.initials(l10n),
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),
-            )
-          : null,
-    );
-  }
-}

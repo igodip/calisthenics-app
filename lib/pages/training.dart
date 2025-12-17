@@ -197,11 +197,6 @@ class _ExerciseCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: onOpenTracker,
-                  icon: const Icon(Icons.fitness_center),
-                  tooltip: l10n.trainingOpenTracker,
-                ),
               ],
             ),
             const SizedBox(height: 12),

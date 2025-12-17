@@ -229,7 +229,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get trainingNotesUnavailable => 'Cannot update notes for this exercise.';
+  String get trainingNotesUnavailable =>
+      'Cannot update notes for this exercise.';
 
   @override
   String get trainingOpenTracker => 'Open tracker';

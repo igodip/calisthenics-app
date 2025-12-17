@@ -216,7 +216,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainingHeaderNotes => 'Note';
 
   @override
-  String get trainingNotesLabel => "Note dell'esercizio";
+  String get trainingNotesLabel => 'Note dell\'esercizio';
 
   @override
   String get trainingNotesSave => 'Salva note';
@@ -601,7 +601,8 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get emomFinishedMessage => 'Ottimo lavoro! Hai rispettato ogni minuto.';
+  String get emomFinishedMessage =>
+      'Ottimo lavoro! Hai rispettato ogni minuto.';
 
   @override
   String get emomTimeRemainingLabel => 'Tempo rimanente in questo minuto';
