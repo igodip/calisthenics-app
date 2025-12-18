@@ -18,13 +18,33 @@ class AppLocalizationsIt extends AppLocalizations {
   String get navHome => 'Home';
 
   @override
-  String get navSettings => 'Impostazioni';
+  String get navGuides => 'Guide';
 
   @override
   String get navProfile => 'Profilo';
 
   @override
   String get navTerminology => 'Terminologia';
+
+  @override
+  String get guidesTitle => 'Guida agli esercizi';
+
+  @override
+  String get guidesSubtitle =>
+      'Scopri la tecnica corretta, i punti chiave e guarda il movimento prima di allenarti.';
+
+  @override
+  String get guidesPrimaryFocus => 'Focus principale';
+
+  @override
+  String get guidesCoachTip => 'Consiglio del coach';
+
+  @override
+  String get guidesWatchVideo => 'Guarda il tutorial';
+
+  @override
+  String get guidesVideoUnavailable =>
+      'Impossibile aprire il tutorial in questo momento.';
 
   @override
   String get settingsComingSoon =>
