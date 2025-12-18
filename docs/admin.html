@@ -223,10 +223,6 @@
                                     Starts at
                                     <input type="date" v-model="planEdits[plan.id].starts_on" />
                                 </label>
-                                <label class="small stack">
-                                    Ends at
-                                    <input type="date" v-model="planEdits[plan.id].ends_at" />
-                                </label>
                             </div>
                             <label class="small stack">
                                 Notes
@@ -512,7 +508,6 @@
                 name: plan.name || '',
                 status: plan.status || planStatuses[0],
                 starts_on: normalizeDateInput(plan.starts_on),
-                ends_at: normalizeDateInput(plan.ends_at),
                 notes: plan.notes || ''
               }
             };
@@ -754,7 +749,6 @@
                 name,
                 status: (newPlanStatus.value || '').trim() || null,
                 starts_on: newPlanStartsAt.value || null,
-                ends_at: newPlanEndsAt.value || null,
                 notes: (newPlanNotes.value || '').trim() || null,
               };
               const { error } = await supabase
@@ -809,7 +803,6 @@
                 name,
                 status: (form.status || '').trim() || null,
                 starts_on: form.starts_on || null,
-                ends_at: form.ends_at || null,
                 notes: (form.notes || '').trim() || null,
               };
               const { error } = await supabase
