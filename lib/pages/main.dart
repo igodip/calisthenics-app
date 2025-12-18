@@ -5,9 +5,9 @@ import 'package:calisync/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import 'exercise_guides.dart';
 import 'home_content.dart';
 import 'login.dart';
-import 'settings.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -84,8 +84,8 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       _NavigationItem(
-        icon: Icons.settings,
-        label: l10n.navSettings,
+        icon: Icons.play_circle,
+        label: l10n.navGuides,
         gradient: LinearGradient(
           colors: [colorScheme.secondary, colorScheme.tertiary],
         ),
@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
 
     final List<Widget> pages = [
       const HomeContent(),
-      const SettingsPage(),
+      const ExerciseGuidesPage(),
       const ProfilePage(),
       const TerminologiaPage()
     ];

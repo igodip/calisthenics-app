@@ -116,11 +116,11 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get navHome;
 
-  /// No description provided for @navSettings.
+  /// No description provided for @navGuides.
   ///
   /// In it, this message translates to:
-  /// **'Impostazioni'**
-  String get navSettings;
+  /// **'Guide'**
+  String get navGuides;
 
   /// No description provided for @navProfile.
   ///
@@ -133,6 +133,42 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Terminologia'**
   String get navTerminology;
+
+  /// No description provided for @guidesTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Guida agli esercizi'**
+  String get guidesTitle;
+
+  /// No description provided for @guidesSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Scopri la tecnica corretta, i punti chiave e guarda il movimento prima di allenarti.'**
+  String get guidesSubtitle;
+
+  /// No description provided for @guidesPrimaryFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Focus principale'**
+  String get guidesPrimaryFocus;
+
+  /// No description provided for @guidesCoachTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Consiglio del coach'**
+  String get guidesCoachTip;
+
+  /// No description provided for @guidesWatchVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Guarda il tutorial'**
+  String get guidesWatchVideo;
+
+  /// No description provided for @guidesVideoUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aprire il tutorial in questo momento.'**
+  String get guidesVideoUnavailable;
 
   /// No description provided for @settingsComingSoon.
   ///

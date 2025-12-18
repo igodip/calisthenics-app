@@ -46,6 +46,7 @@ dependencies:
   app_links: ^6.0.0
   camera:
   intl: ^0.20.2
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
