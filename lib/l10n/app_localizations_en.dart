@@ -355,6 +355,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUnitSystem => 'Unit system';
 
   @override
+  String get profileWeight => 'Weight';
+
+  @override
+  String profileWeightValue(String weight) {
+    return '$weight kg';
+  }
+
+  @override
   String get profileEdit => 'Edit profile';
 
   @override
@@ -371,6 +379,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileEditFullNameHint => 'How should we call you?';
+
+  @override
+  String get profileEditWeightLabel => 'Weight';
+
+  @override
+  String get profileEditWeightHint => 'Enter your weight in kg (optional)';
+
+  @override
+  String get profileEditWeightInvalid => 'Enter a valid positive weight.';
 
   @override
   String get profileEditTimezoneLabel => 'Time zone';

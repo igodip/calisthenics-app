@@ -357,6 +357,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileUnitSystem => 'Unità di misura';
 
   @override
+  String get profileWeight => 'Peso';
+
+  @override
+  String profileWeightValue(String weight) {
+    return '$weight kg';
+  }
+
+  @override
   String get profileEdit => 'Modifica profilo';
 
   @override
@@ -373,6 +381,16 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get profileEditFullNameHint => 'Come vuoi essere chiamato?';
+
+  @override
+  String get profileEditWeightLabel => 'Peso';
+
+  @override
+  String get profileEditWeightHint => 'Inserisci il tuo peso in kg (opzionale)';
+
+  @override
+  String get profileEditWeightInvalid =>
+      'Inserisci un peso valido e positivo.';
 
   @override
   String get profileEditTimezoneLabel => 'Fuso orario';

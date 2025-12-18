@@ -59,7 +59,7 @@ Future<UserProfileData> getUserData() async {
   final profileResponse = await supabase
       .from('trainees')
       .select(
-          'id, name, paid')
+          'id, name, paid, weight')
       .eq('id', user.id)
       .limit(1)
       .maybeSingle();
@@ -189,6 +189,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 theme.textTheme.labelMedium?.copyWith(color: colorScheme.onPrimary);
             final displayName = data.displayName(l10n);
             final emailText = data.email.isEmpty ? l10n.profileEmailUnavailable : data.email;
+            final weight = data.profile?.weight;
+            final weightText = weight != null
+                ? l10n.profileWeightValue(weight.toStringAsFixed(1))
+                : l10n.profileNotSet;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -249,6 +253,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           title: Text(l10n.profileUsername),
                           subtitle: Text(data.username.isEmpty ? '-' : data.username),
                         ),
+                        const Divider(height: 0),
+                        ListTile(
+                          leading: const Icon(Icons.monitor_weight_outlined),
+                          title: Text(l10n.profileWeight),
+                          subtitle: Text(weightText),
+                        ),
                       ],
                     ),
                   ),
@@ -293,17 +303,21 @@ class _EditProfileBottomSheet extends StatefulWidget {
 class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _fullNameController;
+  late final TextEditingController _weightController;
   bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
     _fullNameController = TextEditingController(text: widget.data.profile?.name ?? '');
+    final weight = widget.data.profile?.weight;
+    _weightController = TextEditingController(text: weight != null ? '$weight' : '');
   }
 
   @override
   void dispose() {
     _fullNameController.dispose();
+    _weightController.dispose();
     super.dispose();
   }
 
@@ -316,7 +330,12 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     });
 
     final fullName = _fullNameController.text.trim();
-    final updates = <String, dynamic>{'name': fullName.isEmpty ? null : fullName};
+    final weightText = _weightController.text.trim().replaceAll(',', '.');
+    final weightValue = weightText.isEmpty ? null : double.tryParse(weightText);
+    final updates = <String, dynamic>{
+      'name': fullName.isEmpty ? null : fullName,
+      'weight': weightValue,
+    };
 
     try {
       await supabase.from('trainees').update(updates).eq('id', widget.data.userId);
@@ -372,6 +391,27 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return l10n.profileEditFullNameHint;
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _weightController,
+                  decoration: InputDecoration(
+                    labelText: l10n.profileEditWeightLabel,
+                    hintText: l10n.profileEditWeightHint,
+                  ),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true, signed: false),
+                  validator: (value) {
+                    final text = value?.trim();
+                    if (text == null || text.isEmpty) {
+                      return null;
+                    }
+                    final parsed = double.tryParse(text.replaceAll(',', '.'));
+                    if (parsed == null || parsed <= 0) {
+                      return l10n.profileEditWeightInvalid;
                     }
                     return null;
                   },

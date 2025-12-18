@@ -680,6 +680,18 @@ abstract class AppLocalizations {
   /// **'Unità di misura'**
   String get profileUnitSystem;
 
+  /// No description provided for @profileWeight.
+  ///
+  /// In it, this message translates to:
+  /// **'Peso'**
+  String get profileWeight;
+
+  /// No description provided for @profileWeightValue.
+  ///
+  /// In it, this message translates to:
+  /// **'{weight} kg'**
+  String profileWeightValue(String weight);
+
   /// No description provided for @profileEdit.
   ///
   /// In it, this message translates to:
@@ -715,6 +727,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Come vuoi essere chiamato?'**
   String get profileEditFullNameHint;
+
+  /// No description provided for @profileEditWeightLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Peso'**
+  String get profileEditWeightLabel;
+
+  /// No description provided for @profileEditWeightHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci il tuo peso in kg (opzionale)'**
+  String get profileEditWeightHint;
+
+  /// No description provided for @profileEditWeightInvalid.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un peso valido e positivo.'**
+  String get profileEditWeightInvalid;
 
   /// No description provided for @profileEditTimezoneLabel.
   ///

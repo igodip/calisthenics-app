@@ -162,12 +162,24 @@
   "profileTimezone": "Time zone",
   "profileNotSet": "Not set",
   "profileUnitSystem": "Unit system",
+  "profileWeight": "Weight",
+  "profileWeightValue": "{weight} kg",
+  "@profileWeightValue": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
   "profileEdit": "Edit profile",
   "profileComingSoon": "Coming soon",
   "profileEditSubtitle": "Update your personal details",
   "profileEditTitle": "Edit profile",
   "profileEditFullNameLabel": "Full name",
   "profileEditFullNameHint": "How should we call you?",
+  "profileEditWeightLabel": "Weight",
+  "profileEditWeightHint": "Enter your weight in kg (optional)",
+  "profileEditWeightInvalid": "Enter a valid positive weight.",
   "profileEditTimezoneLabel": "Time zone",
   "profileEditTimezoneHint": "Example: Europe/Rome",
   "profileEditUnitSystemLabel": "Preferred unit system",
