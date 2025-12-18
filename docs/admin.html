@@ -645,7 +645,7 @@
             if(!u) return;
             const { data, error } = await supabase
               .from('workout_plans')
-              .select('id, name, status, starts_on, ends_at, notes, trainee_id, created_at')
+              .select('id, title, status, starts_on, notes, trainee_id, created_at')
               .eq('trainee_id', u.id)
               .order('starts_on', { ascending:false, nullsLast:false })
               .order('created_at', { ascending:false });
