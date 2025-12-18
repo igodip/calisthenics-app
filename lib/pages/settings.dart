@@ -272,84 +272,9 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
         const SizedBox(height: 24),
-        _SectionHeader(title: l10n.settingsTrainingSection),
-        _SettingsCard(
-          children: [
-            ListTile(
-              title: Text(l10n.settingsUnitSystem),
-              subtitle: Text(
-                _unitSystem == 'metric'
-                    ? l10n.settingsUnitsMetric
-                    : l10n.settingsUnitsImperial,
-              ),
-              trailing: DropdownButton<String>(
-                value: _unitSystem,
-                dropdownColor: theme.cardColor,
-                onChanged: _changeUnitSystem,
-                underline: const SizedBox.shrink(),
-                items: [
-                  DropdownMenuItem(
-                    value: 'metric',
-                    child: Text(l10n.settingsUnitsMetric),
-                  ),
-                  DropdownMenuItem(
-                    value: 'imperial',
-                    child: Text(l10n.settingsUnitsImperial),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 0),
-            ListTile(
-              title: Text(l10n.settingsRestTimer),
-              subtitle: Text(l10n.settingsRestTimerDescription),
-              trailing: DropdownButton<int>(
-                value: _restTimerSeconds,
-                dropdownColor: theme.cardColor,
-                onChanged: _changeRestTimer,
-                underline: const SizedBox.shrink(),
-                items: const [60, 90, 120, 180]
-                    .map(
-                      (seconds) => DropdownMenuItem(
-                        value: seconds,
-                        child: Text(_restTimerLabel(l10n, seconds)),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        _SectionHeader(title: l10n.settingsDataSection),
-        _SettingsCard(
-          children: [
-            ListTile(
-              onTap: _clearCache,
-              title: Text(l10n.settingsClearCache),
-              subtitle: Text(l10n.settingsClearCacheDescription),
-              trailing: const Icon(Icons.delete_outline),
-            ),
-            const Divider(height: 0),
-            ListTile(
-              onTap: _exportData,
-              title: Text(l10n.settingsExportData),
-              subtitle: Text(l10n.settingsExportDataDescription),
-              trailing: const Icon(Icons.file_download_outlined),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
         _SectionHeader(title: l10n.settingsSupportSection),
         _SettingsCard(
           children: [
-            ListTile(
-              onTap: _contactCoach,
-              title: Text(l10n.settingsContactCoach),
-              subtitle: Text(l10n.settingsContactCoachDescription),
-              trailing: const Icon(Icons.message_outlined),
-            ),
-            const Divider(height: 0),
             ListTile(
               title: Text(l10n.settingsAppVersion),
               subtitle: Text(l10n.settingsAppVersionValue(_appVersion)),

@@ -1,8 +1,6 @@
 import 'package:calisync/components/cards/selection_card.dart';
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/model/workout_plan.dart';
-import 'package:calisync/pages/emom_tracker.dart';
-import 'package:calisync/pages/exercise_tracker.dart';
 import 'package:calisync/pages/training.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -29,33 +27,6 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final extraTools = [
-      SelectionCard(
-        title: l10n.exerciseTrackerTitle,
-        icon: Icons.checklist,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ExerciseTrackerPage(),
-            ),
-          );
-        },
-      ),
-      SelectionCard(
-        title: l10n.emomTrackerTitle,
-        subtitle: l10n.emomTrackerSubtitle,
-        icon: Icons.timer,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const EmomTrackerPage(),
-            ),
-          );
-        },
-      ),
-    ];
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: RefreshIndicator(
@@ -141,9 +112,7 @@ class _HomeContentState extends State<HomeContent> {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 24),
-                  planOverview,
-                  const SizedBox(height: 24),
-                  ...extraTools,
+                  planOverview
                 ],
               );
             }
@@ -167,8 +136,6 @@ class _HomeContentState extends State<HomeContent> {
                         ),
                       ),
                     ),
-                const SizedBox(height: 8),
-                ...extraTools,
               ],
             );
           },
@@ -243,7 +210,7 @@ class _HomeContentState extends State<HomeContent> {
     final data = (response as List<dynamic>? ?? [])
         .cast<Map<String, dynamic>>();
 
-    DateTime? _parseDate(dynamic value) {
+    DateTime? parseDate(dynamic value) {
       if (value is DateTime) return value;
       if (value is String) {
         return DateTime.tryParse(value);
@@ -255,8 +222,8 @@ class _HomeContentState extends State<HomeContent> {
       final dayExercises =
           (row['day_exercises'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
 
-      final createdAt = _parseDate(row['created_at']);
-      final planStartedAt = _parseDate(
+      final createdAt = parseDate(row['created_at']);
+      final planStartedAt = parseDate(
         row['plan_started_at'] ?? row['plan_start'] ?? row['starts_on'],
       );
       final planId = row['plan_id'] as String? ??
@@ -455,7 +422,7 @@ class _WorkoutPlanOverview extends StatelessWidget {
         const SizedBox(height: 12),
         if (plans.isEmpty)
           Card(
-            color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.7),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -560,7 +527,7 @@ class _WorkoutPlanCard extends StatelessWidget {
       icon: Icons.assignment,
       trailing: Chip(
         label: Text(_statusLabel(l10n)),
-        backgroundColor: _statusColor(theme).withOpacity(0.15),
+        backgroundColor: _statusColor(theme).withValues(alpha: 0.15),
         labelStyle: TextStyle(
           color: _statusColor(theme),
           fontWeight: FontWeight.bold,
@@ -608,7 +575,7 @@ class _WorkoutPlanSection extends StatelessWidget {
         : null;
 
     return Card(
-      color: isLatest ? theme.colorScheme.primaryContainer.withOpacity(0.25) : null,
+      color: isLatest ? theme.colorScheme.primaryContainer.withValues(alpha: 0.25) : null,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
@@ -680,7 +647,7 @@ class _WorkoutDayTile extends StatelessWidget {
       iconColor: isCompleted
           ? theme.colorScheme.secondary
           : theme.colorScheme.primary,
-      tileColor: isCompleted ? theme.colorScheme.surfaceVariant : null,
+      tileColor: isCompleted ? theme.colorScheme.surfaceContainerHighest : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
