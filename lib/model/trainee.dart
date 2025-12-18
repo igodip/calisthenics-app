@@ -3,18 +3,21 @@ class Trainee {
   final String id;
   final String? name;
   final bool? paid;
+  final double? weight;
 
   const Trainee({
     required this.id,
     this.name,
-    this.paid
+    this.paid,
+    this.weight,
   });
 
   factory Trainee.fromMap(Map<String, dynamic> map) {
     return Trainee(
       id: map['id'] as String,
       name: map['name'] as String?,
-      paid: map['paid'] as bool?
+      paid: map['paid'] as bool?,
+      weight: (map['weight'] as num?)?.toDouble(),
     );
   }
 
@@ -22,19 +25,22 @@ class Trainee {
     return {
       'id': id,
       'name': name,
-      'paid': paid
+      'paid': paid,
+      'weight': weight,
     };
   }
 
   Trainee copyWith({
     String? id,
     String? name,
-    bool? paid
+    bool? paid,
+    double? weight,
   }) {
     return Trainee(
       id: id ?? this.id,
       name: name ?? this.name,
-      paid: paid ?? this.paid
+      paid: paid ?? this.paid,
+      weight: weight ?? this.weight,
     );
   }
 
@@ -42,7 +48,8 @@ class Trainee {
   String toString() => 'Profiles(${{
         'id': id,
         'name': name,
-        'paid': paid
+        'paid': paid,
+        'weight': weight
       }})';
 
   @override
@@ -52,13 +59,15 @@ class Trainee {
       runtimeType == other.runtimeType &&
       id == other.id &&
       name == other.name &&
-      paid == other.paid;
+      paid == other.paid &&
+      weight == other.weight;
 
   @override
   int get hashCode =>
       Object.hashAll([
         id,
         name,
-        paid
+        paid,
+        weight
       ]);
 }

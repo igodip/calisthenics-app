@@ -162,12 +162,24 @@
   "profileTimezone": "Fuso orario",
   "profileNotSet": "Non impostato",
   "profileUnitSystem": "Unità di misura",
+  "profileWeight": "Peso",
+  "profileWeightValue": "{weight} kg",
+  "@profileWeightValue": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
   "profileEdit": "Modifica profilo",
   "profileComingSoon": "Presto disponibile",
   "profileEditSubtitle": "Aggiorna le tue informazioni personali",
   "profileEditTitle": "Modifica profilo",
   "profileEditFullNameLabel": "Nome completo",
   "profileEditFullNameHint": "Come vuoi essere chiamato?",
+  "profileEditWeightLabel": "Peso",
+  "profileEditWeightHint": "Inserisci il tuo peso in kg (opzionale)",
+  "profileEditWeightInvalid": "Inserisci un peso valido e positivo.",
   "profileEditTimezoneLabel": "Fuso orario",
   "profileEditTimezoneHint": "Esempio: Europe/Rome",
   "profileEditUnitSystemLabel": "Unità di misura preferita",
