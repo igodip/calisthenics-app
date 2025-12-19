@@ -728,6 +728,120 @@ abstract class AppLocalizations {
   /// **'{weight} kg'**
   String profileWeightValue(String weight);
 
+  /// No description provided for @profileMaxTestsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Test massimali'**
+  String get profileMaxTestsTitle;
+
+  /// No description provided for @profileMaxTestsDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.'**
+  String get profileMaxTestsDescription;
+
+  /// No description provided for @profileMaxTestsAdd.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi test massimale'**
+  String get profileMaxTestsAdd;
+
+  /// No description provided for @profileMaxTestsRefresh.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiorna'**
+  String get profileMaxTestsRefresh;
+
+  /// No description provided for @profileMaxTestsEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.'**
+  String get profileMaxTestsEmpty;
+
+  /// No description provided for @profileMaxTestsError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare i test massimali: {error}'**
+  String profileMaxTestsError(Object error);
+
+  /// No description provided for @profileMaxTestsExerciseLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Esercizio'**
+  String get profileMaxTestsExerciseLabel;
+
+  /// No description provided for @profileMaxTestsExerciseHint.
+  ///
+  /// In it, this message translates to:
+  /// **'es. trazioni o piegamenti'**
+  String get profileMaxTestsExerciseHint;
+
+  /// No description provided for @profileMaxTestsValueLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultato'**
+  String get profileMaxTestsValueLabel;
+
+  /// No description provided for @profileMaxTestsValueHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un valore positivo'**
+  String get profileMaxTestsValueHint;
+
+  /// No description provided for @profileMaxTestsUnitLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Unità'**
+  String get profileMaxTestsUnitLabel;
+
+  /// No description provided for @profileMaxTestsUnitHint.
+  ///
+  /// In it, this message translates to:
+  /// **'es. rip, kg, sec'**
+  String get profileMaxTestsUnitHint;
+
+  /// No description provided for @profileMaxTestsDateLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrato il {date}'**
+  String profileMaxTestsDateLabel(String date);
+
+  /// No description provided for @profileMaxTestsCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get profileMaxTestsCancel;
+
+  /// No description provided for @profileMaxTestsSave.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva test'**
+  String get profileMaxTestsSave;
+
+  /// No description provided for @profileMaxTestsSaveSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Test massimale salvato'**
+  String get profileMaxTestsSaveSuccess;
+
+  /// No description provided for @profileMaxTestsSaveError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile salvare il test: {error}'**
+  String profileMaxTestsSaveError(Object error);
+
+  /// No description provided for @profileMaxTestsDefaultUnit.
+  ///
+  /// In it, this message translates to:
+  /// **'ripetizioni'**
+  String get profileMaxTestsDefaultUnit;
+
+  /// No description provided for @profileMaxTestsBestLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Miglior risultato'**
+  String get profileMaxTestsBestLabel;
+
   /// No description provided for @profileEdit.
   ///
   /// In it, this message translates to:
