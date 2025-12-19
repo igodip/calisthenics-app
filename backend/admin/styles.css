@@ -57,3 +57,12 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .day-code-picker button{border-radius:999px;padding:6px 12px;border:1px solid var(--line);background:transparent;color:var(--ink)}
 .day-code-picker button.active{background:var(--accent);color:#04120c;border-color:transparent}
 .helper-text{font-size:12px;color:var(--muted)}
+.history-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}
+.history-card{display:flex;flex-direction:column;gap:10px}
+.history-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.history-card-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
+.history-chart{width:100%;height:100px;background:#0e111a;border-radius:12px;border:1px solid var(--line);padding:6px;box-sizing:border-box}
+.history-line{fill:none;stroke:var(--accent);stroke-width:2}
+.history-point{fill:#9aa0a6;stroke:#0e111a;stroke-width:2;r:3}
+.history-point.latest{fill:var(--accent)}
+.history-meta{display:flex;justify-content:space-between;align-items:center;color:var(--muted)}

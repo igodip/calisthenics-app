@@ -31,6 +31,7 @@
                 <button :class="{active: activeSection==='trainees'}" @click="activeSection='trainees'">Trainees</button>
                 <button :class="{active: activeSection==='plans'}" @click="activeSection='plans'" :disabled="!current">Plans</button>
                 <button :class="{active: activeSection==='schedule'}" @click="activeSection='schedule'" :disabled="!current">Schedule</button>
+                <button :class="{active: activeSection==='history'}" @click="activeSection='history'" :disabled="!current">History</button>
             </div>
             <div class="toolbar-secondary">
                 <input v-model="search" placeholder="Search trainees..." style="min-width:200px" />
@@ -340,6 +341,62 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row section-panel" :class="{active: activeSection==='history'}">
+            <div class="col" v-if="!current">
+                <div class="card">
+                    <h2>Max test history</h2>
+                    <p class="muted">Select a trainee from the Trainees tab to review their max test history.</p>
+                </div>
+            </div>
+
+            <div class="col" v-else>
+                <div class="card">
+                    <div class="history-header">
+                        <h2 style="margin:0">Max test history • {{ current.displayName || shortId(current.id) }}</h2>
+                        <div class="inline-actions">
+                            <span class="pill">{{ maxTests.length }} tests</span>
+                            <button class="small" type="button" @click="loadMaxTests" :disabled="loadingMaxTests">Refresh</button>
+                        </div>
+                    </div>
+                    <p class="muted small">Each chart shows how max attempts evolve over time for a single exercise.</p>
+                    <div v-if="loadingMaxTests" class="muted small">Loading max tests…</div>
+                    <div v-else-if="maxTestsError" class="muted small">{{ maxTestsError }}</div>
+                    <div v-else-if="maxTests.length===0" class="muted small">No max tests logged yet.</div>
+                    <div v-else class="history-grid">
+                        <div v-for="entry in maxTestHistory" :key="entry.exercise" class="card history-card">
+                            <div class="history-card-head">
+                                <div class="stack">
+                                    <strong>{{ entry.exercise }}</strong>
+                                    <span class="muted small">{{ entry.count }} tests • best {{ formatTestValue(entry.bestValue) }} {{ entry.unit }}</span>
+                                </div>
+                                <span class="pill">{{ entry.latestLabel }}</span>
+                            </div>
+                            <svg
+                                class="history-chart"
+                                :viewBox="`0 0 ${entry.chartWidth} ${entry.chartHeight}`"
+                                role="img"
+                                :aria-label="`Max test history for ${entry.exercise}`"
+                            >
+                                <polyline :points="entry.polyline" class="history-line"></polyline>
+                                <circle
+                                    v-for="(point, idx) in entry.points"
+                                    :key="idx"
+                                    :cx="point.x"
+                                    :cy="point.y"
+                                    class="history-point"
+                                    :class="{ latest: idx === entry.points.length - 1 }"
+                                ></circle>
+                            </svg>
+                            <div class="history-meta small">
+                                <span>{{ formatTestValue(entry.minValue) }} {{ entry.unit }}</span>
+                                <span>{{ formatTestValue(entry.maxValue) }} {{ entry.unit }}</span>
                             </div>
                         </div>
                     </div>
