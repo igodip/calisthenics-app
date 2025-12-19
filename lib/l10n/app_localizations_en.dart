@@ -382,6 +382,71 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get profileMaxTestsTitle => 'Max test tracking';
+
+  @override
+  String get profileMaxTestsDescription =>
+      'Log your best attempts to see how your strength evolves over time.';
+
+  @override
+  String get profileMaxTestsAdd => 'Add max test';
+
+  @override
+  String get profileMaxTestsRefresh => 'Refresh';
+
+  @override
+  String get profileMaxTestsEmpty =>
+      'No max tests recorded yet. Add your first attempt to start tracking progress.';
+
+  @override
+  String profileMaxTestsError(Object error) {
+    return 'Unable to load max tests: $error';
+  }
+
+  @override
+  String get profileMaxTestsExerciseLabel => 'Exercise';
+
+  @override
+  String get profileMaxTestsExerciseHint => 'e.g. Pull ups or Push ups';
+
+  @override
+  String get profileMaxTestsValueLabel => 'Result';
+
+  @override
+  String get profileMaxTestsValueHint => 'Enter a positive value';
+
+  @override
+  String get profileMaxTestsUnitLabel => 'Unit';
+
+  @override
+  String get profileMaxTestsUnitHint => 'e.g. reps, kg, sec';
+
+  @override
+  String profileMaxTestsDateLabel(String date) {
+    return 'Recorded on $date';
+  }
+
+  @override
+  String get profileMaxTestsCancel => 'Cancel';
+
+  @override
+  String get profileMaxTestsSave => 'Save test';
+
+  @override
+  String get profileMaxTestsSaveSuccess => 'Max test saved';
+
+  @override
+  String profileMaxTestsSaveError(Object error) {
+    return 'Unable to save test: $error';
+  }
+
+  @override
+  String get profileMaxTestsDefaultUnit => 'reps';
+
+  @override
+  String get profileMaxTestsBestLabel => 'Personal best';
+
+  @override
   String get profileEdit => 'Edit profile';
 
   @override

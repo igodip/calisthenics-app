@@ -177,6 +177,46 @@
       }
     }
   },
+  "profileMaxTestsTitle": "Test massimali",
+  "profileMaxTestsDescription": "Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.",
+  "profileMaxTestsAdd": "Aggiungi test massimale",
+  "profileMaxTestsRefresh": "Aggiorna",
+  "profileMaxTestsEmpty": "Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.",
+  "profileMaxTestsError": "Impossibile caricare i test massimali: {error}",
+  "@profileMaxTestsError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileMaxTestsExerciseLabel": "Esercizio",
+  "profileMaxTestsExerciseHint": "es. trazioni o piegamenti",
+  "profileMaxTestsValueLabel": "Risultato",
+  "profileMaxTestsValueHint": "Inserisci un valore positivo",
+  "profileMaxTestsUnitLabel": "Unità",
+  "profileMaxTestsUnitHint": "es. rip, kg, sec",
+  "profileMaxTestsDateLabel": "Registrato il {date}",
+  "@profileMaxTestsDateLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "profileMaxTestsCancel": "Annulla",
+  "profileMaxTestsSave": "Salva test",
+  "profileMaxTestsSaveSuccess": "Test massimale salvato",
+  "profileMaxTestsSaveError": "Impossibile salvare il test: {error}",
+  "@profileMaxTestsSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileMaxTestsDefaultUnit": "ripetizioni",
+  "profileMaxTestsBestLabel": "Miglior risultato",
   "profileEdit": "Modifica profilo",
   "profileComingSoon": "Presto disponibile",
   "profileEditSubtitle": "Aggiorna le tue informazioni personali",

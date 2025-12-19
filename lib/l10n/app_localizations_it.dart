@@ -385,6 +385,71 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get profileMaxTestsTitle => 'Test massimali';
+
+  @override
+  String get profileMaxTestsDescription =>
+      'Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.';
+
+  @override
+  String get profileMaxTestsAdd => 'Aggiungi test massimale';
+
+  @override
+  String get profileMaxTestsRefresh => 'Aggiorna';
+
+  @override
+  String get profileMaxTestsEmpty =>
+      'Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.';
+
+  @override
+  String profileMaxTestsError(Object error) {
+    return 'Impossibile caricare i test massimali: $error';
+  }
+
+  @override
+  String get profileMaxTestsExerciseLabel => 'Esercizio';
+
+  @override
+  String get profileMaxTestsExerciseHint => 'es. trazioni o piegamenti';
+
+  @override
+  String get profileMaxTestsValueLabel => 'Risultato';
+
+  @override
+  String get profileMaxTestsValueHint => 'Inserisci un valore positivo';
+
+  @override
+  String get profileMaxTestsUnitLabel => 'Unità';
+
+  @override
+  String get profileMaxTestsUnitHint => 'es. rip, kg, sec';
+
+  @override
+  String profileMaxTestsDateLabel(String date) {
+    return 'Registrato il $date';
+  }
+
+  @override
+  String get profileMaxTestsCancel => 'Annulla';
+
+  @override
+  String get profileMaxTestsSave => 'Salva test';
+
+  @override
+  String get profileMaxTestsSaveSuccess => 'Test massimale salvato';
+
+  @override
+  String profileMaxTestsSaveError(Object error) {
+    return 'Impossibile salvare il test: $error';
+  }
+
+  @override
+  String get profileMaxTestsDefaultUnit => 'ripetizioni';
+
+  @override
+  String get profileMaxTestsBestLabel => 'Miglior risultato';
+
+  @override
   String get profileEdit => 'Modifica profilo';
 
   @override

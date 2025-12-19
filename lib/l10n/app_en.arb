@@ -177,6 +177,46 @@
       }
     }
   },
+  "profileMaxTestsTitle": "Max test tracking",
+  "profileMaxTestsDescription": "Log your best attempts to see how your strength evolves over time.",
+  "profileMaxTestsAdd": "Add max test",
+  "profileMaxTestsRefresh": "Refresh",
+  "profileMaxTestsEmpty": "No max tests recorded yet. Add your first attempt to start tracking progress.",
+  "profileMaxTestsError": "Unable to load max tests: {error}",
+  "@profileMaxTestsError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileMaxTestsExerciseLabel": "Exercise",
+  "profileMaxTestsExerciseHint": "e.g. Pull ups or Push ups",
+  "profileMaxTestsValueLabel": "Result",
+  "profileMaxTestsValueHint": "Enter a positive value",
+  "profileMaxTestsUnitLabel": "Unit",
+  "profileMaxTestsUnitHint": "e.g. reps, kg, sec",
+  "profileMaxTestsDateLabel": "Recorded on {date}",
+  "@profileMaxTestsDateLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "profileMaxTestsCancel": "Cancel",
+  "profileMaxTestsSave": "Save test",
+  "profileMaxTestsSaveSuccess": "Max test saved",
+  "profileMaxTestsSaveError": "Unable to save test: {error}",
+  "@profileMaxTestsSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileMaxTestsDefaultUnit": "reps",
+  "profileMaxTestsBestLabel": "Personal best",
   "profileEdit": "Edit profile",
   "profileComingSoon": "Coming soon",
   "profileEditSubtitle": "Update your personal details",
