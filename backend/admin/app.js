@@ -93,6 +93,12 @@
             const minValue = values.length ? Math.min(...values) : 0;
             const minDate = sorted[0]?.timestamp || Date.now();
             const maxDate = sorted[sorted.length - 1]?.timestamp || minDate;
+            const minDateLabel = sorted[0]?.recorded_at
+              ? formatDate(sorted[0].recorded_at)
+              : '';
+            const maxDateLabel = sorted[sorted.length - 1]?.recorded_at
+              ? formatDate(sorted[sorted.length - 1].recorded_at)
+              : '';
             const range = maxValue - minValue || 1;
             const timeRange = maxDate - minDate || 1;
             const chartWidth = 260;
@@ -124,6 +130,8 @@
               maxValue,
               bestValue: maxValue,
               latestLabel: latest ? formatDate(latest.recorded_at) : '',
+              minDateLabel,
+              maxDateLabel,
               chartWidth,
               chartHeight,
               points,
