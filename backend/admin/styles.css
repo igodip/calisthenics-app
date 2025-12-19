@@ -47,6 +47,16 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .exercise-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .exercise-head input{flex:1 1 160px;min-width:0}
 .exercise-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.exercise-panel h2{margin:12px 0 6px}
+.exercise-panel .row{gap:12px}
+.exercise-panel form{gap:6px}
+.exercise-panel input{padding:6px 8px}
+.exercise-panel .exercise-list{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.exercise-panel .exercise-item{padding:8px;gap:4px}
+.exercise-panel .exercise-head{gap:6px}
+.exercise-panel .exercise-actions{gap:4px;justify-content:flex-start}
+.exercise-panel .btn.small,
+.exercise-panel button.small{padding:6px 10px}
 .progress-row{display:flex;align-items:center;gap:8px;margin-top:8px}
 .progress-bar{flex:1;height:6px;border-radius:999px;background:#11131a;overflow:hidden;border:1px solid var(--line)}
 .progress-bar span{display:block;height:100%;background:var(--accent)}
