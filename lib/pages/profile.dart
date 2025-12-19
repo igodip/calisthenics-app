@@ -662,7 +662,7 @@ class _MaxTestTile extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: (appColors?.success ?? theme.colorScheme.secondary)
-                      .withOpacity(0.15),
+                      .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 padding:

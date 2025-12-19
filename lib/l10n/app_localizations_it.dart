@@ -474,8 +474,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileEditWeightHint => 'Inserisci il tuo peso in kg (opzionale)';
 
   @override
-  String get profileEditWeightInvalid =>
-      'Inserisci un peso valido e positivo.';
+  String get profileEditWeightInvalid => 'Inserisci un peso valido e positivo.';
 
   @override
   String get profileEditTimezoneLabel => 'Fuso orario';
