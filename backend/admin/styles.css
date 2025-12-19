@@ -71,7 +71,9 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .history-card{display:flex;flex-direction:column;gap:10px}
 .history-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .history-card-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
-.history-chart{width:100%;height:100px;background:#0e111a;border-radius:12px;border:1px solid var(--line);padding:6px;box-sizing:border-box}
+.history-chart-wrap{display:flex;gap:8px;align-items:stretch}
+.history-y-axis{display:flex;flex-direction:column;justify-content:space-between;min-width:56px;text-align:right}
+.history-chart{width:100%;height:100px;background:#0e111a;border-radius:12px;border:1px solid var(--line);padding:6px;box-sizing:border-box;flex:1}
 .history-line{fill:none;stroke:var(--accent);stroke-width:2}
 .history-point{fill:#9aa0a6;stroke:#0e111a;stroke-width:2;r:3}
 .history-point.latest{fill:var(--accent)}

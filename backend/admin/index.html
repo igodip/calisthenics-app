@@ -378,25 +378,31 @@
                                 </div>
                                 <span class="pill">{{ entry.latestLabel }}</span>
                             </div>
-                            <svg
-                                class="history-chart"
-                                :viewBox="`0 0 ${entry.chartWidth} ${entry.chartHeight}`"
-                                role="img"
-                                :aria-label="`Max test history for ${entry.exercise}`"
-                            >
-                                <polyline :points="entry.polyline" class="history-line"></polyline>
-                                <circle
-                                    v-for="(point, idx) in entry.points"
-                                    :key="idx"
-                                    :cx="point.x"
-                                    :cy="point.y"
-                                    class="history-point"
-                                    :class="{ latest: idx === entry.points.length - 1 }"
-                                ></circle>
-                            </svg>
+                            <div class="history-chart-wrap">
+                                <div class="history-y-axis small">
+                                    <span>{{ formatTestValue(entry.maxValue) }} {{ entry.unit }}</span>
+                                    <span>{{ formatTestValue(entry.minValue) }} {{ entry.unit }}</span>
+                                </div>
+                                <svg
+                                    class="history-chart"
+                                    :viewBox="`0 0 ${entry.chartWidth} ${entry.chartHeight}`"
+                                    role="img"
+                                    :aria-label="`Max test history for ${entry.exercise}`"
+                                >
+                                    <polyline :points="entry.polyline" class="history-line"></polyline>
+                                    <circle
+                                        v-for="(point, idx) in entry.points"
+                                        :key="idx"
+                                        :cx="point.x"
+                                        :cy="point.y"
+                                        class="history-point"
+                                        :class="{ latest: idx === entry.points.length - 1 }"
+                                    ></circle>
+                                </svg>
+                            </div>
                             <div class="history-meta small">
-                                <span>{{ formatTestValue(entry.minValue) }} {{ entry.unit }}</span>
-                                <span>{{ formatTestValue(entry.maxValue) }} {{ entry.unit }}</span>
+                                <span>{{ entry.minDateLabel }}</span>
+                                <span>{{ entry.maxDateLabel }}</span>
                             </div>
                         </div>
                     </div>
