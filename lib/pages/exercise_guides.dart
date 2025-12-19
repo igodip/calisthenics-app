@@ -49,6 +49,27 @@ class ExerciseGuidesPage extends StatelessWidget {
       accent: Colors.purple,
     ),
     _ExerciseGuide(
+      name: 'Muscle-up',
+      difficulty: 'Advanced',
+      focus: 'Lats, chest, triceps, transition strength',
+      tip:
+          'Pull high to your upper chest and keep the bar close to reduce the swing.',
+      description:
+          'From a controlled hang, explode into a high pull, transition the wrists over the bar, and press to lockout.',
+      videoUrl: 'https://youtu.be/4NnU1YuZzUE',
+      accent: Colors.teal,
+    ),
+    _ExerciseGuide(
+      name: 'Straight bar dip',
+      difficulty: 'Intermediate',
+      focus: 'Chest, triceps, shoulders',
+      tip: 'Keep elbows tucked and press down while leaning slightly forward.',
+      description:
+          'Start on top of the bar with locked elbows, lower under control until shoulders dip below elbows, then drive back up.',
+      videoUrl: 'https://youtu.be/2z8JmcrW-As',
+      accent: Colors.deepOrange,
+    ),
+    _ExerciseGuide(
       name: 'Dips',
       difficulty: 'Intermediate',
       focus: 'Chest, triceps, shoulders',
@@ -57,6 +78,27 @@ class ExerciseGuidesPage extends StatelessWidget {
           'Start locked out on parallel bars, lower until shoulders dip below elbows, then press back to a strong lockout.',
       videoUrl: 'https://youtu.be/2z8JmcrW-As',
       accent: Colors.red,
+    ),
+    _ExerciseGuide(
+      name: 'Australian row',
+      difficulty: 'Beginner',
+      focus: 'Upper back, biceps, core',
+      tip: 'Brace your core and keep a straight line from shoulders to heels.',
+      description:
+          'Set the bar at waist height, hang underneath, and row your chest to the bar with elbows tight.',
+      videoUrl: 'https://youtu.be/9efgcAjQe7E',
+      accent: Colors.indigo,
+    ),
+    _ExerciseGuide(
+      name: 'Pike push-up',
+      difficulty: 'Intermediate',
+      focus: 'Shoulders, triceps, core',
+      tip:
+          'Keep hips high and lower your head to a spot just in front of your hands.',
+      description:
+          'From a pike position, bend elbows to bring the head down, then press back to a strong lockout.',
+      videoUrl: 'https://youtu.be/0wDEO1i2bFM',
+      accent: Colors.amber,
     ),
   ];
 
