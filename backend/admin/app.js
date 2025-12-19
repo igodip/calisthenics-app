@@ -38,6 +38,9 @@
       const expandedDays = ref({});
       const traineeProgress = ref({});
       const loadingProgress = ref(false);
+      const maxTests = ref([]);
+      const loadingMaxTests = ref(false);
+      const maxTestsError = ref('');
       const addingDay = ref(false);
       const addingExercise = ref(false);
       const savingExercise = ref(false);
@@ -61,6 +64,75 @@
         return Math.max(...weeks) + 1;
       });
 
+      const maxTestHistory = computed(() => {
+        const grouped = {};
+        (maxTests.value || []).forEach((test) => {
+          const exercise = (test.exercise || '').trim() || 'Unknown exercise';
+          if (!grouped[exercise]) {
+            grouped[exercise] = {
+              exercise,
+              unit: test.unit || '',
+              tests: [],
+            };
+          }
+          grouped[exercise].tests.push({
+            ...test,
+            value: Number(test.value || 0),
+            timestamp: Date.parse(test.recorded_at || '') || Date.now(),
+          });
+          if (!grouped[exercise].unit && test.unit) {
+            grouped[exercise].unit = test.unit;
+          }
+        });
+
+        return Object.values(grouped)
+          .map((entry) => {
+            const sorted = entry.tests.sort((a, b) => a.timestamp - b.timestamp);
+            const values = sorted.map((item) => item.value);
+            const maxValue = values.length ? Math.max(...values) : 0;
+            const minValue = values.length ? Math.min(...values) : 0;
+            const minDate = sorted[0]?.timestamp || Date.now();
+            const maxDate = sorted[sorted.length - 1]?.timestamp || minDate;
+            const range = maxValue - minValue || 1;
+            const timeRange = maxDate - minDate || 1;
+            const chartWidth = 260;
+            const chartHeight = 90;
+            const padding = 12;
+            const points = sorted.map((item) => {
+              const x =
+                padding +
+                ((item.timestamp - minDate) / timeRange) *
+                  (chartWidth - padding * 2);
+              const y =
+                chartHeight -
+                padding -
+                ((item.value - minValue) / range) * (chartHeight - padding * 2);
+              return {
+                x: Number(x.toFixed(2)),
+                y: Number(y.toFixed(2)),
+                value: item.value,
+                recorded_at: item.recorded_at,
+              };
+            });
+            const polyline = points.map((point) => `${point.x},${point.y}`).join(' ');
+            const latest = sorted[sorted.length - 1];
+            return {
+              exercise: entry.exercise,
+              unit: entry.unit,
+              count: sorted.length,
+              minValue,
+              maxValue,
+              bestValue: maxValue,
+              latestLabel: latest ? formatDate(latest.recorded_at) : '',
+              chartWidth,
+              chartHeight,
+              points,
+              polyline,
+            };
+          })
+          .sort((a, b) => a.exercise.localeCompare(b.exercise));
+      });
+
       const filteredUsers = computed(() => {
         const q = search.value.trim().toLowerCase();
         if (!q) return users.value;
@@ -72,6 +144,22 @@
       });
 
       const shortId = (id) => (id ? id.toString().slice(0, 8) + '…' : '');
+
+      const formatTestValue = (value) => {
+        const numeric = Number(value || 0);
+        return Number.isInteger(numeric) ? numeric.toFixed(0) : numeric.toFixed(1);
+      };
+
+      const formatDate = (value) => {
+        if (!value) return '';
+        const parsed = new Date(value);
+        if (Number.isNaN(parsed.valueOf())) return value;
+        return parsed.toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+      };
 
       function resetDayForm() {
         newDayWeek.value = 1;
@@ -273,7 +361,7 @@
         await loadExercises();
         await loadTraineeProgress();
         if (users.value.length) {
-          selectUser(users.value[0]);
+          await selectUser(users.value[0]);
           await loadPlans(users.value[0]);
           await loadDays(users.value[0]);
         }
@@ -296,12 +384,15 @@
         }));
       }
 
-      function selectUser(u) {
+      async function selectUser(u) {
         current.value = u;
         days.value = [];
         plans.value = [];
         planEdits.value = {};
         expandedDays.value = {};
+        maxTests.value = [];
+        maxTestsError.value = '';
+        await loadMaxTests(u);
       }
 
       async function loadExercises() {
@@ -345,6 +436,32 @@
           alert(err.message || 'Failed to load trainee progress.');
         } finally {
           loadingProgress.value = false;
+        }
+      }
+
+      async function loadMaxTests(u = current.value) {
+        if (!u) return;
+        loadingMaxTests.value = true;
+        maxTestsError.value = '';
+        try {
+          const { data, error } = await supabase
+            .from('max_tests')
+            .select('id, exercise, value, unit, recorded_at')
+            .eq('trainee_id', u.id)
+            .order('recorded_at', { ascending: true });
+          if (error) {
+            throw new Error('Failed to load max tests: ' + error.message);
+          }
+          maxTests.value = (data || []).map((row) => ({
+            ...row,
+            value: Number(row.value || 0),
+          }));
+        } catch (err) {
+          console.error(err);
+          maxTests.value = [];
+          maxTestsError.value = err.message || 'Failed to load max tests.';
+        } finally {
+          loadingMaxTests.value = false;
         }
       }
 
@@ -735,6 +852,8 @@
         filteredUsers,
         current,
         days,
+        maxTests,
+        maxTestHistory,
         exerciseOptions,
         exerciseSelection,
         exerciseEdits,
@@ -761,13 +880,17 @@
         newPlanEndsAt,
         newPlanNotes,
         loadingProgress,
+        loadingMaxTests,
+        maxTestsError,
         progressFor,
+        formatTestValue,
         applyNextWeek,
         setDayCode,
         emailPasswordSignIn,
         signOut,
         selectUser,
         loadDays,
+        loadMaxTests,
         loadPlans,
         addPlan,
         addDay,
