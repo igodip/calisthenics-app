@@ -27,6 +27,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navTerminology => 'Terminology';
 
   @override
+  String get onboardingTitleOne => 'Train smarter';
+
+  @override
+  String get onboardingDescriptionOne =>
+      'Follow guided workouts built for your calisthenics plan.';
+
+  @override
+  String get onboardingTitleTwo => 'Track progress';
+
+  @override
+  String get onboardingDescriptionTwo =>
+      'Log sets, reps, and notes to see your improvements.';
+
+  @override
+  String get onboardingTitleThree => 'Stay consistent';
+
+  @override
+  String get onboardingDescriptionThree =>
+      'Keep momentum with quick access to your next session.';
+
+  @override
+  String get onboardingSkip => 'Skip';
+
+  @override
+  String get onboardingBack => 'Back';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingGetStarted => 'Get started';
+
+  @override
   String get guidesTitle => 'Exercise walkthroughs';
 
   @override

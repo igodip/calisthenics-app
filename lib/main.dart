@@ -1,5 +1,5 @@
 
-import 'package:calisync/pages/main.dart';
+import 'package:calisync/pages/onboarding.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -28,7 +28,7 @@ class CalisthenicsApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const AuthGate(),
+      home: const OnboardingGate(),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -27,6 +27,39 @@ class AppLocalizationsIt extends AppLocalizations {
   String get navTerminology => 'Terminologia';
 
   @override
+  String get onboardingTitleOne => 'Allenati meglio';
+
+  @override
+  String get onboardingDescriptionOne =>
+      'Segui allenamenti guidati creati per il tuo piano di calisthenics.';
+
+  @override
+  String get onboardingTitleTwo => 'Monitora i progressi';
+
+  @override
+  String get onboardingDescriptionTwo =>
+      'Registra serie, ripetizioni e note per vedere i miglioramenti.';
+
+  @override
+  String get onboardingTitleThree => 'Rimani costante';
+
+  @override
+  String get onboardingDescriptionThree =>
+      'Mantieni il ritmo con accesso rapido alla prossima sessione.';
+
+  @override
+  String get onboardingSkip => 'Salta';
+
+  @override
+  String get onboardingBack => 'Indietro';
+
+  @override
+  String get onboardingNext => 'Avanti';
+
+  @override
+  String get onboardingGetStarted => 'Inizia';
+
+  @override
   String get guidesTitle => 'Guida agli esercizi';
 
   @override
