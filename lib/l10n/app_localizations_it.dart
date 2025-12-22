@@ -309,6 +309,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainingNotesLabel => 'Note dell\'esercizio';
 
   @override
+  String get trainingTraineeNotesLabel => 'Note del tirocinante';
+
+  @override
   String get trainingNotesSave => 'Salva note';
 
   @override

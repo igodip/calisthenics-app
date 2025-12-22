@@ -307,6 +307,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingNotesLabel => 'Exercise notes';
 
   @override
+  String get trainingTraineeNotesLabel => 'Trainee notes';
+
+  @override
   String get trainingNotesSave => 'Save notes';
 
   @override
