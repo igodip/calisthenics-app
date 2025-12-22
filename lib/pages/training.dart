@@ -50,8 +50,14 @@ class _TrainingState extends State<Training> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        Navigator.of(context).pop(_completionChanged);
-        return;
+        if (didPop) {
+          return;
+        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.of(context).pop(_completionChanged);
+          }
+        });
       },
       child: Scaffold(
         appBar: AppBar(title: Text(widget.day.formattedTitle(l10n))),
