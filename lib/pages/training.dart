@@ -15,9 +15,8 @@ class Training extends StatefulWidget {
 
 class _TrainingState extends State<Training> {
   late final List<WorkoutExercise> _exercises;
-  late final Map<String, TextEditingController> _personalNoteControllers;
-  final Set<String> _savingNotes = {};
   final Set<String> _togglingExerciseCompletion = {};
+  final Set<String> _visibleTraineeNotes = {};
   late bool _isCompleted;
   bool _updatingCompletion = false;
   bool _completionChanged = false;
@@ -28,19 +27,10 @@ class _TrainingState extends State<Training> {
     _exercises = List<WorkoutExercise>.from(widget.day.exercises);
     _sortExercises();
     _isCompleted = widget.day.isCompleted;
-    _personalNoteControllers = {};
-    for (int i = 0; i < _exercises.length; i++) {
-      final key = _controllerKey(_exercises[i], i);
-      _personalNoteControllers[key] =
-          TextEditingController(text: _exercises[i].traineeNotes ?? '');
-    }
   }
 
   @override
   void dispose() {
-    for (final controller in _personalNoteControllers.values) {
-      controller.dispose();
-    }
     super.dispose();
   }
 
@@ -86,15 +76,11 @@ class _TrainingState extends State<Training> {
             for (int index = 0; index < _exercises.length; index++)
               _ExerciseCard(
                 exercise: _exercises[index],
-                traineeNotesController: _personalNoteControllers.putIfAbsent(
-                  _controllerKey(_exercises[index], index),
-                  () =>
-                      TextEditingController(text: _exercises[index].traineeNotes ?? ''),
-                ),
-                saving: _savingNotes.contains(_exercises[index].id),
+                showTraineeNotes: _visibleTraineeNotes
+                    .contains(_exerciseKey(_exercises[index], index)),
                 updatingCompletion: _togglingExerciseCompletion
                     .contains(_exercises[index].id),
-                onSaveNotes: () => _saveNotes(index),
+                onToggleTraineeNotes: () => _toggleTraineeNotes(index),
                 onToggleCompletion: () => _toggleExerciseCompletion(index),
               ),
             const SizedBox(height: 24),
@@ -119,56 +105,6 @@ class _TrainingState extends State<Training> {
         ),
       ),
     );
-  }
-
-  Future<void> _saveNotes(int index) async {
-    final exercise = _exercises[index];
-    final note = _personalNoteControllers[_controllerKey(exercise, index)]!
-        .text
-        .trim();
-    final l10n = AppLocalizations.of(context)!;
-
-    if (exercise.id == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.trainingNotesUnavailable)),
-      );
-      return;
-    }
-
-    setState(() => _savingNotes.add(exercise.id!));
-
-    try {
-      await Supabase.instance.client
-          .from('day_exercises')
-          .update({'trainee_notes': note.isEmpty ? null : note})
-          .eq('id', exercise.id!);
-
-      if (!mounted) return;
-
-      setState(() {
-        _exercises[index] = WorkoutExercise(
-          id: exercise.id,
-          name: exercise.name,
-          notes: exercise.notes,
-          traineeNotes: note.isEmpty ? null : note,
-          position: exercise.position,
-          isCompleted: exercise.isCompleted,
-        );
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.trainingNotesSaved)),
-      );
-    } catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.trainingNotesError('$error'))),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _savingNotes.remove(exercise.id));
-      }
-    }
   }
 
   Future<void> _toggleExerciseCompletion(int index) async {
@@ -297,24 +233,33 @@ class _TrainingState extends State<Training> {
     return fallbackIndex < 0 ? 0 : fallbackIndex;
   }
 
-  String _controllerKey(WorkoutExercise exercise, int fallbackIndex) =>
-      exercise.id ?? 'local-$fallbackIndex';
+  String _exerciseKey(WorkoutExercise exercise, int fallbackIndex) =>
+      exercise.id ?? 'exercise-$fallbackIndex';
+
+  void _toggleTraineeNotes(int index) {
+    final key = _exerciseKey(_exercises[index], index);
+    setState(() {
+      if (_visibleTraineeNotes.contains(key)) {
+        _visibleTraineeNotes.remove(key);
+      } else {
+        _visibleTraineeNotes.add(key);
+      }
+    });
+  }
 }
 
 class _ExerciseCard extends StatelessWidget {
   final WorkoutExercise exercise;
-  final TextEditingController traineeNotesController;
-  final bool saving;
+  final bool showTraineeNotes;
   final bool updatingCompletion;
-  final VoidCallback onSaveNotes;
+  final VoidCallback onToggleTraineeNotes;
   final VoidCallback onToggleCompletion;
 
   const _ExerciseCard({
     required this.exercise,
-    required this.traineeNotesController,
-    required this.saving,
+    required this.showTraineeNotes,
     required this.updatingCompletion,
-    required this.onSaveNotes,
+    required this.onToggleTraineeNotes,
     required this.onToggleCompletion,
   });
 
@@ -354,6 +299,8 @@ class _ExerciseCard extends StatelessWidget {
               isCompleted ? TextDecoration.lineThrough : TextDecoration.none,
           color: isCompleted ? colorScheme.onPrimaryContainer : null,
         );
+    final traineeNotes = exercise.traineeNotes?.trim() ?? '';
+    final hasTraineeNotes = traineeNotes.isNotEmpty;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -374,6 +321,16 @@ class _ExerciseCard extends StatelessWidget {
                     style: titleStyle,
                   ),
                 ),
+                if (hasTraineeNotes)
+                  IconButton(
+                    onPressed: onToggleTraineeNotes,
+                    tooltip: l10n.trainingNotesLabel,
+                    icon: Icon(
+                      showTraineeNotes
+                          ? Icons.sticky_note_2
+                          : Icons.sticky_note_2_outlined,
+                    ),
+                  ),
                 IconButton(
                   onPressed: updatingCompletion ? null : onToggleCompletion,
                   tooltip: l10n.trainingExerciseCompletedLabel,
@@ -415,32 +372,13 @@ class _ExerciseCard extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 8),
-            TextField(
-              controller: traineeNotesController,
-              maxLines: null,
-              decoration: InputDecoration(
-                labelText: l10n.trainingNotesLabel,
-                hintText: l10n.trainingHeaderNotes,
-                border: const OutlineInputBorder(),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                suffixIcon: saving
-                    ? const Padding(
-                        padding: EdgeInsets.all(10),
-                        child: SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    : IconButton(
-                        icon: const Icon(Icons.save),
-                        tooltip: l10n.trainingNotesSave,
-                        onPressed: onSaveNotes,
-                      ),
+            if (hasTraineeNotes && showTraineeNotes) ...[
+              const SizedBox(height: 8),
+              Text(
+                traineeNotes,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-            ),
+            ],
           ],
         ),
       ),
