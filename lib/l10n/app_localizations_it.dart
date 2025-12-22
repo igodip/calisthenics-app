@@ -450,6 +450,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileMaxTestsBestLabel => 'Miglior risultato';
 
   @override
+  String get profileMaxTestsShowMore => 'Mostra tutti i tentativi';
+
+  @override
+  String get profileMaxTestsShowLess => 'Mostra meno tentativi';
+
+  @override
   String get profileEdit => 'Modifica profilo';
 
   @override

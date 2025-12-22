@@ -842,6 +842,18 @@ abstract class AppLocalizations {
   /// **'Miglior risultato'**
   String get profileMaxTestsBestLabel;
 
+  /// No description provided for @profileMaxTestsShowMore.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra tutti i tentativi'**
+  String get profileMaxTestsShowMore;
+
+  /// No description provided for @profileMaxTestsShowLess.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra meno tentativi'**
+  String get profileMaxTestsShowLess;
+
   /// No description provided for @profileEdit.
   ///
   /// In it, this message translates to:

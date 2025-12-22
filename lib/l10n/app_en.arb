@@ -217,6 +217,8 @@
   },
   "profileMaxTestsDefaultUnit": "reps",
   "profileMaxTestsBestLabel": "Personal best",
+  "profileMaxTestsShowMore": "Show all attempts",
+  "profileMaxTestsShowLess": "Show fewer attempts",
   "profileEdit": "Edit profile",
   "profileComingSoon": "Coming soon",
   "profileEditSubtitle": "Update your personal details",
