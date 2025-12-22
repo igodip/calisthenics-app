@@ -53,7 +53,7 @@ class _TrainingState extends State<Training> {
         Navigator.of(context).pop(_completionChanged);
         return;
       },
-      child: Scaffold(6
+      child: Scaffold(
         appBar: AppBar(title: Text(widget.day.formattedTitle(l10n))),
         body: ListView(
           padding: const EdgeInsets.all(16),
