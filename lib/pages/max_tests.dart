@@ -211,7 +211,7 @@ class _MaxTestsPageState extends State<MaxTestsPage> {
   }
 }
 
-class _ExerciseGroupCard extends StatelessWidget {
+class _ExerciseGroupCard extends StatefulWidget {
   const _ExerciseGroupCard({
     required this.exercise,
     required this.tests,
@@ -223,10 +223,22 @@ class _ExerciseGroupCard extends StatelessWidget {
   final double bestValue;
 
   @override
+  State<_ExerciseGroupCard> createState() => _ExerciseGroupCardState();
+}
+
+class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
+  static const int _collapsedCount = 3;
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final tests = widget.tests;
+    final showToggle = tests.length > _collapsedCount;
+    final visibleTests =
+        _isExpanded ? tests : tests.take(_collapsedCount).toList();
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -242,23 +254,35 @@ class _ExerciseGroupCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              exercise,
+              widget.exercise,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 12),
-            for (final test in tests)
+            for (final test in visibleTests)
               _MaxTestTile(
                 test: test,
-                isBest: test.value == bestValue,
+                isBest: test.value == widget.bestValue,
+              ),
+            if (showToggle)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () => setState(() => _isExpanded = !_isExpanded),
+                  child: Text(
+                    _isExpanded
+                        ? l10n.profileMaxTestsShowLess
+                        : l10n.profileMaxTestsShowMore,
+                  ),
+                ),
               ),
             if (tests.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   '${l10n.profileMaxTestsBestLabel}: '
-                  '${bestValue.toStringAsFixed(bestValue.truncateToDouble() == bestValue ? 0 : 1)} '
+                  '${widget.bestValue.toStringAsFixed(widget.bestValue.truncateToDouble() == widget.bestValue ? 0 : 1)} '
                   '${tests.first.unit}'.trim(),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,

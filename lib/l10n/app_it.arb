@@ -217,6 +217,8 @@
   },
   "profileMaxTestsDefaultUnit": "ripetizioni",
   "profileMaxTestsBestLabel": "Miglior risultato",
+  "profileMaxTestsShowMore": "Mostra tutti i tentativi",
+  "profileMaxTestsShowLess": "Mostra meno tentativi",
   "profileEdit": "Modifica profilo",
   "profileComingSoon": "Presto disponibile",
   "profileEditSubtitle": "Aggiorna le tue informazioni personali",
