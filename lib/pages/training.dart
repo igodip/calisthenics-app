@@ -47,12 +47,13 @@ class _TrainingState extends State<Training> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
         Navigator.of(context).pop(_completionChanged);
-        return false;
+        return;
       },
-      child: Scaffold(
+      child: Scaffold(6
         appBar: AppBar(title: Text(widget.day.formattedTitle(l10n))),
         body: ListView(
           padding: const EdgeInsets.all(16),
