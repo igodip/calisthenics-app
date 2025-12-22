@@ -596,6 +596,12 @@ abstract class AppLocalizations {
   /// **'Note dell\'esercizio'**
   String get trainingNotesLabel;
 
+  /// No description provided for @trainingTraineeNotesLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Note del tirocinante'**
+  String get trainingTraineeNotesLabel;
+
   /// No description provided for @trainingNotesSave.
   ///
   /// In it, this message translates to:

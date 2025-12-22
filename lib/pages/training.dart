@@ -421,12 +421,32 @@ class _ExerciseCard extends StatelessWidget {
                 ),
               ),
             ],
+            if ((exercise.traineeNotes ?? '').trim().isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  onPressed: () => _showExerciseNotes(
+                    context,
+                    exerciseName,
+                    exercise.traineeNotes!.trim(),
+                  ),
+                  icon: const Icon(Icons.notes_outlined, size: 18),
+                  label: Text(l10n.trainingTraineeNotesLabel),
+                  style: OutlinedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 8),
             TextField(
               controller: traineeNotesController,
               maxLines: null,
               decoration: InputDecoration(
-                labelText: l10n.trainingNotesLabel,
+                labelText: l10n.trainingTraineeNotesLabel,
                 hintText: l10n.trainingHeaderNotes,
                 border: const OutlineInputBorder(),
                 contentPadding:

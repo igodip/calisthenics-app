@@ -120,6 +120,7 @@
   "trainingHeaderIntensity": "Intensità",
   "trainingHeaderNotes": "Note",
   "trainingNotesLabel": "Note dell'esercizio",
+  "trainingTraineeNotesLabel": "Note del tirocinante",
   "trainingNotesSave": "Salva note",
   "trainingNotesSaved": "Note salvate",
   "trainingNotesError": "Impossibile salvare le note: {error}",
