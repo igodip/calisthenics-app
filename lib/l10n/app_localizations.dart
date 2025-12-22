@@ -134,6 +134,66 @@ abstract class AppLocalizations {
   /// **'Terminologia'**
   String get navTerminology;
 
+  /// No description provided for @onboardingTitleOne.
+  ///
+  /// In it, this message translates to:
+  /// **'Allenati meglio'**
+  String get onboardingTitleOne;
+
+  /// No description provided for @onboardingDescriptionOne.
+  ///
+  /// In it, this message translates to:
+  /// **'Segui allenamenti guidati creati per il tuo piano di calisthenics.'**
+  String get onboardingDescriptionOne;
+
+  /// No description provided for @onboardingTitleTwo.
+  ///
+  /// In it, this message translates to:
+  /// **'Monitora i progressi'**
+  String get onboardingTitleTwo;
+
+  /// No description provided for @onboardingDescriptionTwo.
+  ///
+  /// In it, this message translates to:
+  /// **'Registra serie, ripetizioni e note per vedere i miglioramenti.'**
+  String get onboardingDescriptionTwo;
+
+  /// No description provided for @onboardingTitleThree.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimani costante'**
+  String get onboardingTitleThree;
+
+  /// No description provided for @onboardingDescriptionThree.
+  ///
+  /// In it, this message translates to:
+  /// **'Mantieni il ritmo con accesso rapido alla prossima sessione.'**
+  String get onboardingDescriptionThree;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In it, this message translates to:
+  /// **'Salta'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingBack.
+  ///
+  /// In it, this message translates to:
+  /// **'Indietro'**
+  String get onboardingBack;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In it, this message translates to:
+  /// **'Avanti'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingGetStarted.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizia'**
+  String get onboardingGetStarted;
+
   /// No description provided for @guidesTitle.
   ///
   /// In it, this message translates to:
