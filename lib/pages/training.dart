@@ -318,6 +318,26 @@ class _ExerciseCard extends StatelessWidget {
     required this.onToggleCompletion,
   });
 
+  void _showExerciseNotes(
+    BuildContext context,
+    String exerciseName,
+    String notes,
+  ) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(exerciseName),
+        content: Text(notes),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(MaterialLocalizations.of(context).closeButtonLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -377,19 +397,21 @@ class _ExerciseCard extends StatelessWidget {
             const SizedBox(height: 4),
             if ((exercise.notes ?? '').trim().isNotEmpty) ...[
               const SizedBox(height: 8),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  exercise.notes!.trim(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  onPressed: () => _showExerciseNotes(
+                    context,
+                    exerciseName,
+                    exercise.notes!.trim(),
+                  ),
+                  icon: const Icon(Icons.sticky_note_2_outlined, size: 18),
+                  label: Text(l10n.trainingNotesLabel),
+                  style: OutlinedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    visualDensity: VisualDensity.compact,
+                  ),
                 ),
               ),
             ],
