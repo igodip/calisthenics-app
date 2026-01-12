@@ -47,6 +47,15 @@ CREATE TABLE public.trainees (
   weight numeric,
   CONSTRAINT trainees_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.trainee_feedbacks (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  trainee_id uuid NOT NULL,
+  message text NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  read_at timestamp with time zone,
+  CONSTRAINT trainee_feedbacks_pkey PRIMARY KEY (id),
+  CONSTRAINT trainee_feedbacks_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id)
+);
 CREATE TABLE public.workout_plan_days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   plan_id uuid NOT NULL,
