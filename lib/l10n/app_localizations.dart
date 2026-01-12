@@ -728,6 +728,18 @@ abstract class AppLocalizations {
   /// **'Condividi aggiornamenti con il tuo coach dopo le sessioni.'**
   String get homeTraineeFeedbackSubtitle;
 
+  /// No description provided for @homeCoachTipTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Consiglio del coach'**
+  String get homeCoachTipTitle;
+
+  /// No description provided for @homeCoachTipPlaceholder.
+  ///
+  /// In it, this message translates to:
+  /// **'Qui troverai l'ultimo consiglio del tuo coach.'**
+  String get homeCoachTipPlaceholder;
+
   /// No description provided for @workoutPlanTitle.
   ///
   /// In it, this message translates to:

@@ -388,6 +388,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Share updates with your coach after sessions.';
 
   @override
+  String get homeCoachTipTitle => 'Coach tip';
+
+  @override
+  String get homeCoachTipPlaceholder =>
+      'Your coach\'s latest tip will appear here.';
+
+  @override
   String get workoutPlanTitle => 'Workout plan';
 
   @override
