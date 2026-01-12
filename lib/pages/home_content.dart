@@ -116,10 +116,11 @@ class _HomeContentState extends State<HomeContent> {
 
     final response = await client
         .from('days')
-        .select('week, day_code, plan_started_at, plan_start, starts_on, created_at')
+        .select('week, day_code, workout_plan_days ( workout_plans ( starts_on ) )')
         .eq('trainee_id', userId)
         .order('week', ascending: true)
-        .order('day_code', ascending: true);
+        .order('day_code', ascending: true)
+        .order('position', referencedTable: 'workout_plan_days', ascending: true);
 
     final data = (response as List<dynamic>? ?? [])
         .cast<Map<String, dynamic>>();
@@ -133,10 +134,12 @@ class _HomeContentState extends State<HomeContent> {
     }
 
     return data.map((row) {
-      final createdAt = parseDate(row['created_at']);
-      final planStartedAt = parseDate(
-        row['plan_started_at'] ?? row['plan_start'] ?? row['starts_on'],
-      );
+      final planEntries =
+          (row['workout_plan_days'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+      final planDetails = planEntries.isNotEmpty
+          ? (planEntries.first['workout_plans'] as Map<String, dynamic>?) ?? {}
+          : <String, dynamic>{};
+      final planStartedAt = parseDate(planDetails['starts_on']);
 
       return WorkoutDay(
         id: null,
@@ -148,7 +151,7 @@ class _HomeContentState extends State<HomeContent> {
         planId: null,
         planName: null,
         planStartedAt: planStartedAt,
-        createdAt: createdAt,
+        createdAt: null,
         exercises: const [],
       );
     }).toList();
@@ -181,7 +184,6 @@ class _HomeContentState extends State<HomeContent> {
 
   DateTime? _resolveWorkoutDate(WorkoutDay day) {
     final planStart = day.planStartedAt;
-    final createdAt = day.createdAt;
     final weekOffset = day.week > 0 ? day.week - 1 : 0;
     final dayOffset = _dayOffsetFromCode(day.dayCode);
 
@@ -195,10 +197,6 @@ class _HomeContentState extends State<HomeContent> {
     if (planStart != null) {
       final normalizedStart = _normalizeDate(planStart);
       return normalizedStart.add(Duration(days: weekOffset * 7));
-    }
-
-    if (createdAt != null) {
-      return _normalizeDate(createdAt);
     }
 
     return null;
