@@ -692,6 +692,36 @@ abstract class AppLocalizations {
   /// **'Riprova'**
   String get retry;
 
+  /// No description provided for @homeCalendarTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Calendario allenamenti'**
+  String get homeCalendarTitle;
+
+  /// No description provided for @homeCalendarSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'I giorni di allenamento sono evidenziati.'**
+  String get homeCalendarSubtitle;
+
+  /// No description provided for @homeWorkoutPlanTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Piano di allenamento'**
+  String get homeWorkoutPlanTitle;
+
+  /// No description provided for @homeWorkoutPlanSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Rivedi il piano assegnato e le prossime sessioni.'**
+  String get homeWorkoutPlanSubtitle;
+
+  /// No description provided for @workoutPlanTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Piano di allenamento'**
+  String get workoutPlanTitle;
+
   /// No description provided for @homeEmptyTitle.
   ///
   /// In it, this message translates to:
