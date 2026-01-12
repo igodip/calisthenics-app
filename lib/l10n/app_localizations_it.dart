@@ -80,6 +80,143 @@ class AppLocalizationsIt extends AppLocalizations {
       'Impossibile aprire il tutorial in questo momento.';
 
   @override
+  String get difficultyBeginner => 'Principiante';
+
+  @override
+  String get difficultyIntermediate => 'Intermedio';
+
+  @override
+  String get difficultyAdvanced => 'Avanzato';
+
+  @override
+  String get guidesPullupName => 'Trazioni';
+
+  @override
+  String get guidesPullupFocus => 'Dorsali, bicipiti, presa';
+
+  @override
+  String get guidesPullupTip =>
+      'Spingi i gomiti verso le costole e tieni le costole chiuse per evitare oscillazioni.';
+
+  @override
+  String get guidesPullupDescription =>
+      'Parti da una sospensione in hollow body, poi tira finché il mento supera la sbarra. Controlla la discesa per ripetizioni più forti.';
+
+  @override
+  String get guidesPushupName => 'Piegamenti';
+
+  @override
+  String get guidesPushupFocus => 'Petto, tricipiti, core';
+
+  @override
+  String get guidesPushupTip =>
+      'Contrai i glutei e mantieni una linea dritta dalla testa ai talloni.';
+
+  @override
+  String get guidesPushupDescription =>
+      'Scendi con i gomiti a circa 45° rispetto al busto, sfiora il petto e risali senza lasciare che i fianchi cedano.';
+
+  @override
+  String get guidesBodyweightSquatName => 'Squat a corpo libero';
+
+  @override
+  String get guidesBodyweightSquatFocus => 'Quadricipiti, glutei, core';
+
+  @override
+  String get guidesBodyweightSquatTip =>
+      'Spingi le ginocchia verso l\'esterno durante la discesa e mantieni i talloni a terra.';
+
+  @override
+  String get guidesBodyweightSquatDescription =>
+      'Porta indietro e in basso le anche finché le cosce sono almeno parallele. Spingi uniformemente su tutto il piede per tornare in piedi.';
+
+  @override
+  String get guidesHangingLegRaiseName => 'Sollevamento gambe alla sbarra';
+
+  @override
+  String get guidesHangingLegRaiseFocus =>
+      'Addominali, flessori dell\'anca, presa';
+
+  @override
+  String get guidesHangingLegRaiseTip =>
+      'Inizia ogni ripetizione attivando i dorsali per stabilizzare il busto.';
+
+  @override
+  String get guidesHangingLegRaiseDescription =>
+      'Da una sospensione completa, solleva le gambe unite fino all\'altezza delle anche o più in alto. Scendi lentamente per mantenere tensione.';
+
+  @override
+  String get guidesMuscleUpName => 'Muscle-up';
+
+  @override
+  String get guidesMuscleUpFocus =>
+      'Dorsali, petto, tricipiti, forza nella transizione';
+
+  @override
+  String get guidesMuscleUpTip =>
+      'Tira in alto verso la parte alta del petto e tieni la sbarra vicina per ridurre l\'oscillazione.';
+
+  @override
+  String get guidesMuscleUpDescription =>
+      'Da una sospensione controllata, esplodi in una trazione alta, porta i polsi sopra la sbarra e spingi fino al blocco.';
+
+  @override
+  String get guidesStraightBarDipName => 'Dip alla sbarra';
+
+  @override
+  String get guidesStraightBarDipFocus => 'Petto, tricipiti, spalle';
+
+  @override
+  String get guidesStraightBarDipTip =>
+      'Tieni i gomiti vicini al corpo e spingi verso il basso con una leggera inclinazione in avanti.';
+
+  @override
+  String get guidesStraightBarDipDescription =>
+      'Parti sopra la sbarra con gomiti bloccati, scendi controllando finché le spalle scendono sotto i gomiti, poi risali.';
+
+  @override
+  String get guidesDipsName => 'Dip alle parallele';
+
+  @override
+  String get guidesDipsFocus => 'Petto, tricipiti, spalle';
+
+  @override
+  String get guidesDipsTip =>
+      'Inclina leggermente il busto in avanti e mantieni le spalle compatte per proteggere le articolazioni.';
+
+  @override
+  String get guidesDipsDescription =>
+      'Parti in blocco sulle parallele, scendi finché le spalle vanno sotto i gomiti, poi risali fino a un blocco forte.';
+
+  @override
+  String get guidesAustralianRowName => 'Rematore australiano';
+
+  @override
+  String get guidesAustralianRowFocus => 'Dorsali alti, bicipiti, core';
+
+  @override
+  String get guidesAustralianRowTip =>
+      'Attiva il core e mantieni una linea dritta dalle spalle ai talloni.';
+
+  @override
+  String get guidesAustralianRowDescription =>
+      'Imposta la sbarra all\'altezza della vita, appenditi sotto e tira il petto verso la sbarra con gomiti stretti.';
+
+  @override
+  String get guidesPikePushUpName => 'Piegamenti in pike';
+
+  @override
+  String get guidesPikePushUpFocus => 'Spalle, tricipiti, core';
+
+  @override
+  String get guidesPikePushUpTip =>
+      'Tieni i fianchi alti e abbassa la testa verso un punto appena davanti alle mani.';
+
+  @override
+  String get guidesPikePushUpDescription =>
+      'Da una posizione a pike, piega i gomiti per portare la testa in basso, poi spingi fino a un blocco forte.';
+
+  @override
   String get settingsComingSoon =>
       'Le impostazioni saranno presto disponibili.';
 

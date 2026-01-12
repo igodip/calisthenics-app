@@ -79,6 +79,141 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guidesVideoUnavailable => 'Could not open the tutorial right now.';
 
   @override
+  String get difficultyBeginner => 'Beginner';
+
+  @override
+  String get difficultyIntermediate => 'Intermediate';
+
+  @override
+  String get difficultyAdvanced => 'Advanced';
+
+  @override
+  String get guidesPullupName => 'Pull-up';
+
+  @override
+  String get guidesPullupFocus => 'Lats, biceps, grip';
+
+  @override
+  String get guidesPullupTip =>
+      'Drive elbows toward your ribs and keep your ribs tucked to avoid swinging.';
+
+  @override
+  String get guidesPullupDescription =>
+      'Start from a hollow body hang, then pull until your chin clears the bar. Control the descent for stronger reps.';
+
+  @override
+  String get guidesPushupName => 'Push-up';
+
+  @override
+  String get guidesPushupFocus => 'Chest, triceps, core';
+
+  @override
+  String get guidesPushupTip =>
+      'Squeeze your glutes and keep a straight line from head to heels.';
+
+  @override
+  String get guidesPushupDescription =>
+      'Lower with elbows at roughly 45° to your torso, touch your chest lightly, then press back up without letting hips sag.';
+
+  @override
+  String get guidesBodyweightSquatName => 'Bodyweight squat';
+
+  @override
+  String get guidesBodyweightSquatFocus => 'Quads, glutes, core';
+
+  @override
+  String get guidesBodyweightSquatTip =>
+      'Push your knees out as you descend and keep your heels planted.';
+
+  @override
+  String get guidesBodyweightSquatDescription =>
+      'Sit the hips back and down until thighs are at least parallel. Drive evenly through the whole foot to stand tall.';
+
+  @override
+  String get guidesHangingLegRaiseName => 'Hanging leg raise';
+
+  @override
+  String get guidesHangingLegRaiseFocus => 'Abdominals, hip flexors, grip';
+
+  @override
+  String get guidesHangingLegRaiseTip =>
+      'Initiate each rep by engaging your lats to steady the torso.';
+
+  @override
+  String get guidesHangingLegRaiseDescription =>
+      'From a dead hang, lift your legs together until they reach hip height or higher. Lower slowly to keep tension.';
+
+  @override
+  String get guidesMuscleUpName => 'Muscle-up';
+
+  @override
+  String get guidesMuscleUpFocus => 'Lats, chest, triceps, transition strength';
+
+  @override
+  String get guidesMuscleUpTip =>
+      'Pull high to your upper chest and keep the bar close to reduce the swing.';
+
+  @override
+  String get guidesMuscleUpDescription =>
+      'From a controlled hang, explode into a high pull, transition the wrists over the bar, and press to lockout.';
+
+  @override
+  String get guidesStraightBarDipName => 'Straight bar dip';
+
+  @override
+  String get guidesStraightBarDipFocus => 'Chest, triceps, shoulders';
+
+  @override
+  String get guidesStraightBarDipTip =>
+      'Keep elbows tucked and press down while leaning slightly forward.';
+
+  @override
+  String get guidesStraightBarDipDescription =>
+      'Start on top of the bar with locked elbows, lower under control until shoulders dip below elbows, then drive back up.';
+
+  @override
+  String get guidesDipsName => 'Dips';
+
+  @override
+  String get guidesDipsFocus => 'Chest, triceps, shoulders';
+
+  @override
+  String get guidesDipsTip =>
+      'Lean slightly forward and keep shoulders packed to protect the joints.';
+
+  @override
+  String get guidesDipsDescription =>
+      'Start locked out on parallel bars, lower until shoulders dip below elbows, then press back to a strong lockout.';
+
+  @override
+  String get guidesAustralianRowName => 'Australian row';
+
+  @override
+  String get guidesAustralianRowFocus => 'Upper back, biceps, core';
+
+  @override
+  String get guidesAustralianRowTip =>
+      'Brace your core and keep a straight line from shoulders to heels.';
+
+  @override
+  String get guidesAustralianRowDescription =>
+      'Set the bar at waist height, hang underneath, and row your chest to the bar with elbows tight.';
+
+  @override
+  String get guidesPikePushUpName => 'Pike push-up';
+
+  @override
+  String get guidesPikePushUpFocus => 'Shoulders, triceps, core';
+
+  @override
+  String get guidesPikePushUpTip =>
+      'Keep hips high and lower your head to a spot just in front of your hands.';
+
+  @override
+  String get guidesPikePushUpDescription =>
+      'From a pike position, bend elbows to bring the head down, then press back to a strong lockout.';
+
+  @override
   String get settingsComingSoon => 'Settings coming soon.';
 
   @override

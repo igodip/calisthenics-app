@@ -230,6 +230,240 @@ abstract class AppLocalizations {
   /// **'Impossibile aprire il tutorial in questo momento.'**
   String get guidesVideoUnavailable;
 
+  /// No description provided for @difficultyBeginner.
+  ///
+  /// In it, this message translates to:
+  /// **'Principiante'**
+  String get difficultyBeginner;
+
+  /// No description provided for @difficultyIntermediate.
+  ///
+  /// In it, this message translates to:
+  /// **'Intermedio'**
+  String get difficultyIntermediate;
+
+  /// No description provided for @difficultyAdvanced.
+  ///
+  /// In it, this message translates to:
+  /// **'Avanzato'**
+  String get difficultyAdvanced;
+
+  /// No description provided for @guidesPullupName.
+  ///
+  /// In it, this message translates to:
+  /// **'Trazioni'**
+  String get guidesPullupName;
+
+  /// No description provided for @guidesPullupFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Dorsali, bicipiti, presa'**
+  String get guidesPullupFocus;
+
+  /// No description provided for @guidesPullupTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Spingi i gomiti verso le costole e tieni le costole chiuse per evitare oscillazioni.'**
+  String get guidesPullupTip;
+
+  /// No description provided for @guidesPullupDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Parti da una sospensione in hollow body, poi tira finché il mento supera la sbarra. Controlla la discesa per ripetizioni più forti.'**
+  String get guidesPullupDescription;
+
+  /// No description provided for @guidesPushupName.
+  ///
+  /// In it, this message translates to:
+  /// **'Piegamenti'**
+  String get guidesPushupName;
+
+  /// No description provided for @guidesPushupFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Petto, tricipiti, core'**
+  String get guidesPushupFocus;
+
+  /// No description provided for @guidesPushupTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Contrai i glutei e mantieni una linea dritta dalla testa ai talloni.'**
+  String get guidesPushupTip;
+
+  /// No description provided for @guidesPushupDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Scendi con i gomiti a circa 45° rispetto al busto, sfiora il petto e risali senza lasciare che i fianchi cedano.'**
+  String get guidesPushupDescription;
+
+  /// No description provided for @guidesBodyweightSquatName.
+  ///
+  /// In it, this message translates to:
+  /// **'Squat a corpo libero'**
+  String get guidesBodyweightSquatName;
+
+  /// No description provided for @guidesBodyweightSquatFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Quadricipiti, glutei, core'**
+  String get guidesBodyweightSquatFocus;
+
+  /// No description provided for @guidesBodyweightSquatTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Spingi le ginocchia verso l\'esterno durante la discesa e mantieni i talloni a terra.'**
+  String get guidesBodyweightSquatTip;
+
+  /// No description provided for @guidesBodyweightSquatDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Porta indietro e in basso le anche finché le cosce sono almeno parallele. Spingi uniformemente su tutto il piede per tornare in piedi.'**
+  String get guidesBodyweightSquatDescription;
+
+  /// No description provided for @guidesHangingLegRaiseName.
+  ///
+  /// In it, this message translates to:
+  /// **'Sollevamento gambe alla sbarra'**
+  String get guidesHangingLegRaiseName;
+
+  /// No description provided for @guidesHangingLegRaiseFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Addominali, flessori dell\'anca, presa'**
+  String get guidesHangingLegRaiseFocus;
+
+  /// No description provided for @guidesHangingLegRaiseTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizia ogni ripetizione attivando i dorsali per stabilizzare il busto.'**
+  String get guidesHangingLegRaiseTip;
+
+  /// No description provided for @guidesHangingLegRaiseDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Da una sospensione completa, solleva le gambe unite fino all\'altezza delle anche o più in alto. Scendi lentamente per mantenere tensione.'**
+  String get guidesHangingLegRaiseDescription;
+
+  /// No description provided for @guidesMuscleUpName.
+  ///
+  /// In it, this message translates to:
+  /// **'Muscle-up'**
+  String get guidesMuscleUpName;
+
+  /// No description provided for @guidesMuscleUpFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Dorsali, petto, tricipiti, forza nella transizione'**
+  String get guidesMuscleUpFocus;
+
+  /// No description provided for @guidesMuscleUpTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Tira in alto verso la parte alta del petto e tieni la sbarra vicina per ridurre l\'oscillazione.'**
+  String get guidesMuscleUpTip;
+
+  /// No description provided for @guidesMuscleUpDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Da una sospensione controllata, esplodi in una trazione alta, porta i polsi sopra la sbarra e spingi fino al blocco.'**
+  String get guidesMuscleUpDescription;
+
+  /// No description provided for @guidesStraightBarDipName.
+  ///
+  /// In it, this message translates to:
+  /// **'Dip alla sbarra'**
+  String get guidesStraightBarDipName;
+
+  /// No description provided for @guidesStraightBarDipFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Petto, tricipiti, spalle'**
+  String get guidesStraightBarDipFocus;
+
+  /// No description provided for @guidesStraightBarDipTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Tieni i gomiti vicini al corpo e spingi verso il basso con una leggera inclinazione in avanti.'**
+  String get guidesStraightBarDipTip;
+
+  /// No description provided for @guidesStraightBarDipDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Parti sopra la sbarra con gomiti bloccati, scendi controllando finché le spalle scendono sotto i gomiti, poi risali.'**
+  String get guidesStraightBarDipDescription;
+
+  /// No description provided for @guidesDipsName.
+  ///
+  /// In it, this message translates to:
+  /// **'Dip alle parallele'**
+  String get guidesDipsName;
+
+  /// No description provided for @guidesDipsFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Petto, tricipiti, spalle'**
+  String get guidesDipsFocus;
+
+  /// No description provided for @guidesDipsTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Inclina leggermente il busto in avanti e mantieni le spalle compatte per proteggere le articolazioni.'**
+  String get guidesDipsTip;
+
+  /// No description provided for @guidesDipsDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Parti in blocco sulle parallele, scendi finché le spalle vanno sotto i gomiti, poi risali fino a un blocco forte.'**
+  String get guidesDipsDescription;
+
+  /// No description provided for @guidesAustralianRowName.
+  ///
+  /// In it, this message translates to:
+  /// **'Rematore australiano'**
+  String get guidesAustralianRowName;
+
+  /// No description provided for @guidesAustralianRowFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Dorsali alti, bicipiti, core'**
+  String get guidesAustralianRowFocus;
+
+  /// No description provided for @guidesAustralianRowTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Attiva il core e mantieni una linea dritta dalle spalle ai talloni.'**
+  String get guidesAustralianRowTip;
+
+  /// No description provided for @guidesAustralianRowDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Imposta la sbarra all\'altezza della vita, appenditi sotto e tira il petto verso la sbarra con gomiti stretti.'**
+  String get guidesAustralianRowDescription;
+
+  /// No description provided for @guidesPikePushUpName.
+  ///
+  /// In it, this message translates to:
+  /// **'Piegamenti in pike'**
+  String get guidesPikePushUpName;
+
+  /// No description provided for @guidesPikePushUpFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Spalle, tricipiti, core'**
+  String get guidesPikePushUpFocus;
+
+  /// No description provided for @guidesPikePushUpTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Tieni i fianchi alti e abbassa la testa verso un punto appena davanti alle mani.'**
+  String get guidesPikePushUpTip;
+
+  /// No description provided for @guidesPikePushUpDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Da una posizione a pike, piega i gomiti per portare la testa in basso, poi spingi fino a un blocco forte.'**
+  String get guidesPikePushUpDescription;
+
   /// No description provided for @settingsComingSoon.
   ///
   /// In it, this message translates to:
