@@ -75,37 +75,6 @@ class _HomePageState extends State<HomePage> {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    final navigationItems = [
-      _NavigationItem(
-        icon: Icons.home,
-        label: l10n.navHome,
-        gradient: LinearGradient(
-          colors: [colorScheme.primary, colorScheme.secondary],
-        ),
-      ),
-      _NavigationItem(
-        icon: Icons.play_circle,
-        label: l10n.navGuides,
-        gradient: LinearGradient(
-          colors: [colorScheme.secondary, colorScheme.tertiary],
-        ),
-      ),
-      _NavigationItem(
-        icon: Icons.account_circle,
-        label: l10n.navProfile,
-        gradient: LinearGradient(
-          colors: [colorScheme.tertiary, colorScheme.primary],
-        ),
-      ),
-      _NavigationItem(
-        icon: Icons.book,
-        label: l10n.navTerminology,
-        gradient: LinearGradient(
-          colors: [colorScheme.primary, colorScheme.error],
-        ),
-      ),
-    ];
-
     final List<Widget> pages = [
       const HomeContent(),
       const ExerciseGuidesPage(),
@@ -129,6 +98,18 @@ class _HomePageState extends State<HomePage> {
             PopupMenuItem<int>(
               value: 2,
               child: Text(l10n.navProfile),
+            ),
+            PopupMenuItem<int>(
+              value: 0,
+              child: Text(l10n.navHome),
+            ),
+            PopupMenuItem<int>(
+              value: 1,
+              child: Text(l10n.navGuides),
+            ),
+            PopupMenuItem<int>(
+              value: 3,
+              child: Text(l10n.navTerminology),
             ),
           ],
         ),
@@ -202,89 +183,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: theme.shadowColor.withValues(alpha: 0.08),
-                offset: const Offset(0, 10),
-                blurRadius: 32,
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: BottomNavigationBar(
-              backgroundColor: colorScheme.surface.withValues(alpha: 0),
-              elevation: 0,
-              type: BottomNavigationBarType.fixed,
-              currentIndex: selectedIndex,
-              selectedItemColor: colorScheme.primary,
-              unselectedItemColor: colorScheme.onSurfaceVariant,
-              showUnselectedLabels: true,
-              onTap: (int index) {
-                setState(() {
-                  selectedIndex = index;
-                });
-              },
-              items: [
-                for (final item in navigationItems)
-                  BottomNavigationBarItem(
-                    icon: _GradientIcon(
-                      icon: item.icon,
-                      gradient: item.gradient,
-                      isActive: navigationItems.indexOf(item) == selectedIndex,
-                      inactiveColor: colorScheme.onSurfaceVariant,
-                    ),
-                    label: item.label,
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavigationItem {
-  const _NavigationItem({
-    required this.icon,
-    required this.label,
-    required this.gradient,
-  });
-
-  final IconData icon;
-  final String label;
-  final Gradient gradient;
-}
-
-class _GradientIcon extends StatelessWidget {
-  const _GradientIcon({
-    required this.icon,
-    required this.gradient,
-    required this.isActive,
-    required this.inactiveColor,
-  });
-
-  final IconData icon;
-  final Gradient gradient;
-  final bool isActive;
-  final Color inactiveColor;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!isActive) {
-      return Icon(icon, color: inactiveColor);
-    }
-
-    return ShaderMask(
-      shaderCallback: (bounds) => gradient.createShader(bounds),
-      child: Icon(icon, color: Theme.of(context).colorScheme.onPrimary),
     );
   }
 }
