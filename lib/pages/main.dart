@@ -116,8 +116,22 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
+        leading: PopupMenuButton<int>(
+          icon: const Icon(Icons.menu),
+          onSelected: (index) {
+            setState(() {
+              selectedIndex = index;
+            });
+          },
+          itemBuilder: (context) => [
+            PopupMenuItem<int>(
+              value: 2,
+              child: Text(l10n.navProfile),
+            ),
+          ],
+        ),
         title: Text(
           widget.title,
           style: theme.textTheme.titleLarge?.copyWith(
@@ -274,4 +288,3 @@ class _GradientIcon extends StatelessWidget {
     );
   }
 }
-
