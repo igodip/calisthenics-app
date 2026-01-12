@@ -164,7 +164,7 @@
                         <div v-for="plan in plans" :key="plan.id" class="card stack small">
                             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
                                 <div class="stack">
-                                    <strong>{{ planEdits[plan.id]?.name || plan.name }}</strong>
+                                    <strong>{{ planEdits[plan.id]?.title || plan.title }}</strong>
                                     <span class="muted mono small">#{{ shortId(plan.id) }}</span>
                                 </div>
                                 <div class="inline-actions">
@@ -176,7 +176,7 @@
                             <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">
                                 <label class="small stack">
                                     Name
-                                    <input v-model="planEdits[plan.id].name" />
+                                    <input v-model="planEdits[plan.id].title" />
                                 </label>
                                 <label class="small stack">
                                     Status
