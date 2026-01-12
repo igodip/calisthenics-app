@@ -375,7 +375,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeCalendarTitle => 'Calendario allenamenti';
 
   @override
-  String get homeCalendarSubtitle => 'I giorni di allenamento sono evidenziati.';
+  String get homeCalendarSubtitle =>
+      'I giorni di allenamento sono evidenziati.';
 
   @override
   String get homeWorkoutPlanTitle => 'Piano di allenamento';
