@@ -112,23 +112,43 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   ) async {
     final response = await client
         .from('workout_plans')
-        .select()
+        .select('id, title, status, notes, starts_on, created_at')
         .eq('trainee_id', userId)
         .order('starts_on', ascending: false)
         .order('created_at', ascending: false);
 
     final data = (response as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
-    return data
-        .map(WorkoutPlan.fromJson)
-        .toList()
-      ..sort((a, b) {
-        final aDate = a.startsOn ?? a.createdAt;
-        final bDate = b.startsOn ?? b.createdAt;
-        if (aDate == null && bDate == null) return 0;
-        if (aDate == null) return 1;
-        if (bDate == null) return -1;
-        return bDate.compareTo(aDate);
-      });
+    DateTime? parseDate(dynamic value) {
+      if (value is DateTime) return value;
+      if (value is String && value.isNotEmpty) {
+        return DateTime.tryParse(value);
+      }
+      return null;
+    }
+
+    final plans = data
+        .map(
+          (row) => WorkoutPlan(
+            id: row['id'] as String?,
+            name: (row['title'] as String? ?? '').trim(),
+            status: (row['status'] as String? ?? '').trim(),
+            notes: row['notes'] as String?,
+            startsOn: parseDate(row['starts_on']),
+            createdAt: parseDate(row['created_at']),
+          ),
+        )
+        .toList();
+
+    plans.sort((a, b) {
+      final aDate = a.startsOn ?? a.createdAt;
+      final bDate = b.startsOn ?? b.createdAt;
+      if (aDate == null && bDate == null) return 0;
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+      return bDate.compareTo(aDate);
+    });
+
+    return plans;
   }
 
   Future<List<WorkoutDay>> _loadWorkoutDays(
@@ -138,10 +158,14 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     final response = await client
         .from('days')
         .select(
-            '*, day_exercises ( id, position, notes, completed, trainee_notes, exercises ( id, name ) )')
+          'id, week, day_code, title, notes, completed, '
+          'workout_plan_days ( position, workout_plans ( id, title, starts_on, created_at ) ), '
+          'day_exercises ( id, position, notes, completed, trainee_notes, exercises ( id, name ) )',
+        )
         .eq('trainee_id', userId)
         .order('week', ascending: true)
         .order('day_code', ascending: true)
+        .order('position', referencedTable: 'workout_plan_days', ascending: true)
         .order('position', referencedTable: 'day_exercises', ascending: true);
 
     final data = (response as List<dynamic>? ?? [])
@@ -158,16 +182,16 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     return data.map((row) {
       final dayExercises =
           (row['day_exercises'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+      final planEntries =
+          (row['workout_plan_days'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+      final planDetails = planEntries.isNotEmpty
+          ? (planEntries.first['workout_plans'] as Map<String, dynamic>?) ?? {}
+          : <String, dynamic>{};
 
-      final createdAt = parseDate(row['created_at']);
-      final planStartedAt = parseDate(
-        row['plan_started_at'] ?? row['plan_start'] ?? row['starts_on'],
-      );
-      final planId = row['plan_id'] as String? ??
-          row['workout_plan_id'] as String? ??
-          row['program_id'] as String?;
-      final planName =
-          row['plan_name'] as String? ?? row['workout_plan_name'] as String?;
+      final planStartedAt = parseDate(planDetails['starts_on']);
+      final planCreatedAt = parseDate(planDetails['created_at']);
+      final planId = planDetails['id'] as String?;
+      final planName = planDetails['title'] as String?;
 
       final exercises = dayExercises.map((exercise) {
         final exerciseDetails =
@@ -190,9 +214,9 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         notes: row['notes'] as String?,
         isCompleted: row['completed'] as bool? ?? false,
         planId: planId,
-        planName: planName ,
+        planName: planName,
         planStartedAt: planStartedAt,
-        createdAt: createdAt,
+        createdAt: planCreatedAt,
         exercises: exercises,
       );
     }).toList();
