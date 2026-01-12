@@ -1,7 +1,5 @@
-import 'package:calisync/components/cards/selection_card.dart';
 import 'package:calisync/model/workout_day.dart';
-import 'package:calisync/model/workout_plan.dart';
-import 'package:calisync/pages/training.dart';
+import 'package:calisync/pages/workout_plan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,12 +14,12 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  late Future<_HomeData> _homeDataFuture;
+  late Future<List<WorkoutDay>> _daysFuture;
 
   @override
   void initState() {
     super.initState();
-    _homeDataFuture = _loadHomeData();
+    _daysFuture = _loadWorkoutDays();
   }
 
   @override
@@ -31,8 +29,8 @@ class _HomeContentState extends State<HomeContent> {
       padding: const EdgeInsets.all(16.0),
       child: RefreshIndicator(
         onRefresh: _refresh,
-        child: FutureBuilder<_HomeData>(
-          future: _homeDataFuture,
+        child: FutureBuilder<List<WorkoutDay>>(
+          future: _daysFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return ListView(
@@ -71,7 +69,7 @@ class _HomeContentState extends State<HomeContent> {
                     child: FilledButton.icon(
                       onPressed: () {
                         setState(() {
-                          _homeDataFuture = _loadHomeData();
+                          _daysFuture = _loadWorkoutDays();
                         });
                       },
                       icon: const Icon(Icons.refresh),
@@ -82,60 +80,18 @@ class _HomeContentState extends State<HomeContent> {
               );
             }
 
-            final homeData = snapshot.data ?? const _HomeData.empty();
-            final days = homeData.days;
-            final plans = homeData.plans;
-            final planOverview = _WorkoutPlanOverview(
-              plans: plans,
-              onRefresh: _refresh,
-            );
-            if (days.isEmpty) {
-              return ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  const SizedBox(height: 32),
-                  Image.asset(
-                    'assets/logo.png',
-                    height: 56,
-                    width: 56,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.homeEmptyTitle,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.homeEmptyDescription,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 24),
-                  planOverview
-                ],
-              );
-            }
-
-            final planGroups = _buildPlanGroups(days, l10n);
+            final days = snapshot.data ?? const <WorkoutDay>[];
+            final workoutDates = _workoutDatesForMonth(days, DateTime.now());
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                planOverview,
-                const SizedBox(height: 16),
-                ...planGroups
-                    .asMap()
-                    .entries
-                    .map(
-                      (entry) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: _WorkoutPlanSection(
-                          plan: entry.value,
-                          isLatest: entry.key == 0,
-                          onOpenDay: _openDay,
-                        ),
-                      ),
-                    ),
+                _WorkoutCalendarSection(
+                  workoutDates: workoutDates,
+                ),
+                const SizedBox(height: 24),
+                _WorkoutPlanLinkSection(
+                  onOpenPlan: _openWorkoutPlan,
+                ),
               ],
             );
           },
@@ -146,66 +102,24 @@ class _HomeContentState extends State<HomeContent> {
 
   Future<void> _refresh() async {
     setState(() {
-      _homeDataFuture = _loadHomeData();
+      _daysFuture = _loadWorkoutDays();
     });
-    await _homeDataFuture;
+    await _daysFuture;
   }
 
-  Future<_HomeData> _loadHomeData() async {
+  Future<List<WorkoutDay>> _loadWorkoutDays() async {
     final client = Supabase.instance.client;
     final userId = client.auth.currentUser?.id;
     if (userId == null) {
       throw Exception(AppLocalizations.of(context)!.unauthenticated);
     }
 
-    final results = await Future.wait([
-      _loadWorkoutPlans(client, userId),
-      _loadWorkoutDays(client, userId),
-    ]);
-
-    return _HomeData(
-      plans: results[0] as List<WorkoutPlan>,
-      days: results[1] as List<WorkoutDay>,
-    );
-  }
-
-  Future<List<WorkoutPlan>> _loadWorkoutPlans(
-    SupabaseClient client,
-    String userId,
-  ) async {
-    final response = await client
-        .from('workout_plans')
-        .select()
-        .eq('trainee_id', userId)
-        .order('starts_on', ascending: false)
-        .order('created_at', ascending: false);
-
-    final data = (response as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
-    return data
-        .map(WorkoutPlan.fromJson)
-        .toList()
-      ..sort((a, b) {
-        final aDate = a.startsOn ?? a.createdAt;
-        final bDate = b.startsOn ?? b.createdAt;
-        if (aDate == null && bDate == null) return 0;
-        if (aDate == null) return 1;
-        if (bDate == null) return -1;
-        return bDate.compareTo(aDate);
-      });
-  }
-
-  Future<List<WorkoutDay>> _loadWorkoutDays(
-    SupabaseClient client,
-    String userId,
-  ) async {
     final response = await client
         .from('days')
-        .select(
-            '*, day_exercises ( id, position, notes, completed, trainee_notes, exercises ( id, name ) )')
+        .select('week, day_code, plan_started_at, plan_start, starts_on, created_at')
         .eq('trainee_id', userId)
         .order('week', ascending: true)
-        .order('day_code', ascending: true)
-        .order('position', referencedTable: 'day_exercises', ascending: true);
+        .order('day_code', ascending: true);
 
     final data = (response as List<dynamic>? ?? [])
         .cast<Map<String, dynamic>>();
@@ -219,447 +133,317 @@ class _HomeContentState extends State<HomeContent> {
     }
 
     return data.map((row) {
-      final dayExercises =
-          (row['day_exercises'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
-
       final createdAt = parseDate(row['created_at']);
       final planStartedAt = parseDate(
         row['plan_started_at'] ?? row['plan_start'] ?? row['starts_on'],
       );
-      final planId = row['plan_id'] as String? ??
-          row['workout_plan_id'] as String? ??
-          row['program_id'] as String?;
-      final planName =
-          row['plan_name'] as String? ?? row['workout_plan_name'] as String?;
-
-      final exercises = dayExercises.map((exercise) {
-        final exerciseDetails =
-            (exercise['exercises'] as Map<String, dynamic>?) ?? {};
-        return WorkoutExercise(
-          id: exercise['id'] as String?,
-          name: exerciseDetails['name'] as String?,
-          position: (exercise['position'] as num?)?.toInt(),
-          notes: exercise['notes'] as String?,
-          traineeNotes: exercise['trainee_notes'] as String?,
-          isCompleted: exercise['completed'] as bool? ?? false,
-        );
-      }).toList();
 
       return WorkoutDay(
-        id: row['id'] as String?,
+        id: null,
         week: (row['week'] as num?)?.toInt() ?? 0,
         dayCode: (row['day_code'] as String? ?? '').trim(),
-        title: row['title'] as String?,
-        notes: row['notes'] as String?,
-        isCompleted: row['completed'] as bool? ?? false,
-        planId: planId,
-        planName: planName ,
+        title: null,
+        notes: null,
+        isCompleted: false,
+        planId: null,
+        planName: null,
         planStartedAt: planStartedAt,
         createdAt: createdAt,
-        exercises: exercises,
+        exercises: const [],
       );
     }).toList();
   }
 
-  List<_WorkoutPlanGroup> _buildPlanGroups(
+  Future<void> _openWorkoutPlan() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const WorkoutPlanPage()),
+    );
+  }
+
+  Set<DateTime> _workoutDatesForMonth(
     List<WorkoutDay> days,
-    AppLocalizations l10n,
+    DateTime month,
   ) {
-    String planKey(WorkoutDay day) {
-      if (day.planId != null && day.planId!.isNotEmpty) return day.planId!;
-      if (day.planName != null && day.planName!.isNotEmpty) return day.planName!;
-      if (day.planStartedAt != null) return 'start-${day.planStartedAt!.toIso8601String()}';
-      if (day.createdAt != null) return 'created-${day.createdAt!.toIso8601String()}';
-      return 'plan';
-    }
-
-    final Map<String, List<WorkoutDay>> grouped = {};
+    final dates = <DateTime>{};
     for (final day in days) {
-      grouped.putIfAbsent(planKey(day), () => []).add(day);
-    }
-
-    DateTime? earliestDate(Iterable<WorkoutDay> entries) {
-      return entries
-          .map((day) => day.planStartedAt ?? day.createdAt)
-          .whereType<DateTime>()
-          .fold<DateTime?>(null, (previous, element) {
-        if (previous == null) return element;
-        return element.isBefore(previous) ? element : previous;
-      });
-    }
-
-    DateTime? latestDate(Iterable<WorkoutDay> entries) {
-      return entries
-          .map((day) => day.planStartedAt ?? day.createdAt)
-          .whereType<DateTime>()
-          .fold<DateTime?>(null, (previous, element) {
-        if (previous == null) return element;
-        return element.isAfter(previous) ? element : previous;
-      });
-    }
-
-    final plans = grouped.entries.map((entry) {
-      final planDays = [...entry.value]
-        ..sort((a, b) {
-          if (a.isCompleted != b.isCompleted) {
-            return a.isCompleted ? 1 : -1;
-          }
-          if (a.week != b.week) return a.week.compareTo(b.week);
-          return a.dayCode.compareTo(b.dayCode);
-        });
-
-      final first = planDays.first;
-      final planTitle = first.planName?.trim().isNotEmpty == true
-          ? first.planName!.trim()
-          : l10n.homePlanDefaultTitle;
-
-      return _WorkoutPlanGroup(
-        id: entry.key,
-        title: planTitle,
-        startedAt: earliestDate(planDays),
-        latestDate: latestDate(planDays),
-        days: planDays,
-      );
-    }).toList();
-
-    plans.sort((a, b) {
-      final aDate = a.latestDate;
-      final bDate = b.latestDate;
-      if (aDate == null && bDate == null) return 0;
-      if (aDate == null) return 1;
-      if (bDate == null) return -1;
-      return bDate.compareTo(aDate);
-    });
-
-    return plans;
-  }
-
-  Future<void> _openDay(WorkoutDay day) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Training(day: day),
-      ),
-    ).then((updated) {
-      if (updated == true) {
-        _refresh();
+      final computed = _resolveWorkoutDate(day);
+      if (computed == null) continue;
+      if (computed.year == month.year && computed.month == month.month) {
+        dates.add(_normalizeDate(computed));
       }
-    });
+    }
+    return dates;
+  }
+
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  DateTime? _resolveWorkoutDate(WorkoutDay day) {
+    final planStart = day.planStartedAt;
+    final createdAt = day.createdAt;
+    final weekOffset = day.week > 0 ? day.week - 1 : 0;
+    final dayOffset = _dayOffsetFromCode(day.dayCode);
+
+    if (planStart != null && dayOffset != null) {
+      final normalizedStart = _normalizeDate(planStart);
+      return normalizedStart.add(
+        Duration(days: (weekOffset * 7) + dayOffset),
+      );
+    }
+
+    if (planStart != null) {
+      final normalizedStart = _normalizeDate(planStart);
+      return normalizedStart.add(Duration(days: weekOffset * 7));
+    }
+
+    if (createdAt != null) {
+      return _normalizeDate(createdAt);
+    }
+
+    return null;
+  }
+
+  int? _dayOffsetFromCode(String code) {
+    final normalized = code.trim().toLowerCase();
+    if (normalized.isEmpty) return null;
+
+    final numeric = int.tryParse(normalized);
+    if (numeric != null && numeric > 0) {
+      return numeric - 1;
+    }
+
+    final letter = normalized.length == 1 ? normalized.codeUnitAt(0) : null;
+    if (letter != null && letter >= 97 && letter <= 103) {
+      return letter - 97;
+    }
+
+    const weekdayMap = {
+      'mon': 0,
+      'monday': 0,
+      'lun': 0,
+      'lunedi': 0,
+      'lunedì': 0,
+      'tue': 1,
+      'tues': 1,
+      'tuesday': 1,
+      'mar': 1,
+      'martedi': 1,
+      'martedì': 1,
+      'wed': 2,
+      'wednesday': 2,
+      'mer': 2,
+      'mercoledi': 2,
+      'mercoledì': 2,
+      'thu': 3,
+      'thur': 3,
+      'thurs': 3,
+      'thursday': 3,
+      'gio': 3,
+      'giovedi': 3,
+      'giovedì': 3,
+      'fri': 4,
+      'friday': 4,
+      'ven': 4,
+      'venerdi': 4,
+      'venerdì': 4,
+      'sat': 5,
+      'saturday': 5,
+      'sab': 5,
+      'sabato': 5,
+      'sun': 6,
+      'sunday': 6,
+      'dom': 6,
+      'domenica': 6,
+    };
+
+    return weekdayMap[normalized];
   }
 }
 
-class _HomeData {
-  final List<WorkoutPlan> plans;
-  final List<WorkoutDay> days;
+class _WorkoutCalendarSection extends StatelessWidget {
+  final Set<DateTime> workoutDates;
 
-  const _HomeData({
-    required this.plans,
-    required this.days,
-  });
-
-  const _HomeData.empty()
-      : plans = const [],
-        days = const [];
-}
-
-class _WorkoutPlanOverview extends StatelessWidget {
-  final List<WorkoutPlan> plans;
-  final Future<void> Function() onRefresh;
-
-  const _WorkoutPlanOverview({
-    required this.plans,
-    required this.onRefresh,
+  const _WorkoutCalendarSection({
+    required this.workoutDates,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final dateFormat = DateFormat.yMMMd(l10n.localeName);
-
-    final planCards = plans.map(
-      (plan) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: _WorkoutPlanCard(
-          plan: plan,
-          dateFormat: dateFormat,
-        ),
-      ),
-    );
+    final now = DateTime.now();
+    final monthLabel = DateFormat.yMMMM(l10n.localeName).format(now);
+    final weekdayLabels = _weekdayLabels(l10n.localeName);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.homePlansSectionTitle,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.homePlansSectionSubtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              onPressed: onRefresh,
-              tooltip: l10n.retry,
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
+        Text(
+          l10n.homeCalendarTitle,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          l10n.homeCalendarSubtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          monthLabel,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 12),
-        if (plans.isEmpty)
-          Card(
-            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.assignment,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.homePlansEmptyTitle,
-                          style: theme.textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.homePlansEmptyDescription,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: weekdayLabels
+              .map(
+                (label) => Expanded(
+                  child: Center(
+                    child: Text(
+                      label,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          )
-        else
-          ...planCards,
+                ),
+              )
+              .toList(),
+        ),
+        const SizedBox(height: 8),
+        _CalendarGrid(
+          month: now,
+          workoutDates: workoutDates,
+        ),
       ],
     );
   }
-}
 
-class _WorkoutPlanCard extends StatelessWidget {
-  final WorkoutPlan plan;
-  final DateFormat dateFormat;
-
-  const _WorkoutPlanCard({
-    required this.plan,
-    required this.dateFormat,
-  });
-
-  String _statusLabel(AppLocalizations l10n) {
-    final normalized = plan.status?.trim().toLowerCase();
-    switch (normalized) {
-      case 'active':
-        return l10n.profilePlanActive;
-      case 'expired':
-        return l10n.profilePlanExpired;
-      case 'archived':
-        return l10n.homePlanStatusArchived;
-      case 'draft':
-        return l10n.homePlanStatusDraft;
-      case 'upcoming':
-        return l10n.homePlanStatusUpcoming;
-      default:
-        return normalized != null && normalized.isNotEmpty
-            ? normalized[0].toUpperCase() + normalized.substring(1)
-            : l10n.homePlanStatusUnknown;
-    }
-  }
-
-  Color _statusColor(ThemeData theme) {
-    final normalized = plan.status?.trim().toLowerCase();
-    switch (normalized) {
-      case 'active':
-        return theme.colorScheme.primary;
-      case 'expired':
-      case 'archived':
-        return theme.colorScheme.error;
-      case 'upcoming':
-        return theme.colorScheme.tertiary;
-      default:
-        return theme.colorScheme.secondary;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final title = plan.name.isNotEmpty
-        ? plan.name
-        : l10n.homePlanDefaultTitle;
-    final dateRange = plan.dateRangeLabel(dateFormat);
-    final subtitleParts = <String>[];
-    if (dateRange != null) {
-      subtitleParts.add(dateRange);
-    }
-    if ((plan.notes ?? '').trim().isNotEmpty) {
-      subtitleParts.add((plan.notes ?? '').trim());
-    }
-    return SelectionCard(
-      title: title,
-      subtitle: subtitleParts.isEmpty ? null : subtitleParts.join(' • '),
-      icon: Icons.assignment,
-      trailing: Chip(
-        label: Text(_statusLabel(l10n)),
-        backgroundColor: _statusColor(theme).withValues(alpha: 0.15),
-        labelStyle: TextStyle(
-          color: _statusColor(theme),
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
+  List<String> _weekdayLabels(String locale) {
+    final start = DateTime(2020, 1, 6);
+    final formatter = DateFormat.E(locale);
+    return List.generate(7, (index) {
+      return formatter.format(start.add(Duration(days: index)));
+    });
   }
 }
 
-class _WorkoutPlanGroup {
-  final String id;
-  final String title;
-  final DateTime? startedAt;
-  final DateTime? latestDate;
-  final List<WorkoutDay> days;
+class _CalendarGrid extends StatelessWidget {
+  final DateTime month;
+  final Set<DateTime> workoutDates;
 
-  const _WorkoutPlanGroup({
-    required this.id,
-    required this.title,
-    required this.days,
-    this.startedAt,
-    this.latestDate,
-  });
-}
-
-class _WorkoutPlanSection extends StatelessWidget {
-  final _WorkoutPlanGroup plan;
-  final bool isLatest;
-  final ValueChanged<WorkoutDay> onOpenDay;
-
-  const _WorkoutPlanSection({
-    required this.plan,
-    required this.isLatest,
-    required this.onOpenDay,
+  const _CalendarGrid({
+    required this.month,
+    required this.workoutDates,
   });
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final year = month.year;
+    final monthNumber = month.month;
+    final firstDay = DateTime(year, monthNumber, 1);
+    final daysInMonth = DateTime(year, monthNumber + 1, 0).day;
+    final leadingEmpty = firstDay.weekday - 1;
+    final totalCells = leadingEmpty + daysInMonth;
+    final today = DateTime.now();
 
-    final dateFormat = DateFormat.yMMMMd(l10n.localeName);
-    final startedLabel = plan.startedAt != null
-        ? l10n.homePlanStartedLabel(dateFormat.format(plan.startedAt!))
-        : null;
-
-    return Card(
-      color: isLatest ? theme.colorScheme.primaryContainer.withValues(alpha: 0.25) : null,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: isLatest
-              ? theme.colorScheme.primary
-              : theme.colorScheme.outlineVariant,
-          width: 1.25,
-        ),
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 7,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 1.1,
       ),
-      child: ExpansionTile(
-        initiallyExpanded: isLatest,
-        tilePadding: const EdgeInsets.all(16),
-        trailing: isLatest
-            ? Chip(
-                label: Text(l10n.homePlanLatestLabel),
-                backgroundColor: theme.colorScheme.primary,
-                labelStyle: TextStyle(color: theme.colorScheme.onPrimary),
-              )
-            : null,
-        title: Text(
-          plan.title,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+      itemCount: totalCells,
+      itemBuilder: (context, index) {
+        if (index < leadingEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final dayNumber = index - leadingEmpty + 1;
+        final date = DateTime(year, monthNumber, dayNumber);
+        final normalized = DateTime(date.year, date.month, date.day);
+        final isWorkoutDay = workoutDates.contains(normalized);
+        final isToday = normalized.year == today.year &&
+            normalized.month == today.month &&
+            normalized.day == today.day;
+
+        final backgroundColor = isWorkoutDay
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6);
+        final textColor = isWorkoutDay
+            ? theme.colorScheme.onPrimaryContainer
+            : theme.colorScheme.onSurface;
+
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(12),
+            border: isToday
+                ? Border.all(
+                    color: theme.colorScheme.primary,
+                    width: 1.5,
+                  )
+                : null,
           ),
-        ),
-        subtitle: startedLabel != null
-            ? Text(
-                startedLabel,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              )
-            : null,
-        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        children: [
-          ...plan.days.map(
-            (day) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _WorkoutDayTile(
-                day: day,
-                onTap: () => onOpenDay(day),
+          child: Center(
+            child: Text(
+              '$dayNumber',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: textColor,
               ),
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
-class _WorkoutDayTile extends StatelessWidget {
-  final WorkoutDay day;
-  final VoidCallback onTap;
+class _WorkoutPlanLinkSection extends StatelessWidget {
+  final VoidCallback onOpenPlan;
 
-  const _WorkoutDayTile({
-    required this.day,
-    required this.onTap,
+  const _WorkoutPlanLinkSection({
+    required this.onOpenPlan,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isCompleted = day.isCompleted;
 
-    return SelectionCard(
-      title: day.formattedTitle(l10n),
-      icon: Icons.calendar_today,
-      iconColor: isCompleted
-          ? theme.colorScheme.secondary
-          : theme.colorScheme.primary,
-      tileColor: isCompleted ? theme.colorScheme.surfaceContainerHighest : null,
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (isCompleted)
-            Icon(Icons.check_circle,
-                color: theme.colorScheme.secondary),
-          if (isCompleted)
-            const SizedBox(width: 6),
-          const Icon(Icons.arrow_forward_ios),
-        ],
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          Icons.fitness_center,
+          color: theme.colorScheme.primary,
+        ),
+        title: Text(
+          l10n.homeWorkoutPlanTitle,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(
+          l10n.homeWorkoutPlanSubtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios),
+        onTap: onOpenPlan,
       ),
-      onTap: onTap,
     );
   }
 }

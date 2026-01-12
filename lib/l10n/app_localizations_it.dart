@@ -372,6 +372,22 @@ class AppLocalizationsIt extends AppLocalizations {
   String get retry => 'Riprova';
 
   @override
+  String get homeCalendarTitle => 'Calendario allenamenti';
+
+  @override
+  String get homeCalendarSubtitle => 'I giorni di allenamento sono evidenziati.';
+
+  @override
+  String get homeWorkoutPlanTitle => 'Piano di allenamento';
+
+  @override
+  String get homeWorkoutPlanSubtitle =>
+      'Rivedi il piano assegnato e le prossime sessioni.';
+
+  @override
+  String get workoutPlanTitle => 'Piano di allenamento';
+
+  @override
   String get homeEmptyTitle => 'Nessun allenamento disponibile';
 
   @override
