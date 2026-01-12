@@ -78,3 +78,4 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .history-point{fill:#9aa0a6;stroke:#0e111a;stroke-width:2;r:3}
 .history-point.latest{fill:var(--accent)}
 .history-meta{display:flex;justify-content:space-between;align-items:center;color:var(--muted)}
+
