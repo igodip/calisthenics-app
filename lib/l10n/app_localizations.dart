@@ -716,11 +716,83 @@ abstract class AppLocalizations {
   /// **'Rivedi il piano assegnato e le prossime sessioni.'**
   String get homeWorkoutPlanSubtitle;
 
+  /// No description provided for @homeTraineeFeedbackTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback atleta'**
+  String get homeTraineeFeedbackTitle;
+
+  /// No description provided for @homeTraineeFeedbackSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi aggiornamenti con il tuo coach dopo le sessioni.'**
+  String get homeTraineeFeedbackSubtitle;
+
   /// No description provided for @workoutPlanTitle.
   ///
   /// In it, this message translates to:
   /// **'Piano di allenamento'**
   String get workoutPlanTitle;
+
+  /// No description provided for @traineeFeedbackTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback atleta'**
+  String get traineeFeedbackTitle;
+
+  /// No description provided for @traineeFeedbackSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Racconta al tuo coach come ti senti e come procede il piano.'**
+  String get traineeFeedbackSubtitle;
+
+  /// No description provided for @traineeFeedbackHighlightsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Punti forti'**
+  String get traineeFeedbackHighlightsLabel;
+
+  /// No description provided for @traineeFeedbackHighlightsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cosa è andato bene o ti è piaciuto?'**
+  String get traineeFeedbackHighlightsHint;
+
+  /// No description provided for @traineeFeedbackChallengesLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Difficoltà'**
+  String get traineeFeedbackChallengesLabel;
+
+  /// No description provided for @traineeFeedbackChallengesHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cosa è stato difficile o da adattare?'**
+  String get traineeFeedbackChallengesHint;
+
+  /// No description provided for @traineeFeedbackNotesLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Note per il coach'**
+  String get traineeFeedbackNotesLabel;
+
+  /// No description provided for @traineeFeedbackNotesHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai altro da condividere?'**
+  String get traineeFeedbackNotesHint;
+
+  /// No description provided for @traineeFeedbackSubmit.
+  ///
+  /// In it, this message translates to:
+  /// **'Invia feedback'**
+  String get traineeFeedbackSubmit;
+
+  /// No description provided for @traineeFeedbackSubmitted.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback salvato. Lo condivideremo con il tuo coach.'**
+  String get traineeFeedbackSubmitted;
 
   /// No description provided for @homeEmptyTitle.
   ///

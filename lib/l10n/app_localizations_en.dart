@@ -381,7 +381,47 @@ class AppLocalizationsEn extends AppLocalizations {
       'Review your assigned plan and upcoming sessions.';
 
   @override
+  String get homeTraineeFeedbackTitle => 'Trainee feedback';
+
+  @override
+  String get homeTraineeFeedbackSubtitle =>
+      'Share updates with your coach after sessions.';
+
+  @override
   String get workoutPlanTitle => 'Workout plan';
+
+  @override
+  String get traineeFeedbackTitle => 'Trainee feedback';
+
+  @override
+  String get traineeFeedbackSubtitle =>
+      'Tell your coach how you\'re feeling and how the plan is going.';
+
+  @override
+  String get traineeFeedbackHighlightsLabel => 'Highlights';
+
+  @override
+  String get traineeFeedbackHighlightsHint => 'What felt good or went well?';
+
+  @override
+  String get traineeFeedbackChallengesLabel => 'Challenges';
+
+  @override
+  String get traineeFeedbackChallengesHint =>
+      'What felt difficult or needs adjustment?';
+
+  @override
+  String get traineeFeedbackNotesLabel => 'Coach notes';
+
+  @override
+  String get traineeFeedbackNotesHint => 'Anything else to share?';
+
+  @override
+  String get traineeFeedbackSubmit => 'Send feedback';
+
+  @override
+  String get traineeFeedbackSubmitted =>
+      'Feedback saved. We\'ll share it with your coach.';
 
   @override
   String get homeEmptyTitle => 'No workouts available';

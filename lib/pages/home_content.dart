@@ -1,4 +1,5 @@
 import 'package:calisync/model/workout_day.dart';
+import 'package:calisync/pages/trainee_feedback.dart';
 import 'package:calisync/pages/workout_plan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -92,6 +93,10 @@ class _HomeContentState extends State<HomeContent> {
                 _WorkoutPlanLinkSection(
                   onOpenPlan: _openWorkoutPlan,
                 ),
+                const SizedBox(height: 16),
+                _TraineeFeedbackLinkSection(
+                  onOpenFeedback: _openTraineeFeedback,
+                ),
               ],
             );
           },
@@ -160,6 +165,12 @@ class _HomeContentState extends State<HomeContent> {
   Future<void> _openWorkoutPlan() async {
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const WorkoutPlanPage()),
+    );
+  }
+
+  Future<void> _openTraineeFeedback() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const TraineeFeedbackPage()),
     );
   }
 
@@ -441,6 +452,43 @@ class _WorkoutPlanLinkSection extends StatelessWidget {
         ),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: onOpenPlan,
+      ),
+    );
+  }
+}
+
+class _TraineeFeedbackLinkSection extends StatelessWidget {
+  final VoidCallback onOpenFeedback;
+
+  const _TraineeFeedbackLinkSection({
+    required this.onOpenFeedback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          Icons.rate_review,
+          color: theme.colorScheme.primary,
+        ),
+        title: Text(
+          l10n.homeTraineeFeedbackTitle,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(
+          l10n.homeTraineeFeedbackSubtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios),
+        onTap: onOpenFeedback,
       ),
     );
   }
