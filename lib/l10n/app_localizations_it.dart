@@ -385,7 +385,48 @@ class AppLocalizationsIt extends AppLocalizations {
       'Rivedi il piano assegnato e le prossime sessioni.';
 
   @override
+  String get homeTraineeFeedbackTitle => 'Feedback atleta';
+
+  @override
+  String get homeTraineeFeedbackSubtitle =>
+      'Condividi aggiornamenti con il tuo coach dopo le sessioni.';
+
+  @override
   String get workoutPlanTitle => 'Piano di allenamento';
+
+  @override
+  String get traineeFeedbackTitle => 'Feedback atleta';
+
+  @override
+  String get traineeFeedbackSubtitle =>
+      'Racconta al tuo coach come ti senti e come procede il piano.';
+
+  @override
+  String get traineeFeedbackHighlightsLabel => 'Punti forti';
+
+  @override
+  String get traineeFeedbackHighlightsHint =>
+      'Cosa è andato bene o ti è piaciuto?';
+
+  @override
+  String get traineeFeedbackChallengesLabel => 'Difficoltà';
+
+  @override
+  String get traineeFeedbackChallengesHint =>
+      'Cosa è stato difficile o da adattare?';
+
+  @override
+  String get traineeFeedbackNotesLabel => 'Note per il coach';
+
+  @override
+  String get traineeFeedbackNotesHint => 'Hai altro da condividere?';
+
+  @override
+  String get traineeFeedbackSubmit => 'Invia feedback';
+
+  @override
+  String get traineeFeedbackSubmitted =>
+      'Feedback salvato. Lo condivideremo con il tuo coach.';
 
   @override
   String get homeEmptyTitle => 'Nessun allenamento disponibile';
