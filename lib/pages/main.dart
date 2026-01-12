@@ -87,32 +87,6 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         centerTitle: false,
         elevation: 0,
-        leading: PopupMenuButton<int>(
-          icon: const Icon(Icons.menu),
-          onSelected: (index) {
-            setState(() {
-              selectedIndex = index;
-            });
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem<int>(
-              value: 2,
-              child: Text(l10n.navProfile),
-            ),
-            PopupMenuItem<int>(
-              value: 0,
-              child: Text(l10n.navHome),
-            ),
-            PopupMenuItem<int>(
-              value: 1,
-              child: Text(l10n.navGuides),
-            ),
-            PopupMenuItem<int>(
-              value: 3,
-              child: Text(l10n.navTerminology),
-            ),
-          ],
-        ),
         title: Text(
           widget.title,
           style: theme.textTheme.titleLarge?.copyWith(
@@ -128,6 +102,79 @@ class _HomePageState extends State<HomePage> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
+          ),
+        ),
+      ),
+      drawer: Drawer(
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [colorScheme.primary, colorScheme.secondary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    widget.title,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: colorScheme.onPrimary,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.home),
+                title: Text(l10n.navHome),
+                selected: selectedIndex == 0,
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 0;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.fitness_center),
+                title: Text(l10n.navGuides),
+                selected: selectedIndex == 1,
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 1;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: Text(l10n.navProfile),
+                selected: selectedIndex == 2,
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 2;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.menu_book),
+                title: Text(l10n.navTerminology),
+                selected: selectedIndex == 3,
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 3;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ],
           ),
         ),
       ),
