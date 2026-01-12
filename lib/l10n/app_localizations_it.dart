@@ -393,6 +393,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Condividi aggiornamenti con il tuo coach dopo le sessioni.';
 
   @override
+  String get homeCoachTipTitle => 'Consiglio del coach';
+
+  @override
+  String get homeCoachTipPlaceholder =>
+      'Qui troverai l\'ultimo consiglio del tuo coach.';
+
+  @override
   String get workoutPlanTitle => 'Piano di allenamento';
 
   @override

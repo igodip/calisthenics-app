@@ -135,6 +135,8 @@
   "homeWorkoutPlanSubtitle": "Rivedi il piano assegnato e le prossime sessioni.",
   "homeTraineeFeedbackTitle": "Feedback atleta",
   "homeTraineeFeedbackSubtitle": "Condividi aggiornamenti con il tuo coach dopo le sessioni.",
+  "homeCoachTipTitle": "Consiglio del coach",
+  "homeCoachTipPlaceholder": "Qui troverai l'ultimo consiglio del tuo coach.",
   "workoutPlanTitle": "Piano di allenamento",
   "traineeFeedbackTitle": "Feedback atleta",
   "traineeFeedbackSubtitle": "Racconta al tuo coach come ti senti e come procede il piano.",

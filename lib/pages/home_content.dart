@@ -97,6 +97,8 @@ class _HomeContentState extends State<HomeContent> {
                 _TraineeFeedbackLinkSection(
                   onOpenFeedback: _openTraineeFeedback,
                 ),
+                const SizedBox(height: 16),
+                const _CoachTipSection(),
               ],
             );
           },
@@ -489,6 +491,51 @@ class _TraineeFeedbackLinkSection extends StatelessWidget {
         ),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: onOpenFeedback,
+      ),
+    );
+  }
+}
+
+class _CoachTipSection extends StatelessWidget {
+  const _CoachTipSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Card(
+      color: theme.colorScheme.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.tips_and_updates,
+                  color: theme.colorScheme.onSecondaryContainer,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.homeCoachTipTitle,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSecondaryContainer,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.homeCoachTipPlaceholder,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSecondaryContainer,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
