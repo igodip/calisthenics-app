@@ -3,7 +3,7 @@ name: Deploy admin to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - stable
     paths:
       - "backend/admin/**"
       - ".github/workflows/deploy-admin.yml"
