@@ -8,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import 'exercise_guides.dart';
 import 'home_content.dart';
 import 'login.dart';
+import 'workout_plan_page.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -79,7 +80,8 @@ class _HomePageState extends State<HomePage> {
       const HomeContent(),
       const ExerciseGuidesPage(),
       const ProfilePage(),
-      const TerminologiaPage()
+      const TerminologiaPage(),
+      const WorkoutPlanPage(),
     ];
 
     return Scaffold(
@@ -170,6 +172,17 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   setState(() {
                     selectedIndex = 3;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.event_note),
+                title: Text(l10n.workoutPlanTitle),
+                selected: selectedIndex == 4,
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 4;
                   });
                   Navigator.pop(context);
                 },
