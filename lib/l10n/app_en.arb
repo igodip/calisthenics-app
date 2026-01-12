@@ -135,6 +135,8 @@
   "homeWorkoutPlanSubtitle": "Review your assigned plan and upcoming sessions.",
   "homeTraineeFeedbackTitle": "Trainee feedback",
   "homeTraineeFeedbackSubtitle": "Share updates with your coach after sessions.",
+  "homeCoachTipTitle": "Coach tip",
+  "homeCoachTipPlaceholder": "Your coach's latest tip will appear here.",
   "workoutPlanTitle": "Workout plan",
   "traineeFeedbackTitle": "Trainee feedback",
   "traineeFeedbackSubtitle": "Tell your coach how you're feeling and how the plan is going.",
