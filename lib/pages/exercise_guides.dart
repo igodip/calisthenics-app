@@ -6,97 +6,85 @@ import '../l10n/app_localizations.dart';
 class ExerciseGuidesPage extends StatelessWidget {
   const ExerciseGuidesPage({super.key});
 
-  static const _guides = [
+  static List<_ExerciseGuide> _buildGuides(AppLocalizations l10n) => [
     _ExerciseGuide(
-      name: 'Pull-up',
-      difficulty: 'Intermediate',
-      focus: 'Lats, biceps, grip',
-      tip:
-          'Drive elbows toward your ribs and keep your ribs tucked to avoid swinging.',
-      description:
-          'Start from a hollow body hang, then pull until your chin clears the bar. Control the descent for stronger reps.',
+      name: l10n.guidesPullupName,
+      difficulty: l10n.difficultyIntermediate,
+      focus: l10n.guidesPullupFocus,
+      tip: l10n.guidesPullupTip,
+      description: l10n.guidesPullupDescription,
       videoUrl: 'https://youtu.be/eGo4IYlbE5g',
       accent: Colors.blue,
     ),
     _ExerciseGuide(
-      name: 'Push-up',
-      difficulty: 'Beginner',
-      focus: 'Chest, triceps, core',
-      tip: 'Squeeze your glutes and keep a straight line from head to heels.',
-      description:
-          'Lower with elbows at roughly 45° to your torso, touch your chest lightly, then press back up without letting hips sag.',
+      name: l10n.guidesPushupName,
+      difficulty: l10n.difficultyBeginner,
+      focus: l10n.guidesPushupFocus,
+      tip: l10n.guidesPushupTip,
+      description: l10n.guidesPushupDescription,
       videoUrl: 'https://youtu.be/IODxDxX7oi4',
       accent: Colors.orange,
     ),
     _ExerciseGuide(
-      name: 'Bodyweight squat',
-      difficulty: 'Beginner',
-      focus: 'Quads, glutes, core',
-      tip: 'Push your knees out as you descend and keep your heels planted.',
-      description:
-          'Sit the hips back and down until thighs are at least parallel. Drive evenly through the whole foot to stand tall.',
+      name: l10n.guidesBodyweightSquatName,
+      difficulty: l10n.difficultyBeginner,
+      focus: l10n.guidesBodyweightSquatFocus,
+      tip: l10n.guidesBodyweightSquatTip,
+      description: l10n.guidesBodyweightSquatDescription,
       videoUrl: 'https://youtu.be/aclHkVaku9U',
       accent: Colors.green,
     ),
     _ExerciseGuide(
-      name: 'Hanging leg raise',
-      difficulty: 'Intermediate',
-      focus: 'Abdominals, hip flexors, grip',
-      tip: 'Initiate each rep by engaging your lats to steady the torso.',
-      description:
-          'From a dead hang, lift your legs together until they reach hip height or higher. Lower slowly to keep tension.',
+      name: l10n.guidesHangingLegRaiseName,
+      difficulty: l10n.difficultyIntermediate,
+      focus: l10n.guidesHangingLegRaiseFocus,
+      tip: l10n.guidesHangingLegRaiseTip,
+      description: l10n.guidesHangingLegRaiseDescription,
       videoUrl: 'https://youtu.be/0yRQw1wqHik',
       accent: Colors.purple,
     ),
     _ExerciseGuide(
-      name: 'Muscle-up',
-      difficulty: 'Advanced',
-      focus: 'Lats, chest, triceps, transition strength',
-      tip:
-          'Pull high to your upper chest and keep the bar close to reduce the swing.',
-      description:
-          'From a controlled hang, explode into a high pull, transition the wrists over the bar, and press to lockout.',
+      name: l10n.guidesMuscleUpName,
+      difficulty: l10n.difficultyAdvanced,
+      focus: l10n.guidesMuscleUpFocus,
+      tip: l10n.guidesMuscleUpTip,
+      description: l10n.guidesMuscleUpDescription,
       videoUrl: 'https://youtu.be/4NnU1YuZzUE',
       accent: Colors.teal,
     ),
     _ExerciseGuide(
-      name: 'Straight bar dip',
-      difficulty: 'Intermediate',
-      focus: 'Chest, triceps, shoulders',
-      tip: 'Keep elbows tucked and press down while leaning slightly forward.',
-      description:
-          'Start on top of the bar with locked elbows, lower under control until shoulders dip below elbows, then drive back up.',
+      name: l10n.guidesStraightBarDipName,
+      difficulty: l10n.difficultyIntermediate,
+      focus: l10n.guidesStraightBarDipFocus,
+      tip: l10n.guidesStraightBarDipTip,
+      description: l10n.guidesStraightBarDipDescription,
       videoUrl: 'https://youtu.be/2z8JmcrW-As',
       accent: Colors.deepOrange,
     ),
     _ExerciseGuide(
-      name: 'Dips',
-      difficulty: 'Intermediate',
-      focus: 'Chest, triceps, shoulders',
-      tip: 'Lean slightly forward and keep shoulders packed to protect the joints.',
-      description:
-          'Start locked out on parallel bars, lower until shoulders dip below elbows, then press back to a strong lockout.',
+      name: l10n.guidesDipsName,
+      difficulty: l10n.difficultyIntermediate,
+      focus: l10n.guidesDipsFocus,
+      tip: l10n.guidesDipsTip,
+      description: l10n.guidesDipsDescription,
       videoUrl: 'https://youtu.be/2z8JmcrW-As',
       accent: Colors.red,
     ),
     _ExerciseGuide(
-      name: 'Australian row',
-      difficulty: 'Beginner',
-      focus: 'Upper back, biceps, core',
-      tip: 'Brace your core and keep a straight line from shoulders to heels.',
-      description:
-          'Set the bar at waist height, hang underneath, and row your chest to the bar with elbows tight.',
+      name: l10n.guidesAustralianRowName,
+      difficulty: l10n.difficultyBeginner,
+      focus: l10n.guidesAustralianRowFocus,
+      tip: l10n.guidesAustralianRowTip,
+      description: l10n.guidesAustralianRowDescription,
       videoUrl: 'https://youtu.be/9efgcAjQe7E',
       accent: Colors.indigo,
     ),
     _ExerciseGuide(
-      name: 'Pike push-up',
-      difficulty: 'Intermediate',
-      focus: 'Shoulders, triceps, core',
-      tip:
-          'Keep hips high and lower your head to a spot just in front of your hands.',
-      description:
-          'From a pike position, bend elbows to bring the head down, then press back to a strong lockout.',
+      name: l10n.guidesPikePushUpName,
+      difficulty: l10n.difficultyIntermediate,
+      focus: l10n.guidesPikePushUpFocus,
+      tip: l10n.guidesPikePushUpTip,
+      description: l10n.guidesPikePushUpDescription,
       videoUrl: 'https://youtu.be/0wDEO1i2bFM',
       accent: Colors.amber,
     ),
@@ -114,7 +102,7 @@ class ExerciseGuidesPage extends StatelessWidget {
           description: l10n.guidesSubtitle,
         ),
         const SizedBox(height: 12),
-        for (final guide in _guides)
+        for (final guide in _buildGuides(l10n))
           Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: _ExerciseGuideCard(guide: guide, l10n: l10n),
