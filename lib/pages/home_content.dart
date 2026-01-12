@@ -94,10 +94,10 @@ class _HomeContentState extends State<HomeContent> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   const SizedBox(height: 32),
-                  Icon(
-                    Icons.fitness_center,
-                    size: 56,
-                    color: Theme.of(context).colorScheme.primary,
+                  Image.asset(
+                    'assets/logo.png',
+                    height: 56,
+                    width: 56,
                   ),
                   const SizedBox(height: 16),
                   Text(
