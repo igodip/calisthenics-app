@@ -63,6 +63,11 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .progress-bar{flex:1;height:6px;border-radius:999px;background:#11131a;overflow:hidden;border:1px solid var(--line)}
 .progress-bar span{display:block;height:100%;background:var(--accent)}
 .progress-meta{display:flex;gap:6px;align-items:center}
+.payment-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;flex-wrap:wrap}
+.payment-toggle{display:flex;align-items:center;gap:6px}
+.payment-toggle input{margin:0}
+.pill.paid{border-color:#1c2b23;background:#0e1a14;color:#b7f5d8}
+.pill.overdue{border-color:#3b0f10;background:#1a0b0c;color:#fca5a5}
 .day-form-card{display:flex;flex-direction:column;gap:10px}
 .day-form-header{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
 .day-code-picker{display:flex;gap:6px;flex-wrap:wrap}

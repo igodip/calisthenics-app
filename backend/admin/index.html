@@ -100,6 +100,21 @@
                                 </div>
                             </div>
                             <div class="muted small" v-else>No progress logged yet.</div>
+                            <div class="payment-row">
+                                <span class="pill" :class="u.paid ? 'paid' : 'overdue'">
+                                    {{ u.paid ? 'Payments on time' : 'Payment overdue' }}
+                                </span>
+                                <label class="payment-toggle small">
+                                    <input
+                                        type="checkbox"
+                                        :checked="u.paid"
+                                        :disabled="paymentSaving[u.id]"
+                                        @change="togglePayment(u, $event)"
+                                    />
+                                    <span>On time</span>
+                                </label>
+                            </div>
+                            <div class="muted small" v-if="paymentSaving[u.id]">Updating payment status…</div>
                             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
                                 <button class="btn" @click="selectUser(u); activeSection='schedule'">Open schedule</button>
                                 <button class="btn" @click="loadDays(u); activeSection='schedule'">Load days</button>
