@@ -67,6 +67,15 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .day-code-picker button{border-radius:999px;padding:6px 12px;border:1px solid var(--line);background:transparent;color:var(--ink)}
 .day-code-picker button.active{background:var(--accent);color:#04120c;border-color:transparent}
 .helper-text{font-size:12px;color:var(--muted)}
+.schedule-summary-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px}
+.summary-item{background:#0f1118;border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:4px}
+.summary-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.summary-highlights{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.summary-chips{display:flex;flex-wrap:wrap;gap:6px}
+.jump-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.jump-button{display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:999px;padding:6px 12px;border:1px solid var(--line);background:#0f1118;color:var(--ink)}
+.jump-button:hover{border-color:var(--accent);color:var(--accent)}
 .history-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}
 .history-card{display:flex;flex-direction:column;gap:10px}
 .history-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
