@@ -43,16 +43,18 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .day-body{display:flex;flex-direction:column;gap:10px;margin-top:10px}
 .inline-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .exercise-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
-.exercise-item{border:1px solid var(--line);border-radius:12px;background:#0f1118;padding:10px;display:flex;flex-direction:column;gap:6px}
-.exercise-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.exercise-item{border:1px solid var(--line);border-radius:12px;background:#0f1118;padding:10px;display:flex;align-items:center;gap:8px}
+.exercise-head{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;flex:1}
 .exercise-head input{flex:1 1 160px;min-width:0}
-.exercise-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.exercise-actions{display:flex;gap:6px;flex-wrap:nowrap;justify-content:flex-end}
+.exercise-actions .icon-button{min-width:auto;padding:6px 8px}
+.exercise-actions .icon-button.danger{color:#fca5a5;border-color:#3b0f10;background:#1a0b0c}
 .exercise-panel h2{margin:12px 0 6px}
 .exercise-panel .row{gap:12px}
 .exercise-panel form{gap:6px}
 .exercise-panel input{padding:6px 8px}
 .exercise-panel .exercise-list{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
-.exercise-panel .exercise-item{padding:8px;gap:4px}
+.exercise-panel .exercise-item{padding:8px;gap:6px}
 .exercise-panel .exercise-head{gap:6px}
 .exercise-panel .exercise-actions{gap:4px;justify-content:flex-start}
 .exercise-panel .btn.small,
