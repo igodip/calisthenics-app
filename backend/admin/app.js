@@ -41,6 +41,7 @@
       const maxTests = ref([]);
       const loadingMaxTests = ref(false);
       const maxTestsError = ref('');
+      const paymentSaving = ref({});
       const addingDay = ref(false);
       const addingExercise = ref(false);
       const savingExercise = ref(false);
@@ -378,7 +379,7 @@
       async function loadUsers() {
         const { data: traineeRows, error } = await supabase
           .from('trainees')
-          .select('id, name')
+          .select('id, name, paid')
           .order('name', { ascending: true });
         if (error) {
           console.error(error);
@@ -390,6 +391,34 @@
           ...row,
           displayName: row.name || shortId(row.id),
         }));
+      }
+
+      async function togglePayment(u, event) {
+        if (!u?.id) return;
+        if (paymentSaving.value[u.id]) return;
+        const target = event?.target;
+        const nextPaid = Boolean(target?.checked);
+        const previousPaid = Boolean(u.paid);
+        u.paid = nextPaid;
+        paymentSaving.value = { ...paymentSaving.value, [u.id]: true };
+        try {
+          const { error } = await supabase
+            .from('trainees')
+            .update({ paid: nextPaid })
+            .eq('id', u.id);
+          if (error) {
+            throw new Error('Update payment status failed: ' + error.message);
+          }
+        } catch (err) {
+          console.error(err);
+          u.paid = previousPaid;
+          if (target) {
+            target.checked = previousPaid;
+          }
+          alert(err.message || 'Failed to update payment status.');
+        } finally {
+          paymentSaving.value = { ...paymentSaving.value, [u.id]: false };
+        }
       }
 
       async function selectUser(u) {
@@ -890,6 +919,7 @@
         loadingProgress,
         loadingMaxTests,
         maxTestsError,
+        paymentSaving,
         progressFor,
         formatTestValue,
         applyNextWeek,
@@ -925,6 +955,7 @@
         resetDayExerciseEdit,
         deleteDayExercise,
         shortId,
+        togglePayment,
       };
     },
   }).mount('#app');
