@@ -64,6 +64,69 @@
         return Math.max(...weeks) + 1;
       });
 
+      const dayTitleSuggestions = computed(() => {
+        const titles = new Set();
+        (days.value || []).forEach((day) => {
+          const title = (day.title || '').trim();
+          if (title) titles.add(title);
+        });
+        return Array.from(titles).sort((a, b) => a.localeCompare(b));
+      });
+
+      const scheduleSummary = computed(() => {
+        const totalDays = days.value.length;
+        const totalExercises = (days.value || []).reduce(
+          (sum, day) => sum + (day.day_exercises || []).length,
+          0,
+        );
+        const weekSet = new Set(
+          (days.value || [])
+            .map((day) => Number(day.week || 0))
+            .filter((week) => week > 0),
+        );
+        const daysWithExercises = (days.value || []).filter(
+          (day) => (day.day_exercises || []).length > 0,
+        ).length;
+        const highlights = (days.value || [])
+          .map((day) => ({
+            id: day.id,
+            label: `Week ${day.week || 1} • ${day.day_code?.toUpperCase() || 'DAY'}`,
+            exercises: (day.day_exercises || []).length,
+          }))
+          .filter((item) => item.exercises > 0)
+          .sort((a, b) => b.exercises - a.exercises)
+          .slice(0, 6);
+        return {
+          days: totalDays,
+          exercises: totalExercises,
+          weeks: weekSet.size,
+          daysWithExercises,
+          highlights,
+        };
+      });
+
+      const dayNavigation = computed(() => {
+        const order = new Map(dayCodeOptions.map((code, idx) => [code, idx]));
+        return (days.value || [])
+          .map((day) => ({
+            id: day.id,
+            week: Number(day.week || 0),
+            code: day.day_code?.toUpperCase() || '',
+            exercises: (day.day_exercises || []).length,
+            title: (day.title || '').trim(),
+            label: `Week ${day.week || 1} • ${day.day_code?.toUpperCase() || 'DAY'}${
+              day.title ? ` — ${day.title}` : ''
+            }`,
+          }))
+          .sort((a, b) => {
+            if (a.week !== b.week) return a.week - b.week;
+            const aIdx = order.has(a.code) ? order.get(a.code) : 99;
+            const bIdx = order.has(b.code) ? order.get(b.code) : 99;
+            if (aIdx !== bIdx) return aIdx - bIdx;
+            return a.label.localeCompare(b.label);
+          });
+      });
+
       const maxTestHistory = computed(() => {
         const grouped = {};
         (maxTests.value || []).forEach((test) => {
@@ -266,6 +329,17 @@
 
       function toggleDay(day) {
         setDayExpansion(day.id, !isDayOpen(day));
+      }
+
+      function jumpToDay(item) {
+        if (!item?.id) return;
+        setDayExpansion(item.id, true);
+        requestAnimationFrame(() => {
+          const target = document.getElementById(`day-${item.id}`);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
       }
 
       function filteredExerciseOptions(day) {
@@ -869,6 +943,9 @@
         dayExerciseEdits,
         expandedDays,
         nextWeek,
+        dayTitleSuggestions,
+        scheduleSummary,
+        dayNavigation,
         plans,
         planEdits,
         planStatuses,
@@ -915,6 +992,7 @@
         matchExercise,
         toggleDay,
         isDayOpen,
+        jumpToDay,
         saveDay,
         resetDayEdit,
         deleteDay,
