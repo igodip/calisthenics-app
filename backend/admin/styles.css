@@ -29,7 +29,7 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .pill-menu button.active{background:var(--accent);color:#04120c;border-color:transparent}
 .section-panel{display:none}
 .section-panel.active{display:block}
-.scroll-area{max-height:320px;overflow:auto;padding-right:4px}
+.scroll-area{overflow:auto;padding-right:4px}
 .toolbar-secondary{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .chip{border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#0e0f14;cursor:pointer}
