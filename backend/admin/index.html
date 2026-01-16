@@ -50,7 +50,6 @@
                         </label>
                         <div style="display:flex;gap:8px;flex-wrap:wrap">
                             <button class="btn small" type="submit" :disabled="savingExercise">Add exercise</button>
-                            <button class="small" type="button" @click="resetExerciseForm" :disabled="savingExercise">Reset</button>
                         </div>
                         <div v-if="savingExercise" class="muted small">Saving exercise…</div>
                     </form>
@@ -65,9 +64,8 @@
                                 <span class="pill">#{{ ex.id.slice(0,4) }}</span>
                             </div>
                             <div class="exercise-actions">
-                                <button class="btn small" @click="updateExercise(ex)" :disabled="savingExercise">Save</button>
-                                <button class="small" type="button" @click="resetExerciseEdit(ex)" :disabled="savingExercise">Reset</button>
-                                <button class="small" type="button" @click="deleteExercise(ex)" :disabled="savingExercise" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
+                                <button class="btn small icon-button" @click="updateExercise(ex)" :disabled="savingExercise" title="Save" aria-label="Save">💾</button>
+                                <button class="small icon-button danger" type="button" @click="deleteExercise(ex)" :disabled="savingExercise" title="Delete" aria-label="Delete">🗑️</button>
                             </div>
                         </div>
                     </div>
