@@ -232,9 +232,15 @@
                                     </label>
                                     <label class="small stack">
                                         Title
-                                        <input v-model="newDayTitle" placeholder="Workout title">
+                                        <input v-model="newDayTitle" placeholder="Workout title" list="day-title-options">
                                     </label>
                                 </div>
+                                <datalist id="day-title-options">
+                                    <option v-for="title in dayTitleSuggestions" :key="title" :value="title"></option>
+                                </datalist>
+                                <datalist id="day-code-options">
+                                    <option v-for="code in dayCodeOptions" :key="code" :value="code"></option>
+                                </datalist>
                                 <div class="stack">
                                     <span class="small">Quick day pick</span>
                                     <div class="day-code-picker">
@@ -254,11 +260,66 @@
                             </form>
                         </div>
 
+                        <div class="card schedule-summary">
+                            <div class="schedule-summary-header">
+                                <div class="stack">
+                                    <h3 style="margin:0">Schedule recap</h3>
+                                    <span class="muted small">Quick snapshot of what has been added.</span>
+                                </div>
+                                <button class="small" type="button" @click="loadDays" :disabled="addingDay || addingExercise">Refresh</button>
+                            </div>
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <span class="summary-label">Weeks</span>
+                                    <strong>{{ scheduleSummary.weeks }}</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Days</span>
+                                    <strong>{{ scheduleSummary.days }}</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Exercises</span>
+                                    <strong>{{ scheduleSummary.exercises }}</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Days w/ exercises</span>
+                                    <strong>{{ scheduleSummary.daysWithExercises }}</strong>
+                                </div>
+                            </div>
+                            <div v-if="scheduleSummary.highlights.length" class="summary-highlights">
+                                <span class="summary-label">Highlights</span>
+                                <div class="summary-chips">
+                                    <span class="chip" v-for="item in scheduleSummary.highlights" :key="item.id">
+                                        {{ item.label }} • {{ item.exercises }} ex
+                                    </span>
+                                </div>
+                            </div>
+                            <div v-else class="muted small">Add a day to start building the recap.</div>
+                        </div>
+
+                        <div class="card schedule-nav">
+                            <h3 style="margin-top:0">Jump to day</h3>
+                            <div class="muted small">Move fast between days and auto-expand the one you need.</div>
+                            <div v-if="dayNavigation.length" class="jump-list">
+                                <button
+                                    v-for="item in dayNavigation"
+                                    :key="item.id"
+                                    class="small jump-button"
+                                    type="button"
+                                    @click="jumpToDay(item)"
+                                >
+                                    <span>{{ item.label }}</span>
+                                    <span class="muted">{{ item.exercises }} ex</span>
+                                </button>
+                            </div>
+                            <div v-else class="muted small">No days yet.</div>
+                        </div>
+
                         <div class="card">
                             <h3 style="margin-top:0">Days & Exercises</h3>
                             <div v-if="days.length===0">No days yet.</div>
-                            <div v-else class="day-list scroll-area">
-                                <div v-for="d in days" :key="d.id" class="day-card">
+                            <div v-else class="day-list">
+                                <div v-for="d in days" :key="d.id" class="day-card" :id="'day-'+d.id">
                                     <div class="day-header">
                                         <div class="stack">
                                             <div class="meta">
@@ -276,21 +337,21 @@
                                         </div>
                                     </div>
 
-                                    <div class="day-body" v-show="isDayOpen(d)">
-                                        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
-                                            <label class="small stack">
-                                                Week
-                                                <input type="number" min="1" v-model.number="dayEdits[d.id].week" />
-                                            </label>
-                                            <label class="small stack">
-                                                Day code
-                                                <input v-model="dayEdits[d.id].day_code" />
-                                            </label>
-                                            <label class="small stack">
-                                                Title
-                                                <input v-model="dayEdits[d.id].title" />
-                                            </label>
-                                        </div>
+                                        <div class="day-body" v-show="isDayOpen(d)">
+                                            <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
+                                                <label class="small stack">
+                                                    Week
+                                                    <input type="number" min="1" v-model.number="dayEdits[d.id].week" />
+                                                </label>
+                                                <label class="small stack">
+                                                    Day code
+                                                    <input v-model="dayEdits[d.id].day_code" list="day-code-options" />
+                                                </label>
+                                                <label class="small stack">
+                                                    Title
+                                                    <input v-model="dayEdits[d.id].title" list="day-title-options" />
+                                                </label>
+                                            </div>
                                         <label class="small stack">
                                             Notes
                                             <textarea v-model="dayEdits[d.id].notes" placeholder="Optional notes"></textarea>
