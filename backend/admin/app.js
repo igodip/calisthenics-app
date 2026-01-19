@@ -1,5 +1,5 @@
 (() => {
-  const { createApp, ref, computed, onMounted } = Vue;
+  const { createApp, ref, computed, onMounted, watch } = Vue;
 
   // === Configure your Supabase project ===
   const SUPABASE_URL = 'https://jrqjysycoqhlnyufhliy.supabase.co';
@@ -9,15 +9,466 @@
     (g.supabase && g.supabase.createClient) ||
     (g.Supabase && g.Supabase.createClient) ||
     g.SUPABASE_CREATE_CLIENT;
+  const fallbackLocale = (navigator.language || '').toLowerCase().startsWith('it')
+    ? 'it'
+    : 'en';
+  const supabaseLoadMessages = {
+    en: 'Supabase library failed to load. Check your network or replace with local copies.',
+    it: 'Impossibile caricare la libreria Supabase. Controlla la rete o sostituiscila con copie locali.',
+  };
   if (!createClient) {
     console.error('Supabase JS failed to load from all CDNs (jsDelivr/ESM).');
-    alert('Supabase library failed to load. Check your network or replace with local copies.');
+    alert(supabaseLoadMessages[fallbackLocale]);
     return; // stop bootstrapping
   }
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
   createApp({
     setup() {
+      const storedLocale = localStorage.getItem('adminLocale');
+      const browserLocale = (navigator.language || '').toLowerCase().startsWith('it')
+        ? 'it'
+        : 'en';
+      const locale = ref(storedLocale || browserLocale);
+      const languageOptions = [
+        { value: 'en', label: 'English' },
+        { value: 'it', label: 'Italiano' },
+      ];
+      const translations = {
+        en: {
+          app: {
+            title: 'Calisync Admin Portal',
+          },
+          auth: {
+            subtitle:
+              'Sign in with your Supabase account to manage trainees, their workout days, and exercises.',
+          },
+          toolbar: {
+            language: 'Language',
+            admin: 'Admin',
+            searchPlaceholder: 'Search trainees...',
+          },
+          sections: {
+            exercises: 'Exercises',
+            trainees: 'Trainees',
+            plans: 'Plans',
+            schedule: 'Schedule',
+            history: 'History',
+          },
+          actions: {
+            signIn: 'Sign in',
+            signOut: 'Sign out',
+            save: 'Save',
+            savePlan: 'Save plan',
+            saveDay: 'Save day',
+            reset: 'Reset',
+            delete: 'Delete',
+            add: 'Add',
+            addExercise: 'Add exercise',
+            refresh: 'Refresh',
+            clear: 'Clear',
+            useNextWeek: 'Use next week',
+            openSchedule: 'Open schedule',
+            loadDays: 'Load days',
+            loadPlans: 'Load plans',
+            collapse: 'Collapse',
+            expand: 'Expand',
+          },
+          labels: {
+            totalCount: '{count} total',
+            shownCount: '{count} shown',
+            dayCount: '{count} day',
+            daysCount: '{count} days',
+            exerciseCount: '{count} exercise',
+            exercisesCount: '{count} exercises',
+            testCount: '{count} test',
+            testsCount: '{count} tests',
+            exerciseShort: 'ex',
+            name: 'Name',
+            status: 'Status',
+            startsAt: 'Starts at',
+            endsAt: 'Ends at',
+            notes: 'Notes',
+            week: 'Week',
+            dayCode: 'Day code',
+            title: 'Title',
+            position: 'Position',
+            weeks: 'Weeks',
+            days: 'Days',
+            exercises: 'Exercises',
+            daysWithExercises: 'Days w/ exercises',
+            weekNumber: 'Week {week}',
+            weekDay: 'Week {week} • {day}',
+            weekDayTitle: 'Week {week} • {day} — {title}',
+            untitled: 'Untitled',
+            exercise: 'Exercise',
+            day: 'Day',
+            unknownExercise: 'Unknown exercise',
+          },
+          placeholders: {
+            email: 'Email',
+            password: 'Password',
+            exerciseExample: 'e.g. Push-ups',
+            exerciseName: 'Exercise name',
+            planExample: 'e.g. Summer Strength',
+            planNotes: 'Optional notes for the trainee',
+            notesOptional: 'Optional notes',
+            notesOptionalShort: 'Notes (optional)',
+            workoutTitle: 'Workout title',
+            filterExercises: 'Type to filter exercises',
+          },
+          exercises: {
+            available: 'Available exercises',
+            none: 'No exercises loaded yet.',
+          },
+          trainees: {
+            badge: 'trainee',
+          },
+          payment: {
+            onTime: 'Payments on time',
+            overdue: 'Payment overdue',
+            toggle: 'On time',
+          },
+          status: {
+            savingExercise: 'Saving exercise…',
+            savingPlan: 'Saving plan…',
+            savingDay: 'Saving day…',
+            refreshingProgress: 'Refreshing progress…',
+            updatingPayment: 'Updating payment status…',
+            noProgress: 'No progress logged yet.',
+            loadingMaxTests: 'Loading max tests…',
+          },
+          plans: {
+            title: 'Workout plans',
+            empty: 'Select a trainee from the Trainees tab to manage their plans.',
+            addTitle: 'Add workout plan',
+            listTitle: 'Plans',
+            none: 'No plans for this trainee yet.',
+          },
+          schedule: {
+            empty: 'Pick a trainee from the Trainees tab to manage their schedule.',
+            createDay: 'Create day',
+            nextWeek: 'Next: week {week}',
+            quickDayPick: 'Quick day pick',
+            quickDayHelp: 'Tap a code to fill the day quickly.',
+            recap: 'Schedule recap',
+            recapSubtitle: 'Quick snapshot of what has been added.',
+            recapEmpty: 'Add a day to start building the recap.',
+            highlights: 'Highlights',
+            jumpToDay: 'Jump to day',
+            jumpSubtitle: 'Move fast between days and auto-expand the one you need.',
+            noDays: 'No days yet.',
+            daysExercises: 'Days & Exercises',
+            addExercise: 'Add exercise',
+            searchSelect: 'Search & select',
+            exerciseHelp: 'Start typing to auto-complete and click a suggestion.',
+          },
+          history: {
+            title: 'Max test history',
+            empty: 'Select a trainee from the Trainees tab to review their max test history.',
+            titleWithName: 'Max test history • {name}',
+            subtitle:
+              'Each chart shows how max attempts evolve over time for a single exercise.',
+            none: 'No max tests logged yet.',
+            testsBest: '{countLabel} • best {value} {unit}',
+            chartAria: 'Max test history for {exercise}',
+          },
+          errors: {
+            loadTrainees: 'Failed to load trainees: {message}',
+            updatePayment: 'Failed to update payment status.',
+            loadExercises: 'Failed to load exercises: {message}',
+            loadProgress: 'Failed to load trainee progress: {message}',
+            loadPlans: 'Failed to load plans: {message}',
+            exerciseNameRequired: 'Exercise name is required.',
+            exerciseNameEmpty: 'Exercise name cannot be empty.',
+            createExercise: 'Failed to create exercise.',
+            updateExercise: 'Failed to update exercise.',
+            deleteExercise: 'Failed to delete exercise.',
+            loadDays: 'Failed to load days: {message}',
+            selectTrainee: 'Select a trainee first.',
+            planNameRequired: 'Plan name is required.',
+            createPlan: 'Failed to create plan.',
+            dayCodeRequired: 'Day code is required.',
+            createDay: 'Failed to create day.',
+            missingPlan: 'Missing plan.',
+            updatePlan: 'Failed to update plan.',
+            deletePlan: 'Failed to delete plan.',
+            missingDay: 'Missing day.',
+            chooseExercise: 'Choose an exercise first.',
+            addExercise: 'Failed to add exercise.',
+            updateDay: 'Failed to update day: {message}',
+            deleteDay: 'Failed to delete day: {message}',
+            missingDayExercise: 'Missing day exercise.',
+            updateDayExercise: 'Failed to update exercise: {message}',
+            deleteDayExercise: 'Failed to delete exercise: {message}',
+            loadMaxTests: 'Failed to load max tests.',
+            loadMaxTestsWithMessage: 'Failed to load max tests: {message}',
+          },
+          confirm: {
+            deleteExercise: 'Delete exercise "{name}"?',
+            deletePlan: 'Delete this plan?',
+            deleteDay: 'Delete this day and its exercises?',
+            deleteDayExercise: 'Remove exercise from day?',
+          },
+          dayCodes: {
+            MON: 'Mon',
+            TUE: 'Tue',
+            WED: 'Wed',
+            THU: 'Thu',
+            FRI: 'Fri',
+            SAT: 'Sat',
+            SUN: 'Sun',
+          },
+          planStatuses: {
+            active: 'active',
+            upcoming: 'upcoming',
+            draft: 'draft',
+            archived: 'archived',
+          },
+        },
+        it: {
+          app: {
+            title: 'Portale Admin Calisync',
+          },
+          auth: {
+            subtitle:
+              'Accedi con il tuo account Supabase per gestire gli allievi, le loro giornate di allenamento e gli esercizi.',
+          },
+          toolbar: {
+            language: 'Lingua',
+            admin: 'Admin',
+            searchPlaceholder: 'Cerca allievi...',
+          },
+          sections: {
+            exercises: 'Esercizi',
+            trainees: 'Allievi',
+            plans: 'Piani',
+            schedule: 'Programma',
+            history: 'Storico',
+          },
+          actions: {
+            signIn: 'Accedi',
+            signOut: 'Esci',
+            save: 'Salva',
+            savePlan: 'Salva piano',
+            saveDay: 'Salva giornata',
+            reset: 'Reimposta',
+            delete: 'Elimina',
+            add: 'Aggiungi',
+            addExercise: 'Aggiungi esercizio',
+            refresh: 'Aggiorna',
+            clear: 'Svuota',
+            useNextWeek: 'Usa prossima settimana',
+            openSchedule: 'Apri programma',
+            loadDays: 'Carica giornate',
+            loadPlans: 'Carica piani',
+            collapse: 'Comprimi',
+            expand: 'Espandi',
+          },
+          labels: {
+            totalCount: '{count} totali',
+            shownCount: '{count} mostrati',
+            dayCount: '{count} giorno',
+            daysCount: '{count} giorni',
+            exerciseCount: '{count} esercizio',
+            exercisesCount: '{count} esercizi',
+            testCount: '{count} test',
+            testsCount: '{count} test',
+            exerciseShort: 'es',
+            name: 'Nome',
+            status: 'Stato',
+            startsAt: 'Inizio',
+            endsAt: 'Fine',
+            notes: 'Note',
+            week: 'Settimana',
+            dayCode: 'Codice giorno',
+            title: 'Titolo',
+            position: 'Posizione',
+            weeks: 'Settimane',
+            days: 'Giorni',
+            exercises: 'Esercizi',
+            daysWithExercises: 'Giorni con esercizi',
+            weekNumber: 'Settimana {week}',
+            weekDay: 'Settimana {week} • {day}',
+            weekDayTitle: 'Settimana {week} • {day} — {title}',
+            untitled: 'Senza titolo',
+            exercise: 'Esercizio',
+            day: 'Giorno',
+            unknownExercise: 'Esercizio sconosciuto',
+          },
+          placeholders: {
+            email: 'Email',
+            password: 'Password',
+            exerciseExample: 'es. Push-up',
+            exerciseName: 'Nome esercizio',
+            planExample: 'es. Forza estiva',
+            planNotes: "Note opzionali per l'allievo",
+            notesOptional: 'Note opzionali',
+            notesOptionalShort: 'Note (opzionali)',
+            workoutTitle: 'Titolo allenamento',
+            filterExercises: 'Digita per filtrare esercizi',
+          },
+          exercises: {
+            available: 'Esercizi disponibili',
+            none: 'Nessun esercizio caricato.',
+          },
+          trainees: {
+            badge: 'allievo',
+          },
+          payment: {
+            onTime: 'Pagamenti regolari',
+            overdue: 'Pagamento in ritardo',
+            toggle: 'In regola',
+          },
+          status: {
+            savingExercise: 'Salvataggio esercizio…',
+            savingPlan: 'Salvataggio piano…',
+            savingDay: 'Salvataggio giornata…',
+            refreshingProgress: 'Aggiornamento progressi…',
+            updatingPayment: 'Aggiornamento stato pagamento…',
+            noProgress: 'Nessun progresso registrato.',
+            loadingMaxTests: 'Caricamento test massimali…',
+          },
+          plans: {
+            title: 'Piani di allenamento',
+            empty: 'Seleziona un allievo dalla scheda Allievi per gestire i piani.',
+            addTitle: 'Aggiungi piano di allenamento',
+            listTitle: 'Piani',
+            none: 'Nessun piano per questo allievo.',
+          },
+          schedule: {
+            empty: 'Seleziona un allievo dalla scheda Allievi per gestire il programma.',
+            createDay: 'Crea giornata',
+            nextWeek: 'Prossima: settimana {week}',
+            quickDayPick: 'Scelta rapida giornata',
+            quickDayHelp: 'Tocca un codice per compilare rapidamente la giornata.',
+            recap: 'Riepilogo programma',
+            recapSubtitle: 'Vista rapida di ciò che è stato aggiunto.',
+            recapEmpty: 'Aggiungi una giornata per iniziare il riepilogo.',
+            highlights: 'In evidenza',
+            jumpToDay: 'Vai alla giornata',
+            jumpSubtitle:
+              'Passa rapidamente tra le giornate ed espandi quella che ti serve.',
+            noDays: 'Nessuna giornata ancora.',
+            daysExercises: 'Giornate ed esercizi',
+            addExercise: 'Aggiungi esercizio',
+            searchSelect: 'Cerca e seleziona',
+            exerciseHelp:
+              'Inizia a digitare per completare automaticamente e fai clic su un suggerimento.',
+          },
+          history: {
+            title: 'Storico test massimali',
+            empty:
+              'Seleziona un allievo dalla scheda Allievi per vedere lo storico dei test massimali.',
+            titleWithName: 'Storico test massimali • {name}',
+            subtitle:
+              'Ogni grafico mostra come evolvono i massimali nel tempo per un singolo esercizio.',
+            none: 'Nessun test massimale registrato.',
+            testsBest: '{countLabel} • migliore {value} {unit}',
+            chartAria: 'Storico test massimali per {exercise}',
+          },
+          errors: {
+            loadTrainees: 'Impossibile caricare gli allievi: {message}',
+            updatePayment: 'Impossibile aggiornare lo stato pagamento.',
+            loadExercises: 'Impossibile caricare gli esercizi: {message}',
+            loadProgress: 'Impossibile caricare i progressi degli allievi: {message}',
+            loadPlans: 'Impossibile caricare i piani: {message}',
+            exerciseNameRequired: "Il nome dell'esercizio è obbligatorio.",
+            exerciseNameEmpty: "Il nome dell'esercizio non può essere vuoto.",
+            createExercise: "Impossibile creare l'esercizio.",
+            updateExercise: "Impossibile aggiornare l'esercizio.",
+            deleteExercise: "Impossibile eliminare l'esercizio.",
+            loadDays: 'Impossibile caricare le giornate: {message}',
+            selectTrainee: 'Seleziona prima un allievo.',
+            planNameRequired: 'Il nome del piano è obbligatorio.',
+            createPlan: 'Impossibile creare il piano.',
+            dayCodeRequired: 'Il codice giorno è obbligatorio.',
+            createDay: 'Impossibile creare la giornata.',
+            missingPlan: 'Piano mancante.',
+            updatePlan: 'Impossibile aggiornare il piano.',
+            deletePlan: 'Impossibile eliminare il piano.',
+            missingDay: 'Giornata mancante.',
+            chooseExercise: 'Seleziona prima un esercizio.',
+            addExercise: "Impossibile aggiungere l'esercizio.",
+            updateDay: 'Impossibile aggiornare la giornata: {message}',
+            deleteDay: 'Impossibile eliminare la giornata: {message}',
+            missingDayExercise: 'Esercizio del giorno mancante.',
+            updateDayExercise: "Impossibile aggiornare l'esercizio: {message}",
+            deleteDayExercise: "Impossibile eliminare l'esercizio: {message}",
+            loadMaxTests: 'Impossibile caricare i test massimali.',
+            loadMaxTestsWithMessage:
+              'Impossibile caricare i test massimali: {message}',
+          },
+          confirm: {
+            deleteExercise: 'Eliminare l’esercizio "{name}"?',
+            deletePlan: 'Eliminare questo piano?',
+            deleteDay: 'Eliminare questa giornata e i suoi esercizi?',
+            deleteDayExercise: "Rimuovere l'esercizio dalla giornata?",
+          },
+          dayCodes: {
+            MON: 'Lun',
+            TUE: 'Mar',
+            WED: 'Mer',
+            THU: 'Gio',
+            FRI: 'Ven',
+            SAT: 'Sab',
+            SUN: 'Dom',
+          },
+          planStatuses: {
+            active: 'attivo',
+            upcoming: 'in arrivo',
+            draft: 'bozza',
+            archived: 'archiviato',
+          },
+        },
+      };
+      const interpolate = (template, params) =>
+        template.replace(/\{(\w+)\}/g, (_match, key) =>
+          params[key] !== undefined ? params[key] : '',
+        );
+      const getTranslation = (key, selectedLocale) => {
+        const segments = key.split('.');
+        let current = translations[selectedLocale];
+        for (const segment of segments) {
+          if (!current || typeof current !== 'object' || !(segment in current)) {
+            return null;
+          }
+          current = current[segment];
+        }
+        return typeof current === 'string' ? current : null;
+      };
+      const t = (key, params = {}) => {
+        const selectedLocale = locale.value in translations ? locale.value : 'en';
+        const translation =
+          getTranslation(key, selectedLocale) || getTranslation(key, 'en') || key;
+        return interpolate(translation, params);
+      };
+      const formatCount = (count, singularKey, pluralKey) =>
+        t(count === 1 ? singularKey : pluralKey, { count });
+      const dayCodeLabel = (code) => {
+        const normalized = (code || '').toUpperCase();
+        const label =
+          translations[locale.value]?.dayCodes?.[normalized] ||
+          translations.en?.dayCodes?.[normalized];
+        return label || normalized || t('labels.day');
+      };
+      const planStatusLabel = (status) =>
+        t(`planStatuses.${status}`, { status });
+      const formatWeekDayLabel = (week, code) =>
+        t('labels.weekDay', { week, day: dayCodeLabel(code) });
+      const formatWeekDayTitleLabel = (week, code, title) =>
+        title
+          ? t('labels.weekDayTitle', { week, day: dayCodeLabel(code), title })
+          : formatWeekDayLabel(week, code);
+      const updateDocumentLanguage = () => {
+        document.documentElement.lang = locale.value;
+        document.title = t('app.title');
+      };
+
+      watch(locale, (nextLocale) => {
+        localStorage.setItem('adminLocale', nextLocale);
+        updateDocumentLanguage();
+      });
       const session = ref(null);
       const user = ref(null);
       const email = ref('');
@@ -91,7 +542,7 @@
         const highlights = (days.value || [])
           .map((day) => ({
             id: day.id,
-            label: `Week ${day.week || 1} • ${day.day_code?.toUpperCase() || 'DAY'}`,
+            label: formatWeekDayLabel(day.week || 1, day.day_code?.toUpperCase()),
             exercises: (day.day_exercises || []).length,
           }))
           .filter((item) => item.exercises > 0)
@@ -115,9 +566,11 @@
             code: day.day_code?.toUpperCase() || '',
             exercises: (day.day_exercises || []).length,
             title: (day.title || '').trim(),
-            label: `Week ${day.week || 1} • ${day.day_code?.toUpperCase() || 'DAY'}${
-              day.title ? ` — ${day.title}` : ''
-            }`,
+            label: formatWeekDayTitleLabel(
+              day.week || 1,
+              day.day_code?.toUpperCase(),
+              day.title,
+            ),
           }))
           .sort((a, b) => {
             if (a.week !== b.week) return a.week - b.week;
@@ -131,7 +584,8 @@
       const maxTestHistory = computed(() => {
         const grouped = {};
         (maxTests.value || []).forEach((test) => {
-          const exercise = (test.exercise || '').trim() || 'Unknown exercise';
+          const exercise =
+            (test.exercise || '').trim() || t('labels.unknownExercise');
           if (!grouped[exercise]) {
             grouped[exercise] = {
               exercise,
@@ -226,7 +680,8 @@
         if (!value) return '';
         const parsed = new Date(value);
         if (Number.isNaN(parsed.valueOf())) return value;
-        return parsed.toLocaleDateString(undefined, {
+        const localeTag = locale.value === 'it' ? 'it-IT' : 'en-US';
+        return parsed.toLocaleDateString(localeTag, {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
@@ -457,7 +912,7 @@
           .order('name', { ascending: true });
         if (error) {
           console.error(error);
-          alert('Failed to load trainees: ' + error.message);
+          alert(t('errors.loadTrainees', { message: error.message }));
           return;
         }
 
@@ -489,7 +944,7 @@
           if (target) {
             target.checked = previousPaid;
           }
-          alert(err.message || 'Failed to update payment status.');
+          alert(err.message || t('errors.updatePayment'));
         } finally {
           paymentSaving.value = { ...paymentSaving.value, [u.id]: false };
         }
@@ -513,7 +968,7 @@
           .order('name', { ascending: true });
         if (error) {
           console.error(error);
-          alert('Failed to load exercises: ' + error.message);
+          alert(t('errors.loadExercises', { message: error.message }));
           return;
         }
         exerciseOptions.value = data || [];
@@ -527,7 +982,7 @@
             .from('day_exercises')
             .select('id, completed, days ( trainee_id )');
           if (error) {
-            throw new Error('Failed to load progress: ' + error.message);
+            throw new Error(t('errors.loadProgress', { message: error.message }));
           }
           const progress = {};
           (data || []).forEach((row) => {
@@ -544,7 +999,7 @@
           traineeProgress.value = progress;
         } catch (err) {
           console.error(err);
-          alert(err.message || 'Failed to load trainee progress.');
+          alert(err.message || t('errors.loadProgress'));
         } finally {
           loadingProgress.value = false;
         }
@@ -561,7 +1016,9 @@
             .eq('trainee_id', u.id)
             .order('recorded_at', { ascending: true });
           if (error) {
-            throw new Error('Failed to load max tests: ' + error.message);
+            throw new Error(
+              t('errors.loadMaxTestsWithMessage', { message: error.message }),
+            );
           }
           maxTests.value = (data || []).map((row) => ({
             ...row,
@@ -570,7 +1027,7 @@
         } catch (err) {
           console.error(err);
           maxTests.value = [];
-          maxTestsError.value = err.message || 'Failed to load max tests.';
+          maxTestsError.value = err.message || t('errors.loadMaxTests');
         } finally {
           loadingMaxTests.value = false;
         }
@@ -586,7 +1043,7 @@
           .order('created_at', { ascending: false });
         if (error) {
           console.error(error);
-          alert('Failed to load plans: ' + error.message);
+          alert(t('errors.loadPlans', { message: error.message }));
           return;
         }
         plans.value = data || [];
@@ -597,7 +1054,7 @@
       async function addExerciseDefinition() {
         const name = newExerciseName.value.trim();
         if (!name) {
-          alert('Exercise name is required.');
+          alert(t('errors.exerciseNameRequired'));
           return;
         }
         savingExercise.value = true;
@@ -610,7 +1067,7 @@
           await loadExercises();
         } catch (err) {
           console.error(err);
-          alert(err.message || 'Failed to create exercise.');
+          alert(err.message || t('errors.createExercise'));
         } finally {
           savingExercise.value = false;
         }
@@ -620,7 +1077,7 @@
         if (!ex?.id) return;
         const name = (exerciseEdits.value[ex.id]?.name || '').trim();
         if (!name) {
-          alert('Exercise name cannot be empty.');
+          alert(t('errors.exerciseNameEmpty'));
           return;
         }
         savingExercise.value = true;
@@ -636,7 +1093,7 @@
           await loadDays();
         } catch (err) {
           console.error(err);
-          alert(err.message || 'Failed to update exercise.');
+          alert(err.message || t('errors.updateExercise'));
         } finally {
           savingExercise.value = false;
         }
@@ -644,7 +1101,9 @@
 
       async function deleteExercise(ex) {
         if (!ex?.id) return;
-        const confirmed = confirm('Delete exercise "' + (ex.name || ex.id) + '"?');
+        const confirmed = confirm(
+          t('confirm.deleteExercise', { name: ex.name || ex.id }),
+        );
         if (!confirmed) return;
         savingExercise.value = true;
         try {
@@ -659,7 +1118,7 @@
           await loadDays();
         } catch (err) {
           console.error(err);
-          alert(err.message || 'Failed to delete exercise.');
+          alert(err.message || t('errors.deleteExercise'));
         } finally {
           savingExercise.value = false;
         }
@@ -681,7 +1140,7 @@
           .order('day_code', { ascending: true })
           .order('position', { ascending: true, referencedTable: 'day_exercises' });
         if (error) {
-          alert('Failed to load days: ' + error.message);
+          alert(t('errors.loadDays', { message: error.message }));
           return;
         }
         days.value = data || [];
@@ -699,12 +1158,12 @@
 
       async function addPlan() {
         if (!current.value) {
-          alert('Select a trainee first.');
+          alert(t('errors.selectTrainee'));
           return;
         }
         const name = (newPlanName.value || '').trim();
         if (!name) {
-          alert('Plan name is required.');
+          alert(t('errors.planNameRequired'));
           return;
         }
         savingPlan.value = true;
@@ -724,7 +1183,7 @@
           await loadPlans();
         } catch (err) {
           console.error(err);
-          alert(err.message || 'Failed to create plan.');
+          alert(err.message || t('errors.createPlan'));
         } finally {
           savingPlan.value = false;
         }
@@ -732,13 +1191,13 @@
 
       async function addDay() {
         if (!current.value) {
-          alert('Select a trainee first.');
+          alert(t('errors.selectTrainee'));
           return;
         }
         const week = Number(newDayWeek.value || 1);
         const dayCode = (newDayCode.value || '').trim();
         if (!dayCode) {
-          alert('Day code is required.');
+          alert(t('errors.dayCodeRequired'));
           return;
         }
         addingDay.value = true;
@@ -757,7 +1216,7 @@
           await loadDays();
         } catch (err) {
           console.error(err);
-          alert(err.message || 'Failed to create day.');
+          alert(err.message || t('errors.createDay'));
         } finally {
           addingDay.value = false;
         }
@@ -765,13 +1224,13 @@
 
       async function savePlan(plan) {
         if (!plan?.id) {
-          alert('Missing plan.');
+          alert(t('errors.missingPlan'));
           return;
         }
         const form = planEdits.value[plan.id] || {};
         const name = (form.name || '').trim();
         if (!name) {
-          alert('Plan name is required.');
+          alert(t('errors.planNameRequired'));
           return;
         }
         savingPlan.value = true;
@@ -792,7 +1251,7 @@
           await loadPlans();
         } catch (err) {
           console.error(err);
-          alert(err.message || 'Failed to update plan.');
+          alert(err.message || t('errors.updatePlan'));
         } finally {
           savingPlan.value = false;
         }
@@ -800,7 +1259,7 @@
 
       async function deletePlan(plan) {
         if (!plan?.id) return;
-        const confirmed = confirm('Delete this plan?');
+        const confirmed = confirm(t('confirm.deletePlan'));
         if (!confirmed) return;
         savingPlan.value = true;
         try {
@@ -814,7 +1273,7 @@
           await loadPlans();
         } catch (err) {
           console.error(err);
-          alert(err.message || 'Failed to delete plan.');
+          alert(err.message || t('errors.deletePlan'));
         } finally {
           savingPlan.value = false;
         }
@@ -822,14 +1281,14 @@
 
       async function addExerciseToDay(day) {
         if (!day?.id) {
-          alert('Missing day.');
+          alert(t('errors.missingDay'));
           return;
         }
         ensureSelection(day.id);
         const selection = exerciseSelection.value[day.id];
         const exerciseId = selection?.exercise_id;
         if (!exerciseId) {
-          alert('Choose an exercise first.');
+          alert(t('errors.chooseExercise'));
           return;
         }
         addingExercise.value = true;
@@ -854,7 +1313,7 @@
           await loadDays();
         } catch (err) {
           console.error(err);
-          alert(err.message || 'Failed to add exercise.');
+          alert(err.message || t('errors.addExercise'));
         } finally {
           addingExercise.value = false;
         }
@@ -862,14 +1321,14 @@
 
       async function saveDay(day) {
         if (!day?.id) {
-          alert('Missing day.');
+          alert(t('errors.missingDay'));
           return;
         }
         const form = dayEdits.value[day.id] || {};
         const week = Number(form.week || 1);
         const dayCode = (form.day_code || '').trim();
         if (!dayCode) {
-          alert('Day code is required.');
+          alert(t('errors.dayCodeRequired'));
           return;
         }
         const payload = {
@@ -883,7 +1342,7 @@
           .update(payload)
           .eq('id', day.id);
         if (error) {
-          alert('Failed to update day: ' + error.message);
+          alert(t('errors.updateDay', { message: error.message }));
           return;
         }
         await loadDays();
@@ -891,11 +1350,11 @@
 
       async function deleteDay(day) {
         if (!day?.id) return;
-        const confirmed = confirm('Delete this day and its exercises?');
+        const confirmed = confirm(t('confirm.deleteDay'));
         if (!confirmed) return;
         const { error } = await supabase.from('days').delete().eq('id', day.id);
         if (error) {
-          alert('Failed to delete day: ' + error.message);
+          alert(t('errors.deleteDay', { message: error.message }));
           return;
         }
         await loadDays();
@@ -903,7 +1362,7 @@
 
       async function saveDayExercise(ex) {
         if (!ex?.id) {
-          alert('Missing day exercise.');
+          alert(t('errors.missingDayExercise'));
           return;
         }
         const form = dayExerciseEdits.value[ex.id] || {};
@@ -916,7 +1375,7 @@
           .update(payload)
           .eq('id', ex.id);
         if (error) {
-          alert('Failed to update exercise: ' + error.message);
+          alert(t('errors.updateDayExercise', { message: error.message }));
           return;
         }
         await loadDays();
@@ -924,20 +1383,21 @@
 
       async function deleteDayExercise(ex) {
         if (!ex?.id) return;
-        const confirmed = confirm('Remove exercise from day?');
+        const confirmed = confirm(t('confirm.deleteDayExercise'));
         if (!confirmed) return;
         const { error } = await supabase
           .from('day_exercises')
           .delete()
           .eq('id', ex.id);
         if (error) {
-          alert('Failed to delete exercise: ' + error.message);
+          alert(t('errors.deleteDayExercise', { message: error.message }));
           return;
         }
         await loadDays();
       }
 
       onMounted(async () => {
+        updateDocumentLanguage();
         const {
           data: { session: sess },
         } = await supabase.auth.getSession();
@@ -959,6 +1419,9 @@
         password,
         search,
         activeSection,
+        locale,
+        languageOptions,
+        t,
         users,
         filteredUsers,
         current,
@@ -999,6 +1462,9 @@
         paymentSaving,
         progressFor,
         formatTestValue,
+        formatCount,
+        dayCodeLabel,
+        planStatusLabel,
         applyNextWeek,
         setDayCode,
         emailPasswordSignIn,

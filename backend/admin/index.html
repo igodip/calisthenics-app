@@ -11,12 +11,12 @@
 <body>
 <div id="app" class="wrap">
     <div v-if="!session" class="card" style="max-width:460px;margin:60px auto;">
-        <h1>Calisync Admin Portal</h1>
-        <p class="muted">Sign in with your Supabase account to manage trainees, their workout days, and exercises.</p>
+        <h1>{{ t('app.title') }}</h1>
+        <p class="muted">{{ t('auth.subtitle') }}</p>
         <form @submit.prevent="emailPasswordSignIn" style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
-            <input v-model="email" type="email" placeholder="Email" required>
-            <input v-model="password" type="password" placeholder="Password" required>
-            <button class="btn">Sign in</button>
+            <input v-model="email" type="email" :placeholder="t('placeholders.email')" required>
+            <input v-model="password" type="password" :placeholder="t('placeholders.password')" required>
+            <button class="btn">{{ t('actions.signIn') }}</button>
         </form>
     </div>
 
@@ -24,48 +24,51 @@
         <div class="toolbar">
             <div style="display:flex;align-items:center;gap:10px">
                 <div class="pill">{{ user?.email }}</div>
-                <span class="pill">Admin</span>
+                <span class="pill">{{ t('toolbar.admin') }}</span>
             </div>
             <div class="pill-menu">
-                <button :class="{active: activeSection==='exercises'}" @click="activeSection='exercises'">Exercises</button>
-                <button :class="{active: activeSection==='trainees'}" @click="activeSection='trainees'">Trainees</button>
-                <button :class="{active: activeSection==='plans'}" @click="activeSection='plans'" :disabled="!current">Plans</button>
-                <button :class="{active: activeSection==='schedule'}" @click="activeSection='schedule'" :disabled="!current">Schedule</button>
-                <button :class="{active: activeSection==='history'}" @click="activeSection='history'" :disabled="!current">History</button>
+                <button :class="{active: activeSection==='exercises'}" @click="activeSection='exercises'">{{ t('sections.exercises') }}</button>
+                <button :class="{active: activeSection==='trainees'}" @click="activeSection='trainees'">{{ t('sections.trainees') }}</button>
+                <button :class="{active: activeSection==='plans'}" @click="activeSection='plans'" :disabled="!current">{{ t('sections.plans') }}</button>
+                <button :class="{active: activeSection==='schedule'}" @click="activeSection='schedule'" :disabled="!current">{{ t('sections.schedule') }}</button>
+                <button :class="{active: activeSection==='history'}" @click="activeSection='history'" :disabled="!current">{{ t('sections.history') }}</button>
             </div>
             <div class="toolbar-secondary">
-                <input v-model="search" placeholder="Search trainees..." style="min-width:200px" />
-                <button class="btn" @click="signOut">Sign out</button>
+                <select v-model="locale" class="pill" :aria-label="t('toolbar.language')">
+                    <option v-for="option in languageOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                </select>
+                <input v-model="search" :placeholder="t('toolbar.searchPlaceholder')" style="min-width:200px" />
+                <button class="btn" @click="signOut">{{ t('actions.signOut') }}</button>
             </div>
         </div>
 
         <div class="card section-panel exercise-panel" :class="{active: activeSection==='exercises'}">
-            <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Exercises <span class="pill">{{ exerciseOptions.length }} total</span></h2>
+            <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('sections.exercises') }} <span class="pill">{{ t('labels.totalCount', { count: exerciseOptions.length }) }}</span></h2>
             <div class="row">
                 <div class="col">
                     <form @submit.prevent="addExerciseDefinition" style="display:flex;flex-direction:column;gap:8px">
                         <label class="small" style="display:flex;flex-direction:column;gap:4px">
-                            Name
-                            <input v-model="newExerciseName" placeholder="e.g. Push-ups" required />
+                            {{ t('labels.name') }}
+                            <input v-model="newExerciseName" :placeholder="t('placeholders.exerciseExample')" required />
                         </label>
                         <div style="display:flex;gap:8px;flex-wrap:wrap">
-                            <button class="btn small" type="submit" :disabled="savingExercise">Add exercise</button>
+                            <button class="btn small" type="submit" :disabled="savingExercise">{{ t('actions.addExercise') }}</button>
                         </div>
-                        <div v-if="savingExercise" class="muted small">Saving exercise…</div>
+                        <div v-if="savingExercise" class="muted small">{{ t('status.savingExercise') }}</div>
                     </form>
                 </div>
                 <div class="col">
-                    <h3 style="margin-top:0">Available exercises</h3>
-                    <div v-if="exerciseOptions.length===0" class="muted small">No exercises loaded yet.</div>
+                    <h3 style="margin-top:0">{{ t('exercises.available') }}</h3>
+                    <div v-if="exerciseOptions.length===0" class="muted small">{{ t('exercises.none') }}</div>
                     <div v-else class="exercise-list scroll-area">
                         <div v-for="ex in exerciseOptions" :key="ex.id" class="exercise-item small">
                             <div class="exercise-head">
-                                <input v-model="exerciseEdits[ex.id].name" placeholder="Exercise name" />
+                                <input v-model="exerciseEdits[ex.id].name" :placeholder="t('placeholders.exerciseName')" />
                                 <span class="pill">#{{ ex.id.slice(0,4) }}</span>
                             </div>
                             <div class="exercise-actions">
-                                <button class="btn small icon-button" @click="updateExercise(ex)" :disabled="savingExercise" title="Save" aria-label="Save">💾</button>
-                                <button class="small icon-button danger" type="button" @click="deleteExercise(ex)" :disabled="savingExercise" title="Delete" aria-label="Delete">🗑️</button>
+                                <button class="btn small icon-button" @click="updateExercise(ex)" :disabled="savingExercise" :title="t('actions.save')" :aria-label="t('actions.save')">💾</button>
+                                <button class="small icon-button danger" type="button" @click="deleteExercise(ex)" :disabled="savingExercise" :title="t('actions.delete')" :aria-label="t('actions.delete')">🗑️</button>
                             </div>
                         </div>
                     </div>
@@ -77,10 +80,10 @@
             <div class="col">
                 <div class="card">
                     <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-                        Trainees
-                        <span class="pill">{{ filteredUsers.length }} shown</span>
+                        {{ t('sections.trainees') }}
+                        <span class="pill">{{ t('labels.shownCount', { count: filteredUsers.length }) }}</span>
                     </h2>
-                    <div class="muted small" v-if="loadingProgress">Refreshing progress…</div>
+                    <div class="muted small" v-if="loadingProgress">{{ t('status.refreshingProgress') }}</div>
                     <div class="list scroll-area">
                         <div v-for="u in filteredUsers" :key="u.id" class="card" style="padding:12px">
                             <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
@@ -88,7 +91,7 @@
                                     <strong>{{ u.displayName || shortId(u.id) }}</strong>
                                     <div class="muted small mono">{{ u.id }}</div>
                                 </div>
-                                <span class="badge">trainee</span>
+                                <span class="badge">{{ t('trainees.badge') }}</span>
                             </div>
                             <div class="progress-row" v-if="progressFor(u).total">
                                 <div class="progress-bar">
@@ -99,10 +102,10 @@
                                     <span class="muted">{{ progressFor(u).completed }}/{{ progressFor(u).total }}</span>
                                 </div>
                             </div>
-                            <div class="muted small" v-else>No progress logged yet.</div>
+                            <div class="muted small" v-else>{{ t('status.noProgress') }}</div>
                             <div class="payment-row">
                                 <span class="pill" :class="u.paid ? 'paid' : 'overdue'">
-                                    {{ u.paid ? 'Payments on time' : 'Payment overdue' }}
+                                    {{ u.paid ? t('payment.onTime') : t('payment.overdue') }}
                                 </span>
                                 <label class="payment-toggle small">
                                     <input
@@ -111,14 +114,14 @@
                                         :disabled="paymentSaving[u.id]"
                                         @change="togglePayment(u, $event)"
                                     />
-                                    <span>On time</span>
+                                    <span>{{ t('payment.toggle') }}</span>
                                 </label>
                             </div>
-                            <div class="muted small" v-if="paymentSaving[u.id]">Updating payment status…</div>
+                            <div class="muted small" v-if="paymentSaving[u.id]">{{ t('status.updatingPayment') }}</div>
                             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-                                <button class="btn" @click="selectUser(u); activeSection='schedule'">Open schedule</button>
-                                <button class="btn" @click="loadDays(u); activeSection='schedule'">Load days</button>
-                                <button class="btn" @click="loadPlans(u); activeSection='plans'">Load plans</button>
+                                <button class="btn" @click="selectUser(u); activeSection='schedule'">{{ t('actions.openSchedule') }}</button>
+                                <button class="btn" @click="loadDays(u); activeSection='schedule'">{{ t('actions.loadDays') }}</button>
+                                <button class="btn" @click="loadPlans(u); activeSection='plans'">{{ t('actions.loadPlans') }}</button>
                             </div>
                         </div>
                     </div>
@@ -129,50 +132,50 @@
         <div class="row section-panel" :class="{active: activeSection==='plans'}">
             <div class="col" v-if="!current">
                 <div class="card">
-                    <h2>Workout plans</h2>
-                    <p class="muted">Select a trainee from the Trainees tab to manage their plans.</p>
+                    <h2>{{ t('plans.title') }}</h2>
+                    <p class="muted">{{ t('plans.empty') }}</p>
                 </div>
             </div>
 
             <div class="col" v-else>
                 <div class="card">
-                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Add workout plan <span class="pill">{{ current.displayName || shortId(current.id) }}</span></h2>
+                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('plans.addTitle') }} <span class="pill">{{ current.displayName || shortId(current.id) }}</span></h2>
                     <form @submit.prevent="addPlan" style="display:flex;flex-direction:column;gap:8px">
                         <label class="small stack">
-                            Name
-                            <input v-model="newPlanName" placeholder="e.g. Summer Strength" required />
+                            {{ t('labels.name') }}
+                            <input v-model="newPlanName" :placeholder="t('placeholders.planExample')" required />
                         </label>
                         <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
                             <label class="small stack">
-                                Status
+                                {{ t('labels.status') }}
                                 <select v-model="newPlanStatus">
-                                    <option v-for="status in planStatuses" :key="status" :value="status">{{ status }}</option>
+                                    <option v-for="status in planStatuses" :key="status" :value="status">{{ planStatusLabel(status) }}</option>
                                 </select>
                             </label>
                             <label class="small stack">
-                                Starts at
+                                {{ t('labels.startsAt') }}
                                 <input type="date" v-model="newPlanStartsAt" />
                             </label>
                             <label class="small stack">
-                                Ends at
+                                {{ t('labels.endsAt') }}
                                 <input type="date" v-model="newPlanEndsAt" />
                             </label>
                         </div>
                         <label class="small stack">
-                            Notes
-                            <textarea v-model="newPlanNotes" placeholder="Optional notes for the trainee"></textarea>
+                            {{ t('labels.notes') }}
+                            <textarea v-model="newPlanNotes" :placeholder="t('placeholders.planNotes')"></textarea>
                         </label>
                         <div style="display:flex;gap:8px;flex-wrap:wrap">
-                            <button class="btn small" type="submit" :disabled="savingPlan">Save plan</button>
-                            <button class="small" type="button" @click="resetPlanForm" :disabled="savingPlan">Reset</button>
+                            <button class="btn small" type="submit" :disabled="savingPlan">{{ t('actions.savePlan') }}</button>
+                            <button class="small" type="button" @click="resetPlanForm" :disabled="savingPlan">{{ t('actions.reset') }}</button>
                         </div>
-                        <div v-if="savingPlan" class="muted small">Saving plan…</div>
+                        <div v-if="savingPlan" class="muted small">{{ t('status.savingPlan') }}</div>
                     </form>
                 </div>
 
                 <div class="card">
-                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Plans <span class="pill">{{ plans.length }} total</span></h2>
-                    <div v-if="plans.length===0" class="muted small">No plans for this trainee yet.</div>
+                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('plans.listTitle') }} <span class="pill">{{ t('labels.totalCount', { count: plans.length }) }}</span></h2>
+                    <div v-if="plans.length===0" class="muted small">{{ t('plans.none') }}</div>
                     <div v-else class="list scroll-area">
                         <div v-for="plan in plans" :key="plan.id" class="card stack small">
                             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
@@ -181,30 +184,30 @@
                                     <span class="muted mono small">#{{ shortId(plan.id) }}</span>
                                 </div>
                                 <div class="inline-actions">
-                                    <button class="btn small" @click="savePlan(plan)" :disabled="savingPlan">Save</button>
-                                    <button class="small" type="button" @click="resetPlanEdit(plan)" :disabled="savingPlan">Reset</button>
-                                    <button class="small" type="button" @click="deletePlan(plan)" :disabled="savingPlan" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
+                                    <button class="btn small" @click="savePlan(plan)" :disabled="savingPlan">{{ t('actions.save') }}</button>
+                                    <button class="small" type="button" @click="resetPlanEdit(plan)" :disabled="savingPlan">{{ t('actions.reset') }}</button>
+                                    <button class="small" type="button" @click="deletePlan(plan)" :disabled="savingPlan" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">{{ t('actions.delete') }}</button>
                                 </div>
                             </div>
                             <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">
                                 <label class="small stack">
-                                    Name
+                                    {{ t('labels.name') }}
                                     <input v-model="planEdits[plan.id].title" />
                                 </label>
                                 <label class="small stack">
-                                    Status
+                                    {{ t('labels.status') }}
                                     <select v-model="planEdits[plan.id].status">
-                                        <option v-for="status in planStatuses" :key="status" :value="status">{{ status }}</option>
+                                        <option v-for="status in planStatuses" :key="status" :value="status">{{ planStatusLabel(status) }}</option>
                                     </select>
                                 </label>
                                 <label class="small stack">
-                                    Starts at
+                                    {{ t('labels.startsAt') }}
                                     <input type="date" v-model="planEdits[plan.id].starts_on" />
                                 </label>
                             </div>
                             <label class="small stack">
-                                Notes
-                                <textarea v-model="planEdits[plan.id].notes" placeholder="Optional notes"></textarea>
+                                {{ t('labels.notes') }}
+                                <textarea v-model="planEdits[plan.id].notes" :placeholder="t('placeholders.notesOptional')"></textarea>
                             </label>
                         </div>
                     </div>
@@ -215,39 +218,39 @@
         <div class="row section-panel" :class="{active: activeSection==='schedule'}">
             <div class="col" v-if="!current">
                 <div class="card">
-                    <h2>Schedule</h2>
-                    <p class="muted">Pick a trainee from the Trainees tab to manage their schedule.</p>
+                    <h2>{{ t('sections.schedule') }}</h2>
+                    <p class="muted">{{ t('schedule.empty') }}</p>
                 </div>
             </div>
 
             <div class="col" v-if="current">
                 <div class="card">
-                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Schedule • {{ current.displayName || shortId(current.id) }} <span class="pill">{{ days.length }} days</span></h2>
+                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('sections.schedule') }} • {{ current.displayName || shortId(current.id) }} <span class="pill">{{ formatCount(days.length, 'labels.dayCount', 'labels.daysCount') }}</span></h2>
                     <div class="grid">
                         <div class="card day-form-card">
                             <div class="day-form-header">
-                                <h3 style="margin:0">Create day</h3>
-                                <span class="pill">Next: week {{ nextWeek }}</span>
+                                <h3 style="margin:0">{{ t('schedule.createDay') }}</h3>
+                                <span class="pill">{{ t('schedule.nextWeek', { week: nextWeek }) }}</span>
                             </div>
                             <div class="inline-actions">
-                                <button class="small" type="button" @click="applyNextWeek">Use next week</button>
-                                <button class="small" type="button" @click="resetDayForm" :disabled="addingDay">Clear</button>
+                                <button class="small" type="button" @click="applyNextWeek">{{ t('actions.useNextWeek') }}</button>
+                                <button class="small" type="button" @click="resetDayForm" :disabled="addingDay">{{ t('actions.clear') }}</button>
                             </div>
                             <form @submit.prevent="addDay" class="stack">
                                 <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
                                     <label class="small stack">
-                                        Week
+                                        {{ t('labels.week') }}
                                         <input type="number" min="1" v-model.number="newDayWeek" required>
                                     </label>
                                     <label class="small stack">
-                                        Day code
+                                        {{ t('labels.dayCode') }}
                                         <select v-model="newDayCode" required>
-                                            <option v-for="code in dayCodeOptions" :key="code" :value="code">{{ code }}</option>
+                                            <option v-for="code in dayCodeOptions" :key="code" :value="code">{{ dayCodeLabel(code) }}</option>
                                         </select>
                                     </label>
                                     <label class="small stack">
-                                        Title
-                                        <input v-model="newDayTitle" placeholder="Workout title" list="day-title-options">
+                                        {{ t('labels.title') }}
+                                        <input v-model="newDayTitle" :placeholder="t('placeholders.workoutTitle')" list="day-title-options">
                                     </label>
                                 </div>
                                 <datalist id="day-title-options">
@@ -257,64 +260,64 @@
                                     <option v-for="code in dayCodeOptions" :key="code" :value="code"></option>
                                 </datalist>
                                 <div class="stack">
-                                    <span class="small">Quick day pick</span>
+                                    <span class="small">{{ t('schedule.quickDayPick') }}</span>
                                     <div class="day-code-picker">
-                                        <button v-for="code in dayCodeOptions" :key="code" type="button" :class="{active: newDayCode === code}" @click="setDayCode(code)">{{ code }}</button>
+                                        <button v-for="code in dayCodeOptions" :key="code" type="button" :class="{active: newDayCode === code}" @click="setDayCode(code)">{{ dayCodeLabel(code) }}</button>
                                     </div>
-                                    <span class="helper-text">Tap a code to fill the day quickly.</span>
+                                    <span class="helper-text">{{ t('schedule.quickDayHelp') }}</span>
                                 </div>
                                 <label class="small stack">
-                                    Notes
-                                    <textarea v-model="newDayNotes" placeholder="Optional notes"></textarea>
+                                    {{ t('labels.notes') }}
+                                    <textarea v-model="newDayNotes" :placeholder="t('placeholders.notesOptional')"></textarea>
                                 </label>
                                 <div style="display:flex;gap:8px;flex-wrap:wrap">
-                                    <button class="btn small" type="submit" :disabled="addingDay">Save day</button>
-                                    <button class="small" type="button" @click="resetDayForm" :disabled="addingDay">Reset</button>
+                                    <button class="btn small" type="submit" :disabled="addingDay">{{ t('actions.saveDay') }}</button>
+                                    <button class="small" type="button" @click="resetDayForm" :disabled="addingDay">{{ t('actions.reset') }}</button>
                                 </div>
-                                <div v-if="addingDay" class="muted small">Saving day…</div>
+                                <div v-if="addingDay" class="muted small">{{ t('status.savingDay') }}</div>
                             </form>
                         </div>
 
                         <div class="card schedule-summary">
                             <div class="schedule-summary-header">
                                 <div class="stack">
-                                    <h3 style="margin:0">Schedule recap</h3>
-                                    <span class="muted small">Quick snapshot of what has been added.</span>
+                                    <h3 style="margin:0">{{ t('schedule.recap') }}</h3>
+                                    <span class="muted small">{{ t('schedule.recapSubtitle') }}</span>
                                 </div>
-                                <button class="small" type="button" @click="loadDays" :disabled="addingDay || addingExercise">Refresh</button>
+                                <button class="small" type="button" @click="loadDays" :disabled="addingDay || addingExercise">{{ t('actions.refresh') }}</button>
                             </div>
                             <div class="summary-grid">
                                 <div class="summary-item">
-                                    <span class="summary-label">Weeks</span>
+                                    <span class="summary-label">{{ t('labels.weeks') }}</span>
                                     <strong>{{ scheduleSummary.weeks }}</strong>
                                 </div>
                                 <div class="summary-item">
-                                    <span class="summary-label">Days</span>
+                                    <span class="summary-label">{{ t('labels.days') }}</span>
                                     <strong>{{ scheduleSummary.days }}</strong>
                                 </div>
                                 <div class="summary-item">
-                                    <span class="summary-label">Exercises</span>
+                                    <span class="summary-label">{{ t('labels.exercises') }}</span>
                                     <strong>{{ scheduleSummary.exercises }}</strong>
                                 </div>
                                 <div class="summary-item">
-                                    <span class="summary-label">Days w/ exercises</span>
+                                    <span class="summary-label">{{ t('labels.daysWithExercises') }}</span>
                                     <strong>{{ scheduleSummary.daysWithExercises }}</strong>
                                 </div>
                             </div>
                             <div v-if="scheduleSummary.highlights.length" class="summary-highlights">
-                                <span class="summary-label">Highlights</span>
+                                <span class="summary-label">{{ t('schedule.highlights') }}</span>
                                 <div class="summary-chips">
                                     <span class="chip" v-for="item in scheduleSummary.highlights" :key="item.id">
-                                        {{ item.label }} • {{ item.exercises }} ex
+                                        {{ item.label }} • {{ item.exercises }} {{ t('labels.exerciseShort') }}
                                     </span>
                                 </div>
                             </div>
-                            <div v-else class="muted small">Add a day to start building the recap.</div>
+                            <div v-else class="muted small">{{ t('schedule.recapEmpty') }}</div>
                         </div>
 
                         <div class="card schedule-nav">
-                            <h3 style="margin-top:0">Jump to day</h3>
-                            <div class="muted small">Move fast between days and auto-expand the one you need.</div>
+                            <h3 style="margin-top:0">{{ t('schedule.jumpToDay') }}</h3>
+                            <div class="muted small">{{ t('schedule.jumpSubtitle') }}</div>
                             <div v-if="dayNavigation.length" class="jump-list">
                                 <button
                                     v-for="item in dayNavigation"
@@ -324,83 +327,83 @@
                                     @click="jumpToDay(item)"
                                 >
                                     <span>{{ item.label }}</span>
-                                    <span class="muted">{{ item.exercises }} ex</span>
+                                    <span class="muted">{{ item.exercises }} {{ t('labels.exerciseShort') }}</span>
                                 </button>
                             </div>
-                            <div v-else class="muted small">No days yet.</div>
+                            <div v-else class="muted small">{{ t('schedule.noDays') }}</div>
                         </div>
 
                         <div class="card">
-                            <h3 style="margin-top:0">Days & Exercises</h3>
-                            <div v-if="days.length===0">No days yet.</div>
+                            <h3 style="margin-top:0">{{ t('schedule.daysExercises') }}</h3>
+                            <div v-if="days.length===0">{{ t('schedule.noDays') }}</div>
                             <div v-else class="day-list">
                                 <div v-for="d in days" :key="d.id" class="day-card" :id="'day-'+d.id">
                                     <div class="day-header">
                                         <div class="stack">
                                             <div class="meta">
-                                                <strong>Week {{ d.week }}</strong>
-                                                <span class="tag accent">{{ d.day_code?.toUpperCase() }}</span>
-                                                <span class="tag">{{ (d.day_exercises||[]).length }} exercises</span>
+                                                <strong>{{ t('labels.weekNumber', { week: d.week }) }}</strong>
+                                                <span class="tag accent">{{ dayCodeLabel(d.day_code?.toUpperCase()) }}</span>
+                                                <span class="tag">{{ formatCount((d.day_exercises||[]).length, 'labels.exerciseCount', 'labels.exercisesCount') }}</span>
                                             </div>
-                                            <div class="muted">{{ d.title || 'Untitled' }}</div>
+                                            <div class="muted">{{ d.title || t('labels.untitled') }}</div>
                                         </div>
                                         <div class="inline-actions">
-                                            <button class="small" type="button" @click="toggleDay(d)">{{ isDayOpen(d) ? 'Collapse' : 'Expand' }}</button>
-                                            <button class="btn small" @click="saveDay(d)">Save</button>
-                                            <button class="small" type="button" @click="resetDayEdit(d)">Reset</button>
-                                            <button class="small" type="button" @click="deleteDay(d)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
+                                            <button class="small" type="button" @click="toggleDay(d)">{{ isDayOpen(d) ? t('actions.collapse') : t('actions.expand') }}</button>
+                                            <button class="btn small" @click="saveDay(d)">{{ t('actions.save') }}</button>
+                                            <button class="small" type="button" @click="resetDayEdit(d)">{{ t('actions.reset') }}</button>
+                                            <button class="small" type="button" @click="deleteDay(d)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">{{ t('actions.delete') }}</button>
                                         </div>
                                     </div>
 
                                         <div class="day-body" v-show="isDayOpen(d)">
                                             <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
                                                 <label class="small stack">
-                                                    Week
+                                                    {{ t('labels.week') }}
                                                     <input type="number" min="1" v-model.number="dayEdits[d.id].week" />
                                                 </label>
                                                 <label class="small stack">
-                                                    Day code
+                                                    {{ t('labels.dayCode') }}
                                                     <input v-model="dayEdits[d.id].day_code" list="day-code-options" />
                                                 </label>
                                                 <label class="small stack">
-                                                    Title
+                                                    {{ t('labels.title') }}
                                                     <input v-model="dayEdits[d.id].title" list="day-title-options" />
                                                 </label>
                                             </div>
                                         <label class="small stack">
-                                            Notes
-                                            <textarea v-model="dayEdits[d.id].notes" placeholder="Optional notes"></textarea>
+                                            {{ t('labels.notes') }}
+                                            <textarea v-model="dayEdits[d.id].notes" :placeholder="t('placeholders.notesOptional')"></textarea>
                                         </label>
 
                                         <div v-if="(d.day_exercises||[]).length" class="list">
                                             <div v-for="ex in d.day_exercises" :key="ex.id" class="card small stack">
                                                 <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
-                                                    <strong>{{ ex.exercises?.name || 'Exercise' }}</strong>
+                                                    <strong>{{ ex.exercises?.name || t('labels.exercise') }}</strong>
                                                     <div style="display:flex;gap:6px;flex-wrap:wrap">
-                                                        <button class="btn small" @click="saveDayExercise(ex)">Save</button>
-                                                        <button class="small" type="button" @click="resetDayExerciseEdit(ex)">Reset</button>
-                                                        <button class="small" type="button" @click="deleteDayExercise(ex)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">Delete</button>
+                                                        <button class="btn small" @click="saveDayExercise(ex)">{{ t('actions.save') }}</button>
+                                                        <button class="small" type="button" @click="resetDayExerciseEdit(ex)">{{ t('actions.reset') }}</button>
+                                                        <button class="small" type="button" @click="deleteDayExercise(ex)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">{{ t('actions.delete') }}</button>
                                                     </div>
                                                 </div>
                                                 <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
                                                     <label class="small stack">
-                                                        Position
+                                                        {{ t('labels.position') }}
                                                         <input type="number" min="1" v-model.number="dayExerciseEdits[ex.id].position" />
                                                     </label>
                                                     <label class="small stack">
-                                                        Notes
-                                                        <textarea v-model="dayExerciseEdits[ex.id].notes" placeholder="Optional notes"></textarea>
+                                                        {{ t('labels.notes') }}
+                                                        <textarea v-model="dayExerciseEdits[ex.id].notes" :placeholder="t('placeholders.notesOptional')"></textarea>
                                                     </label>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="card small" style="margin-top:8px">
-                                            <h4 style="margin:0 0 6px">Add exercise</h4>
+                                            <h4 style="margin:0 0 6px">{{ t('schedule.addExercise') }}</h4>
                                             <div style="display:flex;flex-direction:column;gap:6px">
                                                 <label class="small stack">
-                                                    Search & select
-                                                    <input v-model="exerciseSelection[d.id].query" @input="matchExercise(d)" placeholder="Type to filter exercises" :list="'dl-'+d.id">
+                                                    {{ t('schedule.searchSelect') }}
+                                                    <input v-model="exerciseSelection[d.id].query" @input="matchExercise(d)" :placeholder="t('placeholders.filterExercises')" :list="'dl-'+d.id">
                                                 </label>
                                                 <datalist :id="'dl-'+d.id">
                                                     <option v-for="opt in filteredExerciseOptions(d)" :key="opt.id" :value="opt.name"></option>
@@ -408,9 +411,9 @@
                                                 <div class="suggestions">
                                                     <span class="chip" v-for="opt in filteredExerciseOptions(d).slice(0,5)" :key="opt.id" @click="pickExercise(d, opt)">{{ opt.name }}</span>
                                                 </div>
-                                                <textarea v-model="exerciseSelection[d.id].notes" placeholder="Notes (optional)"></textarea>
-                                                <button class="btn small" @click="addExerciseToDay(d)" :disabled="addingExercise">Add</button>
-                                                <div class="muted small" v-if="!exerciseSelection[d.id].exercise_id">Start typing to auto-complete and click a suggestion.</div>
+                                                <textarea v-model="exerciseSelection[d.id].notes" :placeholder="t('placeholders.notesOptionalShort')"></textarea>
+                                                <button class="btn small" @click="addExerciseToDay(d)" :disabled="addingExercise">{{ t('actions.add') }}</button>
+                                                <div class="muted small" v-if="!exerciseSelection[d.id].exercise_id">{{ t('schedule.exerciseHelp') }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -425,30 +428,30 @@
         <div class="row section-panel" :class="{active: activeSection==='history'}">
             <div class="col" v-if="!current">
                 <div class="card">
-                    <h2>Max test history</h2>
-                    <p class="muted">Select a trainee from the Trainees tab to review their max test history.</p>
+                    <h2>{{ t('history.title') }}</h2>
+                    <p class="muted">{{ t('history.empty') }}</p>
                 </div>
             </div>
 
             <div class="col" v-else>
                 <div class="card">
                     <div class="history-header">
-                        <h2 style="margin:0">Max test history • {{ current.displayName || shortId(current.id) }}</h2>
+                        <h2 style="margin:0">{{ t('history.titleWithName', { name: current.displayName || shortId(current.id) }) }}</h2>
                         <div class="inline-actions">
-                            <span class="pill">{{ maxTests.length }} tests</span>
-                            <button class="small" type="button" @click="loadMaxTests" :disabled="loadingMaxTests">Refresh</button>
+                            <span class="pill">{{ formatCount(maxTests.length, 'labels.testCount', 'labels.testsCount') }}</span>
+                            <button class="small" type="button" @click="loadMaxTests" :disabled="loadingMaxTests">{{ t('actions.refresh') }}</button>
                         </div>
                     </div>
-                    <p class="muted small">Each chart shows how max attempts evolve over time for a single exercise.</p>
-                    <div v-if="loadingMaxTests" class="muted small">Loading max tests…</div>
+                    <p class="muted small">{{ t('history.subtitle') }}</p>
+                    <div v-if="loadingMaxTests" class="muted small">{{ t('status.loadingMaxTests') }}</div>
                     <div v-else-if="maxTestsError" class="muted small">{{ maxTestsError }}</div>
-                    <div v-else-if="maxTests.length===0" class="muted small">No max tests logged yet.</div>
+                    <div v-else-if="maxTests.length===0" class="muted small">{{ t('history.none') }}</div>
                     <div v-else class="history-grid">
                         <div v-for="entry in maxTestHistory" :key="entry.exercise" class="card history-card">
                             <div class="history-card-head">
                                 <div class="stack">
                                     <strong>{{ entry.exercise }}</strong>
-                                    <span class="muted small">{{ entry.count }} tests • best {{ formatTestValue(entry.bestValue) }} {{ entry.unit }}</span>
+                                    <span class="muted small">{{ t('history.testsBest', { countLabel: formatCount(entry.count, 'labels.testCount', 'labels.testsCount'), value: formatTestValue(entry.bestValue), unit: entry.unit }) }}</span>
                                 </div>
                                 <span class="pill">{{ entry.latestLabel }}</span>
                             </div>
@@ -461,7 +464,7 @@
                                     class="history-chart"
                                     :viewBox="`0 0 ${entry.chartWidth} ${entry.chartHeight}`"
                                     role="img"
-                                    :aria-label="`Max test history for ${entry.exercise}`"
+                                    :aria-label="t('history.chartAria', { exercise: entry.exercise })"
                                 >
                                     <polyline :points="entry.polyline" class="history-line"></polyline>
                                     <circle
