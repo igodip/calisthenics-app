@@ -49,11 +49,11 @@
             searchPlaceholder: 'Search trainees...',
           },
           sections: {
-            exercises: 'Exercises',
+            dashboard: 'Overview',
             trainees: 'Trainees',
-            plans: 'Plans',
+            program: 'Program',
+            exercises: 'Exercises',
             schedule: 'Schedule',
-            history: 'History',
           },
           actions: {
             signIn: 'Sign in',
@@ -104,6 +104,38 @@
             exercise: 'Exercise',
             day: 'Day',
             unknownExercise: 'Unknown exercise',
+          },
+          dashboard: {
+            feedbackTitle: 'Feedback & trainee notes',
+            feedbackSubtitle: 'Latest messages that need your attention first.',
+            loadingFeedback: 'Loading feedback…',
+            noFeedback: 'No notes yet from trainees.',
+            noticesTitle: 'General notices',
+            noticesSubtitle: 'Quick reminders for upcoming changes or deloads.',
+            noticePlaceholder: 'Add a notice, e.g. “Igor Monday deload week”.',
+            addNotice: 'Add notice',
+            noNotices: 'No general notices yet.',
+            paymentsTitle: 'Payment status',
+            paymentsSubtitle: 'Keep track of who needs a reminder.',
+            paymentsTotal: 'Trainees',
+            paymentsOnTime: 'On time',
+            paymentsOverdue: 'Overdue',
+            noOverdue: 'All payments are up to date.',
+            openProgram: 'Open program',
+          },
+          program: {
+            title: 'Program creation',
+            titleWithName: 'Program creation • {name}',
+            subtitle: 'Create workout structures, then map them into days.',
+            empty: 'Select a trainee from the Trainees tab to start building a program.',
+            templateTitle: 'Base template',
+            templateSubtitle:
+              'Sketch the week structure first, then refine with the daily schedule.',
+            dayCountLabel: 'Training days',
+            templateDay: 'Day {day}',
+            templateExercisePlaceholder: 'Exercise',
+            templateSetsPlaceholder: 'Sets/Reps',
+            templateNotesPlaceholder: 'Notes',
           },
           placeholders: {
             email: 'Email',
@@ -240,11 +272,11 @@
             searchPlaceholder: 'Cerca allievi...',
           },
           sections: {
-            exercises: 'Esercizi',
+            dashboard: 'Panoramica',
             trainees: 'Allievi',
-            plans: 'Piani',
+            program: 'Programma',
+            exercises: 'Esercizi',
             schedule: 'Programma',
-            history: 'Storico',
           },
           actions: {
             signIn: 'Accedi',
@@ -295,6 +327,38 @@
             exercise: 'Esercizio',
             day: 'Giorno',
             unknownExercise: 'Esercizio sconosciuto',
+          },
+          dashboard: {
+            feedbackTitle: 'Feedback & note allievi',
+            feedbackSubtitle: 'Messaggi recenti da vedere subito.',
+            loadingFeedback: 'Caricamento feedback…',
+            noFeedback: 'Nessuna nota inviata dagli allievi.',
+            noticesTitle: 'Avvisi generali',
+            noticesSubtitle: 'Promemoria veloci per scarichi o cambiamenti.',
+            noticePlaceholder: 'Aggiungi un avviso, es. “Igor lunedì settimana di scarico”.',
+            addNotice: 'Aggiungi avviso',
+            noNotices: 'Nessun avviso generale.',
+            paymentsTitle: 'Stato pagamenti',
+            paymentsSubtitle: 'Controlla chi ha bisogno di un promemoria.',
+            paymentsTotal: 'Allievi',
+            paymentsOnTime: 'In regola',
+            paymentsOverdue: 'In ritardo',
+            noOverdue: 'Tutti i pagamenti sono in regola.',
+            openProgram: 'Apri programma',
+          },
+          program: {
+            title: 'Creazione programma',
+            titleWithName: 'Creazione programma • {name}',
+            subtitle: 'Crea la struttura base e poi rifinisci le giornate.',
+            empty: 'Seleziona un allievo dalla scheda Allievi per creare il programma.',
+            templateTitle: 'Scheda base',
+            templateSubtitle:
+              'Imposta prima la struttura, poi rifinisci con le giornate.',
+            dayCountLabel: 'Giorni di allenamento',
+            templateDay: 'Giorno {day}',
+            templateExercisePlaceholder: 'Esercizio',
+            templateSetsPlaceholder: 'Serie/Rip.',
+            templateNotesPlaceholder: 'Note',
           },
           placeholders: {
             email: 'Email',
@@ -469,12 +533,19 @@
         localStorage.setItem('adminLocale', nextLocale);
         updateDocumentLanguage();
       });
+      watch(templateDayCount, (nextCount) => {
+        programTemplateDays.value = buildTemplateDays(
+          nextCount,
+          templateSlotsPerDay,
+          programTemplateDays.value,
+        );
+      });
       const session = ref(null);
       const user = ref(null);
       const email = ref('');
       const password = ref('');
       const search = ref('');
-      const activeSection = ref('exercises');
+      const activeSection = ref('dashboard');
 
       const users = ref([]);
       const current = ref(null);
@@ -493,6 +564,11 @@
       const loadingMaxTests = ref(false);
       const maxTestsError = ref('');
       const paymentSaving = ref({});
+      const dashboardNotes = ref([]);
+      const dashboardNotesLoading = ref(false);
+      const dashboardNotesError = ref('');
+      const announcements = ref([]);
+      const newAnnouncement = ref('');
       const addingDay = ref(false);
       const addingExercise = ref(false);
       const savingExercise = ref(false);
@@ -509,6 +585,35 @@
       const newPlanStartsAt = ref('');
       const newPlanEndsAt = ref('');
       const newPlanNotes = ref('');
+      const templateDayCount = ref(3);
+      const templateDayOptions = [2, 3, 4, 5];
+      const templateSlotsPerDay = 6;
+      const programTemplateDays = ref(
+        buildTemplateDays(templateDayCount.value, templateSlotsPerDay, []),
+      );
+
+      function buildTemplateDays(count, slots, existing) {
+        const list = [];
+        const safeExisting = Array.isArray(existing) ? existing : [];
+        for (let i = 0; i < count; i += 1) {
+          const previous = safeExisting[i];
+          const nextSlots = [];
+          for (let j = 0; j < slots; j += 1) {
+            const prevSlot = previous?.slots?.[j] || {};
+            nextSlots.push({
+              exercise: prevSlot.exercise || '',
+              sets: prevSlot.sets || '',
+              notes: prevSlot.notes || '',
+            });
+          }
+          list.push({
+            id: previous?.id || `template-${i + 1}`,
+            index: i + 1,
+            slots: nextSlots,
+          });
+        }
+        return list;
+      }
 
       const nextWeek = computed(() => {
         if (!days.value.length) return 1;
@@ -554,6 +659,20 @@
           weeks: weekSet.size,
           daysWithExercises,
           highlights,
+        };
+      });
+
+      const overdueUsers = computed(() =>
+        (users.value || []).filter((u) => !u.paid),
+      );
+
+      const paymentSummary = computed(() => {
+        const total = (users.value || []).length;
+        const paid = (users.value || []).filter((u) => u.paid).length;
+        return {
+          total,
+          paid,
+          overdue: total - paid,
         };
       });
 
@@ -687,6 +806,55 @@
           day: 'numeric',
         });
       };
+
+      function loadAnnouncementsFromStorage() {
+        try {
+          const stored = localStorage.getItem('adminAnnouncements');
+          if (!stored) {
+            announcements.value = [];
+            return;
+          }
+          const parsed = JSON.parse(stored);
+          announcements.value = Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+          console.error(error);
+          announcements.value = [];
+        }
+      }
+
+      function persistAnnouncements() {
+        localStorage.setItem(
+          'adminAnnouncements',
+          JSON.stringify(announcements.value),
+        );
+      }
+
+      function addAnnouncement() {
+        const text = (newAnnouncement.value || '').trim();
+        if (!text) return;
+        const id =
+          (window.crypto && window.crypto.randomUUID && window.crypto.randomUUID()) ||
+          `notice-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        const createdAt = new Date().toISOString();
+        announcements.value = [
+          { id, text, createdAt },
+          ...(announcements.value || []),
+        ];
+        newAnnouncement.value = '';
+        persistAnnouncements();
+      }
+
+      function removeAnnouncement(notice) {
+        if (!notice?.id) return;
+        announcements.value = (announcements.value || []).filter(
+          (item) => item.id !== notice.id,
+        );
+        persistAnnouncements();
+      }
+
+      function formatNoticeDate(notice) {
+        return notice?.createdAt ? formatDate(notice.createdAt) : '';
+      }
 
       function resetDayForm() {
         newDayWeek.value = 1;
@@ -898,6 +1066,7 @@
         await loadUsers();
         await loadExercises();
         await loadTraineeProgress();
+        await loadDashboardNotes();
         if (users.value.length) {
           await selectUser(users.value[0]);
           await loadPlans(users.value[0]);
@@ -1156,6 +1325,42 @@
         });
       }
 
+      async function loadDashboardNotes() {
+        dashboardNotesLoading.value = true;
+        dashboardNotesError.value = '';
+        const fetchNotes = (orderColumn) =>
+          supabase
+            .from('days')
+            .select('id, notes, week, day_code, trainee_id, created_at, trainees ( name )')
+            .not('notes', 'is', null)
+            .order(orderColumn, { ascending: false })
+            .limit(8);
+        try {
+          let { data, error } = await fetchNotes('created_at');
+          if (error) {
+            const fallback = await fetchNotes('id');
+            data = fallback.data;
+            error = fallback.error;
+          }
+          if (error) {
+            throw new Error(t('errors.loadDays', { message: error.message }));
+          }
+          dashboardNotes.value = (data || []).map((row) => ({
+            id: row.id,
+            notes: row.notes || '',
+            traineeName: row.trainees?.name || shortId(row.trainee_id),
+            dayLabel: formatWeekDayLabel(row.week || 1, row.day_code),
+            dateLabel: row.created_at ? formatDate(row.created_at) : '',
+          }));
+        } catch (err) {
+          console.error(err);
+          dashboardNotes.value = [];
+          dashboardNotesError.value = err.message || t('errors.loadDays');
+        } finally {
+          dashboardNotesLoading.value = false;
+        }
+      }
+
       async function addPlan() {
         if (!current.value) {
           alert(t('errors.selectTrainee'));
@@ -1398,6 +1603,7 @@
 
       onMounted(async () => {
         updateDocumentLanguage();
+        loadAnnouncementsFromStorage();
         const {
           data: { session: sess },
         } = await supabase.auth.getSession();
@@ -1424,6 +1630,8 @@
         t,
         users,
         filteredUsers,
+        overdueUsers,
+        paymentSummary,
         current,
         days,
         maxTests,
@@ -1456,6 +1664,19 @@
         newPlanStartsAt,
         newPlanEndsAt,
         newPlanNotes,
+        templateDayCount,
+        templateDayOptions,
+        programTemplateDays,
+        dashboardNotes,
+        dashboardNotesLoading,
+        dashboardNotesError,
+        announcements: computed(() =>
+          (announcements.value || []).map((notice) => ({
+            ...notice,
+            dateLabel: formatNoticeDate(notice),
+          })),
+        ),
+        newAnnouncement,
         loadingProgress,
         loadingMaxTests,
         maxTestsError,
@@ -1473,6 +1694,9 @@
         loadDays,
         loadMaxTests,
         loadPlans,
+        loadDashboardNotes,
+        addAnnouncement,
+        removeAnnouncement,
         addPlan,
         addDay,
         resetDayForm,
