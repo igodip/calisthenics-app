@@ -704,6 +704,54 @@ abstract class AppLocalizations {
   /// **'I giorni di allenamento sono evidenziati.'**
   String get homeCalendarSubtitle;
 
+  /// No description provided for @homeScheduleTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Focus settimanale'**
+  String get homeScheduleTitle;
+
+  /// No description provided for @homeScheduleSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimani sul pezzo con le prossime sessioni.'**
+  String get homeScheduleSubtitle;
+
+  /// No description provided for @homeNextWorkoutTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Prossimo allenamento'**
+  String get homeNextWorkoutTitle;
+
+  /// No description provided for @homeNextWorkoutEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun allenamento programmato.'**
+  String get homeNextWorkoutEmpty;
+
+  /// No description provided for @homeWorkoutsThisWeekTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Questa settimana'**
+  String get homeWorkoutsThisWeekTitle;
+
+  /// No description provided for @homeWorkoutsThisMonthTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo mese'**
+  String get homeWorkoutsThisMonthTitle;
+
+  /// No description provided for @homeUpcomingWeekTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'In arrivo questa settimana'**
+  String get homeUpcomingWeekTitle;
+
+  /// No description provided for @homeUpcomingWeekEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna sessione programmata nei prossimi 7 giorni.'**
+  String get homeUpcomingWeekEmpty;
+
   /// No description provided for @homeWorkoutPlanTitle.
   ///
   /// In it, this message translates to:

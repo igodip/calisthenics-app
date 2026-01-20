@@ -379,6 +379,32 @@ class AppLocalizationsIt extends AppLocalizations {
       'I giorni di allenamento sono evidenziati.';
 
   @override
+  String get homeScheduleTitle => 'Focus settimanale';
+
+  @override
+  String get homeScheduleSubtitle =>
+      'Rimani sul pezzo con le prossime sessioni.';
+
+  @override
+  String get homeNextWorkoutTitle => 'Prossimo allenamento';
+
+  @override
+  String get homeNextWorkoutEmpty => 'Nessun allenamento programmato.';
+
+  @override
+  String get homeWorkoutsThisWeekTitle => 'Questa settimana';
+
+  @override
+  String get homeWorkoutsThisMonthTitle => 'Questo mese';
+
+  @override
+  String get homeUpcomingWeekTitle => 'In arrivo questa settimana';
+
+  @override
+  String get homeUpcomingWeekEmpty =>
+      'Nessuna sessione programmata nei prossimi 7 giorni.';
+
+  @override
   String get homeWorkoutPlanTitle => 'Piano di allenamento';
 
   @override

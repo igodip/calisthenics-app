@@ -374,6 +374,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeCalendarSubtitle => 'Workout days are highlighted.';
 
   @override
+  String get homeScheduleTitle => 'Weekly focus';
+
+  @override
+  String get homeScheduleSubtitle => 'Stay on track with your upcoming sessions.';
+
+  @override
+  String get homeNextWorkoutTitle => 'Next workout';
+
+  @override
+  String get homeNextWorkoutEmpty => 'No scheduled workouts yet.';
+
+  @override
+  String get homeWorkoutsThisWeekTitle => 'This week';
+
+  @override
+  String get homeWorkoutsThisMonthTitle => 'This month';
+
+  @override
+  String get homeUpcomingWeekTitle => 'Coming up this week';
+
+  @override
+  String get homeUpcomingWeekEmpty =>
+      'No sessions scheduled for the next 7 days.';
+
+  @override
   String get homeWorkoutPlanTitle => 'Workout plan';
 
   @override
