@@ -2,6 +2,7 @@ import 'package:calisync/model/workout_day.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../components/plan_expired_gate.dart';
 import '../l10n/app_localizations.dart';
 
 class Training extends StatefulWidget {
@@ -59,69 +60,72 @@ class _TrainingState extends State<Training> {
           }
         });
       },
-      child: Scaffold(
-        appBar: AppBar(title: Text(widget.day.formattedTitle(l10n))),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            if ((widget.day.notes ?? '').trim().isNotEmpty)
-              Card(
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.generalNotes,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(widget.day.notes!.trim()),
-                    ],
+      child: PlanExpiredGate(
+        child: Scaffold(
+          appBar: AppBar(title: Text(widget.day.formattedTitle(l10n))),
+          body: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              if ((widget.day.notes ?? '').trim().isNotEmpty)
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.generalNotes,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(widget.day.notes!.trim()),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            for (int index = 0; index < _exercises.length; index++)
-              _ExerciseCard(
-                exercise: _exercises[index],
-                traineeNotesController: _personalNoteControllers.putIfAbsent(
-                  _controllerKey(_exercises[index], index),
-                  () =>
-                      TextEditingController(text: _exercises[index].traineeNotes ?? ''),
-                ),
-                saving: _savingNotes.contains(_exercises[index].id),
-                updatingCompletion: _togglingExerciseCompletion
-                    .contains(_exercises[index].id),
-                onSaveNotes: () => _saveNotes(index),
-                onToggleCompletion: () => _toggleExerciseCompletion(index),
-              ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: _updatingCompletion ? null : _toggleCompletion,
-              icon: _updatingCompletion
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Icon(
-                      _isCompleted ? Icons.undo : Icons.check_circle_outline,
+              for (int index = 0; index < _exercises.length; index++)
+                _ExerciseCard(
+                  exercise: _exercises[index],
+                  traineeNotesController: _personalNoteControllers.putIfAbsent(
+                    _controllerKey(_exercises[index], index),
+                    () => TextEditingController(
+                      text: _exercises[index].traineeNotes ?? '',
                     ),
-              label: Text(
-                _isCompleted
-                    ? l10n.trainingMarkIncomplete
-                    : l10n.trainingMarkComplete,
+                  ),
+                  saving: _savingNotes.contains(_exercises[index].id),
+                  updatingCompletion: _togglingExerciseCompletion
+                      .contains(_exercises[index].id),
+                  onSaveNotes: () => _saveNotes(index),
+                  onToggleCompletion: () => _toggleExerciseCompletion(index),
+                ),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: _updatingCompletion ? null : _toggleCompletion,
+                icon: _updatingCompletion
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Icon(
+                        _isCompleted ? Icons.undo : Icons.check_circle_outline,
+                      ),
+                label: Text(
+                  _isCompleted
+                      ? l10n.trainingMarkIncomplete
+                      : l10n.trainingMarkComplete,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
