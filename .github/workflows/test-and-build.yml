@@ -1,9 +1,6 @@
 name: Test & Build
 
 on:
-  pull_request:
-    branches:
-      - stable
   push:
     branches:
       - stable
