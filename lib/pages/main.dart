@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:calisync/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../components/plan_expired_gate.dart';
 import '../l10n/app_localizations.dart';
 import 'exercise_guides.dart';
 import 'home_content.dart';
@@ -84,7 +85,7 @@ class _HomePageState extends State<HomePage> {
       const WorkoutPlanPage(),
     ];
 
-    return Scaffold(
+    final scaffold = Scaffold(
       extendBody: true,
       appBar: AppBar(
         centerTitle: false,
@@ -243,6 +244,11 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+    );
+
+    return PlanExpiredGate(
+      useOverlay: true,
+      child: scaffold,
     );
   }
 }
