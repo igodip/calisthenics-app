@@ -27,11 +27,9 @@
                 <span class="pill">{{ t('toolbar.admin') }}</span>
             </div>
             <div class="pill-menu">
-                <button :class="{active: activeSection==='exercises'}" @click="activeSection='exercises'">{{ t('sections.exercises') }}</button>
+                <button :class="{active: activeSection==='dashboard'}" @click="activeSection='dashboard'">{{ t('sections.dashboard') }}</button>
                 <button :class="{active: activeSection==='trainees'}" @click="activeSection='trainees'">{{ t('sections.trainees') }}</button>
-                <button :class="{active: activeSection==='plans'}" @click="activeSection='plans'" :disabled="!current">{{ t('sections.plans') }}</button>
-                <button :class="{active: activeSection==='schedule'}" @click="activeSection='schedule'" :disabled="!current">{{ t('sections.schedule') }}</button>
-                <button :class="{active: activeSection==='history'}" @click="activeSection='history'" :disabled="!current">{{ t('sections.history') }}</button>
+                <button :class="{active: activeSection==='program'}" @click="activeSection='program'">{{ t('sections.program') }}</button>
             </div>
             <div class="toolbar-secondary">
                 <select v-model="locale" class="pill" :aria-label="t('toolbar.language')">
@@ -42,34 +40,85 @@
             </div>
         </div>
 
-        <div class="card section-panel exercise-panel" :class="{active: activeSection==='exercises'}">
-            <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('sections.exercises') }} <span class="pill">{{ t('labels.totalCount', { count: exerciseOptions.length }) }}</span></h2>
-            <div class="row">
-                <div class="col">
-                    <form @submit.prevent="addExerciseDefinition" style="display:flex;flex-direction:column;gap:8px">
-                        <label class="small" style="display:flex;flex-direction:column;gap:4px">
-                            {{ t('labels.name') }}
-                            <input v-model="newExerciseName" :placeholder="t('placeholders.exerciseExample')" required />
-                        </label>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap">
-                            <button class="btn small" type="submit" :disabled="savingExercise">{{ t('actions.addExercise') }}</button>
+        <div class="section-panel dashboard-panel" :class="{active: activeSection==='dashboard'}">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="dashboard-card-header">
+                        <div class="stack">
+                            <h2 style="margin:0">{{ t('dashboard.feedbackTitle') }}</h2>
+                            <span class="muted small">{{ t('dashboard.feedbackSubtitle') }}</span>
                         </div>
-                        <div v-if="savingExercise" class="muted small">{{ t('status.savingExercise') }}</div>
-                    </form>
+                        <button class="small" type="button" @click="loadDashboardNotes" :disabled="dashboardNotesLoading">{{ t('actions.refresh') }}</button>
+                    </div>
+                    <div v-if="dashboardNotesLoading" class="muted small">{{ t('dashboard.loadingFeedback') }}</div>
+                    <div v-else-if="dashboardNotesError" class="muted small">{{ dashboardNotesError }}</div>
+                    <div v-else-if="dashboardNotes.length===0" class="muted small">{{ t('dashboard.noFeedback') }}</div>
+                    <div v-else class="chat-list">
+                        <div v-for="note in dashboardNotes" :key="note.id" class="chat-item">
+                            <div class="chat-meta">
+                                <strong>{{ note.traineeName }}</strong>
+                                <span class="pill">{{ note.dayLabel }}</span>
+                            </div>
+                            <div class="muted small" v-if="note.dateLabel">{{ note.dateLabel }}</div>
+                            <div class="chat-message">{{ note.notes }}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col">
-                    <h3 style="margin-top:0">{{ t('exercises.available') }}</h3>
-                    <div v-if="exerciseOptions.length===0" class="muted small">{{ t('exercises.none') }}</div>
-                    <div v-else class="exercise-list scroll-area">
-                        <div v-for="ex in exerciseOptions" :key="ex.id" class="exercise-item small">
-                            <div class="exercise-head">
-                                <input v-model="exerciseEdits[ex.id].name" :placeholder="t('placeholders.exerciseName')" />
-                                <span class="pill">#{{ ex.id.slice(0,4) }}</span>
+
+                <div class="card">
+                    <div class="dashboard-card-header">
+                        <div class="stack">
+                            <h2 style="margin:0">{{ t('dashboard.noticesTitle') }}</h2>
+                            <span class="muted small">{{ t('dashboard.noticesSubtitle') }}</span>
+                        </div>
+                    </div>
+                    <form class="stack" @submit.prevent="addAnnouncement">
+                        <textarea v-model="newAnnouncement" :placeholder="t('dashboard.noticePlaceholder')"></textarea>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <button class="btn small" type="submit">{{ t('dashboard.addNotice') }}</button>
+                        </div>
+                    </form>
+                    <div v-if="announcements.length===0" class="muted small" style="margin-top:10px">{{ t('dashboard.noNotices') }}</div>
+                    <div v-else class="notice-list">
+                        <div class="notice-item" v-for="notice in announcements" :key="notice.id">
+                            <div class="stack">
+                                <strong>{{ notice.text }}</strong>
+                                <span class="muted small" v-if="notice.dateLabel">{{ notice.dateLabel }}</span>
                             </div>
-                            <div class="exercise-actions">
-                                <button class="btn small icon-button" @click="updateExercise(ex)" :disabled="savingExercise" :title="t('actions.save')" :aria-label="t('actions.save')">💾</button>
-                                <button class="small icon-button danger" type="button" @click="deleteExercise(ex)" :disabled="savingExercise" :title="t('actions.delete')" :aria-label="t('actions.delete')">🗑️</button>
+                            <button class="small" type="button" @click="removeAnnouncement(notice)">{{ t('actions.delete') }}</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="dashboard-card-header">
+                        <div class="stack">
+                            <h2 style="margin:0">{{ t('dashboard.paymentsTitle') }}</h2>
+                            <span class="muted small">{{ t('dashboard.paymentsSubtitle') }}</span>
+                        </div>
+                    </div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-label">{{ t('dashboard.paymentsTotal') }}</span>
+                            <strong>{{ paymentSummary.total }}</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{{ t('dashboard.paymentsOnTime') }}</span>
+                            <strong>{{ paymentSummary.paid }}</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{{ t('dashboard.paymentsOverdue') }}</span>
+                            <strong>{{ paymentSummary.overdue }}</strong>
+                        </div>
+                    </div>
+                    <div v-if="overdueUsers.length===0" class="muted small" style="margin-top:10px">{{ t('dashboard.noOverdue') }}</div>
+                    <div v-else class="list" style="margin-top:10px">
+                        <div v-for="u in overdueUsers" :key="u.id" class="payment-alert">
+                            <div class="stack">
+                                <strong>{{ u.displayName || shortId(u.id) }}</strong>
+                                <span class="muted small mono">{{ u.id }}</span>
                             </div>
+                            <button class="small" type="button" @click="selectUser(u); activeSection='program'">{{ t('dashboard.openProgram') }}</button>
                         </div>
                     </div>
                 </div>
@@ -119,9 +168,9 @@
                             </div>
                             <div class="muted small" v-if="paymentSaving[u.id]">{{ t('status.updatingPayment') }}</div>
                             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-                                <button class="btn" @click="selectUser(u); activeSection='schedule'">{{ t('actions.openSchedule') }}</button>
-                                <button class="btn" @click="loadDays(u); activeSection='schedule'">{{ t('actions.loadDays') }}</button>
-                                <button class="btn" @click="loadPlans(u); activeSection='plans'">{{ t('actions.loadPlans') }}</button>
+                                <button class="btn" @click="selectUser(u); activeSection='program'">{{ t('actions.openSchedule') }}</button>
+                                <button class="btn" @click="loadDays(u); activeSection='program'">{{ t('actions.loadDays') }}</button>
+                                <button class="btn" @click="loadPlans(u); activeSection='program'">{{ t('actions.loadPlans') }}</button>
                             </div>
                         </div>
                     </div>
@@ -129,231 +178,251 @@
             </div>
         </div>
 
-        <div class="row section-panel" :class="{active: activeSection==='plans'}">
-            <div class="col" v-if="!current">
-                <div class="card">
-                    <h2>{{ t('plans.title') }}</h2>
-                    <p class="muted">{{ t('plans.empty') }}</p>
+        <div class="row section-panel program-panel" :class="{active: activeSection==='program'}">
+            <div class="col program-main">
+                <div class="card" v-if="!current">
+                    <h2>{{ t('program.title') }}</h2>
+                    <p class="muted">{{ t('program.empty') }}</p>
                 </div>
-            </div>
 
-            <div class="col" v-else>
-                <div class="card">
-                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('plans.addTitle') }} <span class="pill">{{ current.displayName || shortId(current.id) }}</span></h2>
-                    <form @submit.prevent="addPlan" style="display:flex;flex-direction:column;gap:8px">
-                        <label class="small stack">
-                            {{ t('labels.name') }}
-                            <input v-model="newPlanName" :placeholder="t('placeholders.planExample')" required />
-                        </label>
-                        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+                <template v-else>
+                    <div class="card">
+                        <h2 style="margin:0">{{ t('program.titleWithName', { name: current.displayName || shortId(current.id) }) }}</h2>
+                        <p class="muted">{{ t('program.subtitle') }}</p>
+                    </div>
+
+                    <div class="card program-template">
+                        <div class="program-template-header">
+                            <div class="stack">
+                                <h2 style="margin:0">{{ t('program.templateTitle') }}</h2>
+                                <span class="muted small">{{ t('program.templateSubtitle') }}</span>
+                            </div>
                             <label class="small stack">
-                                {{ t('labels.status') }}
-                                <select v-model="newPlanStatus">
-                                    <option v-for="status in planStatuses" :key="status" :value="status">{{ planStatusLabel(status) }}</option>
+                                {{ t('program.dayCountLabel') }}
+                                <select v-model.number="templateDayCount">
+                                    <option v-for="count in templateDayOptions" :key="count" :value="count">{{ count }}</option>
                                 </select>
                             </label>
-                            <label class="small stack">
-                                {{ t('labels.startsAt') }}
-                                <input type="date" v-model="newPlanStartsAt" />
-                            </label>
-                            <label class="small stack">
-                                {{ t('labels.endsAt') }}
-                                <input type="date" v-model="newPlanEndsAt" />
-                            </label>
                         </div>
-                        <label class="small stack">
-                            {{ t('labels.notes') }}
-                            <textarea v-model="newPlanNotes" :placeholder="t('placeholders.planNotes')"></textarea>
-                        </label>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap">
-                            <button class="btn small" type="submit" :disabled="savingPlan">{{ t('actions.savePlan') }}</button>
-                            <button class="small" type="button" @click="resetPlanForm" :disabled="savingPlan">{{ t('actions.reset') }}</button>
-                        </div>
-                        <div v-if="savingPlan" class="muted small">{{ t('status.savingPlan') }}</div>
-                    </form>
-                </div>
-
-                <div class="card">
-                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('plans.listTitle') }} <span class="pill">{{ t('labels.totalCount', { count: plans.length }) }}</span></h2>
-                    <div v-if="plans.length===0" class="muted small">{{ t('plans.none') }}</div>
-                    <div v-else class="list scroll-area">
-                        <div v-for="plan in plans" :key="plan.id" class="card stack small">
-                            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-                                <div class="stack">
-                                    <strong>{{ planEdits[plan.id]?.title || plan.title }}</strong>
-                                    <span class="muted mono small">#{{ shortId(plan.id) }}</span>
-                                </div>
-                                <div class="inline-actions">
-                                    <button class="btn small" @click="savePlan(plan)" :disabled="savingPlan">{{ t('actions.save') }}</button>
-                                    <button class="small" type="button" @click="resetPlanEdit(plan)" :disabled="savingPlan">{{ t('actions.reset') }}</button>
-                                    <button class="small" type="button" @click="deletePlan(plan)" :disabled="savingPlan" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">{{ t('actions.delete') }}</button>
+                        <div class="template-grid">
+                            <div v-for="day in programTemplateDays" :key="day.id" class="template-day">
+                                <h3 style="margin-top:0">{{ t('program.templateDay', { day: day.index }) }}</h3>
+                                <div class="template-slots">
+                                    <div v-for="(slot, idx) in day.slots" :key="idx" class="template-slot">
+                                        <input v-model="slot.exercise" :placeholder="t('program.templateExercisePlaceholder')" />
+                                        <input v-model="slot.sets" :placeholder="t('program.templateSetsPlaceholder')" />
+                                        <input v-model="slot.notes" :placeholder="t('program.templateNotesPlaceholder')" />
+                                    </div>
                                 </div>
                             </div>
-                            <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">
-                                <label class="small stack">
-                                    {{ t('labels.name') }}
-                                    <input v-model="planEdits[plan.id].title" />
-                                </label>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('plans.addTitle') }} <span class="pill">{{ current.displayName || shortId(current.id) }}</span></h2>
+                        <form @submit.prevent="addPlan" style="display:flex;flex-direction:column;gap:8px">
+                            <label class="small stack">
+                                {{ t('labels.name') }}
+                                <input v-model="newPlanName" :placeholder="t('placeholders.planExample')" required />
+                            </label>
+                            <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
                                 <label class="small stack">
                                     {{ t('labels.status') }}
-                                    <select v-model="planEdits[plan.id].status">
+                                    <select v-model="newPlanStatus">
                                         <option v-for="status in planStatuses" :key="status" :value="status">{{ planStatusLabel(status) }}</option>
                                     </select>
                                 </label>
                                 <label class="small stack">
                                     {{ t('labels.startsAt') }}
-                                    <input type="date" v-model="planEdits[plan.id].starts_on" />
+                                    <input type="date" v-model="newPlanStartsAt" />
+                                </label>
+                                <label class="small stack">
+                                    {{ t('labels.endsAt') }}
+                                    <input type="date" v-model="newPlanEndsAt" />
                                 </label>
                             </div>
                             <label class="small stack">
                                 {{ t('labels.notes') }}
-                                <textarea v-model="planEdits[plan.id].notes" :placeholder="t('placeholders.notesOptional')"></textarea>
+                                <textarea v-model="newPlanNotes" :placeholder="t('placeholders.planNotes')"></textarea>
                             </label>
-                        </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <button class="btn small" type="submit" :disabled="savingPlan">{{ t('actions.savePlan') }}</button>
+                                <button class="small" type="button" @click="resetPlanForm" :disabled="savingPlan">{{ t('actions.reset') }}</button>
+                            </div>
+                            <div v-if="savingPlan" class="muted small">{{ t('status.savingPlan') }}</div>
+                        </form>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="row section-panel" :class="{active: activeSection==='schedule'}">
-            <div class="col" v-if="!current">
-                <div class="card">
-                    <h2>{{ t('sections.schedule') }}</h2>
-                    <p class="muted">{{ t('schedule.empty') }}</p>
-                </div>
-            </div>
-
-            <div class="col" v-if="current">
-                <div class="card">
-                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('sections.schedule') }} • {{ current.displayName || shortId(current.id) }} <span class="pill">{{ formatCount(days.length, 'labels.dayCount', 'labels.daysCount') }}</span></h2>
-                    <div class="grid">
-                        <div class="card day-form-card">
-                            <div class="day-form-header">
-                                <h3 style="margin:0">{{ t('schedule.createDay') }}</h3>
-                                <span class="pill">{{ t('schedule.nextWeek', { week: nextWeek }) }}</span>
-                            </div>
-                            <div class="inline-actions">
-                                <button class="small" type="button" @click="applyNextWeek">{{ t('actions.useNextWeek') }}</button>
-                                <button class="small" type="button" @click="resetDayForm" :disabled="addingDay">{{ t('actions.clear') }}</button>
-                            </div>
-                            <form @submit.prevent="addDay" class="stack">
-                                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+                    <div class="card">
+                        <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('plans.listTitle') }} <span class="pill">{{ t('labels.totalCount', { count: plans.length }) }}</span></h2>
+                        <div v-if="plans.length===0" class="muted small">{{ t('plans.none') }}</div>
+                        <div v-else class="list scroll-area">
+                            <div v-for="plan in plans" :key="plan.id" class="card stack small">
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+                                    <div class="stack">
+                                        <strong>{{ planEdits[plan.id]?.title || plan.title }}</strong>
+                                        <span class="muted mono small">#{{ shortId(plan.id) }}</span>
+                                    </div>
+                                    <div class="inline-actions">
+                                        <button class="btn small" @click="savePlan(plan)" :disabled="savingPlan">{{ t('actions.save') }}</button>
+                                        <button class="small" type="button" @click="resetPlanEdit(plan)" :disabled="savingPlan">{{ t('actions.reset') }}</button>
+                                        <button class="small" type="button" @click="deletePlan(plan)" :disabled="savingPlan" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">{{ t('actions.delete') }}</button>
+                                    </div>
+                                </div>
+                                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">
                                     <label class="small stack">
-                                        {{ t('labels.week') }}
-                                        <input type="number" min="1" v-model.number="newDayWeek" required>
+                                        {{ t('labels.name') }}
+                                        <input v-model="planEdits[plan.id].title" />
                                     </label>
                                     <label class="small stack">
-                                        {{ t('labels.dayCode') }}
-                                        <select v-model="newDayCode" required>
-                                            <option v-for="code in dayCodeOptions" :key="code" :value="code">{{ dayCodeLabel(code) }}</option>
+                                        {{ t('labels.status') }}
+                                        <select v-model="planEdits[plan.id].status">
+                                            <option v-for="status in planStatuses" :key="status" :value="status">{{ planStatusLabel(status) }}</option>
                                         </select>
                                     </label>
                                     <label class="small stack">
-                                        {{ t('labels.title') }}
-                                        <input v-model="newDayTitle" :placeholder="t('placeholders.workoutTitle')" list="day-title-options">
+                                        {{ t('labels.startsAt') }}
+                                        <input type="date" v-model="planEdits[plan.id].starts_on" />
                                     </label>
-                                </div>
-                                <datalist id="day-title-options">
-                                    <option v-for="title in dayTitleSuggestions" :key="title" :value="title"></option>
-                                </datalist>
-                                <datalist id="day-code-options">
-                                    <option v-for="code in dayCodeOptions" :key="code" :value="code"></option>
-                                </datalist>
-                                <div class="stack">
-                                    <span class="small">{{ t('schedule.quickDayPick') }}</span>
-                                    <div class="day-code-picker">
-                                        <button v-for="code in dayCodeOptions" :key="code" type="button" :class="{active: newDayCode === code}" @click="setDayCode(code)">{{ dayCodeLabel(code) }}</button>
-                                    </div>
-                                    <span class="helper-text">{{ t('schedule.quickDayHelp') }}</span>
                                 </div>
                                 <label class="small stack">
                                     {{ t('labels.notes') }}
-                                    <textarea v-model="newDayNotes" :placeholder="t('placeholders.notesOptional')"></textarea>
+                                    <textarea v-model="planEdits[plan.id].notes" :placeholder="t('placeholders.notesOptional')"></textarea>
                                 </label>
-                                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                                    <button class="btn small" type="submit" :disabled="addingDay">{{ t('actions.saveDay') }}</button>
-                                    <button class="small" type="button" @click="resetDayForm" :disabled="addingDay">{{ t('actions.reset') }}</button>
-                                </div>
-                                <div v-if="addingDay" class="muted small">{{ t('status.savingDay') }}</div>
-                            </form>
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="card schedule-summary">
-                            <div class="schedule-summary-header">
-                                <div class="stack">
-                                    <h3 style="margin:0">{{ t('schedule.recap') }}</h3>
-                                    <span class="muted small">{{ t('schedule.recapSubtitle') }}</span>
+                    <div class="card program-schedule">
+                        <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('sections.schedule') }} • {{ current.displayName || shortId(current.id) }} <span class="pill">{{ formatCount(days.length, 'labels.dayCount', 'labels.daysCount') }}</span></h2>
+                        <div class="grid">
+                            <div class="card day-form-card">
+                                <div class="day-form-header">
+                                    <h3 style="margin:0">{{ t('schedule.createDay') }}</h3>
+                                    <span class="pill">{{ t('schedule.nextWeek', { week: nextWeek }) }}</span>
                                 </div>
-                                <button class="small" type="button" @click="loadDays" :disabled="addingDay || addingExercise">{{ t('actions.refresh') }}</button>
-                            </div>
-                            <div class="summary-grid">
-                                <div class="summary-item">
-                                    <span class="summary-label">{{ t('labels.weeks') }}</span>
-                                    <strong>{{ scheduleSummary.weeks }}</strong>
+                                <div class="inline-actions">
+                                    <button class="small" type="button" @click="applyNextWeek">{{ t('actions.useNextWeek') }}</button>
+                                    <button class="small" type="button" @click="resetDayForm" :disabled="addingDay">{{ t('actions.clear') }}</button>
                                 </div>
-                                <div class="summary-item">
-                                    <span class="summary-label">{{ t('labels.days') }}</span>
-                                    <strong>{{ scheduleSummary.days }}</strong>
-                                </div>
-                                <div class="summary-item">
-                                    <span class="summary-label">{{ t('labels.exercises') }}</span>
-                                    <strong>{{ scheduleSummary.exercises }}</strong>
-                                </div>
-                                <div class="summary-item">
-                                    <span class="summary-label">{{ t('labels.daysWithExercises') }}</span>
-                                    <strong>{{ scheduleSummary.daysWithExercises }}</strong>
-                                </div>
-                            </div>
-                            <div v-if="scheduleSummary.highlights.length" class="summary-highlights">
-                                <span class="summary-label">{{ t('schedule.highlights') }}</span>
-                                <div class="summary-chips">
-                                    <span class="chip" v-for="item in scheduleSummary.highlights" :key="item.id">
-                                        {{ item.label }} • {{ item.exercises }} {{ t('labels.exerciseShort') }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div v-else class="muted small">{{ t('schedule.recapEmpty') }}</div>
-                        </div>
-
-                        <div class="card schedule-nav">
-                            <h3 style="margin-top:0">{{ t('schedule.jumpToDay') }}</h3>
-                            <div class="muted small">{{ t('schedule.jumpSubtitle') }}</div>
-                            <div v-if="dayNavigation.length" class="jump-list">
-                                <button
-                                    v-for="item in dayNavigation"
-                                    :key="item.id"
-                                    class="small jump-button"
-                                    type="button"
-                                    @click="jumpToDay(item)"
-                                >
-                                    <span>{{ item.label }}</span>
-                                    <span class="muted">{{ item.exercises }} {{ t('labels.exerciseShort') }}</span>
-                                </button>
-                            </div>
-                            <div v-else class="muted small">{{ t('schedule.noDays') }}</div>
-                        </div>
-
-                        <div class="card">
-                            <h3 style="margin-top:0">{{ t('schedule.daysExercises') }}</h3>
-                            <div v-if="days.length===0">{{ t('schedule.noDays') }}</div>
-                            <div v-else class="day-list">
-                                <div v-for="d in days" :key="d.id" class="day-card" :id="'day-'+d.id">
-                                    <div class="day-header">
-                                        <div class="stack">
-                                            <div class="meta">
-                                                <strong>{{ t('labels.weekNumber', { week: d.week }) }}</strong>
-                                                <span class="tag accent">{{ dayCodeLabel(d.day_code?.toUpperCase()) }}</span>
-                                                <span class="tag">{{ formatCount((d.day_exercises||[]).length, 'labels.exerciseCount', 'labels.exercisesCount') }}</span>
-                                            </div>
-                                            <div class="muted">{{ d.title || t('labels.untitled') }}</div>
-                                        </div>
-                                        <div class="inline-actions">
-                                            <button class="small" type="button" @click="toggleDay(d)">{{ isDayOpen(d) ? t('actions.collapse') : t('actions.expand') }}</button>
-                                            <button class="btn small" @click="saveDay(d)">{{ t('actions.save') }}</button>
-                                            <button class="small" type="button" @click="resetDayEdit(d)">{{ t('actions.reset') }}</button>
-                                            <button class="small" type="button" @click="deleteDay(d)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">{{ t('actions.delete') }}</button>
-                                        </div>
+                                <form @submit.prevent="addDay" class="stack">
+                                    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+                                        <label class="small stack">
+                                            {{ t('labels.week') }}
+                                            <input type="number" min="1" v-model.number="newDayWeek" required>
+                                        </label>
+                                        <label class="small stack">
+                                            {{ t('labels.dayCode') }}
+                                            <select v-model="newDayCode" required>
+                                                <option v-for="code in dayCodeOptions" :key="code" :value="code">{{ dayCodeLabel(code) }}</option>
+                                            </select>
+                                        </label>
+                                        <label class="small stack">
+                                            {{ t('labels.title') }}
+                                            <input v-model="newDayTitle" :placeholder="t('placeholders.workoutTitle')" list="day-title-options">
+                                        </label>
                                     </div>
+                                    <datalist id="day-title-options">
+                                        <option v-for="title in dayTitleSuggestions" :key="title" :value="title"></option>
+                                    </datalist>
+                                    <datalist id="day-code-options">
+                                        <option v-for="code in dayCodeOptions" :key="code" :value="code"></option>
+                                    </datalist>
+                                    <div class="stack">
+                                        <span class="small">{{ t('schedule.quickDayPick') }}</span>
+                                        <div class="day-code-picker">
+                                            <button v-for="code in dayCodeOptions" :key="code" type="button" :class="{active: newDayCode === code}" @click="setDayCode(code)">{{ dayCodeLabel(code) }}</button>
+                                        </div>
+                                        <span class="helper-text">{{ t('schedule.quickDayHelp') }}</span>
+                                    </div>
+                                    <label class="small stack">
+                                        {{ t('labels.notes') }}
+                                        <textarea v-model="newDayNotes" :placeholder="t('placeholders.notesOptional')"></textarea>
+                                    </label>
+                                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                        <button class="btn small" type="submit" :disabled="addingDay">{{ t('actions.saveDay') }}</button>
+                                        <button class="small" type="button" @click="resetDayForm" :disabled="addingDay">{{ t('actions.reset') }}</button>
+                                    </div>
+                                    <div v-if="addingDay" class="muted small">{{ t('status.savingDay') }}</div>
+                                </form>
+                            </div>
+
+                            <div class="card schedule-summary">
+                                <div class="schedule-summary-header">
+                                    <div class="stack">
+                                        <h3 style="margin:0">{{ t('schedule.recap') }}</h3>
+                                        <span class="muted small">{{ t('schedule.recapSubtitle') }}</span>
+                                    </div>
+                                    <button class="small" type="button" @click="loadDays" :disabled="addingDay || addingExercise">{{ t('actions.refresh') }}</button>
+                                </div>
+                                <div class="summary-grid">
+                                    <div class="summary-item">
+                                        <span class="summary-label">{{ t('labels.weeks') }}</span>
+                                        <strong>{{ scheduleSummary.weeks }}</strong>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">{{ t('labels.days') }}</span>
+                                        <strong>{{ scheduleSummary.days }}</strong>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">{{ t('labels.exercises') }}</span>
+                                        <strong>{{ scheduleSummary.exercises }}</strong>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">{{ t('labels.daysWithExercises') }}</span>
+                                        <strong>{{ scheduleSummary.daysWithExercises }}</strong>
+                                    </div>
+                                </div>
+                                <div v-if="scheduleSummary.highlights.length" class="summary-highlights">
+                                    <span class="summary-label">{{ t('schedule.highlights') }}</span>
+                                    <div class="summary-chips">
+                                        <span class="chip" v-for="item in scheduleSummary.highlights" :key="item.id">
+                                            {{ item.label }} • {{ item.exercises }} {{ t('labels.exerciseShort') }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div v-else class="muted small">{{ t('schedule.recapEmpty') }}</div>
+                            </div>
+
+                            <div class="card schedule-nav">
+                                <h3 style="margin-top:0">{{ t('schedule.jumpToDay') }}</h3>
+                                <div class="muted small">{{ t('schedule.jumpSubtitle') }}</div>
+                                <div v-if="dayNavigation.length" class="jump-list">
+                                    <button
+                                        v-for="item in dayNavigation"
+                                        :key="item.id"
+                                        class="small jump-button"
+                                        type="button"
+                                        @click="jumpToDay(item)"
+                                    >
+                                        <span>{{ item.label }}</span>
+                                        <span class="muted">{{ item.exercises }} {{ t('labels.exerciseShort') }}</span>
+                                    </button>
+                                </div>
+                                <div v-else class="muted small">{{ t('schedule.noDays') }}</div>
+                            </div>
+
+                            <div class="card">
+                                <h3 style="margin-top:0">{{ t('schedule.daysExercises') }}</h3>
+                                <div v-if="days.length===0">{{ t('schedule.noDays') }}</div>
+                                <div v-else class="day-list">
+                                    <div v-for="d in days" :key="d.id" class="day-card" :id="'day-'+d.id">
+                                        <div class="day-header">
+                                            <div class="stack">
+                                                <div class="meta">
+                                                    <strong>{{ t('labels.weekNumber', { week: d.week }) }}</strong>
+                                                    <span class="tag accent">{{ dayCodeLabel(d.day_code?.toUpperCase()) }}</span>
+                                                    <span class="tag">{{ formatCount((d.day_exercises||[]).length, 'labels.exerciseCount', 'labels.exercisesCount') }}</span>
+                                                </div>
+                                                <div class="muted">{{ d.title || t('labels.untitled') }}</div>
+                                            </div>
+                                            <div class="inline-actions">
+                                                <button class="small" type="button" @click="toggleDay(d)">{{ isDayOpen(d) ? t('actions.collapse') : t('actions.expand') }}</button>
+                                                <button class="btn small" @click="saveDay(d)">{{ t('actions.save') }}</button>
+                                                <button class="small" type="button" @click="resetDayEdit(d)">{{ t('actions.reset') }}</button>
+                                                <button class="small" type="button" @click="deleteDay(d)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">{{ t('actions.delete') }}</button>
+                                            </div>
+                                        </div>
 
                                         <div class="day-body" v-show="isDayOpen(d)">
                                             <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
@@ -370,50 +439,51 @@
                                                     <input v-model="dayEdits[d.id].title" list="day-title-options" />
                                                 </label>
                                             </div>
-                                        <label class="small stack">
-                                            {{ t('labels.notes') }}
-                                            <textarea v-model="dayEdits[d.id].notes" :placeholder="t('placeholders.notesOptional')"></textarea>
-                                        </label>
+                                            <label class="small stack">
+                                                {{ t('labels.notes') }}
+                                                <textarea v-model="dayEdits[d.id].notes" :placeholder="t('placeholders.notesOptional')"></textarea>
+                                            </label>
 
-                                        <div v-if="(d.day_exercises||[]).length" class="list">
-                                            <div v-for="ex in d.day_exercises" :key="ex.id" class="card small stack">
-                                                <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
-                                                    <strong>{{ ex.exercises?.name || t('labels.exercise') }}</strong>
-                                                    <div style="display:flex;gap:6px;flex-wrap:wrap">
-                                                        <button class="btn small" @click="saveDayExercise(ex)">{{ t('actions.save') }}</button>
-                                                        <button class="small" type="button" @click="resetDayExerciseEdit(ex)">{{ t('actions.reset') }}</button>
-                                                        <button class="small" type="button" @click="deleteDayExercise(ex)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">{{ t('actions.delete') }}</button>
+                                            <div v-if="(d.day_exercises||[]).length" class="list">
+                                                <div v-for="ex in d.day_exercises" :key="ex.id" class="card small stack">
+                                                    <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap">
+                                                        <strong>{{ ex.exercises?.name || t('labels.exercise') }}</strong>
+                                                        <div style="display:flex;gap:6px;flex-wrap:wrap">
+                                                            <button class="btn small" @click="saveDayExercise(ex)">{{ t('actions.save') }}</button>
+                                                            <button class="small" type="button" @click="resetDayExerciseEdit(ex)">{{ t('actions.reset') }}</button>
+                                                            <button class="small" type="button" @click="deleteDayExercise(ex)" style="color:#fca5a5;border-color:#3b0f10;background:#1a0b0c">{{ t('actions.delete') }}</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
+                                                        <label class="small stack">
+                                                            {{ t('labels.position') }}
+                                                            <input type="number" min="1" v-model.number="dayExerciseEdits[ex.id].position" />
+                                                        </label>
+                                                        <label class="small stack">
+                                                            {{ t('labels.notes') }}
+                                                            <textarea v-model="dayExerciseEdits[ex.id].notes" :placeholder="t('placeholders.notesOptional')"></textarea>
+                                                        </label>
                                                     </div>
                                                 </div>
-                                                <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
-                                                    <label class="small stack">
-                                                        {{ t('labels.position') }}
-                                                        <input type="number" min="1" v-model.number="dayExerciseEdits[ex.id].position" />
-                                                    </label>
-                                                    <label class="small stack">
-                                                        {{ t('labels.notes') }}
-                                                        <textarea v-model="dayExerciseEdits[ex.id].notes" :placeholder="t('placeholders.notesOptional')"></textarea>
-                                                    </label>
-                                                </div>
                                             </div>
-                                        </div>
 
-                                        <div class="card small" style="margin-top:8px">
-                                            <h4 style="margin:0 0 6px">{{ t('schedule.addExercise') }}</h4>
-                                            <div style="display:flex;flex-direction:column;gap:6px">
-                                                <label class="small stack">
-                                                    {{ t('schedule.searchSelect') }}
-                                                    <input v-model="exerciseSelection[d.id].query" @input="matchExercise(d)" :placeholder="t('placeholders.filterExercises')" :list="'dl-'+d.id">
-                                                </label>
-                                                <datalist :id="'dl-'+d.id">
-                                                    <option v-for="opt in filteredExerciseOptions(d)" :key="opt.id" :value="opt.name"></option>
-                                                </datalist>
-                                                <div class="suggestions">
-                                                    <span class="chip" v-for="opt in filteredExerciseOptions(d).slice(0,5)" :key="opt.id" @click="pickExercise(d, opt)">{{ opt.name }}</span>
+                                            <div class="card small" style="margin-top:8px">
+                                                <h4 style="margin:0 0 6px">{{ t('schedule.addExercise') }}</h4>
+                                                <div style="display:flex;flex-direction:column;gap:6px">
+                                                    <label class="small stack">
+                                                        {{ t('schedule.searchSelect') }}
+                                                        <input v-model="exerciseSelection[d.id].query" @input="matchExercise(d)" :placeholder="t('placeholders.filterExercises')" :list="'dl-'+d.id">
+                                                    </label>
+                                                    <datalist :id="'dl-'+d.id">
+                                                        <option v-for="opt in filteredExerciseOptions(d)" :key="opt.id" :value="opt.name"></option>
+                                                    </datalist>
+                                                    <div class="suggestions">
+                                                        <span class="chip" v-for="opt in filteredExerciseOptions(d).slice(0,5)" :key="opt.id" @click="pickExercise(d, opt)">{{ opt.name }}</span>
+                                                    </div>
+                                                    <textarea v-model="exerciseSelection[d.id].notes" :placeholder="t('placeholders.notesOptionalShort')"></textarea>
+                                                    <button class="btn small" @click="addExerciseToDay(d)" :disabled="addingExercise">{{ t('actions.add') }}</button>
+                                                    <div class="muted small" v-if="!exerciseSelection[d.id].exercise_id">{{ t('schedule.exerciseHelp') }}</div>
                                                 </div>
-                                                <textarea v-model="exerciseSelection[d.id].notes" :placeholder="t('placeholders.notesOptionalShort')"></textarea>
-                                                <button class="btn small" @click="addExerciseToDay(d)" :disabled="addingExercise">{{ t('actions.add') }}</button>
-                                                <div class="muted small" v-if="!exerciseSelection[d.id].exercise_id">{{ t('schedule.exerciseHelp') }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -421,65 +491,37 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row section-panel" :class="{active: activeSection==='history'}">
-            <div class="col" v-if="!current">
-                <div class="card">
-                    <h2>{{ t('history.title') }}</h2>
-                    <p class="muted">{{ t('history.empty') }}</p>
-                </div>
+                </template>
             </div>
 
-            <div class="col" v-else>
-                <div class="card">
-                    <div class="history-header">
-                        <h2 style="margin:0">{{ t('history.titleWithName', { name: current.displayName || shortId(current.id) }) }}</h2>
-                        <div class="inline-actions">
-                            <span class="pill">{{ formatCount(maxTests.length, 'labels.testCount', 'labels.testsCount') }}</span>
-                            <button class="small" type="button" @click="loadMaxTests" :disabled="loadingMaxTests">{{ t('actions.refresh') }}</button>
-                        </div>
-                    </div>
-                    <p class="muted small">{{ t('history.subtitle') }}</p>
-                    <div v-if="loadingMaxTests" class="muted small">{{ t('status.loadingMaxTests') }}</div>
-                    <div v-else-if="maxTestsError" class="muted small">{{ maxTestsError }}</div>
-                    <div v-else-if="maxTests.length===0" class="muted small">{{ t('history.none') }}</div>
-                    <div v-else class="history-grid">
-                        <div v-for="entry in maxTestHistory" :key="entry.exercise" class="card history-card">
-                            <div class="history-card-head">
-                                <div class="stack">
-                                    <strong>{{ entry.exercise }}</strong>
-                                    <span class="muted small">{{ t('history.testsBest', { countLabel: formatCount(entry.count, 'labels.testCount', 'labels.testsCount'), value: formatTestValue(entry.bestValue), unit: entry.unit }) }}</span>
-                                </div>
-                                <span class="pill">{{ entry.latestLabel }}</span>
+            <div class="col program-sidebar">
+                <div class="card exercise-panel exercise-sidebar">
+                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('sections.exercises') }} <span class="pill">{{ t('labels.totalCount', { count: exerciseOptions.length }) }}</span></h2>
+                    <div class="stack">
+                        <form @submit.prevent="addExerciseDefinition" style="display:flex;flex-direction:column;gap:8px">
+                            <label class="small" style="display:flex;flex-direction:column;gap:4px">
+                                {{ t('labels.name') }}
+                                <input v-model="newExerciseName" :placeholder="t('placeholders.exerciseExample')" required />
+                            </label>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <button class="btn small" type="submit" :disabled="savingExercise">{{ t('actions.addExercise') }}</button>
                             </div>
-                            <div class="history-chart-wrap">
-                                <div class="history-y-axis small">
-                                    <span>{{ formatTestValue(entry.maxValue) }} {{ entry.unit }}</span>
-                                    <span>{{ formatTestValue(entry.minValue) }} {{ entry.unit }}</span>
+                            <div v-if="savingExercise" class="muted small">{{ t('status.savingExercise') }}</div>
+                        </form>
+                        <div>
+                            <h3 style="margin-top:0">{{ t('exercises.available') }}</h3>
+                            <div v-if="exerciseOptions.length===0" class="muted small">{{ t('exercises.none') }}</div>
+                            <div v-else class="exercise-list scroll-area">
+                                <div v-for="ex in exerciseOptions" :key="ex.id" class="exercise-item small">
+                                    <div class="exercise-head">
+                                        <input v-model="exerciseEdits[ex.id].name" :placeholder="t('placeholders.exerciseName')" />
+                                        <span class="pill">#{{ ex.id.slice(0,4) }}</span>
+                                    </div>
+                                    <div class="exercise-actions">
+                                        <button class="btn small icon-button" @click="updateExercise(ex)" :disabled="savingExercise" :title="t('actions.save')" :aria-label="t('actions.save')">💾</button>
+                                        <button class="small icon-button danger" type="button" @click="deleteExercise(ex)" :disabled="savingExercise" :title="t('actions.delete')" :aria-label="t('actions.delete')">🗑️</button>
+                                    </div>
                                 </div>
-                                <svg
-                                    class="history-chart"
-                                    :viewBox="`0 0 ${entry.chartWidth} ${entry.chartHeight}`"
-                                    role="img"
-                                    :aria-label="t('history.chartAria', { exercise: entry.exercise })"
-                                >
-                                    <polyline :points="entry.polyline" class="history-line"></polyline>
-                                    <circle
-                                        v-for="(point, idx) in entry.points"
-                                        :key="idx"
-                                        :cx="point.x"
-                                        :cy="point.y"
-                                        class="history-point"
-                                        :class="{ latest: idx === entry.points.length - 1 }"
-                                    ></circle>
-                                </svg>
-                            </div>
-                            <div class="history-meta small">
-                                <span>{{ entry.minDateLabel }}</span>
-                                <span>{{ entry.maxDateLabel }}</span>
                             </div>
                         </div>
                     </div>
