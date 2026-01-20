@@ -533,13 +533,6 @@
         localStorage.setItem('adminLocale', nextLocale);
         updateDocumentLanguage();
       });
-      watch(templateDayCount, (nextCount) => {
-        programTemplateDays.value = buildTemplateDays(
-          nextCount,
-          templateSlotsPerDay,
-          programTemplateDays.value,
-        );
-      });
       const session = ref(null);
       const user = ref(null);
       const email = ref('');
@@ -591,6 +584,13 @@
       const programTemplateDays = ref(
         buildTemplateDays(templateDayCount.value, templateSlotsPerDay, []),
       );
+      watch(templateDayCount, (nextCount) => {
+        programTemplateDays.value = buildTemplateDays(
+          nextCount,
+          templateSlotsPerDay,
+          programTemplateDays.value,
+        );
+      });
 
       function buildTemplateDays(count, slots, existing) {
         const list = [];
