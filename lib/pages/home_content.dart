@@ -82,13 +82,11 @@ class _HomeContentState extends State<HomeContent> {
             }
 
             final days = snapshot.data ?? const <WorkoutDay>[];
-            final workoutDates = _workoutDatesForMonth(days, DateTime.now());
+            final scheduleSummary = _buildScheduleSummary(days, DateTime.now());
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                _WorkoutCalendarSection(
-                  workoutDates: workoutDates,
-                ),
+                _WorkoutScheduleSection(summary: scheduleSummary),
                 const SizedBox(height: 24),
                 _WorkoutPlanLinkSection(
                   onOpenPlan: _openWorkoutPlan,
@@ -176,19 +174,45 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
-  Set<DateTime> _workoutDatesForMonth(
+  _WorkoutScheduleSummary _buildScheduleSummary(
     List<WorkoutDay> days,
-    DateTime month,
+    DateTime now,
   ) {
     final dates = <DateTime>{};
     for (final day in days) {
       final computed = _resolveWorkoutDate(day);
       if (computed == null) continue;
-      if (computed.year == month.year && computed.month == month.month) {
-        dates.add(_normalizeDate(computed));
-      }
+      dates.add(_normalizeDate(computed));
     }
-    return dates;
+
+    final today = _normalizeDate(now);
+    final weekStart = today.subtract(Duration(days: today.weekday - 1));
+    final weekEnd = weekStart.add(const Duration(days: 6));
+    final monthStart = DateTime(today.year, today.month, 1);
+    final monthEnd = DateTime(today.year, today.month + 1, 0);
+
+    final sortedDates = dates.toList()..sort();
+    final nextWorkout = sortedDates.firstWhere(
+      (date) => !date.isBefore(today),
+      orElse: () => DateTime(0),
+    );
+
+    final workoutsThisWeek = dates
+        .where((date) => !date.isBefore(weekStart) && !date.isAfter(weekEnd))
+        .length;
+    final workoutsThisMonth = dates
+        .where((date) => !date.isBefore(monthStart) && !date.isAfter(monthEnd))
+        .length;
+    final upcomingWeek = sortedDates
+        .where((date) => !date.isBefore(today) && !date.isAfter(weekEnd))
+        .toList();
+
+    return _WorkoutScheduleSummary(
+      nextWorkout: nextWorkout.year == 0 ? null : nextWorkout,
+      workoutsThisWeek: workoutsThisWeek,
+      workoutsThisMonth: workoutsThisMonth,
+      upcomingWeek: upcomingWeek,
+    );
   }
 
   DateTime _normalizeDate(DateTime date) {
@@ -272,152 +296,172 @@ class _HomeContentState extends State<HomeContent> {
   }
 }
 
-class _WorkoutCalendarSection extends StatelessWidget {
-  final Set<DateTime> workoutDates;
+class _WorkoutScheduleSummary {
+  final DateTime? nextWorkout;
+  final int workoutsThisWeek;
+  final int workoutsThisMonth;
+  final List<DateTime> upcomingWeek;
 
-  const _WorkoutCalendarSection({
-    required this.workoutDates,
+  const _WorkoutScheduleSummary({
+    required this.nextWorkout,
+    required this.workoutsThisWeek,
+    required this.workoutsThisMonth,
+    required this.upcomingWeek,
+  });
+}
+
+class _WorkoutScheduleSection extends StatelessWidget {
+  final _WorkoutScheduleSummary summary;
+
+  const _WorkoutScheduleSection({
+    required this.summary,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final now = DateTime.now();
-    final monthLabel = DateFormat.yMMMM(l10n.localeName).format(now);
-    final weekdayLabels = _weekdayLabels(l10n.localeName);
+    final dateFormat = DateFormat.EEEE(l10n.localeName).add_yMMMd();
+    final compactDateFormat = DateFormat.MMMd(l10n.localeName);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.homeCalendarTitle,
+          l10n.homeScheduleTitle,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 4),
         Text(
-          l10n.homeCalendarSubtitle,
+          l10n.homeScheduleSubtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 16),
-        Text(
-          monthLabel,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+        Card(
+          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.35),
+          child: ListTile(
+            leading: Icon(
+              Icons.event_available,
+              color: theme.colorScheme.primary,
+            ),
+            title: Text(
+              l10n.homeNextWorkoutTitle,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: Text(
+              summary.nextWorkout == null
+                  ? l10n.homeNextWorkoutEmpty
+                  : dateFormat.format(summary.nextWorkout!),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 12),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: weekdayLabels
-              .map(
-                (label) => Expanded(
-                  child: Center(
-                    child: Text(
-                      label,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
+          children: [
+            Expanded(
+              child: _StatCard(
+                icon: Icons.calendar_view_week,
+                label: l10n.homeWorkoutsThisWeekTitle,
+                value: '${summary.workoutsThisWeek}',
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _StatCard(
+                icon: Icons.calendar_month,
+                label: l10n.homeWorkoutsThisMonthTitle,
+                value: '${summary.workoutsThisMonth}',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          l10n.homeUpcomingWeekTitle,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 8),
-        _CalendarGrid(
-          month: now,
-          workoutDates: workoutDates,
-        ),
+        if (summary.upcomingWeek.isEmpty)
+          Text(
+            l10n.homeUpcomingWeekEmpty,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          )
+        else
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: summary.upcomingWeek
+                .map(
+                  (date) => Chip(
+                    label: Text(compactDateFormat.format(date)),
+                    backgroundColor:
+                        theme.colorScheme.surfaceContainerHighest,
+                  ),
+                )
+                .toList(),
+          ),
       ],
     );
   }
-
-  List<String> _weekdayLabels(String locale) {
-    final start = DateTime(2020, 1, 6);
-    final formatter = DateFormat.E(locale);
-    return List.generate(7, (index) {
-      return formatter.format(start.add(Duration(days: index)));
-    });
-  }
 }
 
-class _CalendarGrid extends StatelessWidget {
-  final DateTime month;
-  final Set<DateTime> workoutDates;
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
 
-  const _CalendarGrid({
-    required this.month,
-    required this.workoutDates,
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final year = month.year;
-    final monthNumber = month.month;
-    final firstDay = DateTime(year, monthNumber, 1);
-    final daysInMonth = DateTime(year, monthNumber + 1, 0).day;
-    final leadingEmpty = firstDay.weekday - 1;
-    final totalCells = leadingEmpty + daysInMonth;
-    final today = DateTime.now();
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 7,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childAspectRatio: 1.1,
-      ),
-      itemCount: totalCells,
-      itemBuilder: (context, index) {
-        if (index < leadingEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        final dayNumber = index - leadingEmpty + 1;
-        final date = DateTime(year, monthNumber, dayNumber);
-        final normalized = DateTime(date.year, date.month, date.day);
-        final isWorkoutDay = workoutDates.contains(normalized);
-        final isToday = normalized.year == today.year &&
-            normalized.month == today.month &&
-            normalized.day == today.day;
-
-        final backgroundColor = isWorkoutDay
-            ? theme.colorScheme.primaryContainer
-            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6);
-        final textColor = isWorkoutDay
-            ? theme.colorScheme.onPrimaryContainer
-            : theme.colorScheme.onSurface;
-
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(12),
-            border: isToday
-                ? Border.all(
-                    color: theme.colorScheme.primary,
-                    width: 1.5,
-                  )
-                : null,
-          ),
-          child: Center(
-            child: Text(
-              '$dayNumber',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: textColor,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(icon, color: theme.colorScheme.primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }
