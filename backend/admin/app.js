@@ -57,9 +57,7 @@ import {
       const current = ref(null);
       const days = ref([]);
       const plans = ref([]);
-      const exerciseOptions = ref([]);
       const exerciseSelection = ref({});
-      const exerciseEdits = ref({});
       const dayEdits = ref({});
       const dayExerciseEdits = ref({});
       const planEdits = ref({});
@@ -80,13 +78,11 @@ import {
       const newAnnouncement = ref('');
       const addingDay = ref(false);
       const addingExercise = ref(false);
-      const savingExercise = ref(false);
       const savingPlan = ref(false);
       const newDayWeek = ref(1);
       const newDayCode = ref('MON');
       const newDayTitle = ref('');
       const newDayNotes = ref('');
-      const newExerciseName = ref('');
       const newPlanName = ref('');
       const newPlanStatus = ref(planStatuses[0]);
       const newPlanStartsAt = ref('');
@@ -452,14 +448,6 @@ import {
         newDayCode.value = code;
       }
 
-      function resetExerciseForm() {
-        newExerciseName.value = '';
-      }
-
-      function resetExerciseEdit(ex) {
-        setExerciseEdit(ex);
-      }
-
       function resetDayEdit(day) {
         setDayEdit(day);
       }
@@ -509,18 +497,9 @@ import {
         if (!exerciseSelection.value[dayId]) {
           exerciseSelection.value = {
             ...exerciseSelection.value,
-            [dayId]: { exercise_id: '', notes: '', query: '' },
+            [dayId]: { exercise: '', notes: '' },
           };
           return;
-        }
-        if (
-          exerciseSelection.value[dayId] &&
-          typeof exerciseSelection.value[dayId].query !== 'string'
-        ) {
-          exerciseSelection.value = {
-            ...exerciseSelection.value,
-            [dayId]: { ...exerciseSelection.value[dayId], query: '' },
-          };
         }
       }
 
@@ -545,49 +524,6 @@ import {
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         });
-      }
-
-      function filteredExerciseOptions(day) {
-        const q = (exerciseSelection.value[day.id]?.query || '').toLowerCase();
-        if (!q) return exerciseOptions.value || [];
-        return (exerciseOptions.value || []).filter((opt) =>
-          opt.name.toLowerCase().includes(q),
-        );
-      }
-
-      function pickExercise(day, opt) {
-        ensureSelection(day.id);
-        exerciseSelection.value = {
-          ...exerciseSelection.value,
-          [day.id]: {
-            ...exerciseSelection.value[day.id],
-            exercise_id: opt.id,
-            query: opt.name,
-          },
-        };
-      }
-
-      function matchExercise(day) {
-        ensureSelection(day.id);
-        const query = (exerciseSelection.value[day.id].query || '').toLowerCase();
-        const match = (exerciseOptions.value || []).find(
-          (opt) => opt.name.toLowerCase() === query,
-        );
-        exerciseSelection.value = {
-          ...exerciseSelection.value,
-          [day.id]: {
-            ...exerciseSelection.value[day.id],
-            exercise_id: match?.id || '',
-          },
-        };
-      }
-
-      function setExerciseEdit(exercise) {
-        if (!exercise?.id) return;
-        exerciseEdits.value = {
-          ...exerciseEdits.value,
-          [exercise.id]: { name: exercise.name || '' },
-        };
       }
 
       function setDayEdit(day) {
@@ -649,7 +585,6 @@ import {
           await loadTrainers();
         }
         await loadUsers();
-        await loadExercises();
         await loadTraineeProgress();
         await loadDashboardNotes();
         if (users.value.length) {
@@ -893,20 +828,6 @@ import {
         await Promise.all([loadDays(u), loadPlans(u), loadPaymentHistory(u)]);
       }
 
-      async function loadExercises() {
-        const { data, error } = await supabase
-          .from('exercises')
-          .select('id, name')
-          .order('name', { ascending: true });
-        if (error) {
-          console.error(error);
-          alert(t('errors.loadExercises', { message: error.message }));
-          return;
-        }
-        exerciseOptions.value = data || [];
-        (exerciseOptions.value || []).forEach(setExerciseEdit);
-      }
-
       async function loadTraineeProgress() {
         loadingProgress.value = true;
         try {
@@ -995,79 +916,6 @@ import {
         (plans.value || []).forEach(setPlanEdit);
       }
 
-      async function addExerciseDefinition() {
-        const name = newExerciseName.value.trim();
-        if (!name) {
-          alert(t('errors.exerciseNameRequired'));
-          return;
-        }
-        savingExercise.value = true;
-        try {
-          const { error } = await supabase.from('exercises').insert({ name });
-          if (error) {
-            throw new Error('Create exercise failed: ' + error.message);
-          }
-          resetExerciseForm();
-          await loadExercises();
-        } catch (err) {
-          console.error(err);
-          alert(err.message || t('errors.createExercise'));
-        } finally {
-          savingExercise.value = false;
-        }
-      }
-
-      async function updateExercise(ex) {
-        if (!ex?.id) return;
-        const name = (exerciseEdits.value[ex.id]?.name || '').trim();
-        if (!name) {
-          alert(t('errors.exerciseNameEmpty'));
-          return;
-        }
-        savingExercise.value = true;
-        try {
-          const { error } = await supabase
-            .from('exercises')
-            .update({ name })
-            .eq('id', ex.id);
-          if (error) {
-            throw new Error('Update exercise failed: ' + error.message);
-          }
-          await loadExercises();
-          await loadDays();
-        } catch (err) {
-          console.error(err);
-          alert(err.message || t('errors.updateExercise'));
-        } finally {
-          savingExercise.value = false;
-        }
-      }
-
-      async function deleteExercise(ex) {
-        if (!ex?.id) return;
-        const confirmed = confirm(
-          t('confirm.deleteExercise', { name: ex.name || ex.id }),
-        );
-        if (!confirmed) return;
-        savingExercise.value = true;
-        try {
-          const { error } = await supabase
-            .from('exercises')
-            .delete()
-            .eq('id', ex.id);
-          if (error) {
-            throw new Error('Delete exercise failed: ' + error.message);
-          }
-          await loadExercises();
-          await loadDays();
-        } catch (err) {
-          console.error(err);
-          alert(err.message || t('errors.deleteExercise'));
-        } finally {
-          savingExercise.value = false;
-        }
-      }
-
       async function loadDays(u = current.value) {
         if (!u) return;
         const { data, error } = await supabase
@@ -1075,8 +923,7 @@ import {
           .select(`
                 id, week, day_code, title, notes,
                 day_exercises (
-                  id, position, notes, completed,
-                  exercises ( id, name )
+                  id, position, notes, completed, exercise
                 )
               `)
           .eq('trainee_id', u.id)
@@ -1300,8 +1147,8 @@ import {
         }
         ensureSelection(day.id);
         const selection = exerciseSelection.value[day.id];
-        const exerciseId = selection?.exercise_id;
-        if (!exerciseId) {
+        const exercise = (selection?.exercise || '').trim();
+        if (!exercise) {
           alert(t('errors.chooseExercise'));
           return;
         }
@@ -1313,7 +1160,7 @@ import {
           const nextPosition = (positions.length ? Math.max(...positions) : 0) + 1;
           const { error } = await supabase.from('day_exercises').insert({
             day_id: day.id,
-            exercise_id: exerciseId,
+            exercise,
             notes: (selection.notes || '').trim() || null,
             position: nextPosition,
           });
@@ -1322,7 +1169,7 @@ import {
           }
           exerciseSelection.value = {
             ...exerciseSelection.value,
-            [day.id]: { exercise_id: '', notes: '' },
+            [day.id]: { exercise: '', notes: '' },
           };
           await loadDays();
         } catch (err) {
@@ -1453,9 +1300,7 @@ import {
         days,
         maxTests,
         maxTestHistory,
-        exerciseOptions,
         exerciseSelection,
-        exerciseEdits,
         dayEdits,
         dayExerciseEdits,
         expandedDays,
@@ -1473,9 +1318,7 @@ import {
         newDayNotes,
         addingDay,
         addingExercise,
-        savingExercise,
         savingPlan,
-        newExerciseName,
         newPlanName,
         newPlanStatus,
         newPlanStartsAt,
@@ -1524,18 +1367,10 @@ import {
         addPlan,
         addDay,
         resetDayForm,
-        resetExerciseForm,
         resetPlanForm,
-        addExerciseDefinition,
         addExerciseToDay,
-        updateExercise,
-        deleteExercise,
         assignTrainerToTrainee,
         removeTrainerAssignment,
-        resetExerciseEdit,
-        filteredExerciseOptions,
-        pickExercise,
-        matchExercise,
         toggleDay,
         isDayOpen,
         jumpToDay,
