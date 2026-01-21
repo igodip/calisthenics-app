@@ -64,20 +64,13 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get guidesSubtitle =>
-      'Scopri la tecnica corretta, i punti chiave e guarda il movimento prima di allenarti.';
+      'Scopri la tecnica corretta e i punti chiave prima di allenarti.';
 
   @override
   String get guidesPrimaryFocus => 'Focus principale';
 
   @override
   String get guidesCoachTip => 'Consiglio del coach';
-
-  @override
-  String get guidesWatchVideo => 'Guarda il tutorial';
-
-  @override
-  String get guidesVideoUnavailable =>
-      'Impossibile aprire il tutorial in questo momento.';
 
   @override
   String get difficultyBeginner => 'Principiante';

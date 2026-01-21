@@ -203,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @guidesSubtitle.
   ///
   /// In it, this message translates to:
-  /// **'Scopri la tecnica corretta, i punti chiave e guarda il movimento prima di allenarti.'**
+  /// **'Scopri la tecnica corretta e i punti chiave prima di allenarti.'**
   String get guidesSubtitle;
 
   /// No description provided for @guidesPrimaryFocus.
@@ -217,18 +217,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Consiglio del coach'**
   String get guidesCoachTip;
-
-  /// No description provided for @guidesWatchVideo.
-  ///
-  /// In it, this message translates to:
-  /// **'Guarda il tutorial'**
-  String get guidesWatchVideo;
-
-  /// No description provided for @guidesVideoUnavailable.
-  ///
-  /// In it, this message translates to:
-  /// **'Impossibile aprire il tutorial in questo momento.'**
-  String get guidesVideoUnavailable;
 
   /// No description provided for @difficultyBeginner.
   ///
