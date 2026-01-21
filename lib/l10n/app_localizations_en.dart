@@ -444,6 +444,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tell your coach how you\'re feeling and how the plan is going.';
 
   @override
+  String get traineeFeedbackQuestionLabel => 'How did your training feel?';
+
+  @override
+  String get traineeFeedbackQuestionHint =>
+      'Share anything going well or that needs attention.';
+
+  @override
   String get traineeFeedbackHighlightsLabel => 'Highlights';
 
   @override

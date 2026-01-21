@@ -168,6 +168,8 @@
   "workoutPlanTitle": "Piano di allenamento",
   "traineeFeedbackTitle": "Feedback atleta",
   "traineeFeedbackSubtitle": "Racconta al tuo coach come ti senti e come procede il piano.",
+  "traineeFeedbackQuestionLabel": "Come è andato l'allenamento?",
+  "traineeFeedbackQuestionHint": "Condividi cosa sta andando bene o cosa richiede attenzione.",
   "traineeFeedbackHighlightsLabel": "Punti forti",
   "traineeFeedbackHighlightsHint": "Cosa è andato bene o ti è piaciuto?",
   "traineeFeedbackChallengesLabel": "Difficoltà",
