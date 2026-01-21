@@ -46,6 +46,9 @@
           toolbar: {
             language: 'Language',
             admin: 'Admin',
+            roleAdmin: 'Admin',
+            roleTrainer: 'Trainer',
+            roleViewer: 'Viewer',
             searchPlaceholder: 'Search trainees...',
           },
           sections: {
@@ -65,6 +68,7 @@
             delete: 'Delete',
             add: 'Add',
             addExercise: 'Add exercise',
+            assignTrainer: 'Assign trainer',
             refresh: 'Refresh',
             clear: 'Clear',
             useNextWeek: 'Use next week',
@@ -156,6 +160,12 @@
           trainees: {
             badge: 'trainee',
           },
+          trainers: {
+            title: 'Trainers',
+            assigned: 'Assigned trainers',
+            none: 'No trainers assigned',
+            select: 'Select trainer',
+          },
           payment: {
             onTime: 'Payments on time',
             overdue: 'Payment overdue',
@@ -167,6 +177,7 @@
             savingDay: 'Saving day…',
             refreshingProgress: 'Refreshing progress…',
             updatingPayment: 'Updating payment status…',
+            updatingTrainer: 'Updating trainer assignment…',
             noProgress: 'No progress logged yet.',
             loadingMaxTests: 'Loading max tests…',
           },
@@ -208,6 +219,10 @@
           errors: {
             loadTrainees: 'Failed to load trainees: {message}',
             updatePayment: 'Failed to update payment status.',
+            loadAccess: 'Failed to load admin access: {message}',
+            loadTrainers: 'Failed to load trainers: {message}',
+            assignTrainer: 'Failed to assign trainer.',
+            removeTrainer: 'Failed to remove trainer.',
             loadExercises: 'Failed to load exercises: {message}',
             loadProgress: 'Failed to load trainee progress: {message}',
             loadPlans: 'Failed to load plans: {message}',
@@ -269,6 +284,9 @@
           toolbar: {
             language: 'Lingua',
             admin: 'Admin',
+            roleAdmin: 'Admin',
+            roleTrainer: 'Trainer',
+            roleViewer: 'Visualizzatore',
             searchPlaceholder: 'Cerca allievi...',
           },
           sections: {
@@ -288,6 +306,7 @@
             delete: 'Elimina',
             add: 'Aggiungi',
             addExercise: 'Aggiungi esercizio',
+            assignTrainer: 'Assegna trainer',
             refresh: 'Aggiorna',
             clear: 'Svuota',
             useNextWeek: 'Usa prossima settimana',
@@ -379,6 +398,12 @@
           trainees: {
             badge: 'allievo',
           },
+          trainers: {
+            title: 'Trainer',
+            assigned: 'Trainer assegnati',
+            none: 'Nessun trainer assegnato',
+            select: 'Seleziona trainer',
+          },
           payment: {
             onTime: 'Pagamenti regolari',
             overdue: 'Pagamento in ritardo',
@@ -390,6 +415,7 @@
             savingDay: 'Salvataggio giornata…',
             refreshingProgress: 'Aggiornamento progressi…',
             updatingPayment: 'Aggiornamento stato pagamento…',
+            updatingTrainer: 'Aggiornamento assegnazione trainer…',
             noProgress: 'Nessun progresso registrato.',
             loadingMaxTests: 'Caricamento test massimali…',
           },
@@ -434,6 +460,10 @@
           errors: {
             loadTrainees: 'Impossibile caricare gli allievi: {message}',
             updatePayment: 'Impossibile aggiornare lo stato pagamento.',
+            loadAccess: 'Impossibile caricare i permessi admin: {message}',
+            loadTrainers: 'Impossibile caricare i trainer: {message}',
+            assignTrainer: 'Impossibile assegnare il trainer.',
+            removeTrainer: 'Impossibile rimuovere il trainer.',
             loadExercises: 'Impossibile caricare gli esercizi: {message}',
             loadProgress: 'Impossibile caricare i progressi degli allievi: {message}',
             loadPlans: 'Impossibile caricare i piani: {message}',
@@ -539,6 +569,11 @@
       const password = ref('');
       const search = ref('');
       const activeSection = ref('dashboard');
+      const currentAdmin = ref(null);
+      const currentTrainer = ref(null);
+      const trainers = ref([]);
+      const trainerSelections = ref({});
+      const trainerAssignmentSaving = ref({});
 
       const users = ref([]);
       const current = ref(null);
@@ -676,6 +711,16 @@
         };
       });
 
+      const canAssignTrainers = computed(() =>
+        Boolean(currentAdmin.value?.can_assign_trainers),
+      );
+
+      const roleLabel = computed(() => {
+        if (currentAdmin.value) return t('toolbar.roleAdmin');
+        if (currentTrainer.value) return t('toolbar.roleTrainer');
+        return t('toolbar.roleViewer');
+      });
+
       const dayNavigation = computed(() => {
         const order = new Map(dayCodeOptions.map((code, idx) => [code, idx]));
         return (days.value || [])
@@ -805,6 +850,13 @@
           month: 'short',
           day: 'numeric',
         });
+      };
+
+      const currentMonthStart = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}-01`;
       };
 
       function loadAnnouncementsFromStorage() {
@@ -1063,6 +1115,10 @@
       }
 
       async function bootstrap() {
+        await loadAccess();
+        if (canAssignTrainers.value) {
+          await loadTrainers();
+        }
         await loadUsers();
         await loadExercises();
         await loadTraineeProgress();
@@ -1074,11 +1130,65 @@
         }
       }
 
-      async function loadUsers() {
-        const { data: traineeRows, error } = await supabase
-          .from('trainees')
-          .select('id, name, paid')
+      async function loadAccess() {
+        const userId = user.value?.id;
+        if (!userId) return;
+        try {
+          const { data: adminRow, error: adminError } = await supabase
+            .from('admins')
+            .select('id, user_id, name, can_assign_trainers')
+            .eq('user_id', userId)
+            .maybeSingle();
+          if (adminError && adminError.code !== 'PGRST116') {
+            throw new Error(adminError.message);
+          }
+          const { data: trainerRow, error: trainerError } = await supabase
+            .from('trainers')
+            .select('id, user_id, name')
+            .eq('user_id', userId)
+            .maybeSingle();
+          if (trainerError && trainerError.code !== 'PGRST116') {
+            throw new Error(trainerError.message);
+          }
+          currentAdmin.value = adminRow || null;
+          currentTrainer.value = trainerRow || null;
+        } catch (error) {
+          console.error(error);
+          alert(t('errors.loadAccess', { message: error.message }));
+          currentAdmin.value = null;
+          currentTrainer.value = null;
+        }
+      }
+
+      async function loadTrainers() {
+        const { data, error } = await supabase
+          .from('trainers')
+          .select('id, name')
           .order('name', { ascending: true });
+        if (error) {
+          console.error(error);
+          alert(t('errors.loadTrainers', { message: error.message }));
+          return;
+        }
+        trainers.value = data || [];
+      }
+
+      async function loadUsers() {
+        const isTrainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
+        const baseSelect =
+          'id, name, paid, trainee_trainers ( trainer_id, trainers ( id, name ) )';
+        let query = supabase.from('trainees').select(baseSelect);
+        if (isTrainerOnly) {
+          query = supabase
+            .from('trainees')
+            .select(
+              'id, name, paid, trainee_trainers!inner ( trainer_id, trainers ( id, name ) )',
+            )
+            .eq('trainee_trainers.trainer_id', currentTrainer.value.id);
+        }
+        const { data: traineeRows, error } = await query.order('name', {
+          ascending: true,
+        });
         if (error) {
           console.error(error);
           alert(t('errors.loadTrainees', { message: error.message }));
@@ -1087,8 +1197,81 @@
 
         users.value = (traineeRows || []).map((row) => ({
           ...row,
+          trainers: (row.trainee_trainers || [])
+            .map((assignment) => assignment.trainers)
+            .filter(Boolean),
+          trainerIds: (row.trainee_trainers || []).map(
+            (assignment) => assignment.trainer_id,
+          ),
           displayName: row.name || shortId(row.id),
         }));
+        users.value.forEach((trainee) => {
+          if (!trainerSelections.value[trainee.id]) {
+            trainerSelections.value = {
+              ...trainerSelections.value,
+              [trainee.id]: '',
+            };
+          }
+        });
+      }
+
+      async function assignTrainerToTrainee(trainee) {
+        if (!canAssignTrainers.value || !trainee?.id) return;
+        const trainerId = trainerSelections.value[trainee.id];
+        if (!trainerId) return;
+        trainerAssignmentSaving.value = {
+          ...trainerAssignmentSaving.value,
+          [trainee.id]: true,
+        };
+        try {
+          const { error } = await supabase.from('trainee_trainers').insert({
+            trainee_id: trainee.id,
+            trainer_id: trainerId,
+          });
+          if (error) {
+            throw new Error('Assign trainer failed: ' + error.message);
+          }
+          trainerSelections.value = {
+            ...trainerSelections.value,
+            [trainee.id]: '',
+          };
+          await loadUsers();
+        } catch (error) {
+          console.error(error);
+          alert(error.message || t('errors.assignTrainer'));
+        } finally {
+          trainerAssignmentSaving.value = {
+            ...trainerAssignmentSaving.value,
+            [trainee.id]: false,
+          };
+        }
+      }
+
+      async function removeTrainerAssignment(trainee, trainer) {
+        if (!canAssignTrainers.value || !trainee?.id || !trainer?.id) return;
+        trainerAssignmentSaving.value = {
+          ...trainerAssignmentSaving.value,
+          [trainee.id]: true,
+        };
+        try {
+          const { error } = await supabase
+            .from('trainee_trainers')
+            .delete()
+            .eq('trainee_id', trainee.id)
+            .eq('trainer_id', trainer.id);
+          if (error) {
+            throw new Error('Remove trainer failed: ' + error.message);
+          }
+          await loadUsers();
+        } catch (error) {
+          console.error(error);
+          alert(error.message || t('errors.removeTrainer'));
+        } finally {
+          trainerAssignmentSaving.value = {
+            ...trainerAssignmentSaving.value,
+            [trainee.id]: false,
+          };
+        }
       }
 
       async function togglePayment(u, event) {
@@ -1106,6 +1289,21 @@
             .eq('id', u.id);
           if (error) {
             throw new Error('Update payment status failed: ' + error.message);
+          }
+          const monthStart = currentMonthStart();
+          const { error: monthlyError } = await supabase
+            .from('trainee_monthly_payments')
+            .upsert(
+              {
+                trainee_id: u.id,
+                month_start: monthStart,
+                paid: nextPaid,
+                paid_at: nextPaid ? new Date().toISOString() : null,
+              },
+              { onConflict: 'trainee_id,month_start' },
+            );
+          if (monthlyError) {
+            throw new Error('Update monthly payment failed: ' + monthlyError.message);
           }
         } catch (err) {
           console.error(err);
@@ -1147,9 +1345,21 @@
       async function loadTraineeProgress() {
         loadingProgress.value = true;
         try {
-          const { data, error } = await supabase
+          const trainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
+          const visibleIds = trainerOnly
+            ? (users.value || []).map((u) => u.id).filter(Boolean)
+            : [];
+          if (trainerOnly && !visibleIds.length) {
+            traineeProgress.value = {};
+            return;
+          }
+          let query = supabase
             .from('day_exercises')
             .select('id, completed, days ( trainee_id )');
+          if (trainerOnly) {
+            query = query.in('days.trainee_id', visibleIds);
+          }
+          const { data, error } = await query;
           if (error) {
             throw new Error(t('errors.loadProgress', { message: error.message }));
           }
@@ -1336,9 +1546,19 @@
             .order(orderColumn, { ascending: false })
             .limit(8);
         try {
-          let { data, error } = await fetchNotes('created_at');
+          const trainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
+          const visibleIds = trainerOnly
+            ? (users.value || []).map((u) => u.id).filter(Boolean)
+            : [];
+          if (trainerOnly && !visibleIds.length) {
+            dashboardNotes.value = [];
+            return;
+          }
+          const applyFilter = (query) =>
+            trainerOnly ? query.in('trainee_id', visibleIds) : query;
+          let { data, error } = await applyFilter(fetchNotes('created_at'));
           if (error) {
-            const fallback = await fetchNotes('id');
+            const fallback = await applyFilter(fetchNotes('id'));
             data = fallback.data;
             error = fallback.error;
           }
@@ -1628,10 +1848,15 @@
         locale,
         languageOptions,
         t,
+        roleLabel,
         users,
         filteredUsers,
         overdueUsers,
         paymentSummary,
+        canAssignTrainers,
+        trainers,
+        trainerSelections,
+        trainerAssignmentSaving,
         current,
         days,
         maxTests,
@@ -1706,6 +1931,8 @@
         addExerciseToDay,
         updateExercise,
         deleteExercise,
+        assignTrainerToTrainee,
+        removeTrainerAssignment,
         resetExerciseEdit,
         filteredExerciseOptions,
         pickExercise,

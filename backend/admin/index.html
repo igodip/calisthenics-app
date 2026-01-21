@@ -24,7 +24,7 @@
         <div class="toolbar">
             <div style="display:flex;align-items:center;gap:10px">
                 <div class="pill">{{ user?.email }}</div>
-                <span class="pill">{{ t('toolbar.admin') }}</span>
+                <span class="pill">{{ roleLabel }}</span>
             </div>
             <div class="pill-menu">
                 <button :class="{active: activeSection==='dashboard'}" @click="activeSection='dashboard'">{{ t('sections.dashboard') }}</button>
@@ -152,6 +152,47 @@
                                 </div>
                             </div>
                             <div class="muted small" v-else>{{ t('status.noProgress') }}</div>
+                            <div class="trainer-row">
+                                <span class="muted small">{{ t('trainers.assigned') }}</span>
+                                <div class="trainer-tags">
+                                    <span v-if="!u.trainers || u.trainers.length===0" class="muted small">
+                                        {{ t('trainers.none') }}
+                                    </span>
+                                    <span v-else v-for="trainer in u.trainers" :key="trainer.id" class="pill trainer-pill">
+                                        {{ trainer.name }}
+                                        <button
+                                            v-if="canAssignTrainers"
+                                            class="icon-button"
+                                            type="button"
+                                            @click="removeTrainerAssignment(u, trainer)"
+                                            :aria-label="t('actions.delete')"
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div v-if="canAssignTrainers" class="trainer-assign">
+                                <select v-model="trainerSelections[u.id]">
+                                    <option value="">{{ t('trainers.select') }}</option>
+                                    <option
+                                        v-for="trainer in trainers"
+                                        :key="trainer.id"
+                                        :value="trainer.id"
+                                        :disabled="u.trainerIds && u.trainerIds.includes(trainer.id)"
+                                    >
+                                        {{ trainer.name }}
+                                    </option>
+                                </select>
+                                <button
+                                    class="small"
+                                    type="button"
+                                    :disabled="trainerAssignmentSaving[u.id] || !trainerSelections[u.id]"
+                                    @click="assignTrainerToTrainee(u)"
+                                >
+                                    {{ t('actions.assignTrainer') }}
+                                </button>
+                            </div>
                             <div class="payment-row">
                                 <span class="pill" :class="u.paid ? 'paid' : 'overdue'">
                                     {{ u.paid ? t('payment.onTime') : t('payment.overdue') }}
@@ -167,6 +208,7 @@
                                 </label>
                             </div>
                             <div class="muted small" v-if="paymentSaving[u.id]">{{ t('status.updatingPayment') }}</div>
+                            <div class="muted small" v-if="trainerAssignmentSaving[u.id]">{{ t('status.updatingTrainer') }}</div>
                             <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
                                 <button class="btn" @click="selectUser(u); activeSection='program'">{{ t('actions.openSchedule') }}</button>
                                 <button class="btn" @click="loadDays(u); activeSection='program'">{{ t('actions.loadDays') }}</button>
