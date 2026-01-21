@@ -740,6 +740,36 @@ abstract class AppLocalizations {
   /// **'Questo mese'**
   String get homeWorkoutsThisMonthTitle;
 
+  /// No description provided for @homePlanProgressTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Progresso complessivo del piano'**
+  String get homePlanProgressTitle;
+
+  /// No description provided for @homePlanProgressCurrentPlan.
+  ///
+  /// In it, this message translates to:
+  /// **'Piano attuale'**
+  String get homePlanProgressCurrentPlan;
+
+  /// No description provided for @homePlanProgressEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun progresso del piano da mostrare.'**
+  String get homePlanProgressEmpty;
+
+  /// No description provided for @homePlanProgressValue.
+  ///
+  /// In it, this message translates to:
+  /// **'{completed} di {total} sessioni completate'**
+  String homePlanProgressValue(int completed, int total);
+
+  /// No description provided for @homePlanProgressPercent.
+  ///
+  /// In it, this message translates to:
+  /// **'{percent}% completato'**
+  String homePlanProgressPercent(int percent);
+
   /// No description provided for @homeUpcomingWeekTitle.
   ///
   /// In it, this message translates to:

@@ -119,9 +119,10 @@ class _HomeContentState extends State<HomeContent> {
       throw Exception(AppLocalizations.of(context)!.unauthenticated);
     }
 
-    final response = await client
-        .from('days')
-        .select('week, day_code, workout_plan_days ( workout_plans ( starts_on ) )')
+    final response = await client.from('days').select(
+          'week, day_code, completed, '
+          'workout_plan_days ( workout_plans ( id, title, starts_on, created_at ) )',
+        )
         .eq('trainee_id', userId)
         .order('week', ascending: true)
         .order('day_code', ascending: true)
@@ -145,6 +146,9 @@ class _HomeContentState extends State<HomeContent> {
           ? (planEntries.first['workout_plans'] as Map<String, dynamic>?) ?? {}
           : <String, dynamic>{};
       final planStartedAt = parseDate(planDetails['starts_on']);
+      final planCreatedAt = parseDate(planDetails['created_at']);
+      final planId = planDetails['id'] as String?;
+      final planName = planDetails['title'] as String?;
 
       return WorkoutDay(
         id: null,
@@ -152,11 +156,11 @@ class _HomeContentState extends State<HomeContent> {
         dayCode: (row['day_code'] as String? ?? '').trim(),
         title: null,
         notes: null,
-        isCompleted: false,
-        planId: null,
-        planName: null,
+        isCompleted: row['completed'] as bool? ?? false,
+        planId: planId,
+        planName: planName,
         planStartedAt: planStartedAt,
-        createdAt: null,
+        createdAt: planCreatedAt,
         exercises: const [],
       );
     }).toList();
@@ -212,11 +216,71 @@ class _HomeContentState extends State<HomeContent> {
       workoutsThisWeek: workoutsThisWeek,
       workoutsThisMonth: workoutsThisMonth,
       upcomingWeek: upcomingWeek,
+      planProgress: _buildPlanProgressSummary(days),
     );
   }
 
   DateTime _normalizeDate(DateTime date) {
     return DateTime(date.year, date.month, date.day);
+  }
+
+  _PlanProgressSummary? _buildPlanProgressSummary(List<WorkoutDay> days) {
+    if (days.isEmpty) return null;
+
+    String planKey(WorkoutDay day) {
+      if (day.planId != null && day.planId!.isNotEmpty) return day.planId!;
+      if (day.planName != null && day.planName!.isNotEmpty) return day.planName!;
+      if (day.planStartedAt != null) return 'start-${day.planStartedAt!.toIso8601String()}';
+      if (day.createdAt != null) return 'created-${day.createdAt!.toIso8601String()}';
+      return 'plan';
+    }
+
+    DateTime? latestPlanDate(Iterable<WorkoutDay> entries) {
+      return entries
+          .map((day) => day.planStartedAt ?? day.createdAt)
+          .whereType<DateTime>()
+          .fold<DateTime?>(null, (previous, element) {
+        if (previous == null) return element;
+        return element.isAfter(previous) ? element : previous;
+      });
+    }
+
+    final Map<String, List<WorkoutDay>> grouped = {};
+    for (final day in days) {
+      grouped.putIfAbsent(planKey(day), () => []).add(day);
+    }
+
+    List<WorkoutDay>? selected;
+    DateTime? selectedDate;
+    for (final entry in grouped.entries) {
+      final candidate = entry.value;
+      final candidateDate = latestPlanDate(candidate);
+      if (selected == null) {
+        selected = candidate;
+        selectedDate = candidateDate;
+        continue;
+      }
+      if (candidateDate == null) {
+        continue;
+      }
+      if (selectedDate == null || candidateDate.isAfter(selectedDate)) {
+        selected = candidate;
+        selectedDate = candidateDate;
+      }
+    }
+
+    if (selected == null || selected.isEmpty) {
+      return null;
+    }
+
+    final totalDays = selected.length;
+    final completedDays = selected.where((day) => day.isCompleted).length;
+    final representative = selected.first;
+    return _PlanProgressSummary(
+      totalDays: totalDays,
+      completedDays: completedDays,
+      planName: representative.planName,
+    );
   }
 
   DateTime? _resolveWorkoutDate(WorkoutDay day) {
@@ -301,13 +365,36 @@ class _WorkoutScheduleSummary {
   final int workoutsThisWeek;
   final int workoutsThisMonth;
   final List<DateTime> upcomingWeek;
+  final _PlanProgressSummary? planProgress;
 
   const _WorkoutScheduleSummary({
     required this.nextWorkout,
     required this.workoutsThisWeek,
     required this.workoutsThisMonth,
     required this.upcomingWeek,
+    required this.planProgress,
   });
+}
+
+class _PlanProgressSummary {
+  final int totalDays;
+  final int completedDays;
+  final String? planName;
+
+  const _PlanProgressSummary({
+    required this.totalDays,
+    required this.completedDays,
+    required this.planName,
+  });
+
+  double get completionRatio {
+    if (totalDays <= 0) return 0;
+    return completedDays / totalDays;
+  }
+
+  int get completionPercent {
+    return (completionRatio * 100).round();
+  }
 }
 
 class _WorkoutScheduleSection extends StatelessWidget {
@@ -384,6 +471,77 @@ class _WorkoutScheduleSection extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 12),
+        if (summary.planProgress == null)
+          Text(
+            l10n.homePlanProgressEmpty,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          )
+        else
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.assessment,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.homePlanProgressTitle,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    summary.planProgress?.planName?.isNotEmpty == true
+                        ? summary.planProgress!.planName!
+                        : l10n.homePlanProgressCurrentPlan,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  LinearProgressIndicator(
+                    value: summary.planProgress!.completionRatio,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.homePlanProgressValue(
+                          summary.planProgress!.completedDays,
+                          summary.planProgress!.totalDays,
+                        ),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      Text(
+                        l10n.homePlanProgressPercent(
+                          summary.planProgress!.completionPercent,
+                        ),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         const SizedBox(height: 12),
         Text(
           l10n.homeUpcomingWeekTitle,

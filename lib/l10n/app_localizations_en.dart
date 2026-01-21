@@ -393,6 +393,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWorkoutsThisMonthTitle => 'This month';
 
   @override
+  String get homePlanProgressTitle => 'Overall plan progress';
+
+  @override
+  String get homePlanProgressCurrentPlan => 'Current plan';
+
+  @override
+  String get homePlanProgressEmpty => 'No plan progress to show yet.';
+
+  @override
+  String homePlanProgressValue(int completed, int total) {
+    return intl.Intl.message(
+      '$completed of $total sessions completed',
+      name: 'homePlanProgressValue',
+      args: [completed, total],
+      desc: '',
+      examples: const {},
+    );
+  }
+
+  @override
+  String homePlanProgressPercent(int percent) {
+    return intl.Intl.message(
+      '$percent% complete',
+      name: 'homePlanProgressPercent',
+      args: [percent],
+      desc: '',
+      examples: const {},
+    );
+  }
+
+  @override
   String get homeUpcomingWeekTitle => 'Coming up this week';
 
   @override
