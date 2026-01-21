@@ -493,12 +493,21 @@ import {
         planEdits.value = {
           ...planEdits.value,
           [plan.id]: {
-            name: plan.name || '',
+            name: plan.title || '',
             status: plan.status || planStatuses[0],
             starts_on: normalizeDateInput(plan.starts_on),
             notes: plan.notes || '',
           },
         };
+      }
+
+      function resolveDefaultPlanId() {
+        const list = plans.value || [];
+        if (!list.length) return null;
+        const active = list.find(
+          (plan) => (plan.status || '').toLowerCase() === 'active',
+        );
+        return (active || list[0]).id || null;
       }
 
       function resetPlanEdit(plan) {
@@ -1074,6 +1083,10 @@ import {
           .from('days')
           .select(`
                 id, week, day_code, title, notes,
+                workout_plan_days (
+                  id, position,
+                  workout_plans ( id, title, starts_on, created_at )
+                ),
                 day_exercises (
                   id, position, notes, completed,
                   exercises ( id, name )
@@ -1175,8 +1188,8 @@ import {
           alert(t('errors.selectTrainee'));
           return;
         }
-        const name = (newPlanName.value || '').trim();
-        if (!name) {
+        const title = (newPlanName.value || '').trim();
+        if (!title) {
           alert(t('errors.planNameRequired'));
           return;
         }
@@ -1184,7 +1197,7 @@ import {
         try {
           const payload = {
             trainee_id: current.value.id,
-            name,
+            title,
             status: (newPlanStatus.value || '').trim() || null,
             starts_on: newPlanStartsAt.value || null,
             notes: (newPlanNotes.value || '').trim() || null,
@@ -1216,15 +1229,47 @@ import {
         }
         addingDay.value = true;
         try {
-          const { error } = await supabase.from('days').insert({
-            trainee_id: current.value.id,
-            week: week,
-            day_code: dayCode,
-            title: newDayTitle.value.trim() || null,
-            notes: newDayNotes.value.trim() || null,
-          });
+          const { data, error } = await supabase
+            .from('days')
+            .insert({
+              trainee_id: current.value.id,
+              week: week,
+              day_code: dayCode,
+              title: newDayTitle.value.trim() || null,
+              notes: newDayNotes.value.trim() || null,
+            })
+            .select('id')
+            .single();
           if (error) {
             throw new Error('Create day failed: ' + error.message);
+          }
+          const planId = resolveDefaultPlanId();
+          if (planId && data?.id) {
+            const { data: positions, error: positionError } = await supabase
+              .from('workout_plan_days')
+              .select('position')
+              .eq('plan_id', planId);
+            if (positionError) {
+              console.error(positionError);
+              alert('Plan association failed: ' + positionError.message);
+            } else {
+              const numericPositions = (positions || [])
+                .map((row) => Number(row.position || 0))
+                .filter((value) => Number.isFinite(value));
+              const nextPosition =
+                (numericPositions.length ? Math.max(...numericPositions) : 0) + 1;
+              const { error: linkError } = await supabase
+                .from('workout_plan_days')
+                .insert({
+                  plan_id: planId,
+                  day_id: data.id,
+                  position: nextPosition,
+                });
+              if (linkError) {
+                console.error(linkError);
+                alert('Plan association failed: ' + linkError.message);
+              }
+            }
           }
           resetDayForm();
           await loadDays();
@@ -1242,15 +1287,15 @@ import {
           return;
         }
         const form = planEdits.value[plan.id] || {};
-        const name = (form.name || '').trim();
-        if (!name) {
+        const title = (form.name || '').trim();
+        if (!title) {
           alert(t('errors.planNameRequired'));
           return;
         }
         savingPlan.value = true;
         try {
           const payload = {
-            name,
+            title,
             status: (form.status || '').trim() || null,
             starts_on: form.starts_on || null,
             notes: (form.notes || '').trim() || null,

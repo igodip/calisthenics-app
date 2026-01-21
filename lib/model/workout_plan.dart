@@ -32,7 +32,7 @@ class WorkoutPlan {
 
     return WorkoutPlan(
       id: json['id'] as String?,
-      name: (json['name'] as String? ?? '').trim(),
+      name: (json['title'] as String? ?? json['name'] as String? ?? '').trim(),
       status: (json['status'] as String? ?? '').trim(),
       notes: json['notes'] as String?,
       startsOn: parseDate(json['starts_on']),

@@ -116,7 +116,7 @@ class _HomeContentState extends State<HomeContent> {
 
     final response = await client.from('days').select(
           'week, day_code, completed, '
-          'workout_plan_days ( workout_plans ( id, title, starts_on, created_at ) )',
+          'workout_plan_days ( position, workout_plans ( id, title, starts_on, created_at ) )',
         )
         .eq('trainee_id', userId)
         .order('week', ascending: true)
@@ -144,6 +144,8 @@ class _HomeContentState extends State<HomeContent> {
       final planCreatedAt = parseDate(planDetails['created_at']);
       final planId = planDetails['id'] as String?;
       final planName = planDetails['title'] as String?;
+      final planPosition =
+          planEntries.isNotEmpty ? (planEntries.first['position'] as num?)?.toInt() : null;
 
       return WorkoutDay(
         id: null,
@@ -156,6 +158,7 @@ class _HomeContentState extends State<HomeContent> {
         planName: planName,
         planStartedAt: planStartedAt,
         createdAt: planCreatedAt,
+        planPosition: planPosition,
         exercises: const [],
       );
     }).toList();
