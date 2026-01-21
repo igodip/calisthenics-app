@@ -137,6 +137,28 @@
   "homeNextWorkoutEmpty": "No scheduled workouts yet.",
   "homeWorkoutsThisWeekTitle": "This week",
   "homeWorkoutsThisMonthTitle": "This month",
+  "homePlanProgressTitle": "Overall plan progress",
+  "homePlanProgressCurrentPlan": "Current plan",
+  "homePlanProgressEmpty": "No plan progress to show yet.",
+  "homePlanProgressValue": "{completed} of {total} sessions completed",
+  "@homePlanProgressValue": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homePlanProgressPercent": "{percent}% complete",
+  "@homePlanProgressPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "homeUpcomingWeekTitle": "Coming up this week",
   "homeUpcomingWeekEmpty": "No sessions scheduled for the next 7 days.",
   "homeWorkoutPlanTitle": "Workout plan",

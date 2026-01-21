@@ -137,6 +137,28 @@
   "homeNextWorkoutEmpty": "Nessun allenamento programmato.",
   "homeWorkoutsThisWeekTitle": "Questa settimana",
   "homeWorkoutsThisMonthTitle": "Questo mese",
+  "homePlanProgressTitle": "Progresso complessivo del piano",
+  "homePlanProgressCurrentPlan": "Piano attuale",
+  "homePlanProgressEmpty": "Nessun progresso del piano da mostrare.",
+  "homePlanProgressValue": "{completed} di {total} sessioni completate",
+  "@homePlanProgressValue": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homePlanProgressPercent": "{percent}% completato",
+  "@homePlanProgressPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "homeUpcomingWeekTitle": "In arrivo questa settimana",
   "homeUpcomingWeekEmpty": "Nessuna sessione programmata nei prossimi 7 giorni.",
   "homeWorkoutPlanTitle": "Piano di allenamento",
