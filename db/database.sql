@@ -1,6 +1,14 @@
 -- WARNING: This schema is for context only and is not meant to be run.
 -- Table order and constraints may not be valid for execution.
 
+CREATE TABLE public.admins (
+  id uuid NOT NULL,
+  name text,
+  can_assign_trainers boolean NOT NULL DEFAULT false,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT admins_pkey PRIMARY KEY (id),
+  CONSTRAINT admins_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
 CREATE TABLE public.day_exercises (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   day_id uuid NOT NULL,
@@ -21,8 +29,8 @@ CREATE TABLE public.days (
   title text,
   notes text,
   completed boolean DEFAULT false,
-  CONSTRAINT days_pkey PRIMARY KEY (id),
-  CONSTRAINT days_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id)
+  completed_at time with time zone,
+  CONSTRAINT days_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.exercises (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -37,42 +45,16 @@ CREATE TABLE public.max_tests (
   unit text,
   recorded_at date,
   trainee_id uuid,
-  CONSTRAINT max_tests_pkey PRIMARY KEY (id),
-  CONSTRAINT max_tests_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id)
+  CONSTRAINT max_tests_pkey PRIMARY KEY (id)
 );
-CREATE TABLE public.trainees (
-  id uuid NOT NULL DEFAULT auth.uid(),
-  name text NOT NULL,
-  paid boolean DEFAULT false,
-  weight numeric,
-  CONSTRAINT trainees_pkey PRIMARY KEY (id)
-);
-CREATE TABLE public.trainers (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL,
-  name text NOT NULL,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT trainers_pkey PRIMARY KEY (id),
-  CONSTRAINT trainers_user_id_key UNIQUE (user_id)
-);
-CREATE TABLE public.admins (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL,
-  name text,
-  can_assign_trainers boolean NOT NULL DEFAULT false,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT admins_pkey PRIMARY KEY (id),
-  CONSTRAINT admins_user_id_key UNIQUE (user_id)
-);
-CREATE TABLE public.trainee_trainers (
+CREATE TABLE public.trainee_feedbacks (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   trainee_id uuid NOT NULL,
-  trainer_id uuid NOT NULL,
-  assigned_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT trainee_trainers_pkey PRIMARY KEY (id),
-  CONSTRAINT trainee_trainers_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
-  CONSTRAINT trainee_trainers_trainer_id_fkey FOREIGN KEY (trainer_id) REFERENCES public.trainers(id),
-  CONSTRAINT trainee_trainers_unique UNIQUE (trainee_id, trainer_id)
+  message text NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  read_at timestamp with time zone,
+  CONSTRAINT trainee_feedbacks_pkey PRIMARY KEY (id),
+  CONSTRAINT trainee_feedbacks_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id)
 );
 CREATE TABLE public.trainee_monthly_payments (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -83,17 +65,30 @@ CREATE TABLE public.trainee_monthly_payments (
   amount numeric,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT trainee_monthly_payments_pkey PRIMARY KEY (id),
-  CONSTRAINT trainee_monthly_payments_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
-  CONSTRAINT trainee_monthly_payments_unique UNIQUE (trainee_id, month_start)
+  CONSTRAINT trainee_monthly_payments_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id)
 );
-CREATE TABLE public.trainee_feedbacks (
+CREATE TABLE public.trainee_trainers (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   trainee_id uuid NOT NULL,
-  message text NOT NULL,
+  trainer_id uuid NOT NULL,
+  assigned_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT trainee_trainers_pkey PRIMARY KEY (id),
+  CONSTRAINT trainee_trainers_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
+  CONSTRAINT trainee_trainers_trainer_id_fkey FOREIGN KEY (trainer_id) REFERENCES public.trainers(id)
+);
+CREATE TABLE public.trainees (
+  id uuid NOT NULL,
+  name text NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
-  read_at timestamp with time zone,
-  CONSTRAINT trainee_feedbacks_pkey PRIMARY KEY (id),
-  CONSTRAINT trainee_feedbacks_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id)
+  CONSTRAINT trainees_pkey PRIMARY KEY (id),
+  CONSTRAINT trainees_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.trainers (
+  id uuid NOT NULL,
+  name text NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT trainers_pkey PRIMARY KEY (id),
+  CONSTRAINT trainers_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
 CREATE TABLE public.workout_plan_days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -113,6 +108,5 @@ CREATE TABLE public.workout_plans (
   status text NOT NULL DEFAULT 'active'::text,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   notes text,
-  CONSTRAINT workout_plans_pkey PRIMARY KEY (id),
-  CONSTRAINT workout_plans_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id)
+  CONSTRAINT workout_plans_pkey PRIMARY KEY (id)
 );
