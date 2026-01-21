@@ -139,6 +139,35 @@
   "homeWorkoutsThisMonthTitle": "This month",
   "homeUpcomingWeekTitle": "Coming up this week",
   "homeUpcomingWeekEmpty": "No sessions scheduled for the next 7 days.",
+  "homeCoachProgressTitle": "Trainees nearing completion",
+  "homeCoachProgressSubtitle": "Latest plans over 75% complete.",
+  "homeCoachProgressPlanLabel": "Latest plan: {plan}",
+  "@homeCoachProgressPlanLabel": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCoachProgressPercentLabel": "{percent}% complete",
+  "@homeCoachProgressPercentLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "homeCoachProgressCountLabel": "{completed}/{total} sessions",
+  "@homeCoachProgressCountLabel": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "homeWorkoutPlanTitle": "Workout plan",
   "homeWorkoutPlanSubtitle": "Review your assigned plan and upcoming sessions.",
   "homeTraineeFeedbackTitle": "Trainee feedback",

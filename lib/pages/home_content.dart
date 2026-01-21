@@ -16,11 +16,13 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   late Future<List<WorkoutDay>> _daysFuture;
+  late Future<List<_CoachPlanProgress>> _coachProgressFuture;
 
   @override
   void initState() {
     super.initState();
     _daysFuture = _loadWorkoutDays();
+    _coachProgressFuture = _loadCoachPlanProgress();
   }
 
   @override
@@ -88,6 +90,26 @@ class _HomeContentState extends State<HomeContent> {
               children: [
                 _WorkoutScheduleSection(summary: scheduleSummary),
                 const SizedBox(height: 24),
+                FutureBuilder<List<_CoachPlanProgress>>(
+                  future: _coachProgressFuture,
+                  builder: (context, coachSnapshot) {
+                    if (coachSnapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox.shrink();
+                    }
+
+                    if (coachSnapshot.hasError) {
+                      return const SizedBox.shrink();
+                    }
+
+                    final entries = coachSnapshot.data ?? const [];
+                    if (entries.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return _CoachPlanProgressSection(entries: entries);
+                  },
+                ),
+                const SizedBox(height: 24),
                 _WorkoutPlanLinkSection(
                   onOpenPlan: _openWorkoutPlan,
                 ),
@@ -108,8 +130,9 @@ class _HomeContentState extends State<HomeContent> {
   Future<void> _refresh() async {
     setState(() {
       _daysFuture = _loadWorkoutDays();
+      _coachProgressFuture = _loadCoachPlanProgress();
     });
-    await _daysFuture;
+    await Future.wait([_daysFuture, _coachProgressFuture]);
   }
 
   Future<List<WorkoutDay>> _loadWorkoutDays() async {
@@ -160,6 +183,172 @@ class _HomeContentState extends State<HomeContent> {
         exercises: const [],
       );
     }).toList();
+  }
+
+  Future<List<_CoachPlanProgress>> _loadCoachPlanProgress() async {
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      throw Exception(AppLocalizations.of(context)!.unauthenticated);
+    }
+
+    final trainerResponse = await client
+        .from('trainers')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+    if (trainerResponse == null) {
+      return [];
+    }
+
+    final trainerId = trainerResponse['id'] as String?;
+    if (trainerId == null || trainerId.isEmpty) {
+      return [];
+    }
+
+    final assignments = await client
+        .from('trainee_trainers')
+        .select('trainee_id, trainees ( id, name )')
+        .eq('trainer_id', trainerId);
+
+    final assignmentData =
+        (assignments as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+    if (assignmentData.isEmpty) {
+      return [];
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+    final trainees = assignmentData
+        .map((row) {
+          final traineeInfo =
+              (row['trainees'] as Map<String, dynamic>?) ?? <String, dynamic>{};
+          final traineeId = row['trainee_id'] as String? ?? '';
+          final rawName = (traineeInfo['name'] as String? ?? '').trim();
+          final displayName = rawName.isNotEmpty ? rawName : l10n.profileFallbackName;
+          return _TraineeSummary(
+            id: traineeId,
+            name: displayName,
+          );
+        })
+        .where((trainee) => trainee.id.isNotEmpty)
+        .toList();
+
+    if (trainees.isEmpty) {
+      return [];
+    }
+
+    final traineeIds = trainees.map((trainee) => trainee.id).toList();
+    final plansResponse = await client
+        .from('workout_plans')
+        .select('id, trainee_id, title, starts_on, created_at')
+        .in_('trainee_id', traineeIds)
+        .order('starts_on', ascending: false)
+        .order('created_at', ascending: false);
+
+    final plansData =
+        (plansResponse as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+    DateTime? parseDate(dynamic value) {
+      if (value is DateTime) return value;
+      if (value is String && value.isNotEmpty) {
+        return DateTime.tryParse(value);
+      }
+      return null;
+    }
+
+    final latestPlanByTrainee = <String, _PlanDetails>{};
+    for (final row in plansData) {
+      final traineeId = row['trainee_id'] as String? ?? '';
+      final planId = row['id'] as String? ?? '';
+      if (traineeId.isEmpty || planId.isEmpty) continue;
+      final planDate = parseDate(row['starts_on']) ?? parseDate(row['created_at']);
+      final planTitle = (row['title'] as String? ?? '').trim();
+      final existing = latestPlanByTrainee[traineeId];
+      if (existing == null) {
+        latestPlanByTrainee[traineeId] = _PlanDetails(
+          id: planId,
+          title: planTitle,
+          date: planDate,
+        );
+        continue;
+      }
+      if (planDate != null &&
+          (existing.date == null || planDate.isAfter(existing.date!))) {
+        latestPlanByTrainee[traineeId] = _PlanDetails(
+          id: planId,
+          title: planTitle,
+          date: planDate,
+        );
+      }
+    }
+
+    if (latestPlanByTrainee.isEmpty) {
+      return [];
+    }
+
+    final planIds = latestPlanByTrainee.values.map((plan) => plan.id).toSet().toList();
+    if (planIds.isEmpty) {
+      return [];
+    }
+
+    final planDaysResponse = await client
+        .from('workout_plan_days')
+        .select('plan_id, days ( completed )')
+        .in_('plan_id', planIds);
+
+    final planDaysData =
+        (planDaysResponse as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+    final completions = <String, _PlanCompletion>{};
+
+    for (final row in planDaysData) {
+      final planId = row['plan_id'] as String? ?? '';
+      if (planId.isEmpty) continue;
+      final day = row['days'] as Map<String, dynamic>?;
+      if (day == null) continue;
+      final completed = day['completed'] as bool? ?? false;
+      final current = completions.putIfAbsent(planId, () => _PlanCompletion());
+      current.total += 1;
+      if (completed) {
+        current.completed += 1;
+      }
+    }
+
+    for (final planId in planIds) {
+      completions.putIfAbsent(planId, () => _PlanCompletion());
+    }
+
+    final progressEntries = <_CoachPlanProgress>[];
+    for (final trainee in trainees) {
+      final plan = latestPlanByTrainee[trainee.id];
+      if (plan == null) continue;
+      final completion = completions[plan.id] ?? _PlanCompletion();
+      final total = completion.total;
+      final completed = completion.completed;
+      final rate = total > 0 ? completed / total : 0.0;
+      if (rate <= 0.75) continue;
+
+      final resolvedTitle =
+          plan.title.isNotEmpty ? plan.title : l10n.homePlanDefaultTitle;
+      progressEntries.add(
+        _CoachPlanProgress(
+          traineeId: trainee.id,
+          traineeName: trainee.name,
+          planId: plan.id,
+          planTitle: resolvedTitle,
+          completionRate: rate,
+          completedDays: completed,
+          totalDays: total,
+          planDate: plan.date,
+        ),
+      );
+    }
+
+    progressEntries.sort((a, b) {
+      final rateCompare = b.completionRate.compareTo(a.completionRate);
+      if (rateCompare != 0) return rateCompare;
+      return a.traineeName.compareTo(b.traineeName);
+    });
+
+    return progressEntries;
   }
 
   Future<void> _openWorkoutPlan() async {
@@ -296,6 +485,55 @@ class _HomeContentState extends State<HomeContent> {
   }
 }
 
+class _TraineeSummary {
+  final String id;
+  final String name;
+
+  const _TraineeSummary({
+    required this.id,
+    required this.name,
+  });
+}
+
+class _PlanDetails {
+  final String id;
+  final String title;
+  final DateTime? date;
+
+  const _PlanDetails({
+    required this.id,
+    required this.title,
+    required this.date,
+  });
+}
+
+class _PlanCompletion {
+  int completed = 0;
+  int total = 0;
+}
+
+class _CoachPlanProgress {
+  final String traineeId;
+  final String traineeName;
+  final String planId;
+  final String planTitle;
+  final double completionRate;
+  final int completedDays;
+  final int totalDays;
+  final DateTime? planDate;
+
+  const _CoachPlanProgress({
+    required this.traineeId,
+    required this.traineeName,
+    required this.planId,
+    required this.planTitle,
+    required this.completionRate,
+    required this.completedDays,
+    required this.totalDays,
+    required this.planDate,
+  });
+}
+
 class _WorkoutScheduleSummary {
   final DateTime? nextWorkout;
   final int workoutsThisWeek;
@@ -308,6 +546,102 @@ class _WorkoutScheduleSummary {
     required this.workoutsThisMonth,
     required this.upcomingWeek,
   });
+}
+
+class _CoachPlanProgressSection extends StatelessWidget {
+  final List<_CoachPlanProgress> entries;
+
+  const _CoachPlanProgressSection({
+    required this.entries,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.homeCoachProgressTitle,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          l10n.homeCoachProgressSubtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ...entries.map((entry) {
+          final percent = (entry.completionRate * 100).round();
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.traineeName,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.homeCoachProgressPlanLabel(entry.planTitle),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: LinearProgressIndicator(
+                              value: entry.completionRate.clamp(0, 1),
+                              minHeight: 8,
+                              backgroundColor:
+                                  theme.colorScheme.surfaceContainerHighest,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          l10n.homeCoachProgressPercentLabel(percent),
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      l10n.homeCoachProgressCountLabel(
+                        entry.completedDays,
+                        entry.totalDays,
+                      ),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+  }
 }
 
 class _WorkoutScheduleSection extends StatelessWidget {

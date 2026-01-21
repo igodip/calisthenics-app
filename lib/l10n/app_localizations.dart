@@ -752,6 +752,36 @@ abstract class AppLocalizations {
   /// **'Nessuna sessione programmata nei prossimi 7 giorni.'**
   String get homeUpcomingWeekEmpty;
 
+  /// No description provided for @homeCoachProgressTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Allievi prossimi al completamento'**
+  String get homeCoachProgressTitle;
+
+  /// No description provided for @homeCoachProgressSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Piani più recenti oltre il 75% completati.'**
+  String get homeCoachProgressSubtitle;
+
+  /// No description provided for @homeCoachProgressPlanLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimo piano: {plan}'**
+  String homeCoachProgressPlanLabel(String plan);
+
+  /// No description provided for @homeCoachProgressPercentLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'{percent}% completato'**
+  String homeCoachProgressPercentLabel(int percent);
+
+  /// No description provided for @homeCoachProgressCountLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'{completed}/{total} sessioni'**
+  String homeCoachProgressCountLabel(int completed, int total);
+
   /// No description provided for @homeWorkoutPlanTitle.
   ///
   /// In it, this message translates to:

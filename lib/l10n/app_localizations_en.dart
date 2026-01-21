@@ -400,6 +400,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'No sessions scheduled for the next 7 days.';
 
   @override
+  String get homeCoachProgressTitle => 'Trainees nearing completion';
+
+  @override
+  String get homeCoachProgressSubtitle => 'Latest plans over 75% complete.';
+
+  @override
+  String homeCoachProgressPlanLabel(String plan) {
+    return 'Latest plan: $plan';
+  }
+
+  @override
+  String homeCoachProgressPercentLabel(int percent) {
+    return '$percent% complete';
+  }
+
+  @override
+  String homeCoachProgressCountLabel(int completed, int total) {
+    return '$completed/$total sessions';
+  }
+
+  @override
   String get homeWorkoutPlanTitle => 'Workout plan';
 
   @override

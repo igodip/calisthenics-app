@@ -139,6 +139,35 @@
   "homeWorkoutsThisMonthTitle": "Questo mese",
   "homeUpcomingWeekTitle": "In arrivo questa settimana",
   "homeUpcomingWeekEmpty": "Nessuna sessione programmata nei prossimi 7 giorni.",
+  "homeCoachProgressTitle": "Allievi prossimi al completamento",
+  "homeCoachProgressSubtitle": "Piani più recenti oltre il 75% completati.",
+  "homeCoachProgressPlanLabel": "Ultimo piano: {plan}",
+  "@homeCoachProgressPlanLabel": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCoachProgressPercentLabel": "{percent}% completato",
+  "@homeCoachProgressPercentLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "homeCoachProgressCountLabel": "{completed}/{total} sessioni",
+  "@homeCoachProgressCountLabel": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "homeWorkoutPlanTitle": "Piano di allenamento",
   "homeWorkoutPlanSubtitle": "Rivedi il piano assegnato e le prossime sessioni.",
   "homeTraineeFeedbackTitle": "Feedback atleta",
