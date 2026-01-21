@@ -397,24 +397,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String homePlanProgressValue(int completed, int total) {
-    return intl.Intl.message(
-      '$completed of $total sessions completed',
-      name: 'homePlanProgressValue',
-      args: [completed, total],
-      desc: '',
-      examples: const {},
-    );
+    return '$completed of $total sessions completed';
   }
 
   @override
   String homePlanProgressPercent(int percent) {
-    return intl.Intl.message(
-      '$percent% complete',
-      name: 'homePlanProgressPercent',
-      args: [percent],
-      desc: '',
-      examples: const {},
-    );
+    return '$percent% complete';
   }
 
   @override
