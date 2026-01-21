@@ -54,6 +54,7 @@
           sections: {
             dashboard: 'Overview',
             trainees: 'Trainees',
+            payments: 'Payments',
             program: 'Program',
             exercises: 'Exercises',
             schedule: 'Schedule',
@@ -119,13 +120,24 @@
             noticePlaceholder: 'Add a notice, e.g. “Igor Monday deload week”.',
             addNotice: 'Add notice',
             noNotices: 'No general notices yet.',
-            paymentsTitle: 'Payment status',
-            paymentsSubtitle: 'Keep track of who needs a reminder.',
-            paymentsTotal: 'Trainees',
-            paymentsOnTime: 'On time',
-            paymentsOverdue: 'Overdue',
-            noOverdue: 'All payments are up to date.',
             openProgram: 'Open program',
+          },
+          payments: {
+            overviewTitle: 'Payment dashboard',
+            overviewSubtitle: 'Check who is up to date and who needs a reminder.',
+            manageTitle: 'Manage payments',
+            manageSubtitle: 'Update payment status for each trainee.',
+            overdueTitle: 'Overdue reminders',
+            overdueSubtitle: 'Follow up or mark payments as received.',
+            totalLabel: 'Trainees',
+            paidLabel: 'On time',
+            overdueLabel: 'Overdue',
+            noOverdue: 'All payments are up to date.',
+            noMatches: 'No trainees match this filter yet.',
+            filterAll: 'All',
+            filterPaid: 'On time',
+            filterOverdue: 'Overdue',
+            markPaid: 'Mark as paid',
           },
           program: {
             title: 'Program creation',
@@ -292,6 +304,7 @@
           sections: {
             dashboard: 'Panoramica',
             trainees: 'Allievi',
+            payments: 'Pagamenti',
             program: 'Programma',
             exercises: 'Esercizi',
             schedule: 'Programma',
@@ -357,13 +370,24 @@
             noticePlaceholder: 'Aggiungi un avviso, es. “Igor lunedì settimana di scarico”.',
             addNotice: 'Aggiungi avviso',
             noNotices: 'Nessun avviso generale.',
-            paymentsTitle: 'Stato pagamenti',
-            paymentsSubtitle: 'Controlla chi ha bisogno di un promemoria.',
-            paymentsTotal: 'Allievi',
-            paymentsOnTime: 'In regola',
-            paymentsOverdue: 'In ritardo',
-            noOverdue: 'Tutti i pagamenti sono in regola.',
             openProgram: 'Apri programma',
+          },
+          payments: {
+            overviewTitle: 'Dashboard pagamenti',
+            overviewSubtitle: 'Controlla chi è in regola e chi necessita un promemoria.',
+            manageTitle: 'Gestione pagamenti',
+            manageSubtitle: 'Aggiorna lo stato di pagamento degli allievi.',
+            overdueTitle: 'Promemoria in ritardo',
+            overdueSubtitle: 'Contatta o segna i pagamenti ricevuti.',
+            totalLabel: 'Allievi',
+            paidLabel: 'In regola',
+            overdueLabel: 'In ritardo',
+            noOverdue: 'Tutti i pagamenti sono in regola.',
+            noMatches: 'Nessun allievo corrisponde a questo filtro.',
+            filterAll: 'Tutti',
+            filterPaid: 'In regola',
+            filterOverdue: 'In ritardo',
+            markPaid: 'Segna pagato',
           },
           program: {
             title: 'Creazione programma',
@@ -569,6 +593,7 @@
       const password = ref('');
       const search = ref('');
       const activeSection = ref('dashboard');
+      const paymentFilter = ref('all');
       const currentAdmin = ref(null);
       const currentTrainer = ref(null);
       const trainers = ref([]);
@@ -700,6 +725,29 @@
       const overdueUsers = computed(() =>
         (users.value || []).filter((u) => !u.paid),
       );
+
+      const paymentFilterOptions = [
+        { value: 'all', labelKey: 'payments.filterAll' },
+        { value: 'paid', labelKey: 'payments.filterPaid' },
+        { value: 'overdue', labelKey: 'payments.filterOverdue' },
+      ];
+
+      const paymentUsers = computed(() => {
+        const list = filteredUsers.value || [];
+        const filter = paymentFilter.value;
+        const filtered = list.filter((u) => {
+          if (filter === 'paid') return u.paid;
+          if (filter === 'overdue') return !u.paid;
+          return true;
+        });
+        return filtered.sort((a, b) => {
+          if (a.paid !== b.paid) return a.paid ? 1 : -1;
+          const nameA = (a.displayName || '').toLowerCase();
+          const nameB = (b.displayName || '').toLowerCase();
+          if (nameA && nameB) return nameA.localeCompare(nameB);
+          return (a.id || '').localeCompare(b.id || '');
+        });
+      });
 
       const paymentSummary = computed(() => {
         const total = (users.value || []).length;
@@ -1274,11 +1322,9 @@
         }
       }
 
-      async function togglePayment(u, event) {
+      async function updatePaymentStatus(u, nextPaid, target) {
         if (!u?.id) return;
         if (paymentSaving.value[u.id]) return;
-        const target = event?.target;
-        const nextPaid = Boolean(target?.checked);
         const previousPaid = Boolean(u.paid);
         u.paid = nextPaid;
         paymentSaving.value = { ...paymentSaving.value, [u.id]: true };
@@ -1308,13 +1354,23 @@
         } catch (err) {
           console.error(err);
           u.paid = previousPaid;
-          if (target) {
+          if (target && 'checked' in target) {
             target.checked = previousPaid;
           }
           alert(err.message || t('errors.updatePayment'));
         } finally {
           paymentSaving.value = { ...paymentSaving.value, [u.id]: false };
         }
+      }
+
+      function togglePayment(u, event) {
+        const target = event?.target;
+        const nextPaid = Boolean(target?.checked);
+        void updatePaymentStatus(u, nextPaid, target);
+      }
+
+      function markPaymentPaid(u) {
+        void updatePaymentStatus(u, true);
       }
 
       async function selectUser(u) {
@@ -1853,6 +1909,9 @@
         filteredUsers,
         overdueUsers,
         paymentSummary,
+        paymentFilter,
+        paymentFilterOptions,
+        paymentUsers,
         canAssignTrainers,
         trainers,
         trainerSelections,
@@ -1951,6 +2010,7 @@
         deleteDayExercise,
         shortId,
         togglePayment,
+        markPaymentPaid,
       };
     },
   }).mount('#app');

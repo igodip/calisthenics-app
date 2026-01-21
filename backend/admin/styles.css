@@ -43,6 +43,13 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .notice-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .notice-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px;background:#0f1118}
 .payment-alert{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px;background:#0f1118}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.filter-row button{border-radius:999px;padding:6px 12px;border:1px solid var(--line);background:#0f1118;color:var(--ink)}
+.filter-row button.active{background:var(--accent);color:#04120c;border-color:transparent}
+.payments-list{max-height:520px}
+.payment-card{padding:12px}
+.payment-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.payment-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px}
 .day-list{display:flex;flex-direction:column;gap:10px}
 .day-card{border:1px solid var(--line);border-radius:12px;background:#0f1118;padding:12px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 .day-header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
