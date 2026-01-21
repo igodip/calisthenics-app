@@ -1109,9 +1109,8 @@ import {
         dashboardNotesError.value = '';
         const fetchNotes = (orderColumn) =>
           supabase
-            .from('days')
-            .select('id, notes, week, day_code, trainee_id, created_at, trainees ( name )')
-            .not('notes', 'is', null)
+            .from('trainee_feedbacks')
+            .select('id, message, created_at, read_at, trainee_id, trainees ( name )')
             .order(orderColumn, { ascending: false })
             .limit(8);
         try {
@@ -1136,9 +1135,11 @@ import {
           }
           dashboardNotes.value = (data || []).map((row) => ({
             id: row.id,
-            notes: row.notes || '',
+            message: row.message || '',
             traineeName: row.trainees?.name || shortId(row.trainee_id),
-            dayLabel: formatWeekDayLabel(row.week || 1, row.day_code),
+            statusLabel: row.read_at
+              ? t('dashboard.feedbackRead')
+              : t('dashboard.feedbackUnread'),
             dateLabel: row.created_at ? formatDate(row.created_at) : '',
           }));
         } catch (err) {
