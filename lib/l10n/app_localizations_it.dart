@@ -448,6 +448,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Racconta al tuo coach come ti senti e come procede il piano.';
 
   @override
+  String get traineeFeedbackQuestionLabel => 'Come è andato l\'allenamento?';
+
+  @override
+  String get traineeFeedbackQuestionHint =>
+      'Condividi cosa sta andando bene o cosa richiede attenzione.';
+
+  @override
   String get traineeFeedbackHighlightsLabel => 'Punti forti';
 
   @override

@@ -824,6 +824,18 @@ abstract class AppLocalizations {
   /// **'Racconta al tuo coach come ti senti e come procede il piano.'**
   String get traineeFeedbackSubtitle;
 
+  /// No description provided for @traineeFeedbackQuestionLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Come è andato l\'allenamento?'**
+  String get traineeFeedbackQuestionLabel;
+
+  /// No description provided for @traineeFeedbackQuestionHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi cosa sta andando bene o cosa richiede attenzione.'**
+  String get traineeFeedbackQuestionHint;
+
   /// No description provided for @traineeFeedbackHighlightsLabel.
   ///
   /// In it, this message translates to:

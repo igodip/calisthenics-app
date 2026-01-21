@@ -11,16 +11,12 @@ class TraineeFeedbackPage extends StatefulWidget {
 }
 
 class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
-  final _highlightsController = TextEditingController();
-  final _challengesController = TextEditingController();
-  final _notesController = TextEditingController();
+  final _feedbackController = TextEditingController();
   bool _isSubmitting = false;
 
   @override
   void dispose() {
-    _highlightsController.dispose();
-    _challengesController.dispose();
-    _notesController.dispose();
+    _feedbackController.dispose();
     super.dispose();
   }
 
@@ -45,21 +41,9 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
             ),
             const SizedBox(height: 16),
             _FeedbackFieldCard(
-              label: l10n.traineeFeedbackHighlightsLabel,
-              hintText: l10n.traineeFeedbackHighlightsHint,
-              controller: _highlightsController,
-            ),
-            const SizedBox(height: 12),
-            _FeedbackFieldCard(
-              label: l10n.traineeFeedbackChallengesLabel,
-              hintText: l10n.traineeFeedbackChallengesHint,
-              controller: _challengesController,
-            ),
-            const SizedBox(height: 12),
-            _FeedbackFieldCard(
-              label: l10n.traineeFeedbackNotesLabel,
-              hintText: l10n.traineeFeedbackNotesHint,
-              controller: _notesController,
+              label: l10n.traineeFeedbackQuestionLabel,
+              hintText: l10n.traineeFeedbackQuestionHint,
+              controller: _feedbackController,
               minLines: 4,
             ),
             const SizedBox(height: 20),
@@ -85,27 +69,13 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
       return;
     }
 
-    final highlights = _highlightsController.text.trim();
-    final challenges = _challengesController.text.trim();
-    final notes = _notesController.text.trim();
-    if (highlights.isEmpty && challenges.isEmpty && notes.isEmpty) {
+    final feedback = _feedbackController.text.trim();
+    if (feedback.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.missingFieldsError)),
       );
       return;
     }
-
-    final sections = <String>[];
-    if (highlights.isNotEmpty) {
-      sections.add('${l10n.traineeFeedbackHighlightsLabel}\n$highlights');
-    }
-    if (challenges.isNotEmpty) {
-      sections.add('${l10n.traineeFeedbackChallengesLabel}\n$challenges');
-    }
-    if (notes.isNotEmpty) {
-      sections.add('${l10n.traineeFeedbackNotesLabel}\n$notes');
-    }
-    final message = sections.join('\n\n');
 
     setState(() {
       _isSubmitting = true;
@@ -114,12 +84,10 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
     try {
       await client.from('trainee_feedbacks').insert({
         'trainee_id': userId,
-        'message': message,
+        'message': feedback,
       });
       if (!mounted) return;
-      _highlightsController.clear();
-      _challengesController.clear();
-      _notesController.clear();
+      _feedbackController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.traineeFeedbackSubmitted)),
       );

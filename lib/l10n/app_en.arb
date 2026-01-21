@@ -168,6 +168,8 @@
   "workoutPlanTitle": "Workout plan",
   "traineeFeedbackTitle": "Trainee feedback",
   "traineeFeedbackSubtitle": "Tell your coach how you're feeling and how the plan is going.",
+  "traineeFeedbackQuestionLabel": "How did your training feel?",
+  "traineeFeedbackQuestionHint": "Share anything going well or that needs attention.",
   "traineeFeedbackHighlightsLabel": "Highlights",
   "traineeFeedbackHighlightsHint": "What felt good or went well?",
   "traineeFeedbackChallengesLabel": "Challenges",
