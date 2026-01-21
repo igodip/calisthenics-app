@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../model/trainee.dart';
+
+final supabase = Supabase.instance.client;
 
 class PlanExpiredGate extends StatefulWidget {
   final Widget child;
@@ -32,7 +35,7 @@ class _PlanExpiredGateState extends State<PlanExpiredGate> {
       future: _expiredFuture,
       builder: (context, snapshot) {
         final isWaiting = snapshot.connectionState == ConnectionState.waiting;
-        final isExpired = snapshot.data == true;
+        final isExpired = snapshot.data == false;
         if (widget.useOverlay) {
           return Stack(
             children: [
@@ -81,19 +84,20 @@ class _PlanExpiredGateState extends State<PlanExpiredGate> {
     final userId = client.auth.currentUser?.id;
     if (userId == null) return false;
 
-    final response = await client
-        .from('workout_plans')
-        .select('status, starts_on, created_at')
-        .eq('trainee_id', userId)
-        .order('starts_on', ascending: false)
-        .order('created_at', ascending: false)
-        .limit(1);
+    final profileResponse = await supabase
+        .from('trainees')
+        .select(
+        'id, name, paid, weight')
+        .eq('id', userId)
+        .limit(1)
+        .maybeSingle();
 
-    final data = (response as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
-    if (data.isEmpty) return false;
+    if (profileResponse == null) {
+      throw Exception('user-not-found');
+    }
 
-    final status = (data.first['status'] as String? ?? '').trim().toLowerCase();
-    return status == 'expired';
+    final profile = Trainee.fromMap(profileResponse);
+    return profile.paid ?? false;
   }
 }
 

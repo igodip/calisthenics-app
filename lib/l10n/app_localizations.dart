@@ -785,7 +785,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeCoachTipPlaceholder.
   ///
   /// In it, this message translates to:
-  /// **'Qui troverai l'ultimo consiglio del tuo coach.'**
+  /// **'Qui troverai l\'ultimo consiglio del tuo coach.'**
   String get homeCoachTipPlaceholder;
 
   /// No description provided for @workoutPlanTitle.

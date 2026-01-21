@@ -377,7 +377,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeScheduleTitle => 'Weekly focus';
 
   @override
-  String get homeScheduleSubtitle => 'Stay on track with your upcoming sessions.';
+  String get homeScheduleSubtitle =>
+      'Stay on track with your upcoming sessions.';
 
   @override
   String get homeNextWorkoutTitle => 'Next workout';
