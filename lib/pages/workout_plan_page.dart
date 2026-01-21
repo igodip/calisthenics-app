@@ -187,6 +187,8 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       final planDetails = planEntries.isNotEmpty
           ? (planEntries.first['workout_plans'] as Map<String, dynamic>?) ?? {}
           : <String, dynamic>{};
+      final planPosition =
+          planEntries.isNotEmpty ? (planEntries.first['position'] as num?)?.toInt() : null;
 
       final planStartedAt = parseDate(planDetails['starts_on']);
       final planCreatedAt = parseDate(planDetails['created_at']);
@@ -215,6 +217,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         planName: planName,
         planStartedAt: planStartedAt,
         createdAt: planCreatedAt,
+        planPosition: planPosition,
         exercises: exercises,
       );
     }).toList();
@@ -262,6 +265,13 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         ..sort((a, b) {
           if (a.isCompleted != b.isCompleted) {
             return a.isCompleted ? 1 : -1;
+          }
+          final aPosition = a.planPosition;
+          final bPosition = b.planPosition;
+          if (aPosition != null || bPosition != null) {
+            if (aPosition == null) return 1;
+            if (bPosition == null) return -1;
+            if (aPosition != bPosition) return aPosition.compareTo(bPosition);
           }
           if (a.week != b.week) return a.week.compareTo(b.week);
           return a.dayCode.compareTo(b.dayCode);

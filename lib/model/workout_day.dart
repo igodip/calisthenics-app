@@ -30,6 +30,7 @@ class WorkoutDay {
   final String? planName;
   final DateTime? planStartedAt;
   final DateTime? createdAt;
+  final int? planPosition;
   final List<WorkoutExercise> exercises;
 
   const WorkoutDay({
@@ -44,6 +45,7 @@ class WorkoutDay {
     this.planName,
     this.planStartedAt,
     this.createdAt,
+    this.planPosition,
   });
 
   String formattedTitle(AppLocalizations l10n, {String? fallback}) {
