@@ -47,6 +47,45 @@ CREATE TABLE public.trainees (
   weight numeric,
   CONSTRAINT trainees_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.trainers (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  name text NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT trainers_pkey PRIMARY KEY (id),
+  CONSTRAINT trainers_user_id_key UNIQUE (user_id)
+);
+CREATE TABLE public.admins (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  name text,
+  can_assign_trainers boolean NOT NULL DEFAULT false,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT admins_pkey PRIMARY KEY (id),
+  CONSTRAINT admins_user_id_key UNIQUE (user_id)
+);
+CREATE TABLE public.trainee_trainers (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  trainee_id uuid NOT NULL,
+  trainer_id uuid NOT NULL,
+  assigned_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT trainee_trainers_pkey PRIMARY KEY (id),
+  CONSTRAINT trainee_trainers_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
+  CONSTRAINT trainee_trainers_trainer_id_fkey FOREIGN KEY (trainer_id) REFERENCES public.trainers(id),
+  CONSTRAINT trainee_trainers_unique UNIQUE (trainee_id, trainer_id)
+);
+CREATE TABLE public.trainee_monthly_payments (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  trainee_id uuid NOT NULL,
+  month_start date NOT NULL,
+  paid boolean NOT NULL DEFAULT false,
+  paid_at timestamp with time zone,
+  amount numeric,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT trainee_monthly_payments_pkey PRIMARY KEY (id),
+  CONSTRAINT trainee_monthly_payments_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
+  CONSTRAINT trainee_monthly_payments_unique UNIQUE (trainee_id, month_start)
+);
 CREATE TABLE public.trainee_feedbacks (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   trainee_id uuid NOT NULL,

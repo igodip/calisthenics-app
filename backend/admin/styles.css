@@ -87,6 +87,12 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .payment-toggle input{margin:0}
 .pill.paid{border-color:#1c2b23;background:#0e1a14;color:#b7f5d8}
 .pill.overdue{border-color:#3b0f10;background:#1a0b0c;color:#fca5a5}
+.trainer-row{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.trainer-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.trainer-pill{display:inline-flex;align-items:center;gap:6px}
+.icon-button{border:1px solid var(--line);background:#0f1118;color:var(--muted);border-radius:999px;padding:2px 6px;line-height:1}
+.icon-button:hover{border-color:var(--accent);color:var(--accent)}
+.trainer-assign{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
 .day-form-card{display:flex;flex-direction:column;gap:10px}
 .day-form-header{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
 .day-code-picker{display:flex;gap:6px;flex-wrap:wrap}
