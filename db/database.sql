@@ -12,14 +12,13 @@ CREATE TABLE public.admins (
 CREATE TABLE public.day_exercises (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   day_id uuid NOT NULL,
-  exercise_id uuid NOT NULL,
+  exercise text NOT NULL,
   position integer NOT NULL DEFAULT 1,
   notes text,
   trainee_notes text,
   completed boolean,
   CONSTRAINT day_exercises_pkey PRIMARY KEY (id),
-  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id),
-  CONSTRAINT day_exercises_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id)
+  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id)
 );
 CREATE TABLE public.days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -31,12 +30,6 @@ CREATE TABLE public.days (
   completed boolean DEFAULT false,
   completed_at time with time zone,
   CONSTRAINT days_pkey PRIMARY KEY (id)
-);
-CREATE TABLE public.exercises (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  name text NOT NULL UNIQUE,
-  explanation text,
-  CONSTRAINT exercises_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.max_tests (
   id uuid NOT NULL DEFAULT gen_random_uuid(),

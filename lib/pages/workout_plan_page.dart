@@ -160,7 +160,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         .select(
           'id, week, day_code, title, notes, completed, '
           'workout_plan_days ( position, workout_plans ( id, title, starts_on, created_at ) ), '
-          'day_exercises ( id, position, notes, completed, trainee_notes, exercises ( id, name ) )',
+          'day_exercises ( id, position, notes, completed, trainee_notes, exercise )',
         )
         .eq('trainee_id', userId)
         .order('week', ascending: true)
@@ -194,11 +194,9 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       final planName = planDetails['title'] as String?;
 
       final exercises = dayExercises.map((exercise) {
-        final exerciseDetails =
-            (exercise['exercises'] as Map<String, dynamic>?) ?? {};
         return WorkoutExercise(
           id: exercise['id'] as String?,
-          name: exerciseDetails['name'] as String?,
+          name: exercise['exercise'] as String?,
           position: (exercise['position'] as num?)?.toInt(),
           notes: exercise['notes'] as String?,
           traineeNotes: exercise['trainee_notes'] as String?,

@@ -424,39 +424,6 @@
                 </template>
             </div>
 
-            <div class="col program-sidebar">
-                <div class="card exercise-panel exercise-sidebar">
-                    <h2 style="display:flex;justify-content:space-between;align-items:center;gap:8px">{{ t('sections.exercises') }} <span class="pill">{{ t('labels.totalCount', { count: exerciseOptions.length }) }}</span></h2>
-                    <div class="stack">
-                        <form @submit.prevent="addExerciseDefinition" style="display:flex;flex-direction:column;gap:8px">
-                            <label class="small" style="display:flex;flex-direction:column;gap:4px">
-                                {{ t('labels.name') }}
-                                <input v-model="newExerciseName" :placeholder="t('placeholders.exerciseExample')" required />
-                            </label>
-                            <div style="display:flex;gap:8px;flex-wrap:wrap">
-                                <button class="btn small" type="submit" :disabled="savingExercise">{{ t('actions.addExercise') }}</button>
-                            </div>
-                            <div v-if="savingExercise" class="muted small">{{ t('status.savingExercise') }}</div>
-                        </form>
-                        <div>
-                            <h3 style="margin-top:0">{{ t('exercises.available') }}</h3>
-                            <div v-if="exerciseOptions.length===0" class="muted small">{{ t('exercises.none') }}</div>
-                            <div v-else class="exercise-list scroll-area">
-                                <div v-for="ex in exerciseOptions" :key="ex.id" class="exercise-item small">
-                                    <div class="exercise-head">
-                                        <input v-model="exerciseEdits[ex.id].name" :placeholder="t('placeholders.exerciseName')" />
-                                        <span class="pill">#{{ ex.id.slice(0,4) }}</span>
-                                    </div>
-                                    <div class="exercise-actions">
-                                        <button class="btn small icon-button" @click="updateExercise(ex)" :disabled="savingExercise" :title="t('actions.save')" :aria-label="t('actions.save')">💾</button>
-                                        <button class="small icon-button danger" type="button" @click="deleteExercise(ex)" :disabled="savingExercise" :title="t('actions.delete')" :aria-label="t('actions.delete')">🗑️</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
