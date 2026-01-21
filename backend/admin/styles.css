@@ -78,6 +78,17 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .exercise-sidebar .exercise-list{grid-template-columns:1fr}
 .program-panel .program-main{flex:2 1 640px}
 .program-panel .program-sidebar{flex:1 1 320px}
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.overview-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.calendar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+.calendar-item{border:1px solid var(--line);border-radius:12px;background:#0f1118;padding:12px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.calendar-item.trained{border-color:#1c2b23;background:#0d1612}
+.data-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.data-row{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.data-block{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.data-chips{display:flex;flex-wrap:wrap;gap:6px}
+.plan-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:#0f1118}
+.payment-history-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:#0f1118;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
 .program-template{display:flex;flex-direction:column;gap:12px}
 .program-template-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .template-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
