@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 
@@ -13,6 +14,7 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
   final _highlightsController = TextEditingController();
   final _challengesController = TextEditingController();
   final _notesController = TextEditingController();
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -62,14 +64,7 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
-              onPressed: () {
-                _highlightsController.clear();
-                _challengesController.clear();
-                _notesController.clear();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.traineeFeedbackSubmitted)),
-                );
-              },
+              onPressed: _isSubmitting ? null : _submitFeedback,
               icon: const Icon(Icons.send),
               label: Text(l10n.traineeFeedbackSubmit),
             ),
@@ -77,6 +72,68 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _submitFeedback() async {
+    final l10n = AppLocalizations.of(context)!;
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.unauthenticated)),
+      );
+      return;
+    }
+
+    final highlights = _highlightsController.text.trim();
+    final challenges = _challengesController.text.trim();
+    final notes = _notesController.text.trim();
+    if (highlights.isEmpty && challenges.isEmpty && notes.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.missingFieldsError)),
+      );
+      return;
+    }
+
+    final sections = <String>[];
+    if (highlights.isNotEmpty) {
+      sections.add('${l10n.traineeFeedbackHighlightsLabel}\n$highlights');
+    }
+    if (challenges.isNotEmpty) {
+      sections.add('${l10n.traineeFeedbackChallengesLabel}\n$challenges');
+    }
+    if (notes.isNotEmpty) {
+      sections.add('${l10n.traineeFeedbackNotesLabel}\n$notes');
+    }
+    final message = sections.join('\n\n');
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      await client.from('trainee_feedbacks').insert({
+        'trainee_id': userId,
+        'message': message,
+      });
+      if (!mounted) return;
+      _highlightsController.clear();
+      _challengesController.clear();
+      _notesController.clear();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.traineeFeedbackSubmitted)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.unexpectedError('$error'))),
+      );
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
   }
 }
 

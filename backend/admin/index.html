@@ -58,10 +58,10 @@
                         <div v-for="note in dashboardNotes" :key="note.id" class="chat-item">
                             <div class="chat-meta">
                                 <strong>{{ note.traineeName }}</strong>
-                                <span class="pill">{{ note.dayLabel }}</span>
+                                <span class="pill">{{ note.statusLabel }}</span>
                             </div>
                             <div class="muted small" v-if="note.dateLabel">{{ note.dateLabel }}</div>
-                            <div class="chat-message">{{ note.notes }}</div>
+                            <div class="chat-message">{{ note.message }}</div>
                         </div>
                     </div>
                 </div>
