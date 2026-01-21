@@ -64,19 +64,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guidesSubtitle =>
-      'Learn form cues, key checkpoints, and watch the movement before you train.';
+      'Learn form cues and key checkpoints before you train.';
 
   @override
   String get guidesPrimaryFocus => 'Primary focus';
 
   @override
   String get guidesCoachTip => 'Coach tip';
-
-  @override
-  String get guidesWatchVideo => 'Watch tutorial video';
-
-  @override
-  String get guidesVideoUnavailable => 'Could not open the tutorial right now.';
 
   @override
   String get difficultyBeginner => 'Beginner';

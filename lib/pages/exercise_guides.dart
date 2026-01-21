@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import '../l10n/app_localizations.dart';
 
 class ExerciseGuidesPage extends StatelessWidget {
@@ -13,7 +11,6 @@ class ExerciseGuidesPage extends StatelessWidget {
       focus: l10n.guidesPullupFocus,
       tip: l10n.guidesPullupTip,
       description: l10n.guidesPullupDescription,
-      videoUrl: 'https://youtu.be/eGo4IYlbE5g',
       accent: Colors.blue,
     ),
     _ExerciseGuide(
@@ -22,7 +19,6 @@ class ExerciseGuidesPage extends StatelessWidget {
       focus: l10n.guidesPushupFocus,
       tip: l10n.guidesPushupTip,
       description: l10n.guidesPushupDescription,
-      videoUrl: 'https://youtu.be/IODxDxX7oi4',
       accent: Colors.orange,
     ),
     _ExerciseGuide(
@@ -31,7 +27,6 @@ class ExerciseGuidesPage extends StatelessWidget {
       focus: l10n.guidesBodyweightSquatFocus,
       tip: l10n.guidesBodyweightSquatTip,
       description: l10n.guidesBodyweightSquatDescription,
-      videoUrl: 'https://youtu.be/aclHkVaku9U',
       accent: Colors.green,
     ),
     _ExerciseGuide(
@@ -40,7 +35,6 @@ class ExerciseGuidesPage extends StatelessWidget {
       focus: l10n.guidesHangingLegRaiseFocus,
       tip: l10n.guidesHangingLegRaiseTip,
       description: l10n.guidesHangingLegRaiseDescription,
-      videoUrl: 'https://youtu.be/0yRQw1wqHik',
       accent: Colors.purple,
     ),
     _ExerciseGuide(
@@ -49,7 +43,6 @@ class ExerciseGuidesPage extends StatelessWidget {
       focus: l10n.guidesMuscleUpFocus,
       tip: l10n.guidesMuscleUpTip,
       description: l10n.guidesMuscleUpDescription,
-      videoUrl: 'https://youtu.be/4NnU1YuZzUE',
       accent: Colors.teal,
     ),
     _ExerciseGuide(
@@ -58,7 +51,6 @@ class ExerciseGuidesPage extends StatelessWidget {
       focus: l10n.guidesStraightBarDipFocus,
       tip: l10n.guidesStraightBarDipTip,
       description: l10n.guidesStraightBarDipDescription,
-      videoUrl: 'https://youtu.be/2z8JmcrW-As',
       accent: Colors.deepOrange,
     ),
     _ExerciseGuide(
@@ -67,7 +59,6 @@ class ExerciseGuidesPage extends StatelessWidget {
       focus: l10n.guidesDipsFocus,
       tip: l10n.guidesDipsTip,
       description: l10n.guidesDipsDescription,
-      videoUrl: 'https://youtu.be/2z8JmcrW-As',
       accent: Colors.red,
     ),
     _ExerciseGuide(
@@ -76,7 +67,6 @@ class ExerciseGuidesPage extends StatelessWidget {
       focus: l10n.guidesAustralianRowFocus,
       tip: l10n.guidesAustralianRowTip,
       description: l10n.guidesAustralianRowDescription,
-      videoUrl: 'https://youtu.be/9efgcAjQe7E',
       accent: Colors.indigo,
     ),
     _ExerciseGuide(
@@ -85,7 +75,6 @@ class ExerciseGuidesPage extends StatelessWidget {
       focus: l10n.guidesPikePushUpFocus,
       tip: l10n.guidesPikePushUpTip,
       description: l10n.guidesPikePushUpDescription,
-      videoUrl: 'https://youtu.be/0wDEO1i2bFM',
       accent: Colors.amber,
     ),
   ];
@@ -163,16 +152,6 @@ class _ExerciseGuideCard extends StatelessWidget {
 
   final _ExerciseGuide guide;
   final AppLocalizations l10n;
-
-  Future<void> _openVideo(BuildContext context) async {
-    final uri = Uri.parse(guide.videoUrl);
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.guidesVideoUnavailable)),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -281,80 +260,8 @@ class _ExerciseGuideCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 14),
-            GestureDetector(
-              onTap: () => _openVideo(context),
-              child: _VideoPreview(
-                guide: guide,
-                label: l10n.guidesWatchVideo,
-              ),
-            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _VideoPreview extends StatelessWidget {
-  const _VideoPreview({required this.guide, required this.label});
-
-  final _ExerciseGuide guide;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Stack(
-        children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    guide.accent.withValues(alpha: 0.2),
-                    colorScheme.onSurface.withValues(alpha: 0.06),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    label,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.55),
-                  shape: BoxShape.circle,
-                ),
-                padding: const EdgeInsets.all(14),
-                child: const Icon(
-                  Icons.play_arrow_rounded,
-                  color: Colors.white,
-                  size: 38,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -367,7 +274,6 @@ class _ExerciseGuide {
     required this.focus,
     required this.tip,
     required this.description,
-    required this.videoUrl,
     required this.accent,
   });
 
@@ -376,6 +282,5 @@ class _ExerciseGuide {
   final String focus;
   final String tip;
   final String description;
-  final String videoUrl;
   final Color accent;
 }
