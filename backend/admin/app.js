@@ -666,16 +666,16 @@ import {
         try {
           const { data: adminRow, error: adminError } = await supabase
             .from('admins')
-            .select('id, user_id, name, can_assign_trainers')
-            .eq('user_id', userId)
+            .select('id, name, can_assign_trainers')
+            .eq('id', userId)
             .maybeSingle();
           if (adminError && adminError.code !== 'PGRST116') {
             throw new Error(adminError.message);
           }
           const { data: trainerRow, error: trainerError } = await supabase
             .from('trainers')
-            .select('id, user_id, name')
-            .eq('user_id', userId)
+            .select('id, name')
+            .eq('id', userId)
             .maybeSingle();
           if (trainerError && trainerError.code !== 'PGRST116') {
             throw new Error(trainerError.message);
@@ -706,13 +706,13 @@ import {
       async function loadUsers() {
         const isTrainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
         const baseSelect =
-          'id, name, paid, trainee_trainers ( trainer_id, trainers ( id, name ) )';
+          'id, name, trainee_trainers ( trainer_id, trainers ( id, name ) )';
         let query = supabase.from('trainees').select(baseSelect);
         if (isTrainerOnly) {
           query = supabase
             .from('trainees')
             .select(
-              'id, name, paid, trainee_trainers!inner ( trainer_id, trainers ( id, name ) )',
+              'id, name, trainee_trainers!inner ( trainer_id, trainers ( id, name ) )',
             )
             .eq('trainee_trainers.trainer_id', currentTrainer.value.id);
         }
@@ -725,8 +725,34 @@ import {
           return;
         }
 
+        const traineeIds = (traineeRows || [])
+          .map((row) => row.id)
+          .filter(Boolean);
+        const paidMap = new Map();
+        if (traineeIds.length) {
+          const monthStart = currentMonthStart();
+          const { data: paymentRows, error: paymentError } = await supabase
+            .from('trainee_monthly_payments')
+            .select('trainee_id, paid')
+            .eq('month_start', monthStart)
+            .in('trainee_id', traineeIds);
+          if (paymentError) {
+            console.error(paymentError);
+            alert(
+              t('errors.loadPayments', {
+                message: paymentError.message,
+              }),
+            );
+          } else {
+            (paymentRows || []).forEach((row) => {
+              paidMap.set(row.trainee_id, Boolean(row.paid));
+            });
+          }
+        }
+
         users.value = (traineeRows || []).map((row) => ({
           ...row,
+          paid: paidMap.get(row.id) || false,
           trainers: (row.trainee_trainers || [])
             .map((assignment) => assignment.trainers)
             .filter(Boolean),
@@ -811,13 +837,6 @@ import {
         u.paid = nextPaid;
         paymentSaving.value = { ...paymentSaving.value, [u.id]: true };
         try {
-          const { error } = await supabase
-            .from('trainees')
-            .update({ paid: nextPaid })
-            .eq('id', u.id);
-          if (error) {
-            throw new Error('Update payment status failed: ' + error.message);
-          }
           const monthStart = currentMonthStart();
           const { error: monthlyError } = await supabase
             .from('trainee_monthly_payments')
