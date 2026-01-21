@@ -70,6 +70,9 @@ import {
       const loadingMaxTests = ref(false);
       const maxTestsError = ref('');
       const paymentSaving = ref({});
+      const paymentHistory = ref([]);
+      const loadingPayments = ref(false);
+      const paymentsError = ref('');
       const dashboardNotes = ref([]);
       const dashboardNotesLoading = ref(false);
       const dashboardNotesError = ref('');
@@ -196,6 +199,35 @@ import {
           if (nameA && nameB) return nameA.localeCompare(nameB);
           return (a.id || '').localeCompare(b.id || '');
         });
+      });
+
+      const trainingCalendar = computed(() => {
+        const order = new Map(dayCodeOptions.map((code, idx) => [code, idx]));
+        return (days.value || [])
+          .map((day) => {
+            const exercises = day.day_exercises || [];
+            const completedCount = exercises.filter((ex) => ex.completed).length;
+            return {
+              id: day.id,
+              week: Number(day.week || 0),
+              code: day.day_code?.toUpperCase() || '',
+              total: exercises.length,
+              completed: completedCount,
+              trained: completedCount > 0,
+              label: formatWeekDayTitleLabel(
+                day.week || 1,
+                day.day_code?.toUpperCase(),
+                day.title,
+              ),
+            };
+          })
+          .sort((a, b) => {
+            if (a.week !== b.week) return a.week - b.week;
+            const aIdx = order.has(a.code) ? order.get(a.code) : 99;
+            const bIdx = order.has(b.code) ? order.get(b.code) : 99;
+            if (aIdx !== bIdx) return aIdx - bIdx;
+            return a.label.localeCompare(b.label);
+          });
       });
 
       const paymentSummary = computed(() => {
@@ -624,6 +656,7 @@ import {
           await selectUser(users.value[0]);
           await loadPlans(users.value[0]);
           await loadDays(users.value[0]);
+          await loadPaymentHistory(users.value[0]);
         }
       }
 
@@ -830,7 +863,15 @@ import {
         expandedDays.value = {};
         maxTests.value = [];
         maxTestsError.value = '';
+        paymentHistory.value = [];
+        paymentsError.value = '';
         await loadMaxTests(u);
+      }
+
+      async function openTrainee(u) {
+        activeSection.value = 'program';
+        await selectUser(u);
+        await Promise.all([loadDays(u), loadPlans(u), loadPaymentHistory(u)]);
       }
 
       async function loadExercises() {
@@ -1015,7 +1056,7 @@ import {
           .select(`
                 id, week, day_code, title, notes,
                 day_exercises (
-                  id, position, notes,
+                  id, position, notes, completed,
                   exercises ( id, name )
                 )
               `)
@@ -1038,6 +1079,29 @@ import {
             setDayExpansion(d.id, idx === 0);
           }
         });
+      }
+
+      async function loadPaymentHistory(u = current.value) {
+        if (!u) return;
+        loadingPayments.value = true;
+        paymentsError.value = '';
+        try {
+          const { data, error } = await supabase
+            .from('trainee_monthly_payments')
+            .select('id, month_start, paid, paid_at')
+            .eq('trainee_id', u.id)
+            .order('month_start', { ascending: false });
+          if (error) {
+            throw new Error(error.message);
+          }
+          paymentHistory.value = data || [];
+        } catch (err) {
+          console.error(err);
+          paymentHistory.value = [];
+          paymentsError.value = err.message || t('errors.loadPayments');
+        } finally {
+          loadingPayments.value = false;
+        }
       }
 
       async function loadDashboardNotes() {
@@ -1414,8 +1478,13 @@ import {
         loadingMaxTests,
         maxTestsError,
         paymentSaving,
+        paymentHistory,
+        loadingPayments,
+        paymentsError,
+        trainingCalendar,
         progressFor,
         formatTestValue,
+        formatDate,
         formatCount,
         dayCodeLabel,
         planStatusLabel,
@@ -1424,9 +1493,11 @@ import {
         emailPasswordSignIn,
         signOut,
         selectUser,
+        openTrainee,
         loadDays,
         loadMaxTests,
         loadPlans,
+        loadPaymentHistory,
         loadDashboardNotes,
         addAnnouncement,
         removeAnnouncement,
