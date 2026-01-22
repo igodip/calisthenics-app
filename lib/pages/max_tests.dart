@@ -191,9 +191,12 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                           }
 
                           final groupedTests = <String, List<MaxTest>>{};
+                          final displayNames = <String, String>{};
                           for (final test in tests) {
-                            final key = test.exercise.trim();
+                            final displayName = test.exercise.trim();
+                            final key = displayName.toLowerCase();
                             groupedTests.putIfAbsent(key, () => []).add(test);
+                            displayNames.putIfAbsent(key, () => displayName);
                           }
 
                           final bestByExercise = <String, double>{};
@@ -209,13 +212,16 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                             separatorBuilder: (context, index) => const SizedBox(height: 16),
                             itemBuilder: (context, index) {
                               final entry = groupedTests.entries.elementAt(index);
-                              final exercise = entry.key;
+                              final exerciseKey = entry.key;
                               final groupTests = entry.value;
+                              final exercise =
+                                  displayNames[exerciseKey] ??
+                                  groupTests.first.exercise.trim();
 
                               return _ExerciseGroupCard(
                                 exercise: exercise,
                                 tests: groupTests,
-                                bestValue: bestByExercise[exercise] ?? 0,
+                                bestValue: bestByExercise[exerciseKey] ?? 0,
                               );
                             },
                           );
