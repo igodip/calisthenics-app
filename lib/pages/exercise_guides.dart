@@ -21,6 +21,14 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
       accent: Colors.blue,
     ),
     _ExerciseGuide(
+      name: l10n.guidesChinUpName,
+      difficulty: _Difficulty.intermediate,
+      focus: l10n.guidesChinUpFocus,
+      tip: l10n.guidesChinUpTip,
+      description: l10n.guidesChinUpDescription,
+      accent: Colors.lightBlue,
+    ),
+    _ExerciseGuide(
       name: l10n.guidesPushupName,
       difficulty: _Difficulty.beginner,
       focus: l10n.guidesPushupFocus,
@@ -35,6 +43,14 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
       tip: l10n.guidesBodyweightSquatTip,
       description: l10n.guidesBodyweightSquatDescription,
       accent: Colors.green,
+    ),
+    _ExerciseGuide(
+      name: l10n.guidesGluteBridgeName,
+      difficulty: _Difficulty.beginner,
+      focus: l10n.guidesGluteBridgeFocus,
+      tip: l10n.guidesGluteBridgeTip,
+      description: l10n.guidesGluteBridgeDescription,
+      accent: Colors.lightGreen,
     ),
     _ExerciseGuide(
       name: l10n.guidesHangingLegRaiseName,
@@ -91,6 +107,14 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
       tip: l10n.guidesHollowHoldTip,
       description: l10n.guidesHollowHoldDescription,
       accent: Colors.brown,
+    ),
+    _ExerciseGuide(
+      name: l10n.guidesPlankName,
+      difficulty: _Difficulty.beginner,
+      focus: l10n.guidesPlankFocus,
+      tip: l10n.guidesPlankTip,
+      description: l10n.guidesPlankDescription,
+      accent: Colors.blueGrey,
     ),
     _ExerciseGuide(
       name: l10n.guidesLSitName,
