@@ -8,7 +8,7 @@ import '../model/max_test.dart';
 
 final supabase = Supabase.instance.client;
 
-class MaxTestsPage extends StatefulWidget {
+class MaxTestsPage extends StatelessWidget {
   const MaxTestsPage({
     super.key,
     required this.userId,
@@ -19,10 +19,35 @@ class MaxTestsPage extends StatefulWidget {
   final String displayName;
 
   @override
-  State<MaxTestsPage> createState() => _MaxTestsPageState();
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.profileMaxTestsTitle),
+      ),
+      body: MaxTestsContent(
+        userId: userId,
+        displayName: displayName,
+      ),
+    );
+  }
 }
 
-class _MaxTestsPageState extends State<MaxTestsPage> {
+class MaxTestsContent extends StatefulWidget {
+  const MaxTestsContent({
+    super.key,
+    required this.userId,
+    required this.displayName,
+  });
+
+  final String userId;
+  final String displayName;
+
+  @override
+  State<MaxTestsContent> createState() => _MaxTestsContentState();
+}
+
+class _MaxTestsContentState extends State<MaxTestsContent> {
   Future<List<MaxTest>>? _maxTestsFuture;
 
   @override
@@ -69,9 +94,6 @@ class _MaxTestsPageState extends State<MaxTestsPage> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.profileMaxTestsTitle),
-      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

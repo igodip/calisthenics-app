@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import 'exercise_guides.dart';
 import 'home_content.dart';
 import 'login.dart';
+import 'max_tests_menu.dart';
 import 'workout_plan_page.dart';
 
 class AuthGate extends StatelessWidget {
@@ -81,6 +82,7 @@ class _HomePageState extends State<HomePage> {
       const HomeContent(),
       const ExerciseGuidesPage(),
       const ProfilePage(),
+      const MaxTestsMenuPage(),
       const TerminologiaPage(),
       const WorkoutPlanPage(),
     ];
@@ -167,8 +169,8 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.menu_book),
-                title: Text(l10n.navTerminology),
+                leading: const Icon(Icons.emoji_events_outlined),
+                title: Text(l10n.profileMaxTestsTitle),
                 selected: selectedIndex == 3,
                 onTap: () {
                   setState(() {
@@ -178,12 +180,23 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.event_note),
-                title: Text(l10n.workoutPlanTitle),
+                leading: const Icon(Icons.menu_book),
+                title: Text(l10n.navTerminology),
                 selected: selectedIndex == 4,
                 onTap: () {
                   setState(() {
                     selectedIndex = 4;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.event_note),
+                title: Text(l10n.workoutPlanTitle),
+                selected: selectedIndex == 5,
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 5;
                   });
                   Navigator.pop(context);
                 },

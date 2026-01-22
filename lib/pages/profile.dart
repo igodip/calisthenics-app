@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
-import 'max_tests.dart';
 import 'login.dart';
 
 final supabase = Supabase.instance.client;
@@ -146,17 +145,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void _openMaxTests(UserProfileData data) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => MaxTestsPage(
-          userId: data.userId,
-          displayName: data.displayName(AppLocalizations.of(context)!),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -281,17 +269,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           subtitle: Text(weightText),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: ListTile(
-                      leading: const Icon(Icons.emoji_events_outlined),
-                      title: Text(l10n.profileMaxTestsTitle),
-                      subtitle: Text(l10n.profileMaxTestsDescription),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => _openMaxTests(data),
                     ),
                   ),
                   const SizedBox(height: 16),
