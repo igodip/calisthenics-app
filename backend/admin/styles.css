@@ -71,6 +71,14 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .data-block{margin-top:14px;display:flex;flex-direction:column;gap:8px}
 .data-chips{display:flex;flex-wrap:wrap;gap:6px}
 .plan-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:#0f1118}
+.plan-manager{display:grid;gap:16px;margin-top:12px}
+.plan-manager-card .plan-form,.plan-manager-card .plan-list{display:flex;flex-direction:column;gap:12px}
+.plan-form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.plan-form textarea,.plan-edit-form textarea{min-height:80px}
+.plan-edit-list{display:grid;gap:12px}
+.plan-edit-card{display:flex;flex-direction:column;gap:12px}
+.plan-edit-form{display:grid;gap:12px}
+.plan-form-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .payment-history-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:#0f1118;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
 .program-template{display:flex;flex-direction:column;gap:12px}
 .program-template-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
