@@ -14,12 +14,12 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  late Future<List<WorkoutDay>> _daysFuture;
+  late Future<_HomeOverviewData> _overviewFuture;
 
   @override
   void initState() {
     super.initState();
-    _daysFuture = _loadWorkoutDays();
+    _overviewFuture = _loadOverview();
   }
 
   @override
@@ -29,8 +29,8 @@ class _HomeContentState extends State<HomeContent> {
       padding: const EdgeInsets.all(16.0),
       child: RefreshIndicator(
         onRefresh: _refresh,
-        child: FutureBuilder<List<WorkoutDay>>(
-          future: _daysFuture,
+        child: FutureBuilder<_HomeOverviewData>(
+          future: _overviewFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return ListView(
@@ -69,7 +69,7 @@ class _HomeContentState extends State<HomeContent> {
                     child: FilledButton.icon(
                       onPressed: () {
                         setState(() {
-                          _daysFuture = _loadWorkoutDays();
+                          _overviewFuture = _loadOverview();
                         });
                       },
                       icon: const Icon(Icons.refresh),
@@ -80,8 +80,9 @@ class _HomeContentState extends State<HomeContent> {
               );
             }
 
-            final days = snapshot.data ?? const <WorkoutDay>[];
-            final scheduleSummary = _buildScheduleSummary(days, DateTime.now());
+            final overview = snapshot.data ?? const _HomeOverviewData();
+            final scheduleSummary =
+                _buildScheduleSummary(overview.days, DateTime.now());
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
@@ -91,7 +92,7 @@ class _HomeContentState extends State<HomeContent> {
                   onOpenFeedback: _openTraineeFeedback,
                 ),
                 const SizedBox(height: 16),
-                const _CoachTipSection(),
+                _CoachTipSection(tip: overview.coachTip),
               ],
             );
           },
@@ -102,18 +103,27 @@ class _HomeContentState extends State<HomeContent> {
 
   Future<void> _refresh() async {
     setState(() {
-      _daysFuture = _loadWorkoutDays();
+      _overviewFuture = _loadOverview();
     });
-    await _daysFuture;
+    await _overviewFuture;
   }
 
-  Future<List<WorkoutDay>> _loadWorkoutDays() async {
+  Future<_HomeOverviewData> _loadOverview() async {
     final client = Supabase.instance.client;
     final userId = client.auth.currentUser?.id;
     if (userId == null) {
       throw Exception(AppLocalizations.of(context)!.unauthenticated);
     }
 
+    final days = await _loadWorkoutDaysForUser(client, userId);
+    final coachTip = await _loadCoachTipForUser(client, userId);
+    return _HomeOverviewData(days: days, coachTip: coachTip);
+  }
+
+  Future<List<WorkoutDay>> _loadWorkoutDaysForUser(
+    SupabaseClient client,
+    String userId,
+  ) async {
     final response = await client.from('days').select(
           'week, day_code, completed, '
           'workout_plan_days ( position, workout_plans ( id, title, starts_on, created_at ) )',
@@ -162,6 +172,22 @@ class _HomeContentState extends State<HomeContent> {
         exercises: const [],
       );
     }).toList();
+  }
+
+  Future<String?> _loadCoachTipForUser(
+    SupabaseClient client,
+    String userId,
+  ) async {
+    final response = await client
+        .from('trainees')
+        .select('coach_tip')
+        .eq('id', userId)
+        .maybeSingle();
+    if (response == null) {
+      return null;
+    }
+    final tip = response['coach_tip'] as String?;
+    return tip?.trim().isEmpty ?? true ? null : tip?.trim();
   }
 
   Future<void> _openTraineeFeedback() async {
@@ -387,6 +413,16 @@ class _PlanProgressSummary {
   int get completionPercent {
     return (completionRatio * 100).round();
   }
+}
+
+class _HomeOverviewData {
+  final List<WorkoutDay> days;
+  final String? coachTip;
+
+  const _HomeOverviewData({
+    this.days = const [],
+    this.coachTip,
+  });
 }
 
 class _WorkoutScheduleSection extends StatelessWidget {
@@ -654,12 +690,18 @@ class _TraineeFeedbackLinkSection extends StatelessWidget {
 }
 
 class _CoachTipSection extends StatelessWidget {
-  const _CoachTipSection();
+  final String? tip;
+
+  const _CoachTipSection({
+    this.tip,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+
+    final tipText = (tip ?? '').trim();
 
     return Card(
       color: theme.colorScheme.secondaryContainer,
@@ -686,7 +728,7 @@ class _CoachTipSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              l10n.homeCoachTipPlaceholder,
+              tipText.isEmpty ? l10n.homeCoachTipPlaceholder : tipText,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSecondaryContainer,
               ),
