@@ -51,6 +51,8 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .payment-card{padding:12px}
 .payment-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .payment-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px}
+.payment-amount-row{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px}
+.payment-amount-row input{min-width:140px}
 .day-list{display:flex;flex-direction:column;gap:10px}
 .day-card{border:1px solid var(--line);border-radius:12px;background:#0f1118;padding:12px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 .day-header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
