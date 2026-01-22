@@ -80,24 +80,26 @@
                 <div class="card">
                     <div class="dashboard-card-header">
                         <div class="stack">
-                            <h2 style="margin:0">{{ t('dashboard.noticesTitle') }}</h2>
-                            <span class="muted small">{{ t('dashboard.noticesSubtitle') }}</span>
+                            <h2 style="margin:0">{{ t('dashboard.generalTitle') }}</h2>
+                            <span class="muted small">{{ t('dashboard.generalSubtitle') }}</span>
                         </div>
+                        <span class="pill">{{ t('labels.shownCount', { count: dashboardTrainees.length }) }}</span>
                     </div>
-                    <form class="stack" @submit.prevent="addAnnouncement">
-                        <textarea v-model="newAnnouncement" :placeholder="t('dashboard.noticePlaceholder')"></textarea>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap">
-                            <button class="btn small" type="submit">{{ t('dashboard.addNotice') }}</button>
-                        </div>
-                    </form>
-                    <div v-if="announcements.length===0" class="muted small" style="margin-top:10px">{{ t('dashboard.noNotices') }}</div>
-                    <div v-else class="notice-list">
-                        <div class="notice-item" v-for="notice in announcements" :key="notice.id">
+                    <div v-if="dashboardTrainees.length===0" class="muted small" style="margin-top:10px">
+                        {{ t('dashboard.generalEmpty') }}
+                    </div>
+                    <div v-else class="dashboard-trainee-list scroll-area">
+                        <div class="dashboard-trainee-item" v-for="u in dashboardTrainees" :key="u.id">
                             <div class="stack">
-                                <strong>{{ notice.text }}</strong>
-                                <span class="muted small" v-if="notice.dateLabel">{{ notice.dateLabel }}</span>
+                                <strong>{{ u.displayName || shortId(u.id) }}</strong>
+                                <span class="muted small mono">{{ u.id }}</span>
                             </div>
-                            <button class="small" type="button" @click="removeAnnouncement(notice)">{{ t('actions.delete') }}</button>
+                            <div class="stack dashboard-trainee-actions">
+                                <span class="pill" :class="u.paid ? 'paid' : 'overdue'">
+                                    {{ u.paid ? t('payment.onTime') : t('payment.overdue') }}
+                                </span>
+                                <button class="small" type="button" @click="openTrainee(u)">{{ t('actions.openTrainee') }}</button>
+                            </div>
                         </div>
                     </div>
                 </div>

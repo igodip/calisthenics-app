@@ -41,8 +41,9 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .chat-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .chat-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .chat-message{white-space:pre-wrap;margin-top:6px}
-.notice-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.notice-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px;background:#0f1118}
+.dashboard-trainee-list{display:flex;flex-direction:column;gap:10px;margin-top:12px;max-height:520px}
+.dashboard-trainee-item{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px;background:#0f1118}
+.dashboard-trainee-actions{align-items:flex-end}
 .payment-alert{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px;background:#0f1118}
 .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .filter-row button{border-radius:999px;padding:6px 12px;border:1px solid var(--line);background:#0f1118;color:var(--ink)}
