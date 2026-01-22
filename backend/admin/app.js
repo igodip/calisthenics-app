@@ -74,6 +74,7 @@ import {
       const dashboardNotes = ref([]);
       const dashboardNotesLoading = ref(false);
       const dashboardNotesError = ref('');
+      const dashboardNotesSaving = ref({});
       const announcements = ref([]);
       const newAnnouncement = ref('');
       const addingDay = ref(false);
@@ -1016,6 +1017,8 @@ import {
             id: row.id,
             message: row.message || '',
             traineeName: row.trainees?.name || shortId(row.trainee_id),
+            isRead: Boolean(row.read_at),
+            readAt: row.read_at,
             statusLabel: row.read_at
               ? t('dashboard.feedbackRead')
               : t('dashboard.feedbackUnread'),
@@ -1027,6 +1030,37 @@ import {
           dashboardNotesError.value = err.message || t('errors.loadDays');
         } finally {
           dashboardNotesLoading.value = false;
+        }
+      }
+
+      async function markFeedbackRead(note) {
+        if (!note || note.isRead || dashboardNotesSaving.value[note.id]) {
+          return;
+        }
+        dashboardNotesSaving.value = {
+          ...dashboardNotesSaving.value,
+          [note.id]: true,
+        };
+        try {
+          const readAt = new Date().toISOString();
+          const { error } = await supabase
+            .from('trainee_feedbacks')
+            .update({ read_at: readAt })
+            .eq('id', note.id);
+          if (error) {
+            throw new Error(error.message);
+          }
+          note.isRead = true;
+          note.readAt = readAt;
+          note.statusLabel = t('dashboard.feedbackRead');
+        } catch (err) {
+          console.error(err);
+          alert(t('errors.updateFeedback', { message: err.message }));
+        } finally {
+          dashboardNotesSaving.value = {
+            ...dashboardNotesSaving.value,
+            [note.id]: false,
+          };
         }
       }
 
@@ -1375,6 +1409,7 @@ import {
         dashboardNotes,
         dashboardNotesLoading,
         dashboardNotesError,
+        dashboardNotesSaving,
         announcements: computed(() =>
           (announcements.value || []).map((notice) => ({
             ...notice,
@@ -1407,6 +1442,7 @@ import {
         loadPlans,
         loadPaymentHistory,
         loadDashboardNotes,
+        markFeedbackRead,
         addAnnouncement,
         removeAnnouncement,
         addPlan,

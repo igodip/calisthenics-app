@@ -58,7 +58,18 @@
                         <div v-for="note in dashboardNotes" :key="note.id" class="chat-item">
                             <div class="chat-meta">
                                 <strong>{{ note.traineeName }}</strong>
-                                <span class="pill">{{ note.statusLabel }}</span>
+                                <div class="chat-actions">
+                                    <span class="pill">{{ note.statusLabel }}</span>
+                                    <button
+                                        v-if="!note.isRead"
+                                        class="small"
+                                        type="button"
+                                        :disabled="dashboardNotesSaving[note.id]"
+                                        @click="markFeedbackRead(note)"
+                                    >
+                                        {{ t('actions.markRead') }}
+                                    </button>
+                                </div>
                             </div>
                             <div class="muted small" v-if="note.dateLabel">{{ note.dateLabel }}</div>
                             <div class="chat-message">{{ note.message }}</div>
