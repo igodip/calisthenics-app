@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
-import '../model/trainee.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -84,20 +83,15 @@ class _PlanExpiredGateState extends State<PlanExpiredGate> {
     final userId = client.auth.currentUser?.id;
     if (userId == null) return false;
 
-    final profileResponse = await supabase
-        .from('trainees')
-        .select(
-        'id, name, paid, weight')
-        .eq('id', userId)
+    final paymentResponse = await supabase
+        .from('trainee_monthly_payments')
+        .select('paid, month_start')
+        .eq('trainee_id', userId)
+        .order('month_start', ascending: false)
         .limit(1)
         .maybeSingle();
 
-    if (profileResponse == null) {
-      throw Exception('user-not-found');
-    }
-
-    final profile = Trainee.fromMap(profileResponse);
-    return profile.paid ?? false;
+    return paymentResponse?['paid'] as bool? ?? false;
   }
 }
 

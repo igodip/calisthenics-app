@@ -59,8 +59,7 @@ Future<UserProfileData> getUserData() async {
 
   final profileResponse = await supabase
       .from('trainees')
-      .select(
-          'id, name, paid, weight')
+      .select('id, name, weight')
       .eq('id', user.id)
       .limit(1)
       .maybeSingle();
@@ -73,12 +72,22 @@ Future<UserProfileData> getUserData() async {
   final name = profile.name ??
       (user.email != null ? user.email!.split('@').first : '');
 
+  final paymentResponse = await supabase
+      .from('trainee_monthly_payments')
+      .select('paid, month_start')
+      .eq('trainee_id', user.id)
+      .order('month_start', ascending: false)
+      .limit(1)
+      .maybeSingle();
+
+  final isPayed = paymentResponse?['paid'] as bool? ?? false;
+
   return UserProfileData(
     userId: user.id,
     email: user.email ?? '',
     username: name,
     isActive: true,
-    isPayed: profile.paid ?? false,
+    isPayed: isPayed,
     profile: profile,
   );
 }
