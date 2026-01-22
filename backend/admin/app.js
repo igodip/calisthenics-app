@@ -66,6 +66,9 @@ import {
       const expandedDays = ref({});
       const traineeProgress = ref({});
       const loadingProgress = ref(false);
+      const traineeWeekStatus = ref({});
+      const loadingWeekStatus = ref(false);
+      const weekStatusError = ref('');
       const maxTests = ref([]);
       const loadingMaxTests = ref(false);
       const maxTestsError = ref('');
@@ -191,6 +194,8 @@ import {
       const overdueUsers = computed(() =>
         (users.value || []).filter((u) => !u.paid),
       );
+
+      const showLastWeekCard = computed(() => Boolean(currentTrainer.value));
 
       const paymentFilterOptions = [
         { value: 'all', labelKey: 'payments.filterAll' },
@@ -416,6 +421,29 @@ import {
           return (a.id || '').localeCompare(b.id || '');
         }),
       );
+
+      const lastWeekTrainees = computed(() => {
+        const statusMap = traineeWeekStatus.value || {};
+        return (filteredUsers.value || [])
+          .filter((u) => statusMap[u.id]?.isLastWeek)
+          .slice()
+          .sort((a, b) => {
+            const nameA = (a.displayName || '').toLowerCase();
+            const nameB = (b.displayName || '').toLowerCase();
+            if (nameA && nameB) return nameA.localeCompare(nameB);
+            return (a.id || '').localeCompare(b.id || '');
+          });
+      });
+
+      const weekStatusFor = (trainee) => {
+        if (!trainee?.id) return '';
+        const status = traineeWeekStatus.value?.[trainee.id];
+        if (!status || !status.lastWeek) return '';
+        return t('dashboard.lastWeekProgress', {
+          current: status.currentWeek || 0,
+          total: status.lastWeek,
+        });
+      };
 
       const shortId = (id) => (id ? id.toString().slice(0, 8) + '…' : '');
 
@@ -855,6 +883,7 @@ import {
             };
           }
         });
+        await loadTraineeWeekStatus();
       }
 
       async function assignTrainerToTrainee(trainee) {
@@ -1032,6 +1061,113 @@ import {
           alert(err.message || t('errors.loadProgress'));
         } finally {
           loadingProgress.value = false;
+        }
+      }
+
+      async function loadTraineeWeekStatus() {
+        loadingWeekStatus.value = true;
+        weekStatusError.value = '';
+        try {
+          const trainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
+          const visibleIds = trainerOnly
+            ? (users.value || []).map((u) => u.id).filter(Boolean)
+            : [];
+          if (trainerOnly && !visibleIds.length) {
+            traineeWeekStatus.value = {};
+            return;
+          }
+          let dayQuery = supabase
+            .from('days')
+            .select(
+              'week, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) )',
+            );
+          if (trainerOnly) {
+            dayQuery = dayQuery.in(
+              'workout_plan_days.workout_plans.trainee_id',
+              visibleIds,
+            );
+          }
+          const { data: dayRows, error: dayError } = await dayQuery;
+          if (dayError) {
+            throw new Error(dayError.message);
+          }
+
+          const maxWeekByTrainee = {};
+          (dayRows || []).forEach((row) => {
+            const planEntries = row.workout_plan_days || [];
+            const traineeId = planEntries?.[0]?.workout_plans?.trainee_id;
+            if (!traineeId) return;
+            const week = Number(row.week || 0);
+            const current = maxWeekByTrainee[traineeId] || 0;
+            if (week > current) {
+              maxWeekByTrainee[traineeId] = week;
+            }
+          });
+
+          let completedQuery = supabase
+            .from('day_exercises')
+            .select(
+              'id, completed, days!inner ( week, completed_at, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) ) )',
+            )
+            .eq('completed', true);
+          if (trainerOnly) {
+            completedQuery = completedQuery.in(
+              'days.workout_plan_days.workout_plans.trainee_id',
+              visibleIds,
+            );
+          }
+          const { data: completedRows, error: completedError } =
+            await completedQuery;
+          if (completedError) {
+            throw new Error(completedError.message);
+          }
+
+          const latestByTrainee = {};
+          (completedRows || []).forEach((row) => {
+            const day = row.days || {};
+            const planEntries = day.workout_plan_days || [];
+            const traineeId = planEntries?.[0]?.workout_plans?.trainee_id;
+            if (!traineeId) return;
+            const week = Number(day.week || 0);
+            const completedAt = day.completed_at
+              ? Date.parse(day.completed_at)
+              : null;
+            const existing = latestByTrainee[traineeId];
+            if (!existing) {
+              latestByTrainee[traineeId] = {
+                week,
+                timestamp: completedAt || 0,
+              };
+              return;
+            }
+            const existingTime = existing.timestamp || 0;
+            if (completedAt && completedAt >= existingTime) {
+              latestByTrainee[traineeId] = { week, timestamp: completedAt };
+              return;
+            }
+            if (!completedAt && week > existing.week) {
+              latestByTrainee[traineeId] = { week, timestamp: existingTime };
+            }
+          });
+
+          const nextStatus = {};
+          (users.value || []).forEach((trainee) => {
+            const lastWeek = maxWeekByTrainee[trainee.id] || 0;
+            const currentEntry = latestByTrainee[trainee.id];
+            const currentWeek = currentEntry?.week || (lastWeek ? 1 : 0);
+            nextStatus[trainee.id] = {
+              currentWeek,
+              lastWeek,
+              isLastWeek: Boolean(lastWeek && currentWeek >= lastWeek),
+            };
+          });
+          traineeWeekStatus.value = nextStatus;
+        } catch (err) {
+          console.error(err);
+          weekStatusError.value = err.message || t('errors.loadLastWeek');
+          traineeWeekStatus.value = {};
+        } finally {
+          loadingWeekStatus.value = false;
         }
       }
 
@@ -1546,6 +1682,8 @@ import {
         users,
         filteredUsers,
         dashboardTrainees,
+        showLastWeekCard,
+        lastWeekTrainees,
         overdueUsers,
         paymentSummary,
         paymentFilter,
@@ -1597,6 +1735,8 @@ import {
         dashboardNotesLoading,
         dashboardNotesError,
         loadingProgress,
+        loadingWeekStatus,
+        weekStatusError,
         loadingMaxTests,
         maxTestsError,
         coachTipDraft,
@@ -1609,6 +1749,7 @@ import {
         completedExercisesError,
         trainingCalendar,
         progressFor,
+        weekStatusFor,
         formatTestValue,
         formatDate,
         formatTime,
