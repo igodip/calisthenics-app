@@ -8,6 +8,8 @@ class TerminologiaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final termini = [
       {'termine': l10n.termRepsTitle, 'descrizione': l10n.termRepsDescription},
       {'termine': l10n.termSetTitle, 'descrizione': l10n.termSetDescription},
@@ -22,34 +24,71 @@ class TerminologiaPage extends StatelessWidget {
       {'termine': l10n.termSomTitle, 'descrizione': l10n.termSomDescription},
       {'termine': l10n.termScaricoTitle, 'descrizione': l10n.termScaricoDescription},
     ];
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: termini.length,
-      itemBuilder: (context, index) {
-        final termine = termini[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          elevation: 3,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  termine['termine']!,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  termine['descrizione']!,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+          sliver: SliverToBoxAdapter(
+            child: Text(
+              l10n.terminologyTitle,
+              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
-        );
-      },
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          sliver: SliverList.separated(
+            itemCount: termini.length,
+            itemBuilder: (context, index) {
+              final termine = termini[index];
+              return DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceVariant.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: colorScheme.outlineVariant),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: colorScheme.primaryContainer,
+                            child: Icon(
+                              Icons.fitness_center,
+                              size: 18,
+                              color: colorScheme.onPrimaryContainer,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              termine['termine']!,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        termine['descrizione']!,
+                        style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+          ),
+        ),
+      ],
     );
   }
 }
