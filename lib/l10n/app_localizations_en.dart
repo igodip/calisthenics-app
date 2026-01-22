@@ -96,6 +96,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Start from a hollow body hang, then pull until your chin clears the bar. Control the descent for stronger reps.';
 
   @override
+  String get guidesChinUpName => 'Chin-up';
+
+  @override
+  String get guidesChinUpFocus => 'Lats, biceps, grip';
+
+  @override
+  String get guidesChinUpTip =>
+      'Keep your shoulders down and drive your elbows toward your ribs to stay strong at the top.';
+
+  @override
+  String get guidesChinUpDescription =>
+      'Start from a dead hang with palms facing you, pull until your chin clears the bar, then lower under control.';
+
+  @override
   String get guidesPushupName => 'Push-up';
 
   @override
@@ -122,6 +136,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get guidesBodyweightSquatDescription =>
       'Sit the hips back and down until thighs are at least parallel. Drive evenly through the whole foot to stand tall.';
+
+  @override
+  String get guidesGluteBridgeName => 'Glute bridge';
+
+  @override
+  String get guidesGluteBridgeFocus => 'Glutes, hamstrings, core';
+
+  @override
+  String get guidesGluteBridgeTip =>
+      'Exhale as you lift and avoid arching your lower back at the top.';
+
+  @override
+  String get guidesGluteBridgeDescription =>
+      'Lie on your back with knees bent, drive through your heels to lift hips until thighs and torso align, then lower with control.';
 
   @override
   String get guidesHangingLegRaiseName => 'Hanging leg raise';
@@ -220,6 +248,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get guidesHollowHoldDescription =>
       'Lie on your back, lift shoulders and legs, and hold a banana shape with straight arms overhead.';
+
+  @override
+  String get guidesPlankName => 'Plank';
+
+  @override
+  String get guidesPlankFocus => 'Core, shoulders, glutes';
+
+  @override
+  String get guidesPlankTip =>
+      'Squeeze glutes and keep your ribs tucked so the hips don\'t sag.';
+
+  @override
+  String get guidesPlankDescription =>
+      'Set forearms under shoulders, extend legs long, and hold a straight line from head to heels while breathing steadily.';
 
   @override
   String get guidesLSitName => 'L-sit';

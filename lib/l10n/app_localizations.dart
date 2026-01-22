@@ -260,6 +260,30 @@ abstract class AppLocalizations {
   /// **'Parti da una sospensione in hollow body, poi tira finché il mento supera la sbarra. Controlla la discesa per ripetizioni più forti.'**
   String get guidesPullupDescription;
 
+  /// No description provided for @guidesChinUpName.
+  ///
+  /// In it, this message translates to:
+  /// **'Chin-up'**
+  String get guidesChinUpName;
+
+  /// No description provided for @guidesChinUpFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Dorsali, bicipiti, presa'**
+  String get guidesChinUpFocus;
+
+  /// No description provided for @guidesChinUpTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Tieni le spalle depresse e spingi i gomiti verso le costole per restare forte in alto.'**
+  String get guidesChinUpTip;
+
+  /// No description provided for @guidesChinUpDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Parti da una sospensione con i palmi verso di te, tira finché il mento supera la sbarra, poi scendi con controllo.'**
+  String get guidesChinUpDescription;
+
   /// No description provided for @guidesPushupName.
   ///
   /// In it, this message translates to:
@@ -307,6 +331,30 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Porta indietro e in basso le anche finché le cosce sono almeno parallele. Spingi uniformemente su tutto il piede per tornare in piedi.'**
   String get guidesBodyweightSquatDescription;
+
+  /// No description provided for @guidesGluteBridgeName.
+  ///
+  /// In it, this message translates to:
+  /// **'Ponte glutei'**
+  String get guidesGluteBridgeName;
+
+  /// No description provided for @guidesGluteBridgeFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Glutei, femorali, core'**
+  String get guidesGluteBridgeFocus;
+
+  /// No description provided for @guidesGluteBridgeTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Espira mentre sali ed evita di inarcare troppo la zona lombare in alto.'**
+  String get guidesGluteBridgeTip;
+
+  /// No description provided for @guidesGluteBridgeDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Supino con ginocchia piegate, spingi sui talloni per sollevare il bacino finché cosce e busto sono allineati, poi scendi lentamente.'**
+  String get guidesGluteBridgeDescription;
 
   /// No description provided for @guidesHangingLegRaiseName.
   ///
@@ -475,6 +523,30 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Sdraiati supino, solleva spalle e gambe e mantieni una forma a banana con braccia tese sopra la testa.'**
   String get guidesHollowHoldDescription;
+
+  /// No description provided for @guidesPlankName.
+  ///
+  /// In it, this message translates to:
+  /// **'Plank'**
+  String get guidesPlankName;
+
+  /// No description provided for @guidesPlankFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Core, spalle, glutei'**
+  String get guidesPlankFocus;
+
+  /// No description provided for @guidesPlankTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Contrai i glutei e tieni le costole chiuse per evitare che i fianchi cedano.'**
+  String get guidesPlankTip;
+
+  /// No description provided for @guidesPlankDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Posiziona gli avambracci sotto le spalle, allunga le gambe e mantieni una linea dritta dalla testa ai talloni respirando con calma.'**
+  String get guidesPlankDescription;
 
   /// No description provided for @guidesLSitName.
   ///

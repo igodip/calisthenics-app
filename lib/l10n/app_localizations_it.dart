@@ -96,6 +96,20 @@ class AppLocalizationsIt extends AppLocalizations {
       'Parti da una sospensione in hollow body, poi tira finché il mento supera la sbarra. Controlla la discesa per ripetizioni più forti.';
 
   @override
+  String get guidesChinUpName => 'Chin-up';
+
+  @override
+  String get guidesChinUpFocus => 'Dorsali, bicipiti, presa';
+
+  @override
+  String get guidesChinUpTip =>
+      'Tieni le spalle depresse e spingi i gomiti verso le costole per restare forte in alto.';
+
+  @override
+  String get guidesChinUpDescription =>
+      'Parti da una sospensione con i palmi verso di te, tira finché il mento supera la sbarra, poi scendi con controllo.';
+
+  @override
   String get guidesPushupName => 'Piegamenti';
 
   @override
@@ -122,6 +136,20 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get guidesBodyweightSquatDescription =>
       'Porta indietro e in basso le anche finché le cosce sono almeno parallele. Spingi uniformemente su tutto il piede per tornare in piedi.';
+
+  @override
+  String get guidesGluteBridgeName => 'Ponte glutei';
+
+  @override
+  String get guidesGluteBridgeFocus => 'Glutei, femorali, core';
+
+  @override
+  String get guidesGluteBridgeTip =>
+      'Espira mentre sali ed evita di inarcare troppo la zona lombare in alto.';
+
+  @override
+  String get guidesGluteBridgeDescription =>
+      'Supino con ginocchia piegate, spingi sui talloni per sollevare il bacino finché cosce e busto sono allineati, poi scendi lentamente.';
 
   @override
   String get guidesHangingLegRaiseName => 'Sollevamento gambe alla sbarra';
@@ -222,6 +250,20 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get guidesHollowHoldDescription =>
       'Sdraiati supino, solleva spalle e gambe e mantieni una forma a banana con braccia tese sopra la testa.';
+
+  @override
+  String get guidesPlankName => 'Plank';
+
+  @override
+  String get guidesPlankFocus => 'Core, spalle, glutei';
+
+  @override
+  String get guidesPlankTip =>
+      'Contrai i glutei e tieni le costole chiuse per evitare che i fianchi cedano.';
+
+  @override
+  String get guidesPlankDescription =>
+      'Posiziona gli avambracci sotto le spalle, allunga le gambe e mantieni una linea dritta dalla testa ai talloni respirando con calma.';
 
   @override
   String get guidesLSitName => 'L-sit';
