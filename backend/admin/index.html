@@ -199,6 +199,17 @@
                         </div>
                         <span class="pill">{{ t('labels.shownCount', { count: paymentUsers.length }) }}</span>
                     </div>
+                    <div class="filter-row">
+                        <button
+                                v-for="filter in paymentFilterOptions"
+                                :key="filter.value"
+                                type="button"
+                                :class="{active: paymentFilter===filter.value}"
+                                @click="paymentFilter=filter.value"
+                        >
+                            {{ t(filter.labelKey) }}
+                        </button>
+                    </div>
                     <div class="summary-grid">
                         <div class="summary-item">
                             <span class="summary-label">{{ t('payments.totalLabel') }}</span>
@@ -212,17 +223,6 @@
                             <span class="summary-label">{{ t('payments.overdueLabel') }}</span>
                             <strong>{{ paymentSummary.overdue }}</strong>
                         </div>
-                    </div>
-                    <div class="filter-row">
-                        <button
-                            v-for="filter in paymentFilterOptions"
-                            :key="filter.value"
-                            type="button"
-                            :class="{active: paymentFilter===filter.value}"
-                            @click="paymentFilter=filter.value"
-                        >
-                            {{ t(filter.labelKey) }}
-                        </button>
                     </div>
                 </div>
 
@@ -263,22 +263,12 @@
                             <div class="payment-card-header">
                                 <div class="stack">
                                     <strong>{{ u.displayName || shortId(u.id) }}</strong>
-                                    <span class="muted small mono">{{ u.id }}</span>
                                 </div>
+                            </div>
+                            <div class="payment-actions">
                                 <span class="pill" :class="u.paid ? 'paid' : 'overdue'">
                                     {{ u.paid ? t('payment.onTime') : t('payment.overdue') }}
                                 </span>
-                            </div>
-                            <div class="payment-actions">
-                                <label class="payment-toggle small">
-                                    <input
-                                        type="checkbox"
-                                        :checked="u.paid"
-                                        :disabled="paymentSaving[u.id]"
-                                        @change="togglePayment(u, $event)"
-                                    />
-                                    <span>{{ t('payment.toggle') }}</span>
-                                </label>
                                 <button class="small" type="button" @click="openTrainee(u)">{{ t('actions.openTrainee') }}</button>
                             </div>
                             <div class="muted small" v-if="paymentSaving[u.id]">{{ t('status.updatingPayment') }}</div>

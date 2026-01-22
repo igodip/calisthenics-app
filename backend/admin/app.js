@@ -499,6 +499,7 @@ import {
               notes: null,
             }),
           );
+          console.log(dayPayloads);
           const { data: dayRows, error: dayError } = await supabase
             .from('days')
             .insert(dayPayloads)
