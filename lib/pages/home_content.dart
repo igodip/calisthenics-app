@@ -125,7 +125,7 @@ class _HomeContentState extends State<HomeContent> {
     String userId,
   ) async {
     final response = await client.from('days').select(
-          'week, day_code, completed, '
+          'id, week, day_code, completed, completed_at, '
           'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) )',
         )
         .eq('workout_plan_days.workout_plans.trainee_id', userId)
@@ -157,12 +157,13 @@ class _HomeContentState extends State<HomeContent> {
       final planPosition = (wpd?['position'] as num?)?.toInt();
 
       return WorkoutDay(
-        id: null,
+        id: row['id'] as String?,
         week: (row['week'] as num?)?.toInt() ?? 0,
         dayCode: (row['day_code'] as String? ?? '').trim(),
         title: null,
         notes: null,
         isCompleted: row['completed'] as bool? ?? false,
+        completedAt: parseDate(row['completed_at']),
         planId: planId,
         planName: planName,
         planStartedAt: planStartedAt,
@@ -301,6 +302,11 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   DateTime? _resolveWorkoutDate(WorkoutDay day) {
+    final completedAt = day.completedAt;
+    if (completedAt != null) {
+      return _normalizeDate(completedAt);
+    }
+
     final planStart = day.planStartedAt;
     final weekOffset = day.week > 0 ? day.week - 1 : 0;
     final dayOffset = _dayOffsetFromCode(day.dayCode);

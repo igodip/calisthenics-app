@@ -158,7 +158,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     final response = await client
         .from('days')
         .select(
-          'id, week, day_code, title, notes, completed, '
+          'id, week, day_code, title, notes, completed, completed_at, '
           'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) ), '
           'day_exercises ( id, position, notes, completed, trainee_notes, exercise )',
         )
@@ -214,6 +214,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         title: row['title'] as String?,
         notes: row['notes'] as String?,
         isCompleted: row['completed'] as bool? ?? false,
+        completedAt: parseDate(row['completed_at']),
         planId: planId,
         planName: planName,
         planStartedAt: planStartedAt,

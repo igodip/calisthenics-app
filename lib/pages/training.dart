@@ -254,9 +254,13 @@ class _TrainingState extends State<Training> {
     });
 
     try {
+      final completedAt = newValue ? DateTime.now().toUtc() : null;
       await Supabase.instance.client
           .from('days')
-          .update({'completed': newValue})
+          .update({
+            'completed': newValue,
+            'completed_at': completedAt?.toIso8601String(),
+          })
           .eq('id', dayId);
 
       if (!mounted) return;
