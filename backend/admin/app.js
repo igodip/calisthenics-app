@@ -694,13 +694,13 @@ import {
       async function loadUsers() {
         const isTrainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
         const baseSelect =
-          'id, name, coach_tip, trainee_trainers ( trainer_id, trainers ( id, name ) )';
+          'id, name, trainee_trainers ( trainer_id, trainers ( id, name ) , coach_tip )';
         let query = supabase.from('trainees').select(baseSelect);
         if (isTrainerOnly) {
           query = supabase
             .from('trainees')
             .select(
-              'id, name, coach_tip, trainee_trainers!inner ( trainer_id, trainers ( id, name ) )',
+              'id, name, trainee_trainers!inner ( trainer_id, trainers ( id, name ), coach_tip )',
             )
             .eq('trainee_trainers.trainer_id', currentTrainer.value.id);
         }
@@ -1037,9 +1037,9 @@ import {
         try {
           const nextTip = coachTipDraft.value.trim();
           const { error } = await supabase
-            .from('trainees')
+            .from('trainee_trainers')
             .update({ coach_tip: nextTip || null })
-            .eq('id', current.value.id);
+            .eq('trainee_id', current.value.id);
           if (error) {
             throw new Error(error.message);
           }

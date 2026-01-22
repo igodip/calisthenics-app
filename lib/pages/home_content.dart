@@ -179,9 +179,9 @@ class _HomeContentState extends State<HomeContent> {
     String userId,
   ) async {
     final response = await client
-        .from('trainees')
+        .from('trainee_trainers')
         .select('coach_tip')
-        .eq('id', userId)
+        .eq('trainee_id', userId)
         .maybeSingle();
     if (response == null) {
       return null;
