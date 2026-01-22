@@ -74,8 +74,6 @@ import {
       const dashboardNotes = ref([]);
       const dashboardNotesLoading = ref(false);
       const dashboardNotesError = ref('');
-      const announcements = ref([]);
-      const newAnnouncement = ref('');
       const addingDay = ref(false);
       const addingExercise = ref(false);
       const savingPlan = ref(false);
@@ -358,6 +356,15 @@ import {
         );
       });
 
+      const dashboardTrainees = computed(() =>
+        (filteredUsers.value || []).slice().sort((a, b) => {
+          const nameA = (a.displayName || '').toLowerCase();
+          const nameB = (b.displayName || '').toLowerCase();
+          if (nameA && nameB) return nameA.localeCompare(nameB);
+          return (a.id || '').localeCompare(b.id || '');
+        }),
+      );
+
       const shortId = (id) => (id ? id.toString().slice(0, 8) + '…' : '');
 
       const formatTestValue = (value) => {
@@ -383,55 +390,6 @@ import {
         const month = String(now.getMonth() + 1).padStart(2, '0');
         return `${year}-${month}-01`;
       };
-
-      function loadAnnouncementsFromStorage() {
-        try {
-          const stored = localStorage.getItem('adminAnnouncements');
-          if (!stored) {
-            announcements.value = [];
-            return;
-          }
-          const parsed = JSON.parse(stored);
-          announcements.value = Array.isArray(parsed) ? parsed : [];
-        } catch (error) {
-          console.error(error);
-          announcements.value = [];
-        }
-      }
-
-      function persistAnnouncements() {
-        localStorage.setItem(
-          'adminAnnouncements',
-          JSON.stringify(announcements.value),
-        );
-      }
-
-      function addAnnouncement() {
-        const text = (newAnnouncement.value || '').trim();
-        if (!text) return;
-        const id =
-          (window.crypto && window.crypto.randomUUID && window.crypto.randomUUID()) ||
-          `notice-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-        const createdAt = new Date().toISOString();
-        announcements.value = [
-          { id, text, createdAt },
-          ...(announcements.value || []),
-        ];
-        newAnnouncement.value = '';
-        persistAnnouncements();
-      }
-
-      function removeAnnouncement(notice) {
-        if (!notice?.id) return;
-        announcements.value = (announcements.value || []).filter(
-          (item) => item.id !== notice.id,
-        );
-        persistAnnouncements();
-      }
-
-      function formatNoticeDate(notice) {
-        return notice?.createdAt ? formatDate(notice.createdAt) : '';
-      }
 
       function resetDayForm() {
         newDayWeek.value = 1;
@@ -1304,7 +1262,6 @@ import {
 
       onMounted(async () => {
         updateDocumentLanguage();
-        loadAnnouncementsFromStorage();
         const {
           data: { session: sess },
         } = await supabase.auth.getSession();
@@ -1332,6 +1289,7 @@ import {
         roleLabel,
         users,
         filteredUsers,
+        dashboardTrainees,
         overdueUsers,
         paymentSummary,
         paymentFilter,
@@ -1375,13 +1333,6 @@ import {
         dashboardNotes,
         dashboardNotesLoading,
         dashboardNotesError,
-        announcements: computed(() =>
-          (announcements.value || []).map((notice) => ({
-            ...notice,
-            dateLabel: formatNoticeDate(notice),
-          })),
-        ),
-        newAnnouncement,
         loadingProgress,
         loadingMaxTests,
         maxTestsError,
@@ -1407,8 +1358,6 @@ import {
         loadPlans,
         loadPaymentHistory,
         loadDashboardNotes,
-        addAnnouncement,
-        removeAnnouncement,
         addPlan,
         addDay,
         resetDayForm,
