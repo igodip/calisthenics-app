@@ -302,7 +302,28 @@
                                 </span>
                                 <button class="small" type="button" @click="openTrainee(u)">{{ t('actions.openTrainee') }}</button>
                             </div>
+                            <div class="payment-amount-row">
+                                <label class="stack small">
+                                    <span class="muted small">{{ t('labels.amount') }}</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        v-model="paymentAmountEdits[u.id]"
+                                        :placeholder="t('placeholders.amount')"
+                                    />
+                                </label>
+                                <button
+                                    class="small"
+                                    type="button"
+                                    :disabled="paymentAmountSaving[u.id]"
+                                    @click="savePaymentAmount(u)"
+                                >
+                                    {{ t('actions.save') }}
+                                </button>
+                            </div>
                             <div class="muted small" v-if="paymentSaving[u.id]">{{ t('status.updatingPayment') }}</div>
+                            <div class="muted small" v-if="paymentAmountSaving[u.id]">{{ t('status.updatingPaymentAmount') }}</div>
                         </div>
                     </div>
                 </div>
@@ -606,6 +627,12 @@
                                     <div class="stack">
                                         <strong>{{ formatDate(payment.month_start) }}</strong>
                                         <span class="muted small" v-if="payment.paid_at">{{ t('program.paidAt', { date: formatDate(payment.paid_at) }) }}</span>
+                                        <span
+                                            class="muted small"
+                                            v-if="payment.amount !== null && payment.amount !== undefined"
+                                        >
+                                            {{ t('payment.amountLabel', { amount: formatAmount(payment.amount) }) }}
+                                        </span>
                                     </div>
                                     <span class="pill" :class="payment.paid ? 'paid' : 'overdue'">
                                         {{ payment.paid ? t('payment.onTime') : t('payment.overdue') }}

@@ -77,6 +77,7 @@ export const translations = {
       untitled: 'Untitled',
       exercise: 'Exercise',
       day: 'Day',
+      amount: 'Amount',
       unknownExercise: 'Unknown exercise',
     },
     dashboard: {
@@ -148,6 +149,7 @@ export const translations = {
     placeholders: {
       email: 'Email',
       password: 'Password',
+      amount: 'Amount',
       exerciseExample: 'e.g. Push-ups',
       exerciseName: 'Exercise name',
       planExample: 'e.g. Summer Strength',
@@ -174,6 +176,7 @@ export const translations = {
       onTime: 'Payments on time',
       overdue: 'Payment overdue',
       toggle: 'On time',
+      amountLabel: 'Amount {amount}',
     },
     status: {
       savingExercise: 'Saving exercise…',
@@ -187,6 +190,7 @@ export const translations = {
       loadingMaxTests: 'Loading max tests…',
       loadingPayments: 'Loading payments…',
       loadingCompletedExercises: 'Loading completed exercises…',
+      updatingPaymentAmount: 'Updating payment amount…',
     },
     plans: {
       title: 'Workout plans',
@@ -363,6 +367,7 @@ export const translations = {
       untitled: 'Senza titolo',
       exercise: 'Esercizio',
       day: 'Giorno',
+      amount: 'Importo',
       unknownExercise: 'Esercizio sconosciuto',
     },
     dashboard: {
@@ -434,6 +439,7 @@ export const translations = {
     placeholders: {
       email: 'Email',
       password: 'Password',
+      amount: 'Importo',
       exerciseExample: 'es. Push-up',
       exerciseName: 'Nome esercizio',
       planExample: 'es. Forza Estiva',
@@ -460,6 +466,7 @@ export const translations = {
       onTime: 'Pagamenti in regola',
       overdue: 'Pagamento in ritardo',
       toggle: 'In regola',
+      amountLabel: 'Importo {amount}',
     },
     status: {
       savingExercise: 'Salvataggio esercizio…',
@@ -473,6 +480,7 @@ export const translations = {
       loadingMaxTests: 'Caricamento test massimali…',
       loadingPayments: 'Caricamento pagamenti…',
       loadingCompletedExercises: 'Caricamento esercizi completati…',
+      updatingPaymentAmount: 'Aggiornamento importo pagamento…',
     },
     plans: {
       title: 'Piani allenamento',

@@ -75,6 +75,8 @@ import {
       const coachTipDraft = ref('');
       const coachTipSaving = ref(false);
       const paymentSaving = ref({});
+      const paymentAmountEdits = ref({});
+      const paymentAmountSaving = ref({});
       const paymentHistory = ref([]);
       const loadingPayments = ref(false);
       const paymentsError = ref('');
@@ -452,6 +454,17 @@ import {
         return Number.isInteger(numeric) ? numeric.toFixed(0) : numeric.toFixed(1);
       };
 
+      const formatAmount = (value) => {
+        if (value === null || value === undefined || value === '') return '';
+        const numeric = Number(value);
+        if (Number.isNaN(numeric)) return String(value);
+        const localeTag = locale.value === 'it' ? 'it-IT' : 'en-US';
+        return new Intl.NumberFormat(localeTag, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(numeric);
+      };
+
       const formatDate = (value) => {
         if (!value) return '';
         const parsed = new Date(value);
@@ -494,6 +507,13 @@ import {
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         return `${year}-${month}-01`;
+      };
+
+      const normalizePaymentAmount = (value) => {
+        if (value === null || value === undefined || value === '') return null;
+        const numeric = Number(value);
+        if (Number.isNaN(numeric)) return null;
+        return numeric;
       };
 
       const templateDayLabel = (index) => {
@@ -843,11 +863,13 @@ import {
           .map((row) => row.id)
           .filter(Boolean);
         const paidMap = new Map();
+        const amountMap = new Map();
+        const paidAtMap = new Map();
         if (traineeIds.length) {
           const monthStart = currentMonthStart();
           const { data: paymentRows, error: paymentError } = await supabase
             .from('trainee_monthly_payments')
-            .select('trainee_id, paid')
+            .select('trainee_id, paid, paid_at, amount')
             .eq('month_start', monthStart)
             .in('trainee_id', traineeIds);
           if (paymentError) {
@@ -860,6 +882,8 @@ import {
           } else {
             (paymentRows || []).forEach((row) => {
               paidMap.set(row.trainee_id, Boolean(row.paid));
+              amountMap.set(row.trainee_id, row.amount ?? null);
+              paidAtMap.set(row.trainee_id, row.paid_at ?? null);
             });
           }
         }
@@ -867,6 +891,8 @@ import {
         users.value = (traineeRows || []).map((row) => ({
           ...row,
           paid: paidMap.get(row.id) || false,
+          paymentAmount: amountMap.get(row.id) ?? null,
+          paymentPaidAt: paidAtMap.get(row.id) ?? null,
           trainers: (row.trainee_trainers || [])
             .map((assignment) => assignment.trainers)
             .filter(Boolean),
@@ -880,6 +906,15 @@ import {
             trainerSelections.value = {
               ...trainerSelections.value,
               [trainee.id]: '',
+            };
+          }
+          if (paymentAmountEdits.value[trainee.id] === undefined) {
+            paymentAmountEdits.value = {
+              ...paymentAmountEdits.value,
+              [trainee.id]:
+                trainee.paymentAmount === null || trainee.paymentAmount === undefined
+                  ? ''
+                  : String(trainee.paymentAmount),
             };
           }
         });
@@ -949,10 +984,15 @@ import {
         if (!u?.id) return;
         if (paymentSaving.value[u.id]) return;
         const previousPaid = Boolean(u.paid);
+        const previousPaidAt = u.paymentPaidAt;
         u.paid = nextPaid;
         paymentSaving.value = { ...paymentSaving.value, [u.id]: true };
         try {
           const monthStart = currentMonthStart();
+          const nextAmount = normalizePaymentAmount(
+            paymentAmountEdits.value[u.id] ?? u.paymentAmount,
+          );
+          const nextPaidAt = nextPaid ? new Date().toISOString() : null;
           const { error: monthlyError } = await supabase
             .from('trainee_monthly_payments')
             .upsert(
@@ -960,16 +1000,20 @@ import {
                 trainee_id: u.id,
                 month_start: monthStart,
                 paid: nextPaid,
-                paid_at: nextPaid ? new Date().toISOString() : null,
+                paid_at: nextPaidAt,
+                amount: nextAmount,
               },
               { onConflict: 'trainee_id,month_start' },
             );
           if (monthlyError) {
             throw new Error('Update monthly payment failed: ' + monthlyError.message);
           }
+          u.paymentAmount = nextAmount;
+          u.paymentPaidAt = nextPaidAt;
         } catch (err) {
           console.error(err);
           u.paid = previousPaid;
+          u.paymentPaidAt = previousPaidAt;
           if (target && 'checked' in target) {
             target.checked = previousPaid;
           }
@@ -987,6 +1031,45 @@ import {
 
       function markPaymentPaid(u) {
         void updatePaymentStatus(u, true);
+      }
+
+      async function savePaymentAmount(u) {
+        if (!u?.id) return;
+        if (paymentAmountSaving.value[u.id]) return;
+        paymentAmountSaving.value = { ...paymentAmountSaving.value, [u.id]: true };
+        try {
+          const monthStart = currentMonthStart();
+          const nextAmount = normalizePaymentAmount(paymentAmountEdits.value[u.id]);
+          const nextPaidAt =
+            u.paymentPaidAt || (u.paid ? new Date().toISOString() : null);
+          const { error: monthlyError } = await supabase
+            .from('trainee_monthly_payments')
+            .upsert(
+              {
+                trainee_id: u.id,
+                month_start: monthStart,
+                paid: u.paid,
+                paid_at: nextPaidAt,
+                amount: nextAmount,
+              },
+              { onConflict: 'trainee_id,month_start' },
+            );
+          if (monthlyError) {
+            throw new Error(
+              'Update monthly payment amount failed: ' + monthlyError.message,
+            );
+          }
+          u.paymentAmount = nextAmount;
+          u.paymentPaidAt = nextPaidAt;
+        } catch (err) {
+          console.error(err);
+          alert(err.message || t('errors.updatePayment'));
+        } finally {
+          paymentAmountSaving.value = {
+            ...paymentAmountSaving.value,
+            [u.id]: false,
+          };
+        }
       }
 
       async function selectUser(u) {
@@ -1259,7 +1342,7 @@ import {
         try {
           const { data, error } = await supabase
             .from('trainee_monthly_payments')
-            .select('id, month_start, paid, paid_at')
+            .select('id, month_start, paid, paid_at, amount')
             .eq('trainee_id', u.id)
             .order('month_start', { ascending: false });
           if (error) {
@@ -1742,6 +1825,9 @@ import {
         coachTipDraft,
         coachTipSaving,
         paymentSaving,
+        paymentAmountEdits,
+        paymentAmountSaving,
+        savePaymentAmount,
         paymentHistory,
         loadingPayments,
         paymentsError,
@@ -1753,6 +1839,7 @@ import {
         formatTestValue,
         formatDate,
         formatTime,
+        formatAmount,
         formatCount,
         dayCodeLabel,
         planStatusLabel,
