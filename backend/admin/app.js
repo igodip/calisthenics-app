@@ -67,6 +67,8 @@ import {
       const maxTests = ref([]);
       const loadingMaxTests = ref(false);
       const maxTestsError = ref('');
+      const coachTipDraft = ref('');
+      const coachTipSaving = ref(false);
       const paymentSaving = ref({});
       const paymentHistory = ref([]);
       const loadingPayments = ref(false);
@@ -608,13 +610,13 @@ import {
       async function loadUsers() {
         const isTrainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
         const baseSelect =
-          'id, name, trainee_trainers ( trainer_id, trainers ( id, name ) )';
+          'id, name, coach_tip, trainee_trainers ( trainer_id, trainers ( id, name ) )';
         let query = supabase.from('trainees').select(baseSelect);
         if (isTrainerOnly) {
           query = supabase
             .from('trainees')
             .select(
-              'id, name, trainee_trainers!inner ( trainer_id, trainers ( id, name ) )',
+              'id, name, coach_tip, trainee_trainers!inner ( trainer_id, trainers ( id, name ) )',
             )
             .eq('trainee_trainers.trainer_id', currentTrainer.value.id);
         }
@@ -786,6 +788,7 @@ import {
         maxTestsError.value = '';
         paymentHistory.value = [];
         paymentsError.value = '';
+        coachTipDraft.value = u?.coach_tip || '';
         await loadMaxTests(u);
       }
 
@@ -938,6 +941,36 @@ import {
           paymentsError.value = err.message || t('errors.loadPayments');
         } finally {
           loadingPayments.value = false;
+        }
+      }
+
+      async function saveCoachTip() {
+        if (!current.value) {
+          alert(t('errors.selectTrainee'));
+          return;
+        }
+        coachTipSaving.value = true;
+        try {
+          const nextTip = coachTipDraft.value.trim();
+          const { error } = await supabase
+            .from('trainees')
+            .update({ coach_tip: nextTip || null })
+            .eq('id', current.value.id);
+          if (error) {
+            throw new Error(error.message);
+          }
+          current.value = {
+            ...current.value,
+            coach_tip: nextTip,
+          };
+          users.value = (users.value || []).map((u) =>
+            u.id === current.value.id ? { ...u, coach_tip: nextTip } : u,
+          );
+        } catch (err) {
+          console.error(err);
+          alert(err.message || t('errors.updateCoachTip'));
+        } finally {
+          coachTipSaving.value = false;
         }
       }
 
@@ -1336,6 +1369,8 @@ import {
         loadingProgress,
         loadingMaxTests,
         maxTestsError,
+        coachTipDraft,
+        coachTipSaving,
         paymentSaving,
         paymentHistory,
         loadingPayments,
@@ -1363,6 +1398,7 @@ import {
         resetDayForm,
         resetPlanForm,
         addExerciseToDay,
+        saveCoachTip,
         assignTrainerToTrainee,
         removeTrainerAssignment,
         toggleDay,
