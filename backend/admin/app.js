@@ -8,6 +8,7 @@ import {
   dayCodeOptions,
   planStatuses,
   templateDayOptions,
+  templateExerciseOptions,
   templateSlotsPerDay,
 } from './constants.js';
 
@@ -89,13 +90,19 @@ import {
       const newPlanEndsAt = ref('');
       const newPlanNotes = ref('');
       const templateDayCount = ref(3);
+      const templateSlotCount = ref(templateSlotsPerDay);
       const programTemplateDays = ref(
-        buildTemplateDays(templateDayCount.value, templateSlotsPerDay, []),
+        buildTemplateDays(
+          templateDayCount.value,
+          templateSlotCount.value,
+          [],
+        ),
       );
-      watch(templateDayCount, (nextCount) => {
+      const savingTemplatePlan = ref(false);
+      watch([templateDayCount, templateSlotCount], ([nextCount, nextSlots]) => {
         programTemplateDays.value = buildTemplateDays(
           nextCount,
-          templateSlotsPerDay,
+          nextSlots,
           programTemplateDays.value,
         );
       });
@@ -117,6 +124,7 @@ import {
           list.push({
             id: previous?.id || `template-${i + 1}`,
             index: i + 1,
+            title: previous?.title || '',
             slots: nextSlots,
           });
         }
@@ -393,6 +401,12 @@ import {
         return `${year}-${month}-01`;
       };
 
+      const templateDayLabel = (index) => {
+        const week = Math.floor(index / dayCodeOptions.length) + 1;
+        const dayCode = dayCodeOptions[index % dayCodeOptions.length];
+        return formatWeekDayLabel(week, dayCode);
+      };
+
       function resetDayForm() {
         newDayWeek.value = 1;
         newDayCode.value = 'MON';
@@ -460,6 +474,68 @@ import {
 
       function resetPlanEdit(plan) {
         setPlanEdit(plan);
+      }
+
+      async function saveTemplatePlan() {
+        if (!current.value) {
+          alert(t('errors.selectTrainee'));
+          return;
+        }
+        savingTemplatePlan.value = true;
+        try {
+          const dayPayloads = (programTemplateDays.value || []).map(
+            (day, index) => ({
+              trainee_id: current.value.id,
+              week: Math.floor(index / dayCodeOptions.length) + 1,
+              day_code: dayCodeOptions[index % dayCodeOptions.length],
+              title: (day.title || '').trim() || null,
+              notes: null,
+            }),
+          );
+          const { data: dayRows, error: dayError } = await supabase
+            .from('days')
+            .insert(dayPayloads)
+            .select('id');
+          if (dayError) {
+            throw new Error('Create days failed: ' + dayError.message);
+          }
+          const exercisePayloads = [];
+          (dayRows || []).forEach((row, dayIndex) => {
+            const slots = programTemplateDays.value?.[dayIndex]?.slots || [];
+            slots.forEach((slot, slotIndex) => {
+              const exercise = (slot.exercise || '').trim();
+              if (!exercise) return;
+              exercisePayloads.push({
+                day_id: row.id,
+                position: slotIndex + 1,
+                notes: null,
+                completed: false,
+                exercise,
+              });
+            });
+          });
+          if (exercisePayloads.length) {
+            const { error: exerciseError } = await supabase
+              .from('day_exercises')
+              .insert(exercisePayloads);
+            if (exerciseError) {
+              throw new Error('Create exercises failed: ' + exerciseError.message);
+            }
+          }
+          await loadDays();
+          templateDayCount.value = templateDayOptions[0] || 1;
+          templateSlotCount.value = templateSlotsPerDay;
+          programTemplateDays.value = buildTemplateDays(
+            templateDayCount.value,
+            templateSlotCount.value,
+            [],
+          );
+        } catch (err) {
+          console.error(err);
+          alert(err.message || t('errors.createDay'));
+        } finally {
+          savingTemplatePlan.value = false;
+        }
       }
 
       function ensureSelection(dayId) {
@@ -1362,7 +1438,10 @@ import {
         newPlanNotes,
         templateDayCount,
         templateDayOptions,
+        templateSlotCount,
+        templateExerciseOptions,
         programTemplateDays,
+        savingTemplatePlan,
         dashboardNotes,
         dashboardNotesLoading,
         dashboardNotesError,
@@ -1382,6 +1461,7 @@ import {
         formatCount,
         dayCodeLabel,
         planStatusLabel,
+        templateDayLabel,
         applyNextWeek,
         setDayCode,
         emailPasswordSignIn,
@@ -1410,6 +1490,7 @@ import {
         resetPlanEdit,
         savePlan,
         deletePlan,
+        saveTemplatePlan,
         saveDayExercise,
         resetDayExerciseEdit,
         deleteDayExercise,

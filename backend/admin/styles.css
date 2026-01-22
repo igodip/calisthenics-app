@@ -79,6 +79,15 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .template-slots{display:flex;flex-direction:column;gap:8px}
 .template-slot{display:grid;grid-template-columns:1.4fr .8fr 1fr;gap:8px}
 .template-slot input{padding:6px 8px}
+.plan-builder-controls{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.plan-builder-controls label{min-width:160px}
+.plan-builder-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;margin-top:12px;background:#0f1118}
+.plan-builder-table{width:100%;border-collapse:collapse;min-width:520px}
+.plan-builder-table th,.plan-builder-table td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+.plan-builder-table th{background:#0e0f14;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.plan-builder-table tr:last-child td{border-bottom:none}
+.plan-builder-table input{width:100%;box-sizing:border-box}
+.plan-builder-actions{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
 .progress-row{display:flex;align-items:center;gap:8px;margin-top:8px}
 .progress-bar{flex:1;height:6px;border-radius:999px;background:#11131a;overflow:hidden;border:1px solid var(--line)}
 .progress-bar span{display:block;height:100%;background:var(--accent)}

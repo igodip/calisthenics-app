@@ -130,6 +130,8 @@ export const translations = {
       paymentsSubtitle: 'Monthly payment history.',
       paymentsEmpty: 'No payment history yet.',
       paidAt: 'Paid at {date}',
+      planBuilderTitle: 'Plan builder',
+      planBuilderSubtitle: 'Create days and exercises for this trainee.',
     },
     placeholders: {
       email: 'Email',
@@ -398,6 +400,8 @@ export const translations = {
       paymentsSubtitle: 'Storico pagamenti mensili.',
       paymentsEmpty: 'Nessuno storico pagamenti disponibile.',
       paidAt: 'Pagato il {date}',
+      planBuilderTitle: 'Crea piano',
+      planBuilderSubtitle: 'Crea giornate ed esercizi per questo allievo.',
     },
     placeholders: {
       email: 'Email',
