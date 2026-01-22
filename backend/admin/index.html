@@ -386,6 +386,85 @@
                         <div class="card">
                             <div class="overview-card-header">
                                 <div class="stack">
+                                    <h3 style="margin:0">
+                                        {{ current ? t('history.titleWithName', { name: current.displayName || shortId(current.id) }) : t('history.title') }}
+                                    </h3>
+                                    <span class="muted small">{{ t('history.subtitle') }}</span>
+                                </div>
+                                <button class="small" type="button" @click="loadMaxTests">{{ t('actions.refresh') }}</button>
+                            </div>
+                            <div v-if="loadingMaxTests" class="muted small">{{ t('status.loadingMaxTests') }}</div>
+                            <div v-else-if="maxTestsError" class="muted small">{{ maxTestsError }}</div>
+                            <div v-else-if="maxTestHistory.length===0" class="muted small">{{ t('history.none') }}</div>
+                            <div v-else class="history-grid">
+                                <div v-for="item in maxTestHistory" :key="item.exercise" class="card history-card">
+                                    <div class="history-card-head">
+                                        <div class="stack">
+                                            <strong>{{ item.exercise }}</strong>
+                                            <span class="muted small">
+                                                {{ t('history.testsBest', { countLabel: formatCount(item.count, 'labels.testCount', 'labels.testsCount'), value: formatTestValue(item.bestValue), unit: item.unit }) }}
+                                            </span>
+                                        </div>
+                                        <span class="muted small" v-if="item.latestLabel">{{ item.latestLabel }}</span>
+                                    </div>
+                                    <div class="history-chart-wrap">
+                                        <div class="history-y-axis small muted">
+                                            <span>{{ formatTestValue(item.maxValue) }}</span>
+                                            <span>{{ formatTestValue(item.minValue) }}</span>
+                                        </div>
+                                        <svg
+                                            class="history-chart"
+                                            :viewBox="`0 0 ${item.chartWidth} ${item.chartHeight}`"
+                                            role="img"
+                                            :aria-label="t('history.chartAria', { exercise: item.exercise })"
+                                        >
+                                            <polyline class="history-line" :points="item.polyline"></polyline>
+                                            <circle
+                                                v-for="(point, idx) in item.points"
+                                                :key="`${item.exercise}-${idx}`"
+                                                class="history-point"
+                                                :class="{latest: idx === item.points.length - 1}"
+                                                :cx="point.x"
+                                                :cy="point.y"
+                                            ></circle>
+                                        </svg>
+                                    </div>
+                                    <div class="history-meta small">
+                                        <span>{{ item.minDateLabel }}</span>
+                                        <span>{{ item.maxDateLabel }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="overview-card-header">
+                                <div class="stack">
+                                    <h3 style="margin:0">{{ t('program.completedLogTitle') }}</h3>
+                                    <span class="muted small">{{ t('program.completedLogSubtitle') }}</span>
+                                </div>
+                                <button class="small" type="button" @click="loadCompletedExercises">{{ t('actions.refresh') }}</button>
+                            </div>
+                            <div v-if="loadingCompletedExercises" class="muted small">{{ t('status.loadingCompletedExercises') }}</div>
+                            <div v-else-if="completedExercisesError" class="muted small">{{ completedExercisesError }}</div>
+                            <div v-else-if="completedExerciseLog.length===0" class="muted small">{{ t('program.completedLogEmpty') }}</div>
+                            <div v-else class="list">
+                                <div v-for="item in completedExerciseLog" :key="item.id" class="exercise-log-item">
+                                    <div class="stack">
+                                        <strong>{{ item.exercise }}</strong>
+                                        <span class="muted small">{{ item.dayLabel }}</span>
+                                        <span class="muted small" v-if="item.timeLabel">{{ item.timeLabel }}</span>
+                                        <span class="muted small" v-if="item.notes">{{ t('labels.notes') }}: {{ item.notes }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overview-grid">
+                        <div class="card">
+                            <div class="overview-card-header">
+                                <div class="stack">
                                     <h3 style="margin:0">{{ t('program.plansTitle') }}</h3>
                                     <span class="muted small">{{ t('program.plansSubtitle') }}</span>
                                 </div>

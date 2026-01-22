@@ -75,6 +75,9 @@ import {
       const paymentHistory = ref([]);
       const loadingPayments = ref(false);
       const paymentsError = ref('');
+      const completedExercises = ref([]);
+      const loadingCompletedExercises = ref(false);
+      const completedExercisesError = ref('');
       const dashboardNotes = ref([]);
       const dashboardNotesLoading = ref(false);
       const dashboardNotesError = ref('');
@@ -363,6 +366,38 @@ import {
           .sort((a, b) => a.exercise.localeCompare(b.exercise));
       });
 
+      const completedExerciseLog = computed(() => {
+        const order = new Map(dayCodeOptions.map((code, idx) => [code, idx]));
+        return (completedExercises.value || [])
+          .map((entry) => {
+            const day = entry.days || {};
+            const week = Number(day.week || 0);
+            const code = day.day_code?.toUpperCase() || '';
+            const dayLabel = formatWeekDayTitleLabel(
+              day.week || 1,
+              code,
+              day.title,
+            );
+            const completedAt = parseCompletedAt(day.completed_at);
+            const timestamp = completedAt ? completedAt.valueOf() : null;
+            const noteParts = [entry.notes, entry.trainee_notes]
+              .map((note) => (note || '').trim())
+              .filter(Boolean);
+            return {
+              id: entry.id,
+              exercise:
+                (entry.exercise || '').trim() || t('labels.unknownExercise'),
+              dayLabel,
+              timeLabel: completedAt ? formatTime(completedAt) : '',
+              notes: noteParts.join(' • '),
+              sortValue:
+                timestamp ??
+                (week * 100 + (order.has(code) ? order.get(code) : 99)),
+            };
+          })
+          .sort((a, b) => b.sortValue - a.sortValue);
+      });
+
       const filteredUsers = computed(() => {
         const q = search.value.trim().toLowerCase();
         if (!q) return users.value;
@@ -399,6 +434,31 @@ import {
           month: 'short',
           day: 'numeric',
         });
+      };
+
+      const formatTime = (value) => {
+        if (!value) return '';
+        const parsed = value instanceof Date ? value : new Date(value);
+        if (Number.isNaN(parsed.valueOf())) return '';
+        const localeTag = locale.value === 'it' ? 'it-IT' : 'en-US';
+        return parsed.toLocaleTimeString(localeTag, {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      };
+
+      const parseCompletedAt = (value) => {
+        if (!value) return null;
+        const direct = new Date(value);
+        if (!Number.isNaN(direct.valueOf())) return direct;
+        if (typeof value === 'string') {
+          const withDate = value.includes('T')
+            ? value
+            : `1970-01-01T${value}`;
+          const parsed = new Date(withDate);
+          if (!Number.isNaN(parsed.valueOf())) return parsed;
+        }
+        return null;
       };
 
       const currentMonthStart = () => {
@@ -683,6 +743,7 @@ import {
           await loadPlans(users.value[0]);
           await loadDays(users.value[0]);
           await loadPaymentHistory(users.value[0]);
+          await loadCompletedExercises(users.value[0]);
         }
       }
 
@@ -908,6 +969,8 @@ import {
         expandedDays.value = {};
         maxTests.value = [];
         maxTestsError.value = '';
+        completedExercises.value = [];
+        completedExercisesError.value = '';
         paymentHistory.value = [];
         paymentsError.value = '';
         coachTipDraft.value = u?.coach_tip || '';
@@ -917,7 +980,12 @@ import {
       async function openTrainee(u) {
         activeSection.value = 'program';
         await selectUser(u);
-        await Promise.all([loadDays(u), loadPlans(u), loadPaymentHistory(u)]);
+        await Promise.all([
+          loadDays(u),
+          loadPlans(u),
+          loadPaymentHistory(u),
+          loadCompletedExercises(u),
+        ]);
       }
 
       async function loadTraineeProgress() {
@@ -1063,6 +1131,32 @@ import {
           paymentsError.value = err.message || t('errors.loadPayments');
         } finally {
           loadingPayments.value = false;
+        }
+      }
+
+      async function loadCompletedExercises(u = current.value) {
+        if (!u) return;
+        loadingCompletedExercises.value = true;
+        completedExercisesError.value = '';
+        try {
+          const { data, error } = await supabase
+            .from('day_exercises')
+            .select(
+              'id, exercise, notes, trainee_notes, completed, days!inner ( id, week, day_code, title, completed_at, trainee_id )',
+            )
+            .eq('completed', true)
+            .eq('days.trainee_id', u.id);
+          if (error) {
+            throw new Error(error.message);
+          }
+          completedExercises.value = data || [];
+        } catch (err) {
+          console.error(err);
+          completedExercises.value = [];
+          completedExercisesError.value =
+            err.message || t('errors.loadCompletedExercises');
+        } finally {
+          loadingCompletedExercises.value = false;
         }
       }
 
@@ -1458,6 +1552,7 @@ import {
         days,
         maxTests,
         maxTestHistory,
+        completedExerciseLog,
         exerciseSelection,
         dayEdits,
         dayExerciseEdits,
@@ -1503,10 +1598,13 @@ import {
         paymentHistory,
         loadingPayments,
         paymentsError,
+        loadingCompletedExercises,
+        completedExercisesError,
         trainingCalendar,
         progressFor,
         formatTestValue,
         formatDate,
+        formatTime,
         formatCount,
         dayCodeLabel,
         planStatusLabel,
@@ -1521,6 +1619,7 @@ import {
         loadMaxTests,
         loadPlans,
         loadPaymentHistory,
+        loadCompletedExercises,
         loadDashboardNotes,
         addPlan,
         addDay,
