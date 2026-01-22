@@ -572,7 +572,6 @@ import {
           }
           const dayPayloads = (programTemplateDays.value || []).map(
             (day, index) => ({
-              trainee_id: current.value.id,
               week: Math.floor(index / templateDayCount.value) + 1,
               day_code: dayCodeOptions[index % templateDayCount.value],
               title: (day.title || '').trim() || null,
@@ -1001,9 +1000,14 @@ import {
           }
           let query = supabase
             .from('day_exercises')
-            .select('id, completed, days ( trainee_id )');
+            .select(
+              'id, completed, days!inner ( workout_plan_days!inner ( workout_plans!inner ( trainee_id ) ) )',
+            );
           if (trainerOnly) {
-            query = query.in('days.trainee_id', visibleIds);
+            query = query.in(
+              'days.workout_plan_days.workout_plans.trainee_id',
+              visibleIds,
+            );
           }
           const { data, error } = await query;
           if (error) {
@@ -1011,7 +1015,8 @@ import {
           }
           const progress = {};
           (data || []).forEach((row) => {
-            const traineeId = row.days?.trainee_id;
+            const planEntries = row.days?.workout_plan_days || [];
+            const traineeId = planEntries?.[0]?.workout_plans?.trainee_id;
             if (!traineeId) return;
             if (!progress[traineeId]) {
               progress[traineeId] = { completed: 0, total: 0 };
@@ -1082,7 +1087,7 @@ import {
           .from('days')
           .select(`
                 id, week, day_code, title, notes,
-                workout_plan_days (
+                workout_plan_days!inner (
                   id, position,
                   workout_plans ( id, title, starts_on, created_at )
                 ),
@@ -1090,7 +1095,7 @@ import {
                   id, position, notes, completed, exercise
                 )
               `)
-          .eq('trainee_id', u.id)
+          .eq('workout_plan_days.workout_plans.trainee_id', u.id)
           .order('week', { ascending: true })
           .order('day_code', { ascending: true })
           .order('position', { ascending: true, referencedTable: 'day_exercises' });
@@ -1142,10 +1147,10 @@ import {
           const { data, error } = await supabase
             .from('day_exercises')
             .select(
-              'id, exercise, notes, trainee_notes, completed, days!inner ( id, week, day_code, title, completed_at, trainee_id )',
+              'id, exercise, notes, trainee_notes, completed, days!inner ( id, week, day_code, title, completed_at, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) ) )',
             )
             .eq('completed', true)
-            .eq('days.trainee_id', u.id);
+            .eq('days.workout_plan_days.workout_plans.trainee_id', u.id);
           if (error) {
             throw new Error(error.message);
           }
@@ -1283,10 +1288,13 @@ import {
         }
         addingDay.value = true;
         try {
+          const planId = resolveDefaultPlanId();
+          if (!planId) {
+            throw new Error(t('errors.missingPlan'));
+          }
           const { data, error } = await supabase
             .from('days')
             .insert({
-              trainee_id: current.value.id,
               week: week,
               day_code: dayCode,
               title: newDayTitle.value.trim() || null,
@@ -1297,7 +1305,6 @@ import {
           if (error) {
             throw new Error('Create day failed: ' + error.message);
           }
-          const planId = resolveDefaultPlanId();
           if (planId && data?.id) {
             const { data: positions, error: positionError } = await supabase
               .from('workout_plan_days')
