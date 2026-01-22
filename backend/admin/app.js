@@ -82,7 +82,7 @@ import {
       const addingExercise = ref(false);
       const savingPlan = ref(false);
       const newDayWeek = ref(1);
-      const newDayCode = ref('MON');
+      const newDayCode = ref('A');
       const newDayTitle = ref('');
       const newDayNotes = ref('');
       const newPlanName = ref('');
@@ -416,7 +416,7 @@ import {
 
       function resetDayForm() {
         newDayWeek.value = 1;
-        newDayCode.value = 'MON';
+        newDayCode.value = 'A';
         newDayTitle.value = '';
         newDayNotes.value = '';
       }
