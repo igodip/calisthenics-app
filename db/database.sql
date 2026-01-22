@@ -22,7 +22,6 @@ CREATE TABLE public.day_exercises (
 );
 CREATE TABLE public.days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
-  trainee_id uuid NOT NULL,
   week integer NOT NULL CHECK (week > 0),
   day_code text NOT NULL,
   title text,
@@ -65,6 +64,7 @@ CREATE TABLE public.trainee_trainers (
   trainee_id uuid NOT NULL,
   trainer_id uuid NOT NULL,
   assigned_at timestamp with time zone NOT NULL DEFAULT now(),
+  coach_tip text,
   CONSTRAINT trainee_trainers_pkey PRIMARY KEY (id),
   CONSTRAINT trainee_trainers_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
   CONSTRAINT trainee_trainers_trainer_id_fkey FOREIGN KEY (trainer_id) REFERENCES public.trainers(id)
@@ -73,6 +73,7 @@ CREATE TABLE public.trainees (
   id uuid NOT NULL,
   name text NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
+  weight numeric,
   CONSTRAINT trainees_pkey PRIMARY KEY (id),
   CONSTRAINT trainees_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
@@ -86,7 +87,7 @@ CREATE TABLE public.trainers (
 CREATE TABLE public.workout_plan_days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   plan_id uuid NOT NULL,
-  day_id uuid NOT NULL,
+  day_id uuid NOT NULL UNIQUE,
   position integer NOT NULL DEFAULT 1,
   CONSTRAINT workout_plan_days_pkey PRIMARY KEY (id),
   CONSTRAINT workout_plan_days_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id),
