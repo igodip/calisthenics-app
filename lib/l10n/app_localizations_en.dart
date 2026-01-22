@@ -208,6 +208,48 @@ class AppLocalizationsEn extends AppLocalizations {
       'From a pike position, bend elbows to bring the head down, then press back to a strong lockout.';
 
   @override
+  String get guidesHollowHoldName => 'Hollow body hold';
+
+  @override
+  String get guidesHollowHoldFocus => 'Core, hip flexors, posture';
+
+  @override
+  String get guidesHollowHoldTip =>
+      'Press your lower back into the floor and keep your ribs tucked.';
+
+  @override
+  String get guidesHollowHoldDescription =>
+      'Lie on your back, lift shoulders and legs, and hold a banana shape with straight arms overhead.';
+
+  @override
+  String get guidesLSitName => 'L-sit';
+
+  @override
+  String get guidesLSitFocus => 'Core, hip flexors, triceps';
+
+  @override
+  String get guidesLSitTip =>
+      'Push the floor away, lock elbows, and keep knees straight.';
+
+  @override
+  String get guidesLSitDescription =>
+      'From parallel bars or the floor, lift your legs to hip height and hold a tight L position.';
+
+  @override
+  String get guidesHandstandName => 'Handstand hold';
+
+  @override
+  String get guidesHandstandFocus => 'Shoulders, core, balance';
+
+  @override
+  String get guidesHandstandTip =>
+      'Stack wrists, shoulders, and hips while squeezing your glutes.';
+
+  @override
+  String get guidesHandstandDescription =>
+      'Kick or press up to a wall or free balance and hold a tall line with toes pointed.';
+
+  @override
   String get settingsComingSoon => 'Settings coming soon.';
 
   @override

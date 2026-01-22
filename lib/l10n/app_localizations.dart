@@ -452,6 +452,78 @@ abstract class AppLocalizations {
   /// **'Da una posizione a pike, piega i gomiti per portare la testa in basso, poi spingi fino a un blocco forte.'**
   String get guidesPikePushUpDescription;
 
+  /// No description provided for @guidesHollowHoldName.
+  ///
+  /// In it, this message translates to:
+  /// **'Tenuta hollow body'**
+  String get guidesHollowHoldName;
+
+  /// No description provided for @guidesHollowHoldFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Core, flessori dell\'anca, postura'**
+  String get guidesHollowHoldFocus;
+
+  /// No description provided for @guidesHollowHoldTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Spingi la zona lombare a terra e tieni le costole chiuse.'**
+  String get guidesHollowHoldTip;
+
+  /// No description provided for @guidesHollowHoldDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Sdraiati supino, solleva spalle e gambe e mantieni una forma a banana con braccia tese sopra la testa.'**
+  String get guidesHollowHoldDescription;
+
+  /// No description provided for @guidesLSitName.
+  ///
+  /// In it, this message translates to:
+  /// **'L-sit'**
+  String get guidesLSitName;
+
+  /// No description provided for @guidesLSitFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Core, flessori dell\'anca, tricipiti'**
+  String get guidesLSitFocus;
+
+  /// No description provided for @guidesLSitTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Spingi il pavimento, blocca i gomiti e tieni le ginocchia dritte.'**
+  String get guidesLSitTip;
+
+  /// No description provided for @guidesLSitDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Da parallele o a terra, solleva le gambe all\'altezza delle anche e mantieni una L compatta.'**
+  String get guidesLSitDescription;
+
+  /// No description provided for @guidesHandstandName.
+  ///
+  /// In it, this message translates to:
+  /// **'Tenuta in verticale'**
+  String get guidesHandstandName;
+
+  /// No description provided for @guidesHandstandFocus.
+  ///
+  /// In it, this message translates to:
+  /// **'Spalle, core, equilibrio'**
+  String get guidesHandstandFocus;
+
+  /// No description provided for @guidesHandstandTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Allinea polsi, spalle e anche e contrai i glutei.'**
+  String get guidesHandstandTip;
+
+  /// No description provided for @guidesHandstandDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Sali in verticale contro il muro o in equilibrio libero e mantieni una linea lunga con le punte tese.'**
+  String get guidesHandstandDescription;
+
   /// No description provided for @settingsComingSoon.
   ///
   /// In it, this message translates to:
