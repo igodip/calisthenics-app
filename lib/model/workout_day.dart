@@ -30,6 +30,7 @@ class WorkoutDay {
   final String? planName;
   final DateTime? planStartedAt;
   final DateTime? createdAt;
+  final DateTime? completedAt;
   final int? planPosition;
   final List<WorkoutExercise> exercises;
 
@@ -45,6 +46,7 @@ class WorkoutDay {
     this.planName,
     this.planStartedAt,
     this.createdAt,
+    this.completedAt,
     this.planPosition,
   });
 
