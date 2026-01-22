@@ -448,6 +448,10 @@
                             </div>
                             <div class="plan-builder-controls">
                                 <label class="stack small">
+                                    <span class="muted small">{{ t('labels.planName') }}</span>
+                                    <input v-model="templatePlanName" :placeholder="t('program.planExample')" />
+                                </label>
+                                <label class="stack small">
                                     <span class="muted small">{{ t('labels.days') }}</span>
                                     <select v-model.number="templateDayCount">
                                         <option v-for="option in templateDayOptions" :key="option" :value="option">
@@ -476,23 +480,26 @@
                                 <table class="plan-builder-table">
                                     <thead>
                                         <tr>
-                                            <th>{{ t('labels.day') }}</th>
-                                            <th v-for="slotIndex in templateSlotCount" :key="slotIndex">
-                                                {{ t('labels.exercise') }} {{ slotIndex }}
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(day, dayIndex) in programTemplateDays" :key="day.id">
-                                            <td>
+                                            <th>{{ t('labels.exercise') }}</th>
+                                            <th v-for="(day, dayIndex) in programTemplateDays" :key="day.id">
                                                 <div class="stack">
                                                     <strong>{{ templateDayLabel(dayIndex) }}</strong>
                                                     <input v-model="day.title" :placeholder="t('placeholders.workoutTitle')" />
                                                 </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="slotIndex in templateSlotCount" :key="slotIndex">
+                                            <td>
+                                                <strong>{{ t('labels.exercise') }} {{ slotIndex }}</strong>
                                             </td>
-                                            <td v-for="(slot, slotIndex) in day.slots" :key="slotIndex">
+                                            <td
+                                                v-for="(day, dayIndex) in programTemplateDays"
+                                                :key="`${day.id}-${slotIndex}`"
+                                            >
                                                 <input
-                                                    v-model="slot.exercise"
+                                                    v-model="day.slots[slotIndex - 1].exercise"
                                                     :placeholder="t('placeholders.exerciseName')"
                                                 />
                                             </td>
