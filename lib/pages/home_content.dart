@@ -145,17 +145,16 @@ class _HomeContentState extends State<HomeContent> {
     }
 
     return data.map((row) {
-      final planEntries =
-          (row['workout_plan_days'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
-      final planDetails = planEntries.isNotEmpty
-          ? (planEntries.first['workout_plans'] as Map<String, dynamic>?) ?? {}
-          : <String, dynamic>{};
+      final Map<String, dynamic>? wpd =
+      row['workout_plan_days'] as Map<String, dynamic>?;
+
+      final Map<String, dynamic> planDetails =
+          (wpd?['workout_plans'] as Map<String, dynamic>?) ?? <String, dynamic>{};
       final planStartedAt = parseDate(planDetails['starts_on']);
       final planCreatedAt = parseDate(planDetails['created_at']);
       final planId = planDetails['id'] as String?;
       final planName = planDetails['title'] as String?;
-      final planPosition =
-          planEntries.isNotEmpty ? (planEntries.first['position'] as num?)?.toInt() : null;
+      final planPosition = (wpd?['position'] as num?)?.toInt();
 
       return WorkoutDay(
         id: null,

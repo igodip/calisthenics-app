@@ -181,14 +181,15 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
 
     return data.map((row) {
       final dayExercises =
-          (row['day_exercises'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
-      final planEntries =
-          (row['workout_plan_days'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
-      final planDetails = planEntries.isNotEmpty
-          ? (planEntries.first['workout_plans'] as Map<String, dynamic>?) ?? {}
-          : <String, dynamic>{};
-      final planPosition =
-          planEntries.isNotEmpty ? (planEntries.first['position'] as num?)?.toInt() : null;
+      (row['day_exercises'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+
+      final Map<String, dynamic>? wpd =
+      row['workout_plan_days'] as Map<String, dynamic>?;
+
+      final Map<String, dynamic> planDetails =
+          (wpd?['workout_plans'] as Map<String, dynamic>?) ?? <String, dynamic>{};
+
+      final planPosition = (wpd?['position'] as num?)?.toInt();
 
       final planStartedAt = parseDate(planDetails['starts_on']);
       final planCreatedAt = parseDate(planDetails['created_at']);
