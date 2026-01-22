@@ -97,10 +97,11 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
         SnackBar(content: Text(l10n.unexpectedError('$error'))),
       );
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isSubmitting = false;
-      });
+      if (!mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 }

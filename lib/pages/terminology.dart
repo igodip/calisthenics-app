@@ -43,7 +43,7 @@ class TerminologiaPage extends StatelessWidget {
               final termine = termini[index];
               return DecoratedBox(
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceVariant.withOpacity(0.5),
+                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: colorScheme.outlineVariant),
                 ),
