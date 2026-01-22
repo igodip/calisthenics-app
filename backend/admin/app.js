@@ -93,6 +93,7 @@ import {
       const templateDayCount = ref(3);
       const templateWeekCount = ref(templateWeekOptions[0] || 1);
       const templateSlotCount = ref(templateSlotsPerDay);
+      const templatePlanName = ref('');
       const programTemplateDays = ref(
         buildTemplateDays(
           templateDayCount.value * templateWeekCount.value,
@@ -488,8 +489,27 @@ import {
           alert(t('errors.selectTrainee'));
           return;
         }
+        const planTitle = (templatePlanName.value || '').trim();
+        if (!planTitle) {
+          alert(t('errors.planNameRequired'));
+          return;
+        }
         savingTemplatePlan.value = true;
         try {
+          const { data: planRow, error: planError } = await supabase
+            .from('workout_plans')
+            .insert({
+              trainee_id: current.value.id,
+              title: planTitle,
+              status: planStatuses[0],
+              starts_on: null,
+              notes: null,
+            })
+            .select('id')
+            .single();
+          if (planError) {
+            throw new Error('Create plan failed: ' + planError.message);
+          }
           const dayPayloads = (programTemplateDays.value || []).map(
             (day, index) => ({
               trainee_id: current.value.id,
@@ -506,6 +526,21 @@ import {
             .select('id');
           if (dayError) {
             throw new Error('Create days failed: ' + dayError.message);
+          }
+          const planDayPayloads = (dayRows || []).map((row, index) => ({
+            plan_id: planRow.id,
+            day_id: row.id,
+            position: index + 1,
+          }));
+          if (planDayPayloads.length) {
+            const { error: linkError } = await supabase
+              .from('workout_plan_days')
+              .insert(planDayPayloads);
+            if (linkError) {
+              throw new Error(
+                'Plan association failed: ' + linkError.message,
+              );
+            }
           }
           const exercisePayloads = [];
           (dayRows || []).forEach((row, dayIndex) => {
@@ -531,9 +566,11 @@ import {
             }
           }
           await loadDays();
+          await loadPlans();
           templateDayCount.value = templateDayOptions[0] || 1;
           templateWeekCount.value = templateWeekOptions[0] || 1;
           templateSlotCount.value = templateSlotsPerDay;
+          templatePlanName.value = '';
           programTemplateDays.value = buildTemplateDays(
             templateDayCount.value * templateWeekCount.value,
             templateSlotCount.value,
@@ -1451,6 +1488,7 @@ import {
         templateWeekOptions,
         templateSlotCount,
         templateExerciseOptions,
+        templatePlanName,
         programTemplateDays,
         savingTemplatePlan,
         dashboardNotes,
