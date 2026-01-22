@@ -423,6 +423,69 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="overview-grid">
+                        <div class="card">
+                            <div class="overview-card-header">
+                                <div class="stack">
+                                    <h3 style="margin:0">{{ t('program.planBuilderTitle') }}</h3>
+                                    <span class="muted small">{{ t('program.planBuilderSubtitle') }}</span>
+                                </div>
+                            </div>
+                            <div class="plan-builder-controls">
+                                <label class="stack small">
+                                    <span class="muted small">{{ t('labels.days') }}</span>
+                                    <select v-model.number="templateDayCount">
+                                        <option v-for="option in templateDayOptions" :key="option" :value="option">
+                                            {{ option }}
+                                        </option>
+                                    </select>
+                                </label>
+                                <label class="stack small">
+                                    <span class="muted small">{{ t('labels.exercises') }}</span>
+                                    <select v-model.number="templateSlotCount">
+                                        <option v-for="option in templateExerciseOptions" :key="option" :value="option">
+                                            {{ option }}
+                                        </option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="plan-builder-table-wrap">
+                                <table class="plan-builder-table">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ t('labels.day') }}</th>
+                                            <th v-for="slotIndex in templateSlotCount" :key="slotIndex">
+                                                {{ t('labels.exercise') }} {{ slotIndex }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(day, dayIndex) in programTemplateDays" :key="day.id">
+                                            <td>
+                                                <div class="stack">
+                                                    <strong>{{ templateDayLabel(dayIndex) }}</strong>
+                                                    <input v-model="day.title" :placeholder="t('placeholders.workoutTitle')" />
+                                                </div>
+                                            </td>
+                                            <td v-for="(slot, slotIndex) in day.slots" :key="slotIndex">
+                                                <input
+                                                    v-model="slot.exercise"
+                                                    :placeholder="t('placeholders.exerciseName')"
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="plan-builder-actions">
+                                <button class="btn" type="button" @click="saveTemplatePlan" :disabled="savingTemplatePlan">
+                                    {{ t('actions.savePlan') }}
+                                </button>
+                                <span v-if="savingTemplatePlan" class="muted small">{{ t('status.savingPlan') }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </template>
             </div>
 
