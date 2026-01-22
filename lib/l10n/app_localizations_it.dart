@@ -210,6 +210,48 @@ class AppLocalizationsIt extends AppLocalizations {
       'Da una posizione a pike, piega i gomiti per portare la testa in basso, poi spingi fino a un blocco forte.';
 
   @override
+  String get guidesHollowHoldName => 'Tenuta hollow body';
+
+  @override
+  String get guidesHollowHoldFocus => 'Core, flessori dell\'anca, postura';
+
+  @override
+  String get guidesHollowHoldTip =>
+      'Spingi la zona lombare a terra e tieni le costole chiuse.';
+
+  @override
+  String get guidesHollowHoldDescription =>
+      'Sdraiati supino, solleva spalle e gambe e mantieni una forma a banana con braccia tese sopra la testa.';
+
+  @override
+  String get guidesLSitName => 'L-sit';
+
+  @override
+  String get guidesLSitFocus => 'Core, flessori dell\'anca, tricipiti';
+
+  @override
+  String get guidesLSitTip =>
+      'Spingi il pavimento, blocca i gomiti e tieni le ginocchia dritte.';
+
+  @override
+  String get guidesLSitDescription =>
+      'Da parallele o a terra, solleva le gambe all\'altezza delle anche e mantieni una L compatta.';
+
+  @override
+  String get guidesHandstandName => 'Tenuta in verticale';
+
+  @override
+  String get guidesHandstandFocus => 'Spalle, core, equilibrio';
+
+  @override
+  String get guidesHandstandTip =>
+      'Allinea polsi, spalle e anche e contrai i glutei.';
+
+  @override
+  String get guidesHandstandDescription =>
+      'Sali in verticale contro il muro o in equilibrio libero e mantieni una linea lunga con le punte tese.';
+
+  @override
   String get settingsComingSoon =>
       'Le impostazioni saranno presto disponibili.';
 
