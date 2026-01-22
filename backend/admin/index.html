@@ -462,7 +462,7 @@
                     </div>
 
                     <div class="overview-grid">
-                        <div class="card">
+                        <div class="card plan-manager-card">
                             <div class="overview-card-header">
                                 <div class="stack">
                                     <h3 style="margin:0">{{ t('program.plansTitle') }}</h3>
@@ -470,13 +470,90 @@
                                 </div>
                                 <button class="small" type="button" @click="loadPlans">{{ t('actions.refresh') }}</button>
                             </div>
-                            <div v-if="plans.length===0" class="muted small">{{ t('plans.none') }}</div>
-                            <div v-else class="list">
-                                <div v-for="plan in plans" :key="plan.id" class="plan-item">
-                                    <div class="stack">
-                                        <strong>{{ plan.title }}</strong>
-                                        <span class="muted small">{{ planStatusLabel(plan.status) }}</span>
-                                        <span class="muted small" v-if="plan.starts_on">{{ t('labels.startsAt') }}: {{ plan.starts_on }}</span>
+                            <div class="plan-manager">
+                                <div class="plan-form">
+                                    <h4 style="margin:0">{{ t('plans.addTitle') }}</h4>
+                                    <div class="plan-form-row">
+                                        <label class="stack small">
+                                            <span class="muted small">{{ t('labels.planName') }}</span>
+                                            <input v-model="newPlanName" :placeholder="t('program.planExample')" />
+                                        </label>
+                                        <label class="stack small">
+                                            <span class="muted small">{{ t('labels.status') }}</span>
+                                            <select v-model="newPlanStatus">
+                                                <option v-for="status in planStatuses" :key="status" :value="status">
+                                                    {{ planStatusLabel(status) }}
+                                                </option>
+                                            </select>
+                                        </label>
+                                        <label class="stack small">
+                                            <span class="muted small">{{ t('labels.startsAt') }}</span>
+                                            <input type="date" v-model="newPlanStartsAt" />
+                                        </label>
+                                    </div>
+                                    <label class="stack small">
+                                        <span class="muted small">{{ t('labels.notes') }}</span>
+                                        <textarea v-model="newPlanNotes" :placeholder="t('program.planNotes')"></textarea>
+                                    </label>
+                                    <div class="plan-form-actions">
+                                        <button class="small" type="button" @click="addPlan" :disabled="savingPlan">
+                                            {{ t('actions.add') }}
+                                        </button>
+                                        <button class="small" type="button" @click="resetPlanForm" :disabled="savingPlan">
+                                            {{ t('actions.clear') }}
+                                        </button>
+                                        <span v-if="savingPlan" class="muted small">{{ t('status.savingPlan') }}</span>
+                                    </div>
+                                </div>
+                                <div class="plan-list">
+                                    <h4 style="margin:0">{{ t('plans.listTitle') }}</h4>
+                                    <div v-if="plans.length===0" class="muted small">{{ t('plans.none') }}</div>
+                                    <div v-else class="plan-edit-list">
+                                        <div v-for="plan in plans" :key="plan.id" class="plan-item plan-edit-card">
+                                            <div class="stack">
+                                                <strong>{{ plan.title }}</strong>
+                                                <span class="muted small">{{ planStatusLabel(plan.status) }}</span>
+                                                <span class="muted small" v-if="plan.created_at">
+                                                    {{ t('labels.createdAt') }}: {{ formatDate(plan.created_at) }}
+                                                </span>
+                                                <span class="muted small" v-if="plan.starts_on">
+                                                    {{ t('labels.startsAt') }}: {{ formatDate(plan.starts_on) }}
+                                                </span>
+                                            </div>
+                                            <div v-if="planEdits[plan.id]" class="plan-edit-form">
+                                                <label class="stack small">
+                                                    <span class="muted small">{{ t('labels.planName') }}</span>
+                                                    <input v-model="planEdits[plan.id].name" />
+                                                </label>
+                                                <label class="stack small">
+                                                    <span class="muted small">{{ t('labels.status') }}</span>
+                                                    <select v-model="planEdits[plan.id].status">
+                                                        <option v-for="status in planStatuses" :key="status" :value="status">
+                                                            {{ planStatusLabel(status) }}
+                                                        </option>
+                                                    </select>
+                                                </label>
+                                                <label class="stack small">
+                                                    <span class="muted small">{{ t('labels.startsAt') }}</span>
+                                                    <input type="date" v-model="planEdits[plan.id].starts_on" />
+                                                </label>
+                                                <label class="stack small plan-edit-notes">
+                                                    <span class="muted small">{{ t('labels.notes') }}</span>
+                                                    <textarea v-model="planEdits[plan.id].notes"></textarea>
+                                                </label>
+                                            </div>
+                                            <div class="plan-form-actions">
+                                                <button class="small" type="button" @click="savePlan(plan)" :disabled="savingPlan">
+                                                    {{ t('actions.save') }}
+                                                </button>
+                                                <button class="small" type="button" @click="resetPlanEdit(plan)" :disabled="savingPlan">
+                                                    {{ t('actions.reset') }}
+                                                </button>
+                                                <button class="small danger" type="button" @click="deletePlan(plan)" :disabled="savingPlan">
+                                                    {{ t('actions.delete') }}
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -57,6 +57,7 @@ export const translations = {
       name: 'Name',
       id: 'ID',
       status: 'Status',
+      createdAt: 'Created at',
       startsAt: 'Starts at',
       endsAt: 'Ends at',
       notes: 'Notes',
@@ -271,6 +272,7 @@ export const translations = {
     },
     planStatuses: {
       active: 'active',
+      inactive: 'inactive',
       upcoming: 'upcoming',
       draft: 'draft',
       archived: 'archived',
@@ -334,6 +336,7 @@ export const translations = {
       name: 'Nome',
       id: 'ID',
       status: 'Stato',
+      createdAt: 'Creato il',
       startsAt: 'Inizio',
       endsAt: 'Fine',
       notes: 'Note',
@@ -548,6 +551,7 @@ export const translations = {
     },
     planStatuses: {
       active: 'attivo',
+      inactive: 'inattivo',
       upcoming: 'in arrivo',
       draft: 'bozza',
       archived: 'archiviato',
