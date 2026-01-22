@@ -9,6 +9,7 @@ import {
   planStatuses,
   templateDayOptions,
   templateExerciseOptions,
+  templateWeekOptions,
   templateSlotsPerDay,
 } from './constants.js';
 
@@ -90,22 +91,27 @@ import {
       const newPlanEndsAt = ref('');
       const newPlanNotes = ref('');
       const templateDayCount = ref(3);
+      const templateWeekCount = ref(templateWeekOptions[0] || 1);
       const templateSlotCount = ref(templateSlotsPerDay);
       const programTemplateDays = ref(
         buildTemplateDays(
-          templateDayCount.value,
+          templateDayCount.value * templateWeekCount.value,
           templateSlotCount.value,
           [],
         ),
       );
       const savingTemplatePlan = ref(false);
-      watch([templateDayCount, templateSlotCount], ([nextCount, nextSlots]) => {
-        programTemplateDays.value = buildTemplateDays(
-          nextCount,
-          nextSlots,
-          programTemplateDays.value,
-        );
-      });
+      watch(
+        [templateDayCount, templateWeekCount, templateSlotCount],
+        ([nextCount, nextWeeks, nextSlots]) => {
+          const totalDays = nextCount * nextWeeks;
+          programTemplateDays.value = buildTemplateDays(
+            totalDays,
+            nextSlots,
+            programTemplateDays.value,
+          );
+        },
+      );
 
       function buildTemplateDays(count, slots, existing) {
         const list = [];
@@ -402,8 +408,9 @@ import {
       };
 
       const templateDayLabel = (index) => {
-        const week = Math.floor(index / dayCodeOptions.length) + 1;
-        const dayCode = dayCodeOptions[index % dayCodeOptions.length];
+        const daysPerWeek = templateDayCount.value || dayCodeOptions.length;
+        const week = Math.floor(index / daysPerWeek) + 1;
+        const dayCode = dayCodeOptions[index % daysPerWeek];
         return formatWeekDayLabel(week, dayCode);
       };
 
@@ -486,8 +493,8 @@ import {
           const dayPayloads = (programTemplateDays.value || []).map(
             (day, index) => ({
               trainee_id: current.value.id,
-              week: Math.floor(index / dayCodeOptions.length) + 1,
-              day_code: dayCodeOptions[index % dayCodeOptions.length],
+              week: Math.floor(index / templateDayCount.value) + 1,
+              day_code: dayCodeOptions[index % templateDayCount.value],
               title: (day.title || '').trim() || null,
               notes: null,
             }),
@@ -524,9 +531,10 @@ import {
           }
           await loadDays();
           templateDayCount.value = templateDayOptions[0] || 1;
+          templateWeekCount.value = templateWeekOptions[0] || 1;
           templateSlotCount.value = templateSlotsPerDay;
           programTemplateDays.value = buildTemplateDays(
-            templateDayCount.value,
+            templateDayCount.value * templateWeekCount.value,
             templateSlotCount.value,
             [],
           );
@@ -1438,6 +1446,8 @@ import {
         newPlanNotes,
         templateDayCount,
         templateDayOptions,
+        templateWeekCount,
+        templateWeekOptions,
         templateSlotCount,
         templateExerciseOptions,
         programTemplateDays,

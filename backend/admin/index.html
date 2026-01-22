@@ -456,6 +456,14 @@
                                     </select>
                                 </label>
                                 <label class="stack small">
+                                    <span class="muted small">{{ t('labels.weeks') }}</span>
+                                    <select v-model.number="templateWeekCount">
+                                        <option v-for="option in templateWeekOptions" :key="option" :value="option">
+                                            {{ option }}
+                                        </option>
+                                    </select>
+                                </label>
+                                <label class="stack small">
                                     <span class="muted small">{{ t('labels.exercises') }}</span>
                                     <select v-model.number="templateSlotCount">
                                         <option v-for="option in templateExerciseOptions" :key="option" :value="option">
