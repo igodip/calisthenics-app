@@ -130,6 +130,10 @@ export const translations = {
       paymentsTitle: 'Payments done',
       paymentsSubtitle: 'Monthly payment history.',
       paymentsEmpty: 'No payment history yet.',
+      completedLogTitle: 'Completed exercise log',
+      completedLogSubtitle:
+        'Review the most recent completed exercises and notes in time order.',
+      completedLogEmpty: 'No completed exercises logged yet.',
       paidAt: 'Paid at {date}',
       planBuilderTitle: 'Plan builder',
       planBuilderSubtitle: 'Create days and exercises for this trainee.',
@@ -175,6 +179,7 @@ export const translations = {
       savingCoachTip: 'Saving coach tip…',
       loadingMaxTests: 'Loading max tests…',
       loadingPayments: 'Loading payments…',
+      loadingCompletedExercises: 'Loading completed exercises…',
     },
     plans: {
       title: 'Workout plans',
@@ -247,6 +252,7 @@ export const translations = {
       loadMaxTests: 'Failed to load max tests.',
       loadMaxTestsWithMessage: 'Failed to load max tests: {message}',
       updateCoachTip: 'Failed to update coach tip.',
+      loadCompletedExercises: 'Failed to load completed exercises.',
     },
     confirm: {
       deleteExercise: 'Delete exercise "{name}"?',
@@ -401,6 +407,10 @@ export const translations = {
       paymentsTitle: 'Pagamenti effettuati',
       paymentsSubtitle: 'Storico pagamenti mensili.',
       paymentsEmpty: 'Nessuno storico pagamenti disponibile.',
+      completedLogTitle: 'Registro esercizi completati',
+      completedLogSubtitle:
+        'Controlla gli esercizi completati più recenti e le note in ordine temporale.',
+      completedLogEmpty: 'Nessun esercizio completato registrato.',
       paidAt: 'Pagato il {date}',
       planBuilderTitle: 'Crea piano',
       planBuilderSubtitle: 'Crea giornate ed esercizi per questo allievo.',
@@ -446,6 +456,7 @@ export const translations = {
       savingCoachTip: 'Salvataggio consiglio…',
       loadingMaxTests: 'Caricamento test massimali…',
       loadingPayments: 'Caricamento pagamenti…',
+      loadingCompletedExercises: 'Caricamento esercizi completati…',
     },
     plans: {
       title: 'Piani allenamento',
@@ -518,6 +529,7 @@ export const translations = {
       loadMaxTests: 'Impossibile caricare i test massimali.',
       loadMaxTestsWithMessage: 'Impossibile caricare i test massimali: {message}',
       updateCoachTip: 'Impossibile aggiornare il consiglio del coach.',
+      loadCompletedExercises: 'Impossibile caricare gli esercizi completati.',
     },
     confirm: {
       deleteExercise: 'Eliminare l’esercizio "{name}"?',
