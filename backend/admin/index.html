@@ -93,6 +93,37 @@
                     </div>
                 </div>
 
+                <div v-if="showLastWeekCard" class="card">
+                    <div class="dashboard-card-header">
+                        <div class="stack">
+                            <h2 style="margin:0">{{ t('dashboard.lastWeekTitle') }}</h2>
+                            <span class="muted small">{{ t('dashboard.lastWeekSubtitle') }}</span>
+                        </div>
+                        <span class="pill">{{ t('labels.shownCount', { count: lastWeekTrainees.length }) }}</span>
+                    </div>
+                    <div v-if="loadingWeekStatus" class="muted small" style="margin-top:10px">
+                        {{ t('dashboard.lastWeekLoading') }}
+                    </div>
+                    <div v-else-if="weekStatusError" class="muted small" style="margin-top:10px">
+                        {{ weekStatusError }}
+                    </div>
+                    <div v-else-if="lastWeekTrainees.length===0" class="muted small" style="margin-top:10px">
+                        {{ t('dashboard.lastWeekEmpty') }}
+                    </div>
+                    <div v-else class="dashboard-trainee-list scroll-area">
+                        <div class="dashboard-trainee-item" v-for="u in lastWeekTrainees" :key="u.id">
+                            <div class="stack">
+                                <strong>{{ u.displayName || shortId(u.id) }}</strong>
+                                <span class="muted small">{{ weekStatusFor(u) }}</span>
+                            </div>
+                            <div class="stack dashboard-trainee-actions">
+                                <span class="pill warning">{{ t('labels.lastWeek') }}</span>
+                                <button class="small" type="button" @click="openTrainee(u)">{{ t('actions.openTrainee') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
