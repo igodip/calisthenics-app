@@ -80,11 +80,11 @@ class _HomePageState extends State<HomePage> {
 
     final List<Widget> pages = [
       const HomeContent(),
+      const WorkoutPlanPage(),
       const ExerciseGuidesPage(),
       const ProfilePage(),
       const MaxTestsMenuPage(),
-      const TerminologiaPage(),
-      const WorkoutPlanPage(),
+      const TerminologyPage(),
     ];
 
     final scaffold = Scaffold(

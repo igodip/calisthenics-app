@@ -326,13 +326,17 @@
   "profileMaxTestsHistoryError": "Unable to load progress history: {error}",
   "@profileMaxTestsHistoryError": {
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "Object"
+      }
     }
   },
   "profileMaxTestsHistoryDeltaLabel": "Change {delta}",
   "@profileMaxTestsHistoryDeltaLabel": {
     "placeholders": {
-      "delta": {}
+      "delta": {
+        "type": "String"
+      }
     }
   },
   "profileMaxTestsHistoryFirstEntry": "First recorded attempt",

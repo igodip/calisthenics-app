@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 
-class TerminologiaPage extends StatelessWidget {
-  const TerminologiaPage({super.key});
+class TerminologyPage extends StatelessWidget {
+  const TerminologyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
