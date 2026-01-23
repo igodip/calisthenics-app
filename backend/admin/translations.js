@@ -79,6 +79,7 @@ export const translations = {
       day: 'Day',
       amount: 'Amount',
       unknownExercise: 'Unknown exercise',
+      traineeNotes: 'Trainee notes',
     },
     dashboard: {
       feedbackTitle: 'Feedback & trainee notes',
@@ -374,6 +375,7 @@ export const translations = {
       day: 'Giorno',
       amount: 'Importo',
       unknownExercise: 'Esercizio sconosciuto',
+      traineeNotes: 'Note dell’allievo',
     },
     dashboard: {
       feedbackTitle: 'Feedback & note allievi',
