@@ -318,7 +318,28 @@
   "profileMaxTestsBestPeriodLabel": "Migliore nel periodo selezionato",
   "profileMaxTestsAdd": "Aggiungi test massimale",
   "profileMaxTestsRefresh": "Aggiorna",
+  "profileMaxTestsHistoryAction": "Vedi progressi",
   "profileMaxTestsEmpty": "Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.",
+  "profileMaxTestsHistoryTitle": "Progressi nel tempo",
+  "profileMaxTestsHistoryDescription": "Rivedi ogni prova e osserva come evolvono i tuoi massimali.",
+  "profileMaxTestsHistoryEmpty": "Nessun test massimale registrato. Aggiungi una nuova prova per vedere i progressi nel tempo.",
+  "profileMaxTestsHistoryError": "Impossibile caricare lo storico dei progressi: {error}",
+  "@profileMaxTestsHistoryError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileMaxTestsHistoryDeltaLabel": "Variazione {delta}",
+  "@profileMaxTestsHistoryDeltaLabel": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "profileMaxTestsHistoryFirstEntry": "Prima registrazione",
   "profileMaxTestsError": "Impossibile caricare i test massimali: {error}",
   "@profileMaxTestsError": {
     "placeholders": {

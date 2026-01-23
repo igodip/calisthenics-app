@@ -789,8 +789,35 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileMaxTestsRefresh => 'Aggiorna';
 
   @override
+  String get profileMaxTestsHistoryAction => 'Vedi progressi';
+
+  @override
   String get profileMaxTestsEmpty =>
       'Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.';
+
+  @override
+  String get profileMaxTestsHistoryTitle => 'Progressi nel tempo';
+
+  @override
+  String get profileMaxTestsHistoryDescription =>
+      'Rivedi ogni prova e osserva come evolvono i tuoi massimali.';
+
+  @override
+  String get profileMaxTestsHistoryEmpty =>
+      'Nessun test massimale registrato. Aggiungi una nuova prova per vedere i progressi nel tempo.';
+
+  @override
+  String profileMaxTestsHistoryError(Object error) {
+    return 'Impossibile caricare lo storico dei progressi: $error';
+  }
+
+  @override
+  String profileMaxTestsHistoryDeltaLabel(String delta) {
+    return 'Variazione $delta';
+  }
+
+  @override
+  String get profileMaxTestsHistoryFirstEntry => 'Prima registrazione';
 
   @override
   String profileMaxTestsError(Object error) {
