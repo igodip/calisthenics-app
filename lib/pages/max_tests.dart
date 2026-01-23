@@ -399,17 +399,36 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
     final showToggle = widget.enableToggle && tests.length > _collapsedCount;
     final visibleTests =
         _isExpanded ? tests : tests.take(_collapsedCount).toList();
+    final recentTests = [...tests]
+      ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
+    final recentSlice = recentTests.take(4).toList().reversed.toList();
+    final bestValueLabel = widget.bestValue
+        .toStringAsFixed(widget.bestValue.truncateToDouble() == widget.bestValue ? 0 : 1);
+    final nextGoal = widget.bestValue == 0 ? 1 : widget.bestValue * 1.1;
+    final goalLabel = nextGoal
+        .toStringAsFixed(nextGoal.truncateToDouble() == nextGoal ? 0 : 1);
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+        gradient: LinearGradient(
+          colors: [
+            colorScheme.surface,
+            colorScheme.surfaceVariant.withValues(alpha: 0.9),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withValues(alpha: 0.2),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -419,7 +438,35 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
                 fontWeight: FontWeight.w700,
               ),
             ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.profileMaxTestsRecentPerformanceLabel,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 12),
+            _RecentPerformanceChart(
+              tests: recentSlice,
+              unit: tests.isEmpty ? '' : tests.first.unit,
+            ),
+            const SizedBox(height: 16),
+            _MetricRow(
+              label: l10n.profileMaxTestsBestLabel,
+              value: '$bestValueLabel ${tests.isEmpty ? '' : tests.first.unit}'.trim(),
+            ),
+            const SizedBox(height: 6),
+            _MetricRow(
+              label: l10n.profileMaxTestsGoalLabel,
+              value: '$goalLabel ${tests.isEmpty ? '' : tests.first.unit}'.trim(),
+            ),
+            const SizedBox(height: 16),
+            _TipsCard(
+              title: l10n.profileMaxTestsTipsTitle,
+              subtitle: l10n.profileMaxTestsTipsSubtitle,
+            ),
+            const SizedBox(height: 16),
             for (final test in visibleTests)
               _MaxTestTile(
                 test: test,
@@ -443,7 +490,7 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   '${widget.summaryLabel}: '
-                  '${widget.bestValue.toStringAsFixed(widget.bestValue.truncateToDouble() == widget.bestValue ? 0 : 1)} '
+                  '$bestValueLabel '
                   '${tests.first.unit}'.trim(),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
@@ -452,6 +499,196 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RecentPerformanceChart extends StatelessWidget {
+  const _RecentPerformanceChart({
+    required this.tests,
+    required this.unit,
+  });
+
+  final List<MaxTest> tests;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    if (tests.isEmpty) {
+      return Text(
+        AppLocalizations.of(context)!.profileMaxTestsEmptyShort,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+
+    final maxValue = tests.map((test) => test.value).fold<double>(
+          0,
+          (previous, value) => value > previous ? value : previous,
+        );
+
+    return Row(
+      children: [
+        for (var index = 0; index < tests.length; index++)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: _PerformanceBar(
+                label: AppLocalizations.of(context)!.profileMaxTestsSessionLabel(
+                  index + 1,
+                ),
+                value: tests[index].value,
+                maxValue: maxValue,
+                unit: unit,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _PerformanceBar extends StatelessWidget {
+  const _PerformanceBar({
+    required this.label,
+    required this.value,
+    required this.maxValue,
+    required this.unit,
+  });
+
+  final String label;
+  final double value;
+  final double maxValue;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final heightFactor = maxValue == 0 ? 0.2 : (value / maxValue).clamp(0.2, 1.0);
+    final valueLabel = value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Container(
+          height: 72,
+          alignment: Alignment.bottomCenter,
+          child: FractionallySizedBox(
+            heightFactor: heightFactor,
+            widthFactor: 1,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [
+                    colorScheme.primary.withValues(alpha: 0.4),
+                    colorScheme.primary,
+                  ],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  valueLabel,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+        if (unit.isNotEmpty)
+          Text(
+            unit,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _MetricRow extends StatelessWidget {
+  const _MetricRow({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TipsCard extends StatelessWidget {
+  const _TipsCard({
+    required this.title,
+    required this.subtitle,
+  });
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceVariant.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        leading: const Icon(Icons.tips_and_updates_outlined),
+        title: Text(
+          title,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(subtitle),
+        trailing: const Icon(Icons.chevron_right),
       ),
     );
   }

@@ -800,6 +800,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'No max tests recorded yet. Add a new attempt to see your progress over time.';
 
   @override
+  String get profileMaxTestsRecentPerformanceLabel => 'Recent Performance';
+
+  @override
+  String get profileMaxTestsGoalLabel => 'Goal';
+
+  @override
+  String get profileMaxTestsTipsTitle => 'Tips & Tutorials';
+
+  @override
+  String get profileMaxTestsTipsSubtitle =>
+      'Review technique cues and accessory drills.';
+
+  @override
+  String get profileMaxTestsEmptyShort =>
+      'Add a new test to see your performance chart.';
+
+  @override
+  String profileMaxTestsSessionLabel(int index) {
+    return 'Session $index';
+  }
+
+  @override
   String profileMaxTestsHistoryError(Object error) {
     return 'Unable to load progress history: $error';
   }

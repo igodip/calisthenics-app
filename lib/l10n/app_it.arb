@@ -323,6 +323,19 @@
   "profileMaxTestsHistoryTitle": "Progressi nel tempo",
   "profileMaxTestsHistoryDescription": "Rivedi ogni prova e osserva come evolvono i tuoi massimali.",
   "profileMaxTestsHistoryEmpty": "Nessun test massimale registrato. Aggiungi una nuova prova per vedere i progressi nel tempo.",
+  "profileMaxTestsRecentPerformanceLabel": "Performance recente",
+  "profileMaxTestsGoalLabel": "Obiettivo",
+  "profileMaxTestsTipsTitle": "Suggerimenti e tutorial",
+  "profileMaxTestsTipsSubtitle": "Rivedi i consigli tecnici e gli esercizi complementari.",
+  "profileMaxTestsEmptyShort": "Aggiungi un nuovo test per vedere il grafico delle prestazioni.",
+  "profileMaxTestsSessionLabel": "Sessione {index}",
+  "@profileMaxTestsSessionLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
   "profileMaxTestsHistoryError": "Impossibile caricare lo storico dei progressi: {error}",
   "@profileMaxTestsHistoryError": {
     "placeholders": {

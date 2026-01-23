@@ -323,6 +323,19 @@
   "profileMaxTestsHistoryTitle": "Progress over time",
   "profileMaxTestsHistoryDescription": "Review each attempt and see how your max values evolve.",
   "profileMaxTestsHistoryEmpty": "No max tests recorded yet. Add a new attempt to see your progress over time.",
+  "profileMaxTestsRecentPerformanceLabel": "Recent Performance",
+  "profileMaxTestsGoalLabel": "Goal",
+  "profileMaxTestsTipsTitle": "Tips & Tutorials",
+  "profileMaxTestsTipsSubtitle": "Review technique cues and accessory drills.",
+  "profileMaxTestsEmptyShort": "Add a new test to see your performance chart.",
+  "profileMaxTestsSessionLabel": "Session {index}",
+  "@profileMaxTestsSessionLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
   "profileMaxTestsHistoryError": "Unable to load progress history: {error}",
   "@profileMaxTestsHistoryError": {
     "placeholders": {
