@@ -1,5 +1,6 @@
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/pages/trainee_feedback.dart';
+import 'package:calisync/pages/workout_plan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -87,6 +88,10 @@ class _HomeContentState extends State<HomeContent> {
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 _WorkoutScheduleSection(summary: scheduleSummary),
+                const SizedBox(height: 16),
+                _WorkoutPlanLinkSection(
+                  onOpenPlan: _openWorkoutPlan,
+                ),
                 const SizedBox(height: 16),
                 _TraineeFeedbackLinkSection(
                   onOpenFeedback: _openTraineeFeedback,
@@ -193,6 +198,12 @@ class _HomeContentState extends State<HomeContent> {
   Future<void> _openTraineeFeedback() async {
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const TraineeFeedbackPage()),
+    );
+  }
+
+  Future<void> _openWorkoutPlan() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const WorkoutPlanPage()),
     );
   }
 
@@ -689,6 +700,43 @@ class _TraineeFeedbackLinkSection extends StatelessWidget {
         ),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: onOpenFeedback,
+      ),
+    );
+  }
+}
+
+class _WorkoutPlanLinkSection extends StatelessWidget {
+  final VoidCallback onOpenPlan;
+
+  const _WorkoutPlanLinkSection({
+    required this.onOpenPlan,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          Icons.event_note,
+          color: theme.colorScheme.primary,
+        ),
+        title: Text(
+          l10n.homeWorkoutPlanTitle,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(
+          l10n.homeWorkoutPlanSubtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios),
+        onTap: onOpenPlan,
       ),
     );
   }
