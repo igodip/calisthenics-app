@@ -302,6 +302,20 @@
   },
   "profileMaxTestsTitle": "Test massimali",
   "profileMaxTestsDescription": "Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.",
+  "profileMaxTestsPeriodLabel": "Periodo",
+  "profileMaxTestsPeriodMonth": "Ultimo mese",
+  "profileMaxTestsPeriodHalfYear": "Ultimi 6 mesi",
+  "profileMaxTestsPeriodYear": "Ultimo anno",
+  "profileMaxTestsPeriodAll": "Tutto il periodo",
+  "profileMaxTestsEmptyPeriod": "Nessun test massimale registrato in {period}. Prova un intervallo più lungo.",
+  "@profileMaxTestsEmptyPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "profileMaxTestsBestPeriodLabel": "Migliore nel periodo selezionato",
   "profileMaxTestsAdd": "Aggiungi test massimale",
   "profileMaxTestsRefresh": "Aggiorna",
   "profileMaxTestsEmpty": "Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.",

@@ -49,6 +49,7 @@ class MaxTestsContent extends StatefulWidget {
 
 class _MaxTestsContentState extends State<MaxTestsContent> {
   Future<List<MaxTest>>? _maxTestsFuture;
+  _MaxTestPeriod _selectedPeriod = _MaxTestPeriod.all;
 
   @override
   void initState() {
@@ -60,6 +61,46 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     setState(() {
       _maxTestsFuture = _loadMaxTests(widget.userId);
     });
+  }
+
+  DateTime? _periodStartDate(DateTime now) {
+    switch (_selectedPeriod) {
+      case _MaxTestPeriod.month:
+        return now.subtract(const Duration(days: 30));
+      case _MaxTestPeriod.halfYear:
+        return now.subtract(const Duration(days: 182));
+      case _MaxTestPeriod.year:
+        return now.subtract(const Duration(days: 365));
+      case _MaxTestPeriod.all:
+        return null;
+    }
+  }
+
+  String _periodLabel(AppLocalizations l10n, _MaxTestPeriod period) {
+    switch (period) {
+      case _MaxTestPeriod.month:
+        return l10n.profileMaxTestsPeriodMonth;
+      case _MaxTestPeriod.halfYear:
+        return l10n.profileMaxTestsPeriodHalfYear;
+      case _MaxTestPeriod.year:
+        return l10n.profileMaxTestsPeriodYear;
+      case _MaxTestPeriod.all:
+        return l10n.profileMaxTestsPeriodAll;
+    }
+  }
+
+  List<MaxTest> _buildProgression(List<MaxTest> tests) {
+    final sorted = [...tests]
+      ..sort((a, b) => a.recordedAt.compareTo(b.recordedAt));
+    final progression = <MaxTest>[];
+    double? currentBest;
+    for (final test in sorted) {
+      if (currentBest == null || test.value > currentBest) {
+        progression.add(test);
+        currentBest = test.value;
+      }
+    }
+    return progression;
   }
 
   Future<List<MaxTest>> _loadMaxTests(String userId) async {
@@ -92,6 +133,8 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final now = DateTime.now();
+    final periodStart = _periodStartDate(now);
 
     return Scaffold(
       body: SafeArea(
@@ -145,6 +188,33 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                       style: theme.textTheme.bodyMedium
                           ?.copyWith(color: colorScheme.onSurfaceVariant),
                     ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Text(
+                          l10n.profileMaxTestsPeriodLabel,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        DropdownButton<_MaxTestPeriod>(
+                          value: _selectedPeriod,
+                          onChanged: (value) {
+                            if (value == null) return;
+                            setState(() => _selectedPeriod = value);
+                          },
+                          items: _MaxTestPeriod.values
+                              .map(
+                                (period) => DropdownMenuItem<_MaxTestPeriod>(
+                                  value: period,
+                                  child: Text(_periodLabel(l10n, period)),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 16),
                     Expanded(
                       child: FutureBuilder<List<MaxTest>>(
@@ -190,21 +260,39 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                             );
                           }
 
+                          final filteredTests =
+                              periodStart == null
+                                  ? tests
+                                  : tests
+                                      .where(
+                                        (test) => !test.recordedAt.isBefore(
+                                          periodStart,
+                                        ),
+                                      )
+                                      .toList();
+
+                          if (filteredTests.isEmpty) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                child: Text(
+                                  l10n.profileMaxTestsEmptyPeriod(
+                                    _periodLabel(l10n, _selectedPeriod),
+                                  ),
+                                  style: theme.textTheme.bodyMedium,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            );
+                          }
+
                           final groupedTests = <String, List<MaxTest>>{};
                           final displayNames = <String, String>{};
-                          for (final test in tests) {
+                          for (final test in filteredTests) {
                             final displayName = test.exercise.trim();
                             final key = displayName.toLowerCase();
                             groupedTests.putIfAbsent(key, () => []).add(test);
                             displayNames.putIfAbsent(key, () => displayName);
-                          }
-
-                          final bestByExercise = <String, double>{};
-                          for (final entry in groupedTests.entries) {
-                            final best = entry.value
-                                .map((test) => test.value)
-                                .reduce((a, b) => a > b ? a : b);
-                            bestByExercise[entry.key] = best;
                           }
 
                           return ListView.separated(
@@ -214,14 +302,35 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                               final entry = groupedTests.entries.elementAt(index);
                               final exerciseKey = entry.key;
                               final groupTests = entry.value;
+                              final isAllPeriod = _selectedPeriod == _MaxTestPeriod.all;
+                              final displayTests = isAllPeriod
+                                  ? _buildProgression(groupTests)
+                                  : [
+                                      groupTests.reduce(
+                                        (a, b) => a.value >= b.value ? a : b,
+                                      ),
+                                    ];
+                              final bestValue =
+                                  displayTests.isEmpty
+                                      ? 0
+                                      : displayTests
+                                          .map((test) => test.value)
+                                          .reduce((a, b) => a > b ? a : b);
                               final exercise =
                                   displayNames[exerciseKey] ??
                                   groupTests.first.exercise.trim();
 
                               return _ExerciseGroupCard(
                                 exercise: exercise,
-                                tests: groupTests,
-                                bestValue: bestByExercise[exerciseKey] ?? 0,
+                                tests: displayTests,
+                                bestValue: bestValue,
+                                summaryLabel: isAllPeriod
+                                    ? l10n.profileMaxTestsBestLabel
+                                    : l10n.profileMaxTestsBestPeriodLabel,
+                                badgeLabel: isAllPeriod
+                                    ? l10n.profileMaxTestsBestLabel
+                                    : l10n.profileMaxTestsBestPeriodLabel,
+                                enableToggle: isAllPeriod,
                               );
                             },
                           );
@@ -244,11 +353,17 @@ class _ExerciseGroupCard extends StatefulWidget {
     required this.exercise,
     required this.tests,
     required this.bestValue,
+    required this.summaryLabel,
+    required this.badgeLabel,
+    required this.enableToggle,
   });
 
   final String exercise;
   final List<MaxTest> tests;
   final double bestValue;
+  final String summaryLabel;
+  final String badgeLabel;
+  final bool enableToggle;
 
   @override
   State<_ExerciseGroupCard> createState() => _ExerciseGroupCardState();
@@ -264,7 +379,7 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final tests = widget.tests;
-    final showToggle = tests.length > _collapsedCount;
+    final showToggle = widget.enableToggle && tests.length > _collapsedCount;
     final visibleTests =
         _isExpanded ? tests : tests.take(_collapsedCount).toList();
 
@@ -292,6 +407,7 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
               _MaxTestTile(
                 test: test,
                 isBest: test.value == widget.bestValue,
+                badgeLabel: widget.badgeLabel,
               ),
             if (showToggle)
               Align(
@@ -309,7 +425,7 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  '${l10n.profileMaxTestsBestLabel}: '
+                  '${widget.summaryLabel}: '
                   '${widget.bestValue.toStringAsFixed(widget.bestValue.truncateToDouble() == widget.bestValue ? 0 : 1)} '
                   '${tests.first.unit}'.trim(),
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -325,10 +441,15 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
 }
 
 class _MaxTestTile extends StatelessWidget {
-  const _MaxTestTile({required this.test, required this.isBest});
+  const _MaxTestTile({
+    required this.test,
+    required this.isBest,
+    required this.badgeLabel,
+  });
 
   final MaxTest test;
   final bool isBest;
+  final String badgeLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -362,7 +483,7 @@ class _MaxTestTile extends StatelessWidget {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Text(
-                l10n.profileMaxTestsBestLabel,
+                badgeLabel,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: appColors?.success ?? theme.colorScheme.secondary,
                   fontWeight: FontWeight.w600,
@@ -373,6 +494,8 @@ class _MaxTestTile extends StatelessWidget {
     );
   }
 }
+
+enum _MaxTestPeriod { month, halfYear, year, all }
 
 class _MaxTestBottomSheet extends StatefulWidget {
   const _MaxTestBottomSheet({required this.userId});

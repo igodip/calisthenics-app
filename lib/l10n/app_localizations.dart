@@ -1376,6 +1376,48 @@ abstract class AppLocalizations {
   /// **'Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.'**
   String get profileMaxTestsDescription;
 
+  /// No description provided for @profileMaxTestsPeriodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get profileMaxTestsPeriodLabel;
+
+  /// No description provided for @profileMaxTestsPeriodMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 1 month'**
+  String get profileMaxTestsPeriodMonth;
+
+  /// No description provided for @profileMaxTestsPeriodHalfYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 6 months'**
+  String get profileMaxTestsPeriodHalfYear;
+
+  /// No description provided for @profileMaxTestsPeriodYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 1 year'**
+  String get profileMaxTestsPeriodYear;
+
+  /// No description provided for @profileMaxTestsPeriodAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All time'**
+  String get profileMaxTestsPeriodAll;
+
+  /// No description provided for @profileMaxTestsEmptyPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'No max tests recorded in {period}. Try a longer time range.'**
+  String profileMaxTestsEmptyPeriod(String period);
+
+  /// No description provided for @profileMaxTestsBestPeriodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Best in selected period'**
+  String get profileMaxTestsBestPeriodLabel;
+
   /// No description provided for @profileMaxTestsAdd.
   ///
   /// In it, this message translates to:

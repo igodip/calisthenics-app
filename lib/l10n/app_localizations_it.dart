@@ -759,6 +759,30 @@ class AppLocalizationsIt extends AppLocalizations {
       'Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.';
 
   @override
+  String get profileMaxTestsPeriodLabel => 'Periodo';
+
+  @override
+  String get profileMaxTestsPeriodMonth => 'Ultimo mese';
+
+  @override
+  String get profileMaxTestsPeriodHalfYear => 'Ultimi 6 mesi';
+
+  @override
+  String get profileMaxTestsPeriodYear => 'Ultimo anno';
+
+  @override
+  String get profileMaxTestsPeriodAll => 'Tutto il periodo';
+
+  @override
+  String profileMaxTestsEmptyPeriod(String period) {
+    return 'Nessun test massimale registrato in $period. Prova un intervallo più lungo.';
+  }
+
+  @override
+  String get profileMaxTestsBestPeriodLabel =>
+      'Migliore nel periodo selezionato';
+
+  @override
   String get profileMaxTestsAdd => 'Aggiungi test massimale';
 
   @override

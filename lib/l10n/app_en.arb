@@ -302,6 +302,20 @@
   },
   "profileMaxTestsTitle": "Max test tracking",
   "profileMaxTestsDescription": "Log your best attempts to see how your strength evolves over time.",
+  "profileMaxTestsPeriodLabel": "Period",
+  "profileMaxTestsPeriodMonth": "Last 1 month",
+  "profileMaxTestsPeriodHalfYear": "Last 6 months",
+  "profileMaxTestsPeriodYear": "Last 1 year",
+  "profileMaxTestsPeriodAll": "All time",
+  "profileMaxTestsEmptyPeriod": "No max tests recorded in {period}. Try a longer time range.",
+  "@profileMaxTestsEmptyPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "profileMaxTestsBestPeriodLabel": "Best in selected period",
   "profileMaxTestsAdd": "Add max test",
   "profileMaxTestsRefresh": "Refresh",
   "profileMaxTestsEmpty": "No max tests recorded yet. Add your first attempt to start tracking progress.",

@@ -753,6 +753,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Log your best attempts to see how your strength evolves over time.';
 
   @override
+  String get profileMaxTestsPeriodLabel => 'Period';
+
+  @override
+  String get profileMaxTestsPeriodMonth => 'Last 1 month';
+
+  @override
+  String get profileMaxTestsPeriodHalfYear => 'Last 6 months';
+
+  @override
+  String get profileMaxTestsPeriodYear => 'Last 1 year';
+
+  @override
+  String get profileMaxTestsPeriodAll => 'All time';
+
+  @override
+  String profileMaxTestsEmptyPeriod(String period) {
+    return 'No max tests recorded in $period. Try a longer time range.';
+  }
+
+  @override
+  String get profileMaxTestsBestPeriodLabel => 'Best in selected period';
+
+  @override
   String get profileMaxTestsAdd => 'Add max test';
 
   @override
