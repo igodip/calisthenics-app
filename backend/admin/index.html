@@ -168,6 +168,57 @@
                     </div>
                 </div>
 
+                    <div class="card dashboard-burndown-card">
+                    <div class="dashboard-card-header">
+                        <div class="stack">
+                            <h2 style="margin:0">{{ t('dashboard.burndownTitle') }}</h2>
+                            <span class="muted small">{{ t('dashboard.burndownSubtitle') }}</span>
+                        </div>
+                        <span class="pill" v-if="dashboardBurndown.minDateLabel && dashboardBurndown.maxDateLabel">
+                            {{ dashboardBurndown.minDateLabel }} → {{ dashboardBurndown.maxDateLabel }}
+                        </span>
+                    </div>
+                    <div v-if="dashboardBurndownLoading" class="muted small" style="margin-top:10px">
+                        {{ t('dashboard.burndownLoading') }}
+                    </div>
+                    <div v-else-if="dashboardBurndownError" class="muted small" style="margin-top:10px">
+                        {{ dashboardBurndownError }}
+                    </div>
+                    <div v-else-if="dashboardBurndown.lines.length===0" class="muted small" style="margin-top:10px">
+                        {{ t('dashboard.burndownEmpty') }}
+                    </div>
+                    <div v-else class="burndown-chart-wrap">
+                        <svg
+                            class="burndown-chart"
+                            role="img"
+                            aria-hidden="true"
+                            :viewBox="`0 0 ${dashboardBurndown.chartWidth} ${dashboardBurndown.chartHeight}`"
+                        >
+                            <polyline
+                                v-for="line in dashboardBurndown.lines"
+                                :key="line.traineeId"
+                                :points="line.polyline"
+                                :stroke="line.color"
+                                stroke-width="2"
+                                fill="none"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                        <div class="burndown-legend">
+                            <div class="burndown-legend-item" v-for="line in dashboardBurndown.lines" :key="line.traineeId">
+                                <span class="burndown-legend-swatch" :style="{ backgroundColor: line.color }"></span>
+                                <div>
+                                    <strong>{{ line.traineeName }}</strong>
+                                    <div class="muted small">
+                                        {{ t('dashboard.burndownRemaining', { remaining: line.latestRemaining, total: line.total }) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                     <div v-if="showLastWeekCard" class="card">
                     <div class="dashboard-card-header">
                         <div class="stack">
