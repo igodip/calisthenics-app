@@ -807,6 +807,28 @@ class AppLocalizationsIt extends AppLocalizations {
       'Nessun test massimale registrato. Aggiungi una nuova prova per vedere i progressi nel tempo.';
 
   @override
+  String get profileMaxTestsRecentPerformanceLabel => 'Performance recente';
+
+  @override
+  String get profileMaxTestsGoalLabel => 'Obiettivo';
+
+  @override
+  String get profileMaxTestsTipsTitle => 'Suggerimenti e tutorial';
+
+  @override
+  String get profileMaxTestsTipsSubtitle =>
+      'Rivedi i consigli tecnici e gli esercizi complementari.';
+
+  @override
+  String get profileMaxTestsEmptyShort =>
+      'Aggiungi un nuovo test per vedere il grafico delle prestazioni.';
+
+  @override
+  String profileMaxTestsSessionLabel(int index) {
+    return 'Sessione $index';
+  }
+
+  @override
   String profileMaxTestsHistoryError(Object error) {
     return 'Impossibile caricare lo storico dei progressi: $error';
   }

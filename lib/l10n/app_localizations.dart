@@ -1460,6 +1460,42 @@ abstract class AppLocalizations {
   /// **'Nessun test massimale registrato. Aggiungi una nuova prova per vedere i progressi nel tempo.'**
   String get profileMaxTestsHistoryEmpty;
 
+  /// No description provided for @profileMaxTestsRecentPerformanceLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Performance recente'**
+  String get profileMaxTestsRecentPerformanceLabel;
+
+  /// No description provided for @profileMaxTestsGoalLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Obiettivo'**
+  String get profileMaxTestsGoalLabel;
+
+  /// No description provided for @profileMaxTestsTipsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Suggerimenti e tutorial'**
+  String get profileMaxTestsTipsTitle;
+
+  /// No description provided for @profileMaxTestsTipsSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Rivedi i consigli tecnici e gli esercizi complementari.'**
+  String get profileMaxTestsTipsSubtitle;
+
+  /// No description provided for @profileMaxTestsEmptyShort.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi un nuovo test per vedere il grafico delle prestazioni.'**
+  String get profileMaxTestsEmptyShort;
+
+  /// No description provided for @profileMaxTestsSessionLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Sessione {index}'**
+  String profileMaxTestsSessionLabel(int index);
+
   /// No description provided for @profileMaxTestsHistoryError.
   ///
   /// In it, this message translates to:
