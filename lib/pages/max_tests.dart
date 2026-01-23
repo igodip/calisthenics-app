@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 import '../model/max_test.dart';
+import 'max_tests_history.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -61,6 +62,17 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     setState(() {
       _maxTestsFuture = _loadMaxTests(widget.userId);
     });
+  }
+
+  void _openHistoryPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MaxTestsHistoryPage(
+          userId: widget.userId,
+          displayName: widget.displayName,
+        ),
+      ),
+    );
   }
 
   DateTime? _periodStartDate(DateTime now) {
@@ -173,6 +185,11 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                           onPressed: _refreshMaxTests,
                           tooltip: l10n.profileMaxTestsRefresh,
                           icon: const Icon(Icons.refresh),
+                        ),
+                        IconButton(
+                          onPressed: _openHistoryPage,
+                          tooltip: l10n.profileMaxTestsHistoryAction,
+                          icon: const Icon(Icons.timeline_outlined),
                         ),
                         const SizedBox(width: 8),
                         FilledButton.tonalIcon(

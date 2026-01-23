@@ -318,7 +318,24 @@
   "profileMaxTestsBestPeriodLabel": "Best in selected period",
   "profileMaxTestsAdd": "Add max test",
   "profileMaxTestsRefresh": "Refresh",
+  "profileMaxTestsHistoryAction": "View progress",
   "profileMaxTestsEmpty": "No max tests recorded yet. Add your first attempt to start tracking progress.",
+  "profileMaxTestsHistoryTitle": "Progress over time",
+  "profileMaxTestsHistoryDescription": "Review each attempt and see how your max values evolve.",
+  "profileMaxTestsHistoryEmpty": "No max tests recorded yet. Add a new attempt to see your progress over time.",
+  "profileMaxTestsHistoryError": "Unable to load progress history: {error}",
+  "@profileMaxTestsHistoryError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "profileMaxTestsHistoryDeltaLabel": "Change {delta}",
+  "@profileMaxTestsHistoryDeltaLabel": {
+    "placeholders": {
+      "delta": {}
+    }
+  },
+  "profileMaxTestsHistoryFirstEntry": "First recorded attempt",
   "profileMaxTestsError": "Unable to load max tests: {error}",
   "@profileMaxTestsError": {
     "placeholders": {

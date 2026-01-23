@@ -1430,11 +1430,53 @@ abstract class AppLocalizations {
   /// **'Aggiorna'**
   String get profileMaxTestsRefresh;
 
+  /// No description provided for @profileMaxTestsHistoryAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Vedi progressi'**
+  String get profileMaxTestsHistoryAction;
+
   /// No description provided for @profileMaxTestsEmpty.
   ///
   /// In it, this message translates to:
   /// **'Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.'**
   String get profileMaxTestsEmpty;
+
+  /// No description provided for @profileMaxTestsHistoryTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Progressi nel tempo'**
+  String get profileMaxTestsHistoryTitle;
+
+  /// No description provided for @profileMaxTestsHistoryDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Rivedi ogni prova e osserva come evolvono i tuoi massimali.'**
+  String get profileMaxTestsHistoryDescription;
+
+  /// No description provided for @profileMaxTestsHistoryEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun test massimale registrato. Aggiungi una nuova prova per vedere i progressi nel tempo.'**
+  String get profileMaxTestsHistoryEmpty;
+
+  /// No description provided for @profileMaxTestsHistoryError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare lo storico dei progressi: {error}'**
+  String profileMaxTestsHistoryError(Object error);
+
+  /// No description provided for @profileMaxTestsHistoryDeltaLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Variazione {delta}'**
+  String profileMaxTestsHistoryDeltaLabel(String delta);
+
+  /// No description provided for @profileMaxTestsHistoryFirstEntry.
+  ///
+  /// In it, this message translates to:
+  /// **'Prima registrazione'**
+  String get profileMaxTestsHistoryFirstEntry;
 
   /// No description provided for @profileMaxTestsError.
   ///

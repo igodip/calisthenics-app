@@ -782,8 +782,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileMaxTestsRefresh => 'Refresh';
 
   @override
+  String get profileMaxTestsHistoryAction => 'View progress';
+
+  @override
   String get profileMaxTestsEmpty =>
       'No max tests recorded yet. Add your first attempt to start tracking progress.';
+
+  @override
+  String get profileMaxTestsHistoryTitle => 'Progress over time';
+
+  @override
+  String get profileMaxTestsHistoryDescription =>
+      'Review each attempt and see how your max values evolve.';
+
+  @override
+  String get profileMaxTestsHistoryEmpty =>
+      'No max tests recorded yet. Add a new attempt to see your progress over time.';
+
+  @override
+  String profileMaxTestsHistoryError(Object error) {
+    return 'Unable to load progress history: $error';
+  }
+
+  @override
+  String profileMaxTestsHistoryDeltaLabel(String delta) {
+    return 'Change $delta';
+  }
+
+  @override
+  String get profileMaxTestsHistoryFirstEntry => 'First recorded attempt';
 
   @override
   String profileMaxTestsError(Object error) {
