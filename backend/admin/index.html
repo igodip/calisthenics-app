@@ -783,13 +783,25 @@
 
                     <div class="overview-grid">
                         <div class="card">
-                            <div class="overview-card-header">
+                            <div class="workout-editor-header">
                                 <div class="stack">
-                                    <h3 style="margin:0">{{ t('program.planBuilderTitle') }}</h3>
+                                    <h3 class="workout-editor-title">{{ t('program.planBuilderTitle') }}</h3>
                                     <span class="muted small">{{ t('program.planBuilderSubtitle') }}</span>
                                 </div>
+                                <div class="workout-editor-header-actions">
+                                    <button
+                                        class="btn workout-editor-create"
+                                        type="button"
+                                        @click="saveTemplatePlan"
+                                        :disabled="savingTemplatePlan"
+                                    >
+                                        <span class="workout-editor-create-icon">+</span>
+                                        {{ t('actions.createWorkout') }}
+                                    </button>
+                                    <span v-if="savingTemplatePlan" class="muted small">{{ t('status.savingPlan') }}</span>
+                                </div>
                             </div>
-                            <div class="plan-builder-controls">
+                            <div class="workout-editor-settings">
                                 <label class="stack small">
                                     <span class="muted small">{{ t('labels.planName') }}</span>
                                     <input v-model="templatePlanName" :placeholder="t('program.planExample')" />
@@ -819,42 +831,116 @@
                                     </select>
                                 </label>
                             </div>
-                            <div class="plan-builder-table-wrap">
-                                <table class="plan-builder-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ t('labels.exercise') }}</th>
-                                            <th v-for="(day, dayIndex) in programTemplateDays" :key="day.id">
+                            <div class="workout-editor-grid">
+                                <div class="workout-editor-column">
+                                    <div class="workout-hero-card">
+                                        <div class="workout-hero-overlay">
+                                            <span class="workout-hero-tag">{{ t('program.planBuilderTitle') }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="workout-card">
+                                        <div class="workout-card-header">
+                                            <h4>{{ t('labels.days') }}</h4>
+                                            <button
+                                                class="icon-button"
+                                                type="button"
+                                                @click="incrementTemplateDayCount"
+                                                :disabled="templateDayCount >= templateDayOptions[templateDayOptions.length - 1]"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                        <div class="workout-days">
+                                            <button
+                                                v-for="(day, dayIndex) in programTemplateDays"
+                                                :key="day.id"
+                                                class="workout-day-item"
+                                                :class="{ active: dayIndex === selectedTemplateDay }"
+                                                type="button"
+                                                @click="selectTemplateDay(dayIndex)"
+                                            >
                                                 <div class="stack">
                                                     <strong>{{ templateDayLabel(dayIndex) }}</strong>
-                                                    <input v-model="day.title" :placeholder="t('placeholders.workoutTitle')" />
+                                                    <span class="muted small">
+                                                        {{ day.title || t('placeholders.workoutTitle') }}
+                                                    </span>
                                                 </div>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="slotIndex in templateSlotCount" :key="slotIndex">
-                                            <td>
-                                                <strong>{{ t('labels.exercise') }} {{ slotIndex }}</strong>
-                                            </td>
-                                            <td
-                                                v-for="(day, dayIndex) in programTemplateDays"
-                                                :key="`${day.id}-${slotIndex}`"
+                                            </button>
+                                        </div>
+                                        <label class="stack small workout-day-title">
+                                            <span class="muted small">{{ t('labels.title') }}</span>
+                                            <input v-model="activeTemplateDay.title" :placeholder="t('placeholders.workoutTitle')" />
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="workout-editor-column">
+                                    <div class="workout-card">
+                                        <div class="workout-card-header">
+                                            <h4>{{ t('labels.activities') }}</h4>
+                                            <button
+                                                class="icon-button"
+                                                type="button"
+                                                @click="incrementTemplateSlotCount"
+                                                :disabled="templateSlotCount >= templateExerciseOptions[templateExerciseOptions.length - 1]"
                                             >
+                                                +
+                                            </button>
+                                        </div>
+                                        <div class="workout-activity-list">
+                                            <button
+                                                v-for="(slot, slotIndex) in activeTemplateSlots"
+                                                :key="`${activeTemplateDay.id}-${slotIndex}`"
+                                                class="workout-activity-item"
+                                                :class="{ active: slotIndex === selectedTemplateSlot }"
+                                                type="button"
+                                                @click="selectTemplateSlot(slotIndex)"
+                                            >
+                                                <div class="stack">
+                                                    <strong>{{ slot.exercise || t('placeholders.exerciseName') }}</strong>
+                                                    <span class="muted small">
+                                                        {{ slot.sets ? `${slot.sets} ${t('labels.sets')}` : t('labels.setsPlaceholder') }}
+                                                    </span>
+                                                </div>
+                                                <span class="workout-activity-check" :class="{ active: slotIndex === selectedTemplateSlot }">
+                                                    ✓
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="workout-editor-column">
+                                    <div class="workout-card workout-detail-card">
+                                        <div class="workout-card-header">
+                                            <h4>{{ activeTemplateSlot.exercise || t('labels.exercise') }}</h4>
+                                        </div>
+                                        <div class="workout-detail-image">
+                                            <span class="muted small">{{ t('labels.preview') }}</span>
+                                        </div>
+                                        <div class="workout-detail-grid">
+                                            <label class="stack small">
+                                                <span class="muted small">{{ t('labels.exercise') }}</span>
                                                 <input
-                                                    v-model="day.slots[slotIndex - 1].exercise"
+                                                    v-model="activeTemplateSlot.exercise"
                                                     :placeholder="t('placeholders.exerciseName')"
                                                 />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="plan-builder-actions">
-                                <button class="btn" type="button" @click="saveTemplatePlan" :disabled="savingTemplatePlan">
-                                    {{ t('actions.savePlan') }}
-                                </button>
-                                <span v-if="savingTemplatePlan" class="muted small">{{ t('status.savingPlan') }}</span>
+                                            </label>
+                                            <label class="stack small">
+                                                <span class="muted small">{{ t('labels.sets') }}</span>
+                                                <input
+                                                    v-model="activeTemplateSlot.sets"
+                                                    :placeholder="t('placeholders.setsExample')"
+                                                />
+                                            </label>
+                                        </div>
+                                        <label class="stack small">
+                                            <span class="muted small">{{ t('labels.notes') }}</span>
+                                            <textarea
+                                                v-model="activeTemplateSlot.notes"
+                                                :placeholder="t('placeholders.notesOptional')"
+                                            ></textarea>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
