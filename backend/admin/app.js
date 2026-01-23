@@ -86,6 +86,17 @@ import {
       const dashboardNotes = ref([]);
       const dashboardNotesLoading = ref(false);
       const dashboardNotesError = ref('');
+      const dashboardBurndown = ref({
+        chartWidth: 760,
+        chartHeight: 240,
+        dates: [],
+        lines: [],
+        maxValue: 0,
+        minDateLabel: '',
+        maxDateLabel: '',
+      });
+      const dashboardBurndownLoading = ref(false);
+      const dashboardBurndownError = ref('');
       const addingDay = ref(false);
       const addingExercise = ref(false);
       const savingPlan = ref(false);
@@ -509,6 +520,33 @@ import {
         return `${year}-${month}-01`;
       };
 
+      const dateKey = (value) => {
+        const parsed = value instanceof Date ? value : new Date(value);
+        if (Number.isNaN(parsed.valueOf())) return '';
+        const year = parsed.getFullYear();
+        const month = String(parsed.getMonth() + 1).padStart(2, '0');
+        const day = String(parsed.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      const buildDateRange = (daysCount) => {
+        const today = new Date();
+        const end = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate(),
+        );
+        const start = new Date(end);
+        start.setDate(start.getDate() - (daysCount - 1));
+        const dates = [];
+        for (let i = 0; i < daysCount; i += 1) {
+          const next = new Date(start);
+          next.setDate(start.getDate() + i);
+          dates.push(next);
+        }
+        return { start, end, dates };
+      };
+
       const normalizePaymentAmount = (value) => {
         if (value === null || value === undefined || value === '') return null;
         const numeric = Number(value);
@@ -784,6 +822,7 @@ import {
         }
         await loadUsers();
         await loadTraineeProgress();
+        await loadDashboardBurndown();
         await loadDashboardNotes();
         if (users.value.length) {
           await selectUser(users.value[0]);
@@ -1461,6 +1500,184 @@ import {
         }
       }
 
+      async function loadDashboardBurndown() {
+        dashboardBurndownLoading.value = true;
+        dashboardBurndownError.value = '';
+        try {
+          const trainees = users.value || [];
+          if (!trainees.length) {
+            dashboardBurndown.value = {
+              ...dashboardBurndown.value,
+              dates: [],
+              lines: [],
+              maxValue: 0,
+              minDateLabel: '',
+              maxDateLabel: '',
+            };
+            return;
+          }
+
+          const traineeIds = trainees.map((u) => u.id).filter(Boolean);
+          if (!traineeIds.length) {
+            return;
+          }
+
+          const { data: planRows, error: planError } = await supabase
+            .from('workout_plans')
+            .select('id, trainee_id, created_at, starts_on')
+            .in('trainee_id', traineeIds)
+            .order('created_at', { ascending: false });
+          if (planError) {
+            throw new Error(planError.message);
+          }
+
+          const latestPlanByTrainee = new Map();
+          (planRows || []).forEach((row) => {
+            if (!row?.trainee_id || !row?.id) return;
+            const stamp = new Date(row.starts_on || row.created_at || 0).valueOf();
+            const existing = latestPlanByTrainee.get(row.trainee_id);
+            if (!existing || stamp > existing.stamp) {
+              latestPlanByTrainee.set(row.trainee_id, {
+                planId: row.id,
+                stamp,
+              });
+            }
+          });
+
+          const planIds = Array.from(latestPlanByTrainee.values())
+            .map((entry) => entry.planId)
+            .filter(Boolean);
+          if (!planIds.length) {
+            dashboardBurndown.value = {
+              ...dashboardBurndown.value,
+              dates: [],
+              lines: [],
+              maxValue: 0,
+              minDateLabel: '',
+              maxDateLabel: '',
+            };
+            return;
+          }
+
+          const { data: exerciseRows, error: exerciseError } = await supabase
+            .from('day_exercises')
+            .select(
+              'id, completed, days!inner ( completed_at, workout_plan_days!inner ( plan_id ) )',
+            )
+            .in('days.workout_plan_days.plan_id', planIds);
+          if (exerciseError) {
+            throw new Error(exerciseError.message);
+          }
+
+          const totalByPlan = new Map();
+          const completedByPlanDate = new Map();
+          const completedBeforeStart = new Map();
+          const { start, dates } = buildDateRange(30);
+          const startKey = dateKey(start);
+
+          (exerciseRows || []).forEach((row) => {
+            const day = row.days || {};
+            const planEntries = day.workout_plan_days || [];
+            const planId = planEntries?.[0]?.plan_id;
+            if (!planId) return;
+            totalByPlan.set(planId, (totalByPlan.get(planId) || 0) + 1);
+            if (!row.completed || !day.completed_at) return;
+            const completedKey = dateKey(day.completed_at);
+            if (!completedKey) return;
+            if (completedKey < startKey) {
+              completedBeforeStart.set(
+                planId,
+                (completedBeforeStart.get(planId) || 0) + 1,
+              );
+              return;
+            }
+            const planMap =
+              completedByPlanDate.get(planId) || new Map();
+            planMap.set(completedKey, (planMap.get(completedKey) || 0) + 1);
+            completedByPlanDate.set(planId, planMap);
+          });
+
+          const chartWidth = dashboardBurndown.value.chartWidth;
+          const chartHeight = dashboardBurndown.value.chartHeight;
+          const padding = 28;
+          const colors = [
+            '#2563eb',
+            '#16a34a',
+            '#f97316',
+            '#db2777',
+            '#0891b2',
+            '#7c3aed',
+            '#4b5563',
+            '#65a30d',
+          ];
+
+          const lines = [];
+          let maxValue = 0;
+          trainees.forEach((trainee, index) => {
+            const planEntry = latestPlanByTrainee.get(trainee.id);
+            if (!planEntry?.planId) return;
+            const planId = planEntry.planId;
+            const total = totalByPlan.get(planId) || 0;
+            if (!total) return;
+            const startingCompleted = completedBeforeStart.get(planId) || 0;
+            const planDates = completedByPlanDate.get(planId) || new Map();
+            let completedCount = startingCompleted;
+            const points = dates.map((dateItem, dayIndex) => {
+              const key = dateKey(dateItem);
+              completedCount += planDates.get(key) || 0;
+              const remaining = Math.max(total - completedCount, 0);
+              const x =
+                dates.length === 1
+                  ? padding
+                  : padding +
+                    (dayIndex / (dates.length - 1)) *
+                      (chartWidth - padding * 2);
+              const yRange = chartHeight - padding * 2;
+              const y =
+                chartHeight -
+                padding -
+                (remaining / total) * yRange;
+              return {
+                x: Number(x.toFixed(2)),
+                y: Number(y.toFixed(2)),
+                remaining,
+              };
+            });
+            maxValue = Math.max(maxValue, total);
+            lines.push({
+              traineeId: trainee.id,
+              traineeName: trainee.displayName || shortId(trainee.id),
+              color: colors[index % colors.length],
+              total,
+              latestRemaining: points.length ? points[points.length - 1].remaining : total,
+              points,
+              polyline: points.map((point) => `${point.x},${point.y}`).join(' '),
+            });
+          });
+
+          const minDateLabel = dates.length ? formatDate(dates[0]) : '';
+          const maxDateLabel = dates.length
+            ? formatDate(dates[dates.length - 1])
+            : '';
+
+          dashboardBurndown.value = {
+            chartWidth,
+            chartHeight,
+            dates,
+            lines,
+            maxValue,
+            minDateLabel,
+            maxDateLabel,
+          };
+        } catch (err) {
+          console.error(err);
+          dashboardBurndownError.value =
+            err.message || t('errors.loadProgress');
+        } finally {
+          dashboardBurndownLoading.value = false;
+        }
+      }
+
       async function addPlan() {
         if (!current.value) {
           alert(t('errors.selectTrainee'));
@@ -1817,6 +2034,9 @@ import {
         dashboardNotes,
         dashboardNotesLoading,
         dashboardNotesError,
+        dashboardBurndown,
+        dashboardBurndownLoading,
+        dashboardBurndownError,
         loadingProgress,
         loadingWeekStatus,
         weekStatusError,

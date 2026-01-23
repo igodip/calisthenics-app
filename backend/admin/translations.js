@@ -96,6 +96,11 @@ export const translations = {
       lastWeekEmpty: 'No trainees are in their last week right now.',
       lastWeekProgress: 'Week {current} of {total}',
       openProgram: 'Open program',
+      burndownTitle: 'Plan burndown',
+      burndownSubtitle: 'Shows remaining exercises in the latest plan over the last month.',
+      burndownLoading: 'Loading plan progress…',
+      burndownEmpty: 'No plan progress found for the last month.',
+      burndownRemaining: '{remaining} of {total} exercises remaining',
     },
     payments: {
       overviewTitle: 'Payment dashboard',
@@ -386,6 +391,12 @@ export const translations = {
       lastWeekEmpty: 'Nessun allievo è nell’ultima settimana al momento.',
       lastWeekProgress: 'Settimana {current} di {total}',
       openProgram: 'Apri programma',
+      burndownTitle: 'Burn down piano',
+      burndownSubtitle:
+        'Mostra gli esercizi rimanenti del piano più recente nell’ultimo mese.',
+      burndownLoading: 'Caricamento progresso piano…',
+      burndownEmpty: 'Nessun progresso del piano trovato nell’ultimo mese.',
+      burndownRemaining: '{remaining} di {total} esercizi rimanenti',
     },
     payments: {
       overviewTitle: 'Dashboard pagamenti',
