@@ -377,7 +377,7 @@ class _ExerciseGroupCard extends StatefulWidget {
 
   final String exercise;
   final List<MaxTest> tests;
-  final double bestValue;
+  final num bestValue;
   final String summaryLabel;
   final String badgeLabel;
   final bool enableToggle;
