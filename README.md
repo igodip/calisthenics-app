@@ -7,27 +7,32 @@ profile information stay in sync across devices.
 
 ## What you can do
 
-- **Follow your weekly plan** – the home screen pulls the latest training plan
-  from Supabase and organizes it by day. Each workout opens into a detailed
-  view showing exercises, sets, reps, intensity guidance and notes to keep you
-  on track.
-- **Track exercises in real time** – launch the exercise tracker to quickly log
-  reps with customizable quick-add buttons, undo actions, rest timers and goal
-  progress indicators for every movement.
-- **Use pose estimation tools** – switch to the built-in camera experience that
-  leverages Google ML Kit pose detection to analyse squats, push-ups, pull-ups
-  and dips, count reps and provide instant feedback on each set.
-- **Manage your profile** – review and edit profile details pulled from
-  Supabase, update preferences like units and timezone, and sign out securely.
-- **Tune settings** – change appearance, localization and other preferences via
-  the dedicated settings tab (see `lib/pages/settings.dart`).
+- **Complete onboarding and authentication** – new users are guided through a
+  three-step onboarding flow before signing in or creating an account with
+  Supabase authentication.
+- **Review your weekly plan** – the home screen highlights upcoming training
+  days, plan progress, and the latest coach tip for the trainee.
+- **Execute training days** – open a workout plan day to log completion, add
+  trainee notes, and track exercise completion state.
+- **Submit trainee feedback** – send feedback directly from the home experience
+  and receive confirmation on submission.
+- **Browse exercise guides and terminology** – browse curated exercise tips
+  alongside a glossary of training terms.
+- **Manage your profile and max tests** – update profile details, review payment
+  status, and record max test entries per exercise.
 
 ## Tech highlights
 
 - Flutter 3 application with a custom dark theme and localization support.
-- Supabase authentication, real-time data and profile management.
-- Google ML Kit pose detection for camera-based movement analysis.
+- Supabase authentication and data-backed trainee workflows.
+- Plan-expired gate that blocks app access when payment is overdue.
 - Modular component structure for cards, theming and reusable widgets.
+
+## Admin portal status
+
+The repo also ships a lightweight admin portal under `backend/admin` for
+trainers and admins to review trainees, payments, plans, and feedback in
+Supabase.
 
 ## Getting Started
 
