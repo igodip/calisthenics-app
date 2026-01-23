@@ -398,16 +398,16 @@ import {
             );
             const completedAt = parseCompletedAt(day.completed_at);
             const timestamp = completedAt ? completedAt.valueOf() : null;
-            const noteParts = [entry.notes, entry.trainee_notes]
-              .map((note) => (note || '').trim())
-              .filter(Boolean);
+            const notes = (entry.notes || '').trim();
+            const traineeNotes = (entry.trainee_notes || '').trim();
             return {
               id: entry.id,
               exercise:
                 (entry.exercise || '').trim() || t('labels.unknownExercise'),
               dayLabel,
               timeLabel: completedAt ? formatTime(completedAt) : '',
-              notes: noteParts.join(' • '),
+              notes,
+              traineeNotes,
               sortValue:
                 timestamp ??
                 (week * 100 + (order.has(code) ? order.get(code) : 99)),
