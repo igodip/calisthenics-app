@@ -120,6 +120,8 @@ import {
           [],
         ),
       );
+      const selectedTemplateDay = ref(0);
+      const selectedTemplateSlot = ref(0);
       const savingTemplatePlan = ref(false);
       watch(
         [templateDayCount, templateWeekCount, templateSlotCount],
@@ -132,6 +134,15 @@ import {
           );
         },
       );
+      watch(programTemplateDays, (nextDays) => {
+        if (selectedTemplateDay.value >= nextDays.length) {
+          selectedTemplateDay.value = 0;
+        }
+        const nextSlots = nextDays[selectedTemplateDay.value]?.slots || [];
+        if (selectedTemplateSlot.value >= nextSlots.length) {
+          selectedTemplateSlot.value = 0;
+        }
+      });
 
       function buildTemplateDays(count, slots, existing) {
         const list = [];
@@ -209,6 +220,43 @@ import {
       );
 
       const showLastWeekCard = computed(() => Boolean(currentTrainer.value));
+
+      const activeTemplateDay = computed(
+        () =>
+          programTemplateDays.value[selectedTemplateDay.value] ||
+          programTemplateDays.value[0] ||
+          { slots: [], title: '', id: 'template-empty' },
+      );
+      const activeTemplateSlots = computed(() => activeTemplateDay.value.slots || []);
+      const activeTemplateSlot = computed(
+        () =>
+          activeTemplateSlots.value[selectedTemplateSlot.value] ||
+          activeTemplateSlots.value[0] ||
+          { exercise: '', sets: '', notes: '' },
+      );
+
+      const selectTemplateDay = (index) => {
+        selectedTemplateDay.value = index;
+        selectedTemplateSlot.value = 0;
+      };
+
+      const selectTemplateSlot = (index) => {
+        selectedTemplateSlot.value = index;
+      };
+
+      const incrementTemplateDayCount = () => {
+        const next = templateDayOptions.find(
+          (option) => option > templateDayCount.value,
+        );
+        if (next) templateDayCount.value = next;
+      };
+
+      const incrementTemplateSlotCount = () => {
+        const next = templateExerciseOptions.find(
+          (option) => option > templateSlotCount.value,
+        );
+        if (next) templateSlotCount.value = next;
+      };
 
       const paymentFilterOptions = [
         { value: 'all', labelKey: 'payments.filterAll' },
@@ -2047,6 +2095,11 @@ import {
         templateExerciseOptions,
         templatePlanName,
         programTemplateDays,
+        selectedTemplateDay,
+        selectedTemplateSlot,
+        activeTemplateDay,
+        activeTemplateSlots,
+        activeTemplateSlot,
         savingTemplatePlan,
         dashboardNotes,
         dashboardNotesLoading,
@@ -2081,6 +2134,10 @@ import {
         dayCodeLabel,
         planStatusLabel,
         templateDayLabel,
+        selectTemplateDay,
+        selectTemplateSlot,
+        incrementTemplateDayCount,
+        incrementTemplateSlotCount,
         applyNextWeek,
         setDayCode,
         emailPasswordSignIn,
