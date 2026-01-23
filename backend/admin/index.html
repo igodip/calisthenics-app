@@ -380,6 +380,18 @@
                             <span class="summary-label">{{ t('payments.overdueLabel') }}</span>
                             <strong>{{ paymentSummary.overdue }}</strong>
                         </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{{ t('payments.receivedAmountLabel') }}</span>
+                            <strong>{{ formatAmount(paymentSummary.receivedAmount) }}</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{{ t('payments.forecastedAmountLabel') }}</span>
+                            <strong>{{ formatAmount(paymentSummary.forecastedAmount) }}</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">{{ t('payments.dueAmountLabel') }}</span>
+                            <strong>{{ formatAmount(paymentSummary.dueAmount) }}</strong>
+                        </div>
                     </div>
                 </div>
 
