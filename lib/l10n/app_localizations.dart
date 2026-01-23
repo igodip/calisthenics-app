@@ -1202,6 +1202,24 @@ abstract class AppLocalizations {
   /// **'Apri tracker'**
   String get trainingOpenTracker;
 
+  /// No description provided for @trainingTodayTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Allenamento di oggi'**
+  String get trainingTodayTitle;
+
+  /// No description provided for @trainingStartWorkout.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizia allenamento'**
+  String get trainingStartWorkout;
+
+  /// No description provided for @trainingWorkoutCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Allenamento completato'**
+  String get trainingWorkoutCompleted;
+
   /// No description provided for @trainingMarkComplete.
   ///
   /// In it, this message translates to:

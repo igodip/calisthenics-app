@@ -16,8 +16,6 @@ class Training extends StatefulWidget {
 
 class _TrainingState extends State<Training> {
   late final List<WorkoutExercise> _exercises;
-  late final Map<String, TextEditingController> _personalNoteControllers;
-  final Set<String> _savingNotes = {};
   final Set<String> _togglingExerciseCompletion = {};
   late bool _isCompleted;
   bool _updatingCompletion = false;
@@ -29,25 +27,12 @@ class _TrainingState extends State<Training> {
     _exercises = List<WorkoutExercise>.from(widget.day.exercises);
     _sortExercises();
     _isCompleted = widget.day.isCompleted;
-    _personalNoteControllers = {};
-    for (int i = 0; i < _exercises.length; i++) {
-      final key = _controllerKey(_exercises[i], i);
-      _personalNoteControllers[key] =
-          TextEditingController(text: _exercises[i].traineeNotes ?? '');
-    }
-  }
-
-  @override
-  void dispose() {
-    for (final controller in _personalNoteControllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -62,123 +47,153 @@ class _TrainingState extends State<Training> {
       },
       child: PlanExpiredGate(
         child: Scaffold(
-          appBar: AppBar(title: Text(widget.day.formattedTitle(l10n))),
-          body: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              if ((widget.day.notes ?? '').trim().isNotEmpty)
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+          backgroundColor: const Color(0xFF0D1626),
+          appBar: AppBar(
+            backgroundColor: const Color(0xFF0D1626),
+            elevation: 0,
+            foregroundColor: Colors.white,
+            title: Text(l10n.trainingTodayTitle),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.08),
+                    shape: BoxShape.circle,
                   ),
-                  elevation: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.generalNotes,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(widget.day.notes!.trim()),
-                      ],
-                    ),
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.more_horiz),
+                    color: Colors.white70,
                   ),
-                ),
-              for (int index = 0; index < _exercises.length; index++)
-                _ExerciseCard(
-                  exercise: _exercises[index],
-                  traineeNotesController: _personalNoteControllers.putIfAbsent(
-                    _controllerKey(_exercises[index], index),
-                    () => TextEditingController(
-                      text: _exercises[index].traineeNotes ?? '',
-                    ),
-                  ),
-                  saving: _savingNotes.contains(_exercises[index].id),
-                  updatingCompletion: _togglingExerciseCompletion
-                      .contains(_exercises[index].id),
-                  onSaveNotes: () => _saveNotes(index),
-                  onToggleCompletion: () => _toggleExerciseCompletion(index),
-                ),
-              const SizedBox(height: 24),
-              FilledButton.icon(
-                onPressed: _updatingCompletion ? null : _toggleCompletion,
-                icon: _updatingCompletion
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Icon(
-                        _isCompleted ? Icons.undo : Icons.check_circle_outline,
-                      ),
-                label: Text(
-                  _isCompleted
-                      ? l10n.trainingMarkIncomplete
-                      : l10n.trainingMarkComplete,
                 ),
               ),
             ],
           ),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF202B3E), Color(0xFF151F33)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: Colors.white.withOpacity(0.08)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.day.formattedTitle(l10n),
+                              style: textTheme.titleMedium?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '45 min',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: Colors.white70,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 16,
+                            color: Color(0xFF4DA6FF),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${_exercises.length} ${l10n.trainingHeaderExercise}${_exercises.length == 1 ? '' : 's'}',
+                            style: textTheme.bodySmall?.copyWith(
+                              color: Colors.white60,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                for (int index = 0; index < _exercises.length; index++)
+                  _ExerciseCard(
+                    exercise: _exercises[index],
+                    detailText:
+                        _exerciseDetailText(_exercises[index], l10n),
+                    updatingCompletion: _togglingExerciseCompletion
+                        .contains(_exercises[index].id),
+                    onToggleCompletion: () => _toggleExerciseCompletion(index),
+                  ),
+              ],
+            ),
+          ),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF2B7BFF), Color(0xFF1A5DDB)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF2B7BFF).withOpacity(0.35),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: FilledButton(
+                onPressed: _updatingCompletion ? null : _toggleCompletion,
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: _updatingCompletion
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Text(
+                        _isCompleted
+                            ? l10n.trainingWorkoutCompleted
+                            : l10n.trainingStartWorkout,
+                        style: textTheme.titleSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+              ),
+            ),
+          ),
         ),
       ),
     );
-  }
-
-  Future<void> _saveNotes(int index) async {
-    final exercise = _exercises[index];
-    final note = _personalNoteControllers[_controllerKey(exercise, index)]!
-        .text
-        .trim();
-    final l10n = AppLocalizations.of(context)!;
-
-    if (exercise.id == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.trainingNotesUnavailable)),
-      );
-      return;
-    }
-
-    setState(() => _savingNotes.add(exercise.id!));
-
-    try {
-      await Supabase.instance.client
-          .from('day_exercises')
-          .update({'trainee_notes': note.isEmpty ? null : note})
-          .eq('id', exercise.id!);
-
-      if (!mounted) return;
-
-      setState(() {
-        _exercises[index] = WorkoutExercise(
-          id: exercise.id,
-          name: exercise.name,
-          notes: exercise.notes,
-          traineeNotes: note.isEmpty ? null : note,
-          position: exercise.position,
-          isCompleted: exercise.isCompleted,
-        );
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.trainingNotesSaved)),
-      );
-    } catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.trainingNotesError('$error'))),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _savingNotes.remove(exercise.id));
-      }
-    }
   }
 
   Future<void> _toggleExerciseCompletion(int index) async {
@@ -310,47 +325,20 @@ class _TrainingState extends State<Training> {
     final fallbackIndex = widget.day.exercises.indexOf(exercise);
     return fallbackIndex < 0 ? 0 : fallbackIndex;
   }
-
-  String _controllerKey(WorkoutExercise exercise, int fallbackIndex) =>
-      exercise.id ?? 'local-$fallbackIndex';
 }
 
 class _ExerciseCard extends StatelessWidget {
   final WorkoutExercise exercise;
-  final TextEditingController traineeNotesController;
-  final bool saving;
+  final String detailText;
   final bool updatingCompletion;
-  final VoidCallback onSaveNotes;
   final VoidCallback onToggleCompletion;
 
   const _ExerciseCard({
     required this.exercise,
-    required this.traineeNotesController,
-    required this.saving,
+    required this.detailText,
     required this.updatingCompletion,
-    required this.onSaveNotes,
     required this.onToggleCompletion,
   });
-
-  void _showExerciseNotes(
-    BuildContext context,
-    String exerciseName,
-    String notes,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(exerciseName),
-        content: Text(notes),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(MaterialLocalizations.of(context).closeButtonLabel),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -358,126 +346,94 @@ class _ExerciseCard extends StatelessWidget {
     final exerciseName = exercise.name?.trim().isNotEmpty == true
         ? exercise.name!
         : l10n.defaultExerciseName;
-    final colorScheme = Theme.of(context).colorScheme;
     final isCompleted = exercise.isCompleted;
-    final cardColor =
-        isCompleted ? colorScheme.primaryContainer : Theme.of(context).cardColor;
-    final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.bold,
-          decoration:
-              isCompleted ? TextDecoration.lineThrough : TextDecoration.none,
-          color: isCompleted ? colorScheme.onPrimaryContainer : null,
-        );
+    final textTheme = Theme.of(context).textTheme;
+    final titleStyle = textTheme.titleSmall?.copyWith(
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+      decoration: isCompleted ? TextDecoration.lineThrough : null,
+    );
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
-      color: cardColor,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      decoration: BoxDecoration(
+        color: const Color(0xFF121C2B),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.06)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: updatingCompletion ? null : onToggleCompletion,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            child: Row(
               children: [
-                Expanded(
-                  child: Text(
-                    exerciseName,
-                    style: titleStyle,
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF324158), Color(0xFF1A2438)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.fitness_center,
+                    color: Colors.white,
+                    size: 22,
                   ),
                 ),
-                IconButton(
-                  onPressed: updatingCompletion ? null : onToggleCompletion,
-                  tooltip: l10n.trainingExerciseCompletedLabel,
-                  icon: updatingCompletion
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Icon(
-                          isCompleted
-                              ? Icons.check_circle
-                              : Icons.radio_button_unchecked,
-                          color: isCompleted
-                              ? colorScheme.primary
-                              : Theme.of(context).iconTheme.color,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(exerciseName, style: titleStyle),
+                      const SizedBox(height: 4),
+                      Text(
+                        detailText,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: Colors.white60,
                         ),
+                      ),
+                    ],
+                  ),
                 ),
+                if (updatingCompletion)
+                  const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else
+                  Icon(
+                    isCompleted ? Icons.check_circle : Icons.chevron_right,
+                    color: isCompleted
+                        ? const Color(0xFF4DA6FF)
+                        : Colors.white38,
+                  ),
               ],
             ),
-            const SizedBox(height: 4),
-            if ((exercise.notes ?? '').trim().isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: OutlinedButton.icon(
-                  onPressed: () => _showExerciseNotes(
-                    context,
-                    exerciseName,
-                    exercise.notes!.trim(),
-                  ),
-                  icon: const Icon(Icons.sticky_note_2_outlined, size: 18),
-                  label: Text(l10n.trainingNotesLabel),
-                  style: OutlinedButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ),
-              ),
-            ],
-            if ((exercise.traineeNotes ?? '').trim().isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: OutlinedButton.icon(
-                  onPressed: () => _showExerciseNotes(
-                    context,
-                    exerciseName,
-                    exercise.traineeNotes!.trim(),
-                  ),
-                  icon: const Icon(Icons.notes_outlined, size: 18),
-                  label: Text(l10n.trainingTraineeNotesLabel),
-                  style: OutlinedButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 8),
-            TextField(
-              controller: traineeNotesController,
-              maxLines: null,
-              decoration: InputDecoration(
-                labelText: l10n.trainingTraineeNotesLabel,
-                hintText: l10n.trainingHeaderNotes,
-                border: const OutlineInputBorder(),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                suffixIcon: saving
-                    ? const Padding(
-                        padding: EdgeInsets.all(10),
-                        child: SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    : IconButton(
-                        icon: const Icon(Icons.save),
-                        tooltip: l10n.trainingNotesSave,
-                        onPressed: onSaveNotes,
-                      ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
+
+String _exerciseDetailText(
+  WorkoutExercise exercise,
+  AppLocalizations l10n,
+) {
+  final notes = (exercise.notes ?? '').trim();
+  if (notes.isNotEmpty) return notes;
+
+  final traineeNotes = (exercise.traineeNotes ?? '').trim();
+  if (traineeNotes.isNotEmpty) return traineeNotes;
+
+  return '${l10n.trainingHeaderSets} · ${l10n.trainingHeaderReps}';
 }
