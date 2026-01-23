@@ -1,794 +1,429 @@
-import 'package:calisync/model/workout_day.dart';
-import 'package:calisync/pages/trainee_feedback.dart';
-import 'package:calisync/pages/workout_plan_page.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../l10n/app_localizations.dart';
-
-class HomeContent extends StatefulWidget {
+class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
 
   @override
-  State<HomeContent> createState() => _HomeContentState();
-}
-
-class _HomeContentState extends State<HomeContent> {
-  late Future<_HomeOverviewData> _overviewFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _overviewFuture = _loadOverview();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: RefreshIndicator(
-        onRefresh: _refresh,
-        child: FutureBuilder<_HomeOverviewData>(
-          future: _overviewFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 32),
-                  Center(child: CircularProgressIndicator()),
-                ],
-              );
-            }
-
-            if (snapshot.hasError) {
-              return ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  const SizedBox(height: 32),
-                  Icon(
-                    Icons.error_outline,
-                    size: 56,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.homeLoadErrorTitle,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${snapshot.error}',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: FilledButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _overviewFuture = _loadOverview();
-                        });
-                      },
-                      icon: const Icon(Icons.refresh),
-                      label: Text(l10n.retry),
-                    ),
-                  ),
-                ],
-              );
-            }
-
-            final overview = snapshot.data ?? const _HomeOverviewData();
-            final scheduleSummary =
-                _buildScheduleSummary(overview.days, DateTime.now());
-            return ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                _WorkoutScheduleSection(summary: scheduleSummary),
-                const SizedBox(height: 16),
-                _WorkoutPlanLinkSection(
-                  onOpenPlan: _openWorkoutPlan,
-                ),
-                const SizedBox(height: 16),
-                _TraineeFeedbackLinkSection(
-                  onOpenFeedback: _openTraineeFeedback,
-                ),
-                const SizedBox(height: 16),
-                _CoachTipSection(tip: overview.coachTip),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Future<void> _refresh() async {
-    setState(() {
-      _overviewFuture = _loadOverview();
-    });
-    await _overviewFuture;
-  }
-
-  Future<_HomeOverviewData> _loadOverview() async {
-    final client = Supabase.instance.client;
-    final userId = client.auth.currentUser?.id;
-    if (userId == null) {
-      throw Exception(AppLocalizations.of(context)!.unauthenticated);
-    }
-
-    final days = await _loadWorkoutDaysForUser(client, userId);
-    final coachTip = await _loadCoachTipForUser(client, userId);
-    return _HomeOverviewData(days: days, coachTip: coachTip);
-  }
-
-  Future<List<WorkoutDay>> _loadWorkoutDaysForUser(
-    SupabaseClient client,
-    String userId,
-  ) async {
-    final response = await client.from('days').select(
-          'id, week, day_code, completed, completed_at, '
-          'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) )',
-        )
-        .eq('workout_plan_days.workout_plans.trainee_id', userId)
-        .order('week', ascending: true)
-        .order('day_code', ascending: true)
-        .order('position', referencedTable: 'workout_plan_days', ascending: true);
-
-    final data = (response as List<dynamic>? ?? [])
-        .cast<Map<String, dynamic>>();
-
-    DateTime? parseDate(dynamic value) {
-      if (value is DateTime) return value;
-      if (value is String) {
-        return DateTime.tryParse(value);
-      }
-      return null;
-    }
-
-    return data.map((row) {
-      final Map<String, dynamic>? wpd =
-      row['workout_plan_days'] as Map<String, dynamic>?;
-
-      final Map<String, dynamic> planDetails =
-          (wpd?['workout_plans'] as Map<String, dynamic>?) ?? <String, dynamic>{};
-      final planStartedAt = parseDate(planDetails['starts_on']);
-      final planCreatedAt = parseDate(planDetails['created_at']);
-      final planId = planDetails['id'] as String?;
-      final planName = planDetails['title'] as String?;
-      final planPosition = (wpd?['position'] as num?)?.toInt();
-
-      return WorkoutDay(
-        id: row['id'] as String?,
-        week: (row['week'] as num?)?.toInt() ?? 0,
-        dayCode: (row['day_code'] as String? ?? '').trim(),
-        title: null,
-        notes: null,
-        isCompleted: row['completed'] as bool? ?? false,
-        completedAt: parseDate(row['completed_at']),
-        planId: planId,
-        planName: planName,
-        planStartedAt: planStartedAt,
-        createdAt: planCreatedAt,
-        planPosition: planPosition,
-        exercises: const [],
-      );
-    }).toList();
-  }
-
-  Future<String?> _loadCoachTipForUser(
-    SupabaseClient client,
-    String userId,
-  ) async {
-    final response = await client
-        .from('trainee_trainers')
-        .select('coach_tip')
-        .eq('trainee_id', userId)
-        .maybeSingle();
-    if (response == null) {
-      return null;
-    }
-    final tip = response['coach_tip'] as String?;
-    return tip?.trim().isEmpty ?? true ? null : tip?.trim();
-  }
-
-  Future<void> _openTraineeFeedback() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const TraineeFeedbackPage()),
-    );
-  }
-
-  Future<void> _openWorkoutPlan() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const WorkoutPlanPage()),
-    );
-  }
-
-  _WorkoutScheduleSummary _buildScheduleSummary(
-    List<WorkoutDay> days,
-    DateTime now,
-  ) {
-    final dates = <DateTime>{};
-    for (final day in days) {
-      final computed = _resolveWorkoutDate(day);
-      if (computed == null) continue;
-      dates.add(_normalizeDate(computed));
-    }
-
-    final today = _normalizeDate(now);
-    final weekStart = today.subtract(Duration(days: today.weekday - 1));
-    final weekEnd = weekStart.add(const Duration(days: 6));
-    final monthStart = DateTime(today.year, today.month, 1);
-    final monthEnd = DateTime(today.year, today.month + 1, 0);
-
-    final sortedDates = dates.toList()..sort();
-    final nextWorkout = sortedDates.firstWhere(
-      (date) => !date.isBefore(today),
-      orElse: () => DateTime(0),
-    );
-
-    final workoutsThisWeek = dates
-        .where((date) => !date.isBefore(weekStart) && !date.isAfter(weekEnd))
-        .length;
-    final workoutsThisMonth = dates
-        .where((date) => !date.isBefore(monthStart) && !date.isAfter(monthEnd))
-        .length;
-    final upcomingWeek = sortedDates
-        .where((date) => !date.isBefore(today) && !date.isAfter(weekEnd))
-        .toList();
-
-    return _WorkoutScheduleSummary(
-      nextWorkout: nextWorkout.year == 0 ? null : nextWorkout,
-      workoutsThisWeek: workoutsThisWeek,
-      workoutsThisMonth: workoutsThisMonth,
-      upcomingWeek: upcomingWeek,
-      planProgress: _buildPlanProgressSummary(days),
-    );
-  }
-
-  DateTime _normalizeDate(DateTime date) {
-    return DateTime(date.year, date.month, date.day);
-  }
-
-  _PlanProgressSummary? _buildPlanProgressSummary(List<WorkoutDay> days) {
-    if (days.isEmpty) return null;
-
-    String planKey(WorkoutDay day) {
-      if (day.planId != null && day.planId!.isNotEmpty) return day.planId!;
-      if (day.planName != null && day.planName!.isNotEmpty) return day.planName!;
-      if (day.planStartedAt != null) return 'start-${day.planStartedAt!.toIso8601String()}';
-      if (day.createdAt != null) return 'created-${day.createdAt!.toIso8601String()}';
-      return 'plan';
-    }
-
-    DateTime? latestPlanDate(Iterable<WorkoutDay> entries) {
-      return entries
-          .map((day) => day.planStartedAt ?? day.createdAt)
-          .whereType<DateTime>()
-          .fold<DateTime?>(null, (previous, element) {
-        if (previous == null) return element;
-        return element.isAfter(previous) ? element : previous;
-      });
-    }
-
-    final Map<String, List<WorkoutDay>> grouped = {};
-    for (final day in days) {
-      grouped.putIfAbsent(planKey(day), () => []).add(day);
-    }
-
-    List<WorkoutDay>? selected;
-    DateTime? selectedDate;
-    for (final entry in grouped.entries) {
-      final candidate = entry.value;
-      final candidateDate = latestPlanDate(candidate);
-      if (selected == null) {
-        selected = candidate;
-        selectedDate = candidateDate;
-        continue;
-      }
-      if (candidateDate == null) {
-        continue;
-      }
-      if (selectedDate == null || candidateDate.isAfter(selectedDate)) {
-        selected = candidate;
-        selectedDate = candidateDate;
-      }
-    }
-
-    if (selected == null || selected.isEmpty) {
-      return null;
-    }
-
-    final totalDays = selected.length;
-    final completedDays = selected.where((day) => day.isCompleted).length;
-    final representative = selected.first;
-    return _PlanProgressSummary(
-      totalDays: totalDays,
-      completedDays: completedDays,
-      planName: representative.planName,
-    );
-  }
-
-  DateTime? _resolveWorkoutDate(WorkoutDay day) {
-    final completedAt = day.completedAt;
-    if (completedAt != null) {
-      return _normalizeDate(completedAt);
-    }
-
-    final planStart = day.planStartedAt;
-    final weekOffset = day.week > 0 ? day.week - 1 : 0;
-    final dayOffset = _dayOffsetFromCode(day.dayCode);
-
-    if (planStart != null && dayOffset != null) {
-      final normalizedStart = _normalizeDate(planStart);
-      return normalizedStart.add(
-        Duration(days: (weekOffset * 7) + dayOffset),
-      );
-    }
-
-    if (planStart != null) {
-      final normalizedStart = _normalizeDate(planStart);
-      return normalizedStart.add(Duration(days: weekOffset * 7));
-    }
-
-    return null;
-  }
-
-  int? _dayOffsetFromCode(String code) {
-    final normalized = code.trim().toLowerCase();
-    if (normalized.isEmpty) return null;
-
-    final numeric = int.tryParse(normalized);
-    if (numeric != null && numeric > 0) {
-      return numeric - 1;
-    }
-
-    final letter = normalized.length == 1 ? normalized.codeUnitAt(0) : null;
-    if (letter != null && letter >= 97 && letter <= 103) {
-      return letter - 97;
-    }
-
-    const weekdayMap = {
-      'mon': 0,
-      'monday': 0,
-      'lun': 0,
-      'lunedi': 0,
-      'lunedì': 0,
-      'tue': 1,
-      'tues': 1,
-      'tuesday': 1,
-      'mar': 1,
-      'martedi': 1,
-      'martedì': 1,
-      'wed': 2,
-      'wednesday': 2,
-      'mer': 2,
-      'mercoledi': 2,
-      'mercoledì': 2,
-      'thu': 3,
-      'thur': 3,
-      'thurs': 3,
-      'thursday': 3,
-      'gio': 3,
-      'giovedi': 3,
-      'giovedì': 3,
-      'fri': 4,
-      'friday': 4,
-      'ven': 4,
-      'venerdi': 4,
-      'venerdì': 4,
-      'sat': 5,
-      'saturday': 5,
-      'sab': 5,
-      'sabato': 5,
-      'sun': 6,
-      'sunday': 6,
-      'dom': 6,
-      'domenica': 6,
-    };
-
-    return weekdayMap[normalized];
-  }
-}
-
-class _WorkoutScheduleSummary {
-  final DateTime? nextWorkout;
-  final int workoutsThisWeek;
-  final int workoutsThisMonth;
-  final List<DateTime> upcomingWeek;
-  final _PlanProgressSummary? planProgress;
-
-  const _WorkoutScheduleSummary({
-    required this.nextWorkout,
-    required this.workoutsThisWeek,
-    required this.workoutsThisMonth,
-    required this.upcomingWeek,
-    required this.planProgress,
-  });
-}
-
-class _PlanProgressSummary {
-  final int totalDays;
-  final int completedDays;
-  final String? planName;
-
-  const _PlanProgressSummary({
-    required this.totalDays,
-    required this.completedDays,
-    required this.planName,
-  });
-
-  double get completionRatio {
-    if (totalDays <= 0) return 0;
-    return completedDays / totalDays;
-  }
-
-  int get completionPercent {
-    return (completionRatio * 100).round();
-  }
-}
-
-class _HomeOverviewData {
-  final List<WorkoutDay> days;
-  final String? coachTip;
-
-  const _HomeOverviewData({
-    this.days = const [],
-    this.coachTip,
-  });
-}
-
-class _WorkoutScheduleSection extends StatelessWidget {
-  final _WorkoutScheduleSummary summary;
-
-  const _WorkoutScheduleSection({
-    required this.summary,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final dateFormat = DateFormat.EEEE(l10n.localeName).add_yMMMd();
-    final compactDateFormat = DateFormat.MMMd(l10n.localeName);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.homeScheduleTitle,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          l10n.homeScheduleSubtitle,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.35),
-          child: ListTile(
-            leading: Icon(
-              Icons.event_available,
-              color: theme.colorScheme.primary,
-            ),
-            title: Text(
-              l10n.homeNextWorkoutTitle,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              summary.nextWorkout == null
-                  ? l10n.homeNextWorkoutEmpty
-                  : dateFormat.format(summary.nextWorkout!),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _StatCard(
-                icon: Icons.calendar_view_week,
-                label: l10n.homeWorkoutsThisWeekTitle,
-                value: '${summary.workoutsThisWeek}',
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _StatCard(
-                icon: Icons.calendar_month,
-                label: l10n.homeWorkoutsThisMonthTitle,
-                value: '${summary.workoutsThisMonth}',
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (summary.planProgress == null)
-          Text(
-            l10n.homePlanProgressEmpty,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          )
-        else
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.assessment,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.homePlanProgressTitle,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    summary.planProgress?.planName?.isNotEmpty == true
-                        ? summary.planProgress!.planName!
-                        : l10n.homePlanProgressCurrentPlan,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  LinearProgressIndicator(
-                    value: summary.planProgress!.completionRatio,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.homePlanProgressValue(
-                          summary.planProgress!.completedDays,
-                          summary.planProgress!.totalDays,
-                        ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      Text(
-                        l10n.homePlanProgressPercent(
-                          summary.planProgress!.completionPercent,
-                        ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        const SizedBox(height: 12),
-        Text(
-          l10n.homeUpcomingWeekTitle,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 8),
-        if (summary.upcomingWeek.isEmpty)
-          Text(
-            l10n.homeUpcomingWeekEmpty,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          )
-        else
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: summary.upcomingWeek
-                .map(
-                  (date) => Chip(
-                    label: Text(compactDateFormat.format(date)),
-                    backgroundColor:
-                        theme.colorScheme.surfaceContainerHighest,
-                  ),
-                )
-                .toList(),
-          ),
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+      children: const [
+        _HomeHeader(),
+        SizedBox(height: 16),
+        _ProgressCard(),
+        SizedBox(height: 16),
+        _GoalsCard(),
+        SizedBox(height: 16),
+        _ActionButtons(),
+        SizedBox(height: 16),
+        _StrengthLevelCard(),
+        SizedBox(height: 16),
+        _SkillProgressCard(),
       ],
     );
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _StatCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+class _HomeHeader extends StatelessWidget {
+  const _HomeHeader();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Icon(icon, color: theme.colorScheme.primary),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Hi, Alex!',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const _AvatarChip(),
+      ],
+    );
+  }
+}
+
+class _AvatarChip extends StatelessWidget {
+  const _AvatarChip();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return CircleAvatar(
+      radius: 18,
+      backgroundColor: theme.colorScheme.primaryContainer,
+      child: CircleAvatar(
+        radius: 16,
+        backgroundColor: theme.colorScheme.surface,
+        child: Icon(
+          Icons.person,
+          color: theme.colorScheme.onSurfaceVariant,
+          size: 18,
+        ),
+      ),
+    );
+  }
+}
+
+class _ProgressCard extends StatelessWidget {
+  const _ProgressCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return _SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Progress',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _StatTile(
+                  value: '245',
+                  label: 'Workouts',
+                  icon: Icons.fitness_center,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StatTile(
+                  value: '75h 30m',
+                  label: 'Time Trained',
+                  icon: Icons.timer,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GoalsCard extends StatelessWidget {
+  const _GoalsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return _SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Current Goals',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                ),
+              ),
+              Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const _GoalRow(
+            title: 'Muscle-Up',
+            progress: 0.7,
+            trailing: '7 / 10 Reps',
+          ),
+          const SizedBox(height: 12),
+          const _GoalRow(
+            title: 'Handstand Push-Up',
+            progress: 0.38,
+            trailing: '3 / 8 Reps',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButtons extends StatelessWidget {
+  const _ActionButtons();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: FilledButton(
+            onPressed: () {},
+            child: const Text('Start Workout'),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: OutlinedButton(
+            onPressed: () {},
+            child: const Text('View Stats'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StrengthLevelCard extends StatelessWidget {
+  const _StrengthLevelCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return _SectionCard(
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Strength Level',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.arrow_circle_up,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Advanced',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.primaryContainer,
+                  theme.colorScheme.surface,
                 ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
             ),
-          ],
-        ),
+            child: Icon(
+              Icons.sports_gymnastics,
+              color: theme.colorScheme.primary,
+              size: 36,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _TraineeFeedbackLinkSection extends StatelessWidget {
-  final VoidCallback onOpenFeedback;
-
-  const _TraineeFeedbackLinkSection({
-    required this.onOpenFeedback,
-  });
+class _SkillProgressCard extends StatelessWidget {
+  const _SkillProgressCard();
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-
-    return Card(
-      child: ListTile(
-        leading: Icon(
-          Icons.rate_review,
-          color: theme.colorScheme.primary,
-        ),
-        title: Text(
-          l10n.homeTraineeFeedbackTitle,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+    return _SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Skill Progress',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
-        ),
-        subtitle: Text(
-          l10n.homeTraineeFeedbackSubtitle,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        trailing: const Icon(Icons.arrow_forward_ios),
-        onTap: onOpenFeedback,
-      ),
-    );
-  }
-}
-
-class _WorkoutPlanLinkSection extends StatelessWidget {
-  final VoidCallback onOpenPlan;
-
-  const _WorkoutPlanLinkSection({
-    required this.onOpenPlan,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-
-    return Card(
-      child: ListTile(
-        leading: Icon(
-          Icons.event_note,
-          color: theme.colorScheme.primary,
-        ),
-        title: Text(
-          l10n.homeWorkoutPlanTitle,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        subtitle: Text(
-          l10n.homeWorkoutPlanSubtitle,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        trailing: const Icon(Icons.arrow_forward_ios),
-        onTap: onOpenPlan,
-      ),
-    );
-  }
-}
-
-class _CoachTipSection extends StatelessWidget {
-  final String? tip;
-
-  const _CoachTipSection({
-    this.tip,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-
-    final tipText = (tip ?? '').trim();
-
-    return Card(
-      color: theme.colorScheme.secondaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.tips_and_updates,
-                  color: theme.colorScheme.onSecondaryContainer,
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text(
+                '5 / 8',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
                 ),
-                const SizedBox(width: 8),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Skills Unlocked',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            children: List.generate(
+              6,
+              (index) => Icon(
+                Icons.fitness_center,
+                size: 20,
+                color: index < 5
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatTile extends StatelessWidget {
+  const _StatTile({
+    required this.value,
+    required this.label,
+    required this.icon,
+  });
+
+  final String value;
+  final String label;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: theme.colorScheme.primaryContainer,
+            child: Icon(icon, color: theme.colorScheme.primary),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  l10n.homeCoachTipTitle,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSecondaryContainer,
+                  value,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GoalRow extends StatelessWidget {
+  const _GoalRow({
+    required this.title,
+    required this.progress,
+    required this.trailing,
+  });
+
+  final String title;
+  final double progress;
+  final String trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
             Text(
-              tipText.isEmpty ? l10n.homeCoachTipPlaceholder : tipText,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSecondaryContainer,
+              trailing,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],
         ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: 6,
+            backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.5),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              theme.colorScheme.primary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: theme.shadowColor.withValues(alpha: 0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
+      child: child,
     );
   }
 }
