@@ -265,10 +265,27 @@ import {
       const paymentSummary = computed(() => {
         const total = (users.value || []).length;
         const paid = (users.value || []).filter((u) => u.paid).length;
+        const amountTotals = (users.value || []).reduce(
+          (totals, u) => {
+            const numericAmount = Number(u.paymentAmount);
+            const amount = Number.isNaN(numericAmount) ? 0 : numericAmount;
+            totals.forecasted += amount;
+            if (u.paid) {
+              totals.received += amount;
+            } else {
+              totals.due += amount;
+            }
+            return totals;
+          },
+          { forecasted: 0, received: 0, due: 0 },
+        );
         return {
           total,
           paid,
           overdue: total - paid,
+          forecastedAmount: amountTotals.forecasted,
+          receivedAmount: amountTotals.received,
+          dueAmount: amountTotals.due,
         };
       });
 
