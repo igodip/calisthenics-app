@@ -60,17 +60,30 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onboardingGetStarted => 'Inizia';
 
   @override
-  String get guidesTitle => 'Guida agli esercizi';
+  String get guidesTitle => 'Skill';
 
   @override
   String get guidesSubtitle =>
-      'Scopri la tecnica corretta e i punti chiave prima di allenarti.';
+      'Sblocca nuove skill man mano che impari le basi.';
 
   @override
   String get guidesPrimaryFocus => 'Focus principale';
 
   @override
   String get guidesCoachTip => 'Consiglio del coach';
+
+  @override
+  String get skillsLockedLabel => 'Bloccato';
+
+  @override
+  String get skillsUnlockedLabel => 'Sbloccato';
+
+  @override
+  String get skillsLockedHint =>
+      'Completa le skill precedenti per sbloccare la spiegazione completa.';
+
+  @override
+  String get skillsUnlockAction => 'Sblocca skill';
 
   @override
   String get difficultyBeginner => 'Principiante';

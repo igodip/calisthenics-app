@@ -197,13 +197,13 @@ abstract class AppLocalizations {
   /// No description provided for @guidesTitle.
   ///
   /// In it, this message translates to:
-  /// **'Guida agli esercizi'**
+  /// **'Skill'**
   String get guidesTitle;
 
   /// No description provided for @guidesSubtitle.
   ///
   /// In it, this message translates to:
-  /// **'Scopri la tecnica corretta e i punti chiave prima di allenarti.'**
+  /// **'Sblocca nuove skill man mano che impari le basi.'**
   String get guidesSubtitle;
 
   /// No description provided for @guidesPrimaryFocus.
@@ -217,6 +217,30 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Consiglio del coach'**
   String get guidesCoachTip;
+
+  /// No description provided for @skillsLockedLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Bloccato'**
+  String get skillsLockedLabel;
+
+  /// No description provided for @skillsUnlockedLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Sbloccato'**
+  String get skillsUnlockedLabel;
+
+  /// No description provided for @skillsLockedHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Completa le skill precedenti per sbloccare la spiegazione completa.'**
+  String get skillsLockedHint;
+
+  /// No description provided for @skillsUnlockAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Sblocca skill'**
+  String get skillsUnlockAction;
 
   /// No description provided for @difficultyBeginner.
   ///
