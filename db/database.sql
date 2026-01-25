@@ -9,16 +9,39 @@ CREATE TABLE public.admins (
   CONSTRAINT admins_pkey PRIMARY KEY (id),
   CONSTRAINT admins_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
+CREATE TABLE public.exercises (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  slug text NOT NULL,
+  name text NOT NULL,
+  difficulty text NOT NULL DEFAULT 'beginner'::text,
+  sort_order integer NOT NULL DEFAULT 1,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT exercises_pkey PRIMARY KEY (id),
+  CONSTRAINT exercises_slug_key UNIQUE (slug),
+  CONSTRAINT exercises_name_key UNIQUE (name)
+);
+CREATE TABLE public.trainee_exercise_unlocks (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  trainee_id uuid NOT NULL,
+  exercise_id uuid NOT NULL,
+  unlocked_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT trainee_exercise_unlocks_pkey PRIMARY KEY (id),
+  CONSTRAINT trainee_exercise_unlocks_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
+  CONSTRAINT trainee_exercise_unlocks_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id),
+  CONSTRAINT trainee_exercise_unlocks_unique UNIQUE (trainee_id, exercise_id)
+);
 CREATE TABLE public.day_exercises (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   day_id uuid NOT NULL,
+  exercise_id uuid NOT NULL,
   exercise text NOT NULL,
   position integer NOT NULL DEFAULT 1,
   notes text,
   trainee_notes text,
   completed boolean,
   CONSTRAINT day_exercises_pkey PRIMARY KEY (id),
-  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id)
+  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id),
+  CONSTRAINT day_exercises_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id)
 );
 CREATE TABLE public.days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
