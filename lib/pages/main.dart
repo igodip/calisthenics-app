@@ -10,6 +10,7 @@ import 'exercise_guides.dart';
 import 'home_content.dart';
 import 'login.dart';
 import 'max_tests_menu.dart';
+import 'timer.dart';
 import 'workout_plan_page.dart';
 
 class AuthGate extends StatelessWidget {
@@ -80,11 +81,12 @@ class _HomePageState extends State<HomePage> {
 
     final List<Widget> pages = [
       const HomeContent(),
-      const WorkoutPlanPage(),
       const ExerciseGuidesPage(),
       const ProfilePage(),
       const MaxTestsMenuPage(),
       const TerminologyPage(),
+      const WorkoutPlanPage(),
+      const TimerPage(),
     ];
 
     final scaffold = Scaffold(
@@ -197,6 +199,17 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   setState(() {
                     selectedIndex = 5;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.timer),
+                title: Text(l10n.timerTitle),
+                selected: selectedIndex == 6,
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 6;
                   });
                   Navigator.pop(context);
                 },

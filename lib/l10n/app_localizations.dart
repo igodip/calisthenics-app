@@ -2228,6 +2228,90 @@ abstract class AppLocalizations {
   /// **'Timer'**
   String get timerTitle;
 
+  /// No description provided for @amrapTimerTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer AMRAP'**
+  String get amrapTimerTitle;
+
+  /// No description provided for @amrapTimerSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Spingi per quante più serie possibile.'**
+  String get amrapTimerSubtitle;
+
+  /// No description provided for @amrapTimerDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Imposta la durata totale e tieni il tempo rimanente.'**
+  String get amrapTimerDescription;
+
+  /// No description provided for @amrapDurationLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Durata (minuti)'**
+  String get amrapDurationLabel;
+
+  /// No description provided for @amrapStartButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvia AMRAP'**
+  String get amrapStartButton;
+
+  /// No description provided for @amrapResetButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Reimposta AMRAP'**
+  String get amrapResetButton;
+
+  /// No description provided for @amrapTimeRemainingLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Tempo rimanente'**
+  String get amrapTimeRemainingLabel;
+
+  /// No description provided for @countdownTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Conto alla rovescia'**
+  String get countdownTitle;
+
+  /// No description provided for @countdownSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Countdown rapido per ogni esercizio.'**
+  String get countdownSubtitle;
+
+  /// No description provided for @countdownDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Imposta minuti e secondi per un intervallo mirato.'**
+  String get countdownDescription;
+
+  /// No description provided for @countdownMinutesLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Minuti'**
+  String get countdownMinutesLabel;
+
+  /// No description provided for @countdownSecondsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Secondi'**
+  String get countdownSecondsLabel;
+
+  /// No description provided for @countdownStartButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Avvia countdown'**
+  String get countdownStartButton;
+
+  /// No description provided for @countdownResetButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Reimposta countdown'**
+  String get countdownResetButton;
+
   /// No description provided for @weekdayMonday.
   ///
   /// In it, this message translates to:

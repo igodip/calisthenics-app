@@ -1247,6 +1247,50 @@ class AppLocalizationsIt extends AppLocalizations {
   String get timerTitle => 'Timer';
 
   @override
+  String get amrapTimerTitle => 'Timer AMRAP';
+
+  @override
+  String get amrapTimerSubtitle => 'Spingi per quante più serie possibile.';
+
+  @override
+  String get amrapTimerDescription =>
+      'Imposta la durata totale e tieni il tempo rimanente.';
+
+  @override
+  String get amrapDurationLabel => 'Durata (minuti)';
+
+  @override
+  String get amrapStartButton => 'Avvia AMRAP';
+
+  @override
+  String get amrapResetButton => 'Reimposta AMRAP';
+
+  @override
+  String get amrapTimeRemainingLabel => 'Tempo rimanente';
+
+  @override
+  String get countdownTitle => 'Conto alla rovescia';
+
+  @override
+  String get countdownSubtitle => 'Countdown rapido per ogni esercizio.';
+
+  @override
+  String get countdownDescription =>
+      'Imposta minuti e secondi per un intervallo mirato.';
+
+  @override
+  String get countdownMinutesLabel => 'Minuti';
+
+  @override
+  String get countdownSecondsLabel => 'Secondi';
+
+  @override
+  String get countdownStartButton => 'Avvia countdown';
+
+  @override
+  String get countdownResetButton => 'Reimposta countdown';
+
+  @override
   String get weekdayMonday => 'Lunedì';
 
   @override
