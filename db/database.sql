@@ -27,7 +27,7 @@ CREATE TABLE public.days (
   title text,
   notes text,
   completed boolean DEFAULT false,
-  completed_at time with time zone,
+  completed_at timestamp with time zone,
   CONSTRAINT days_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.max_tests (
