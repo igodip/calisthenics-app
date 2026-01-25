@@ -54,6 +54,18 @@ class AuthGate extends StatelessWidget {
   }
 }
 
+class _NavigationItem {
+  const _NavigationItem({
+    required this.title,
+    required this.icon,
+    required this.page,
+  });
+
+  final String title;
+  final IconData icon;
+  final Widget page;
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
   final String title;
@@ -65,7 +77,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   bool? payed;
-  
+
   final supabase = Supabase.instance.client;
 
   @override
@@ -79,15 +91,45 @@ class _HomePageState extends State<HomePage> {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    final List<Widget> pages = [
-      const HomeContent(),
-      const ExerciseGuidesPage(),
-      const ProfilePage(),
-      const MaxTestsMenuPage(),
-      const TerminologyPage(),
-      const WorkoutPlanPage(),
-      const TimerPage(),
+    final navigationItems = [
+      _NavigationItem(
+        title: l10n.navHome,
+        icon: Icons.home,
+        page: const HomeContent(),
+      ),
+      _NavigationItem(
+        title: l10n.workoutPlanTitle,
+        icon: Icons.event_note,
+        page: const WorkoutPlanPage(),
+      ),
+      _NavigationItem(
+        title: l10n.navGuides,
+        icon: Icons.fitness_center,
+        page: const ExerciseGuidesPage(),
+      ),
+      _NavigationItem(
+        title: l10n.navProfile,
+        icon: Icons.person,
+        page: const ProfilePage(),
+      ),
+      _NavigationItem(
+        title: l10n.profileMaxTestsTitle,
+        icon: Icons.emoji_events_outlined,
+        page: const MaxTestsMenuPage(),
+      ),
+      _NavigationItem(
+        title: l10n.navTerminology,
+        icon: Icons.menu_book,
+        page: const TerminologyPage(),
+      ),
+      _NavigationItem(
+        title: l10n.timerTitle,
+        icon: Icons.timer,
+        page: const TimerPage(),
+      ),
     ];
+
+    final currentTitle = navigationItems[selectedIndex].title;
 
     final scaffold = Scaffold(
       extendBody: true,
@@ -95,7 +137,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: false,
         elevation: 0,
         title: Text(
-          widget.title,
+          currentTitle,
           style: theme.textTheme.titleLarge?.copyWith(
             color: colorScheme.onPrimary,
             fontWeight: FontWeight.w700,
@@ -128,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                 child: Align(
                   alignment: Alignment.bottomLeft,
                   child: Text(
-                    widget.title,
+                    currentTitle,
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: colorScheme.onPrimary,
                       fontWeight: FontWeight.w700,
@@ -137,83 +179,18 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              ListTile(
-                leading: const Icon(Icons.home),
-                title: Text(l10n.navHome),
-                selected: selectedIndex == 0,
-                onTap: () {
-                  setState(() {
-                    selectedIndex = 0;
-                  });
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.event_note),
-                title: Text(l10n.workoutPlanTitle),
-                selected: selectedIndex == 1,
-                onTap: () {
-                  setState(() {
-                    selectedIndex = 1;
-                  });
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.fitness_center),
-                title: Text(l10n.navGuides),
-                selected: selectedIndex == 2,
-                onTap: () {
-                  setState(() {
-                    selectedIndex = 2;
-                  });
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: Text(l10n.navProfile),
-                selected: selectedIndex == 3,
-                onTap: () {
-                  setState(() {
-                    selectedIndex = 3;
-                  });
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.emoji_events_outlined),
-                title: Text(l10n.profileMaxTestsTitle),
-                selected: selectedIndex == 4,
-                onTap: () {
-                  setState(() {
-                    selectedIndex = 4;
-                  });
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.menu_book),
-                title: Text(l10n.navTerminology),
-                selected: selectedIndex == 5,
-                onTap: () {
-                  setState(() {
-                    selectedIndex = 5;
-                  });
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.timer),
-                title: Text(l10n.timerTitle),
-                selected: selectedIndex == 6,
-                onTap: () {
-                  setState(() {
-                    selectedIndex = 6;
-                  });
-                  Navigator.pop(context);
-                },
-              ),
+              for (final entry in navigationItems.indexed)
+                ListTile(
+                  leading: Icon(entry.$2.icon),
+                  title: Text(entry.$2.title),
+                  selected: selectedIndex == entry.$1,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = entry.$1;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
             ],
           ),
         ),
@@ -263,7 +240,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
-                  child: pages[selectedIndex],
+                  child: navigationItems[selectedIndex].page,
                 ),
               ),
             ),
