@@ -149,8 +149,8 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.fitness_center),
-                title: Text(l10n.navGuides),
+                leading: const Icon(Icons.event_note),
+                title: Text(l10n.workoutPlanTitle),
                 selected: selectedIndex == 1,
                 onTap: () {
                   setState(() {
@@ -160,8 +160,8 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.person),
-                title: Text(l10n.navProfile),
+                leading: const Icon(Icons.fitness_center),
+                title: Text(l10n.navGuides),
                 selected: selectedIndex == 2,
                 onTap: () {
                   setState(() {
@@ -171,8 +171,8 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.emoji_events_outlined),
-                title: Text(l10n.profileMaxTestsTitle),
+                leading: const Icon(Icons.person),
+                title: Text(l10n.navProfile),
                 selected: selectedIndex == 3,
                 onTap: () {
                   setState(() {
@@ -182,8 +182,8 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.menu_book),
-                title: Text(l10n.navTerminology),
+                leading: const Icon(Icons.emoji_events_outlined),
+                title: Text(l10n.profileMaxTestsTitle),
                 selected: selectedIndex == 4,
                 onTap: () {
                   setState(() {
@@ -193,8 +193,8 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.event_note),
-                title: Text(l10n.workoutPlanTitle),
+                leading: const Icon(Icons.menu_book),
+                title: Text(l10n.navTerminology),
                 selected: selectedIndex == 5,
                 onTap: () {
                   setState(() {

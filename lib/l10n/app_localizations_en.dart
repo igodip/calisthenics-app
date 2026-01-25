@@ -656,7 +656,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingOpenTracker => 'Open tracker';
 
   @override
-  String get trainingTodayTitle => "Today's Workout";
+  String get trainingTodayTitle => 'Today\'s Workout';
 
   @override
   String get trainingStartWorkout => 'Start Workout';
