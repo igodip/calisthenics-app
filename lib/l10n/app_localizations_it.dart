@@ -1269,14 +1269,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get amrapTimeRemainingLabel => 'Tempo rimanente';
 
   @override
-  String get countdownTitle => 'Conto alla rovescia';
+  String get countdownTitle => 'Timer semplice';
 
   @override
-  String get countdownSubtitle => 'Countdown rapido per ogni esercizio.';
+  String get countdownSubtitle => 'Un timer essenziale per qualsiasi intervallo.';
 
   @override
   String get countdownDescription =>
-      'Imposta minuti e secondi per un intervallo mirato.';
+      'Imposta minuti e secondi, poi avvia il timer.';
 
   @override
   String get countdownMinutesLabel => 'Minuti';
@@ -1285,10 +1285,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get countdownSecondsLabel => 'Secondi';
 
   @override
-  String get countdownStartButton => 'Avvia countdown';
+  String get countdownStartButton => 'Avvia timer';
 
   @override
-  String get countdownResetButton => 'Reimposta countdown';
+  String get countdownResetButton => 'Ferma timer';
 
   @override
   String get weekdayMonday => 'Lunedì';

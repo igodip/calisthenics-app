@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 
+enum TimerMode { simple, amrap }
+
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
 
@@ -12,21 +14,12 @@ class TimerPage extends StatefulWidget {
 }
 
 class _TimerPageState extends State<TimerPage> {
-  final _emomSetsController = TextEditingController(text: '5');
-  final _emomRepsController = TextEditingController(text: '10');
-  final _emomIntervalController = TextEditingController(text: '60');
   final _amrapDurationController = TextEditingController(text: '12');
   final _countdownMinutesController = TextEditingController(text: '3');
   final _countdownSecondsController = TextEditingController(text: '0');
 
-  Timer? _emomTimer;
   Timer? _amrapTimer;
   Timer? _countdownTimer;
-
-  bool _emomRunning = false;
-  bool _emomComplete = false;
-  int _emomCurrentSet = 1;
-  int _emomTimeRemaining = 0;
 
   bool _amrapRunning = false;
   int _amrapTimeRemaining = 0;
@@ -34,63 +27,16 @@ class _TimerPageState extends State<TimerPage> {
   bool _countdownRunning = false;
   int _countdownTimeRemaining = 0;
 
+  TimerMode? _activeTimerMode;
+
   @override
   void dispose() {
-    _emomTimer?.cancel();
     _amrapTimer?.cancel();
     _countdownTimer?.cancel();
-    _emomSetsController.dispose();
-    _emomRepsController.dispose();
-    _emomIntervalController.dispose();
     _amrapDurationController.dispose();
     _countdownMinutesController.dispose();
     _countdownSecondsController.dispose();
     super.dispose();
-  }
-
-  void _startEmom() {
-    final totalSets = int.tryParse(_emomSetsController.text) ?? 1;
-    final intervalSeconds = int.tryParse(_emomIntervalController.text) ?? 60;
-
-    _emomTimer?.cancel();
-    setState(() {
-      _emomRunning = true;
-      _emomComplete = false;
-      _emomCurrentSet = 1;
-      _emomTimeRemaining = intervalSeconds;
-    });
-
-    _emomTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_emomTimeRemaining > 1) {
-        setState(() {
-          _emomTimeRemaining -= 1;
-        });
-        return;
-      }
-
-      if (_emomCurrentSet < totalSets) {
-        setState(() {
-          _emomCurrentSet += 1;
-          _emomTimeRemaining = intervalSeconds;
-        });
-      } else {
-        timer.cancel();
-        setState(() {
-          _emomRunning = false;
-          _emomComplete = true;
-        });
-      }
-    });
-  }
-
-  void _resetEmom() {
-    _emomTimer?.cancel();
-    setState(() {
-      _emomRunning = false;
-      _emomComplete = false;
-      _emomCurrentSet = 1;
-      _emomTimeRemaining = 0;
-    });
   }
 
   void _startAmrap() {
@@ -101,6 +47,7 @@ class _TimerPageState extends State<TimerPage> {
     setState(() {
       _amrapRunning = true;
       _amrapTimeRemaining = durationSeconds;
+      _activeTimerMode = TimerMode.amrap;
     });
 
     _amrapTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -113,6 +60,7 @@ class _TimerPageState extends State<TimerPage> {
         setState(() {
           _amrapRunning = false;
           _amrapTimeRemaining = 0;
+          _activeTimerMode = null;
         });
       }
     });
@@ -123,6 +71,7 @@ class _TimerPageState extends State<TimerPage> {
     setState(() {
       _amrapRunning = false;
       _amrapTimeRemaining = 0;
+      _activeTimerMode = null;
     });
   }
 
@@ -135,6 +84,7 @@ class _TimerPageState extends State<TimerPage> {
     setState(() {
       _countdownRunning = true;
       _countdownTimeRemaining = totalSeconds;
+      _activeTimerMode = TimerMode.simple;
     });
 
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -147,6 +97,7 @@ class _TimerPageState extends State<TimerPage> {
         setState(() {
           _countdownRunning = false;
           _countdownTimeRemaining = 0;
+          _activeTimerMode = null;
         });
       }
     });
@@ -157,6 +108,7 @@ class _TimerPageState extends State<TimerPage> {
     setState(() {
       _countdownRunning = false;
       _countdownTimeRemaining = 0;
+      _activeTimerMode = null;
     });
   }
 
@@ -180,231 +132,223 @@ class _TimerPageState extends State<TimerPage> {
     );
   }
 
+  Widget _buildFullscreenTimer(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isAmrap = _activeTimerMode == TimerMode.amrap;
+    final timeRemaining =
+        isAmrap ? _amrapTimeRemaining : _countdownTimeRemaining;
+    final title = isAmrap ? l10n.amrapTimerTitle : l10n.countdownTitle;
+    final actionLabel =
+        isAmrap ? l10n.amrapResetButton : l10n.countdownResetButton;
+    final onStop = isAmrap ? _resetAmrap : _resetCountdown;
+
+    return Positioned.fill(
+      child: Material(
+        color: theme.colorScheme.surface,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final timeFontSize =
+                    (constraints.maxWidth * 0.18).clamp(48, 160).toDouble();
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            title,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            l10n.amrapTimeRemainingLabel,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          FilledButton(
+                            onPressed: onStop,
+                            child: Text(actionLabel),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 24),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          _countdownRunning || _amrapRunning
+                              ? _formatSeconds(timeRemaining)
+                              : '--:--',
+                          style: theme.textTheme.displayLarge?.copyWith(
+                            fontSize: timeFontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return DefaultTabController(
-      length: 3,
-      child: Column(
+      length: 2,
+      child: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: TabBar(
-              indicatorColor: theme.colorScheme.primary,
-              labelColor: theme.colorScheme.primary,
-              tabs: [
-                Tab(text: l10n.emomTrackerTitle),
-                Tab(text: l10n.amrapTimerTitle),
-                Tab(text: l10n.countdownTitle),
-              ],
-            ),
+          Column(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: TabBar(
+                  indicatorColor: theme.colorScheme.primary,
+                  labelColor: theme.colorScheme.primary,
+                  tabs: [
+                    Tab(text: l10n.countdownTitle),
+                    Tab(text: l10n.amrapTimerTitle),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    ListView(
+                      padding: const EdgeInsets.all(16),
+                      children: [
+                        Text(
+                          l10n.countdownSubtitle,
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.countdownDescription,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildNumberField(
+                                controller: _countdownMinutesController,
+                                label: l10n.countdownMinutesLabel,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildNumberField(
+                                controller: _countdownSecondsController,
+                                label: l10n.countdownSecondsLabel,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _countdownRunning
+                              ? _formatSeconds(_countdownTimeRemaining)
+                              : '--:--',
+                          style: theme.textTheme.displaySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: FilledButton(
+                                onPressed:
+                                    _countdownRunning ? null : _startCountdown,
+                                child: Text(l10n.countdownStartButton),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: _resetCountdown,
+                                child: Text(l10n.countdownResetButton),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    ListView(
+                      padding: const EdgeInsets.all(16),
+                      children: [
+                        Text(
+                          l10n.amrapTimerSubtitle,
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.amrapTimerDescription,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildNumberField(
+                          controller: _amrapDurationController,
+                          label: l10n.amrapDurationLabel,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.amrapTimeRemainingLabel,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _amrapRunning
+                              ? _formatSeconds(_amrapTimeRemaining)
+                              : '--:--',
+                          style: theme.textTheme.displaySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: _amrapRunning ? null : _startAmrap,
+                                child: Text(l10n.amrapStartButton),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: _resetAmrap,
+                                child: Text(l10n.amrapResetButton),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: TabBarView(
-              children: [
-                ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    Text(
-                      l10n.emomTrackerSubtitle,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.emomTrackerDescription,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildNumberField(
-                      controller: _emomSetsController,
-                      label: l10n.emomSetsLabel,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildNumberField(
-                      controller: _emomRepsController,
-                      label: l10n.emomRepsLabel,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildNumberField(
-                      controller: _emomIntervalController,
-                      label: l10n.emomIntervalLabel,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      _emomTimeRemaining > 0
-                          ? l10n.emomTimeRemainingLabel
-                          : l10n.emomPrepSubhead,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _emomRunning || _emomComplete
-                          ? _formatSeconds(_emomTimeRemaining)
-                          : '--:--',
-                      style: theme.textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.emomCurrentSet(
-                        _emomCurrentSet,
-                        int.tryParse(_emomSetsController.text) ?? 1,
-                      ),
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.emomRepsPerSet(
-                        int.tryParse(_emomRepsController.text) ?? 0,
-                      ),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    if (_emomComplete) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        l10n.emomFinishedMessage,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: _emomRunning ? null : _startEmom,
-                            child: Text(l10n.emomStartButton),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: _resetEmom,
-                            child: Text(l10n.emomResetButton),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    Text(
-                      l10n.amrapTimerSubtitle,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.amrapTimerDescription,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildNumberField(
-                      controller: _amrapDurationController,
-                      label: l10n.amrapDurationLabel,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.amrapTimeRemainingLabel,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _amrapRunning
-                          ? _formatSeconds(_amrapTimeRemaining)
-                          : '--:--',
-                      style: theme.textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: _amrapRunning ? null : _startAmrap,
-                            child: Text(l10n.amrapStartButton),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: _resetAmrap,
-                            child: Text(l10n.amrapResetButton),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    Text(
-                      l10n.countdownSubtitle,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.countdownDescription,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildNumberField(
-                            controller: _countdownMinutesController,
-                            label: l10n.countdownMinutesLabel,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildNumberField(
-                            controller: _countdownSecondsController,
-                            label: l10n.countdownSecondsLabel,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      _countdownRunning
-                          ? _formatSeconds(_countdownTimeRemaining)
-                          : '--:--',
-                      style: theme.textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: _countdownRunning ? null : _startCountdown,
-                            child: Text(l10n.countdownStartButton),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: _resetCountdown,
-                            child: Text(l10n.countdownResetButton),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          if (_activeTimerMode != null) _buildFullscreenTimer(context),
         ],
       ),
     );
