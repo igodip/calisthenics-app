@@ -27,57 +27,17 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.workoutPlanTitle),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              colorScheme.primaryContainer.withValues(alpha: 0.12),
-              colorScheme.secondaryContainer.withValues(alpha: 0.08),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: theme.cardColor.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.shadowColor.withValues(alpha: 0.06),
-                    offset: const Offset(0, 12),
-                    blurRadius: 24,
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: _WorkoutPlanBody(
-                  l10n: l10n,
-                  onRefresh: _refresh,
-                  planDataFuture: _planDataFuture,
-                  onRetry: () {
-                    setState(() {
-                      _planDataFuture = _loadPlanData();
-                    });
-                  },
-                  buildPlanGroups: _buildPlanGroups,
-                  onOpenDay: _openDay,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return _WorkoutPlanBody(
+      l10n: l10n,
+      onRefresh: _refresh,
+      planDataFuture: _planDataFuture,
+      onRetry: () {
+        setState(() {
+          _planDataFuture = _loadPlanData();
+        });
+      },
+      buildPlanGroups: _buildPlanGroups,
+      onOpenDay: _openDay,
     );
   }
 
@@ -341,24 +301,31 @@ class _WorkoutPlanBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const listPadding = EdgeInsets.fromLTRB(16, 20, 16, 24);
     return FutureBuilder<_WorkoutPlanData>(
       future: planDataFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return ListView(
+            padding: listPadding,
             physics: const AlwaysScrollableScrollPhysics(),
             children: const [
+              _WorkoutPlanHeader(),
               SizedBox(height: 32),
-              Center(child: CircularProgressIndicator()),
+              Center(
+                child: CircularProgressIndicator(),
+              ),
             ],
           );
         }
 
         if (snapshot.hasError) {
           return ListView(
+            padding: listPadding,
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
-              const SizedBox(height: 32),
+              const _WorkoutPlanHeader(),
+              const SizedBox(height: 24),
               Icon(
                 Icons.error_outline,
                 size: 56,
@@ -392,9 +359,17 @@ class _WorkoutPlanBody extends StatelessWidget {
         final days = homeData.days;
         final plans = homeData.plans;
         if (_isPlanExpired(plans)) {
-          return _ExpiredPlanStub(
-            title: l10n.profilePlanExpired,
-            description: l10n.homeEmptyDescription,
+          return ListView(
+            padding: listPadding,
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              const _WorkoutPlanHeader(),
+              const SizedBox(height: 24),
+              _ExpiredPlanStub(
+                title: l10n.profilePlanExpired,
+                description: l10n.homeEmptyDescription,
+              ),
+            ],
           );
         }
 
@@ -406,9 +381,11 @@ class _WorkoutPlanBody extends StatelessWidget {
           return RefreshIndicator(
             onRefresh: onRefresh,
             child: ListView(
+              padding: listPadding,
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                const SizedBox(height: 32),
+                const _WorkoutPlanHeader(),
+                const SizedBox(height: 24),
                 Image.asset(
                   'assets/logo.png',
                   height: 56,
@@ -437,8 +414,11 @@ class _WorkoutPlanBody extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: onRefresh,
           child: ListView(
+            padding: listPadding,
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
+              const _WorkoutPlanHeader(),
+              const SizedBox(height: 16),
               planOverview,
               const SizedBox(height: 16),
               ...planGroups
@@ -480,8 +460,7 @@ class _ExpiredPlanStub extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+    return Column(
       children: [
         Icon(
           Icons.assignment_late_outlined,
@@ -498,6 +477,34 @@ class _ExpiredPlanStub extends StatelessWidget {
         Text(
           description,
           textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _WorkoutPlanHeader extends StatelessWidget {
+  const _WorkoutPlanHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.workoutPlanTitle,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.homePlansSectionSubtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
