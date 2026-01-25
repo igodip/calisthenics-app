@@ -60,17 +60,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingGetStarted => 'Get started';
 
   @override
-  String get guidesTitle => 'Exercise walkthroughs';
+  String get guidesTitle => 'Skills';
 
   @override
-  String get guidesSubtitle =>
-      'Learn form cues and key checkpoints before you train.';
+  String get guidesSubtitle => 'Unlock new skills as you master the basics.';
 
   @override
   String get guidesPrimaryFocus => 'Primary focus';
 
   @override
   String get guidesCoachTip => 'Coach tip';
+
+  @override
+  String get skillsLockedLabel => 'Locked';
+
+  @override
+  String get skillsUnlockedLabel => 'Unlocked';
+
+  @override
+  String get skillsLockedHint =>
+      'Complete earlier skills to unlock the full breakdown.';
+
+  @override
+  String get skillsUnlockAction => 'Unlock skill';
 
   @override
   String get difficultyBeginner => 'Beginner';
