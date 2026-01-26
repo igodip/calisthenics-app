@@ -2297,19 +2297,19 @@ abstract class AppLocalizations {
   /// No description provided for @countdownTitle.
   ///
   /// In it, this message translates to:
-  /// **'Conto alla rovescia'**
+  /// **'Timer semplice'**
   String get countdownTitle;
 
   /// No description provided for @countdownSubtitle.
   ///
   /// In it, this message translates to:
-  /// **'Countdown rapido per ogni esercizio.'**
+  /// **'Un timer essenziale per qualsiasi intervallo.'**
   String get countdownSubtitle;
 
   /// No description provided for @countdownDescription.
   ///
   /// In it, this message translates to:
-  /// **'Imposta minuti e secondi per un intervallo mirato.'**
+  /// **'Imposta minuti e secondi, poi avvia il timer.'**
   String get countdownDescription;
 
   /// No description provided for @countdownMinutesLabel.
@@ -2327,13 +2327,13 @@ abstract class AppLocalizations {
   /// No description provided for @countdownStartButton.
   ///
   /// In it, this message translates to:
-  /// **'Avvia countdown'**
+  /// **'Avvia timer'**
   String get countdownStartButton;
 
   /// No description provided for @countdownResetButton.
   ///
   /// In it, this message translates to:
-  /// **'Reimposta countdown'**
+  /// **'Ferma timer'**
   String get countdownResetButton;
 
   /// No description provided for @weekdayMonday.

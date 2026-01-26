@@ -1285,7 +1285,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get countdownTitle => 'Timer semplice';
 
   @override
-  String get countdownSubtitle => 'Un timer essenziale per qualsiasi intervallo.';
+  String get countdownSubtitle =>
+      'Un timer essenziale per qualsiasi intervallo.';
 
   @override
   String get countdownDescription =>

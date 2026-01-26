@@ -283,7 +283,7 @@ class _ExerciseGuideCard extends StatelessWidget {
     final accent = isUnlocked ? guide.accent : colorScheme.outline;
     final statusBackground = isUnlocked
         ? colorScheme.primaryContainer
-        : colorScheme.surfaceVariant;
+        : colorScheme.surfaceContainerHighest;
     final statusForeground =
         isUnlocked ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant;
 
@@ -292,7 +292,7 @@ class _ExerciseGuideCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       color: isUnlocked
           ? colorScheme.surface
-          : colorScheme.surfaceVariant.withValues(alpha: 0.55),
+          : colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -440,7 +440,7 @@ class _ExerciseGuideCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceVariant.withValues(alpha: 0.6),
+                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: colorScheme.outlineVariant),
                 ),
