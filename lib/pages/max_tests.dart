@@ -116,6 +116,29 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     return progression;
   }
 
+  String _resolveExerciseKey(
+    String exercise,
+    Map<String, ExerciseGuide> guidesById,
+    Map<String, ExerciseGuide> guidesByName,
+  ) {
+    final trimmed = exercise.trim();
+    if (guidesById.containsKey(trimmed)) {
+      return trimmed;
+    }
+    final nameMatch = guidesByName[trimmed.toLowerCase()];
+    return nameMatch?.id ?? trimmed.toLowerCase();
+  }
+
+  String _resolveExerciseLabel(
+    String exercise,
+    Map<String, ExerciseGuide> guidesById,
+    Map<String, ExerciseGuide> guidesByName,
+  ) {
+    final trimmed = exercise.trim();
+    final guide = guidesById[trimmed] ?? guidesByName[trimmed.toLowerCase()];
+    return guide?.name ?? trimmed;
+  }
+
   Future<List<MaxTest>> _loadMaxTests(String userId) async {
     final response = await supabase
         .from('max_tests')
@@ -127,12 +150,15 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     return items.map(MaxTest.fromMap).toList();
   }
 
-  Future<void> _showAddMaxTest() async {
+  Future<void> _showAddMaxTest(List<ExerciseGuide> exerciseGuides) async {
     final l10n = AppLocalizations.of(context)!;
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => _MaxTestBottomSheet(userId: widget.userId),
+      builder: (context) => _MaxTestBottomSheet(
+        userId: widget.userId,
+        exerciseGuides: exerciseGuides,
+      ),
     );
     if (saved == true && mounted) {
       _refreshMaxTests();
@@ -148,6 +174,15 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     final colorScheme = theme.colorScheme;
     final now = DateTime.now();
     final periodStart = _periodStartDate(now);
+    final exerciseGuides = ExerciseGuide.buildGuides(l10n)
+      ..sort((a, b) => a.name.compareTo(b.name));
+    final exerciseGuideById = {
+      for (final guide in exerciseGuides) guide.id: guide,
+    };
+    final exerciseGuideByName = {
+      for (final guide in exerciseGuides)
+        guide.name.trim().toLowerCase(): guide,
+    };
 
     return Scaffold(
       body: SafeArea(
@@ -194,7 +229,7 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                         ),
                         const SizedBox(width: 8),
                         FilledButton.tonalIcon(
-                          onPressed: _showAddMaxTest,
+                          onPressed: () => _showAddMaxTest(exerciseGuides),
                           icon: const Icon(Icons.add),
                           label: Text(l10n.profileMaxTestsAdd),
                         ),
@@ -307,8 +342,16 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                           final groupedTests = <String, List<MaxTest>>{};
                           final displayNames = <String, String>{};
                           for (final test in filteredTests) {
-                            final displayName = test.exercise.trim();
-                            final key = displayName.toLowerCase();
+                            final displayName = _resolveExerciseLabel(
+                              test.exercise,
+                              exerciseGuideById,
+                              exerciseGuideByName,
+                            );
+                            final key = _resolveExerciseKey(
+                              test.exercise,
+                              exerciseGuideById,
+                              exerciseGuideByName,
+                            );
                             groupedTests.putIfAbsent(key, () => []).add(test);
                             displayNames.putIfAbsent(key, () => displayName);
                           }
@@ -753,9 +796,13 @@ class _MaxTestTile extends StatelessWidget {
 enum _MaxTestPeriod { month, halfYear, year, all }
 
 class _MaxTestBottomSheet extends StatefulWidget {
-  const _MaxTestBottomSheet({required this.userId});
+  const _MaxTestBottomSheet({
+    required this.userId,
+    required this.exerciseGuides,
+  });
 
   final String userId;
+  final List<ExerciseGuide> exerciseGuides;
 
   @override
   State<_MaxTestBottomSheet> createState() => _MaxTestBottomSheetState();
@@ -780,8 +827,7 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final exerciseOptions = ExerciseGuide.buildGuides(l10n)
-      ..sort((a, b) => a.name.compareTo(b.name));
+    final exerciseOptions = widget.exerciseGuides;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -815,7 +861,7 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
                   items: [
                     for (final guide in exerciseOptions)
                       DropdownMenuItem(
-                        value: guide.name,
+                        value: guide.id,
                         child: Text(guide.name),
                       ),
                   ],
