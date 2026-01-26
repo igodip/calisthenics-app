@@ -59,6 +59,9 @@ export const translations = {
       id: 'ID',
       status: 'Status',
       createdAt: 'Created at',
+      slug: 'Slug',
+      difficulty: 'Difficulty',
+      sortOrder: 'Sort order',
       startsAt: 'Starts at',
       endsAt: 'Ends at',
       notes: 'Notes',
@@ -173,6 +176,7 @@ export const translations = {
       workoutTitle: 'Workout title',
       filterExercises: 'Type to filter exercises',
       setsExample: 'e.g. 12x20 kg, 10x22 kg',
+      slugExample: 'e.g. push-ups',
     },
     exercises: {
       available: 'Available exercises',
@@ -206,6 +210,7 @@ export const translations = {
       loadingPayments: 'Loading payments…',
       loadingCompletedExercises: 'Loading completed exercises…',
       updatingPaymentAmount: 'Updating payment amount…',
+      loadingExercises: 'Loading exercises…',
     },
     plans: {
       title: 'Workout plans',
@@ -364,6 +369,9 @@ export const translations = {
       id: 'ID',
       status: 'Stato',
       createdAt: 'Creato il',
+      slug: 'Slug',
+      difficulty: 'Difficoltà',
+      sortOrder: 'Ordine',
       startsAt: 'Inizio',
       endsAt: 'Fine',
       notes: 'Note',
@@ -479,6 +487,7 @@ export const translations = {
       workoutTitle: 'Titolo workout',
       filterExercises: 'Digita per filtrare gli esercizi',
       setsExample: 'es. 12x20 kg, 10x22 kg',
+      slugExample: 'es. push-ups',
     },
     exercises: {
       available: 'Esercizi disponibili',
@@ -512,6 +521,7 @@ export const translations = {
       loadingPayments: 'Caricamento pagamenti…',
       loadingCompletedExercises: 'Caricamento esercizi completati…',
       updatingPaymentAmount: 'Aggiornamento importo pagamento…',
+      loadingExercises: 'Caricamento esercizi…',
     },
     plans: {
       title: 'Piani allenamento',

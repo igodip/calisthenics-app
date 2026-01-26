@@ -54,6 +54,19 @@ import {
       const trainers = ref([]);
       const trainerSelections = ref({});
       const trainerAssignmentSaving = ref({});
+      const exercises = ref([]);
+      const exerciseFilter = ref('');
+      const exerciseForm = ref({
+        name: '',
+        slug: '',
+        difficulty: 'beginner',
+        sort_order: 1,
+      });
+      const exerciseEdits = ref({});
+      const exerciseSaving = ref({});
+      const creatingExercise = ref(false);
+      const loadingExercises = ref(false);
+      const exercisesError = ref('');
 
       const users = ref([]);
       const current = ref(null);
@@ -220,6 +233,27 @@ import {
       );
 
       const showLastWeekCard = computed(() => Boolean(currentTrainer.value));
+      const exerciseDifficultyOptions = [
+        'beginner',
+        'intermediate',
+        'advanced',
+      ];
+
+      const filteredExercises = computed(() => {
+        const query = (exerciseFilter.value || '').trim().toLowerCase();
+        const list = exercises.value || [];
+        if (!query) return list;
+        return list.filter((exercise) => {
+          const name = (exercise.name || '').toLowerCase();
+          const slug = (exercise.slug || '').toLowerCase();
+          const difficulty = (exercise.difficulty || '').toLowerCase();
+          return (
+            name.includes(query) ||
+            slug.includes(query) ||
+            difficulty.includes(query)
+          );
+        });
+      });
 
       const activeTemplateDay = computed(
         () =>
@@ -886,6 +920,7 @@ import {
           await loadTrainers();
         }
         await loadUsers();
+        await loadExercises();
         await loadTraineeProgress();
         await loadDashboardBurndown();
         await loadDashboardNotes();
@@ -939,6 +974,181 @@ import {
           return;
         }
         trainers.value = data || [];
+      }
+
+      function setExerciseEdit(exercise) {
+        if (!exercise?.id) return;
+        exerciseEdits.value = {
+          ...exerciseEdits.value,
+          [exercise.id]: {
+            name: exercise.name || '',
+            slug: exercise.slug || '',
+            difficulty: exercise.difficulty || 'beginner',
+            sort_order: Number(exercise.sort_order ?? 1),
+          },
+        };
+      }
+
+      function normalizeExerciseSlug(value) {
+        return (value || '')
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)+/g, '');
+      }
+
+      function formatDifficultyLabel(value) {
+        const text = (value || '').trim();
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1);
+      }
+
+      function resetExerciseForm() {
+        exerciseForm.value = {
+          name: '',
+          slug: '',
+          difficulty: 'beginner',
+          sort_order: 1,
+        };
+      }
+
+      async function loadExercises() {
+        loadingExercises.value = true;
+        exercisesError.value = '';
+        try {
+          const { data, error } = await supabase
+            .from('exercises')
+            .select('id, slug, name, difficulty, sort_order, created_at')
+            .order('sort_order', { ascending: true })
+            .order('name', { ascending: true });
+          if (error) {
+            throw new Error(t('errors.loadExercises', { message: error.message }));
+          }
+          exercises.value = data || [];
+          exerciseEdits.value = {};
+          (exercises.value || []).forEach(setExerciseEdit);
+        } catch (error) {
+          console.error(error);
+          exercises.value = [];
+          exercisesError.value = error.message || t('errors.loadExercises');
+        } finally {
+          loadingExercises.value = false;
+        }
+      }
+
+      async function createExercise() {
+        if (creatingExercise.value) return;
+        const name = (exerciseForm.value.name || '').trim();
+        if (!name) {
+          alert(t('errors.exerciseNameRequired'));
+          return;
+        }
+        const slugInput = (exerciseForm.value.slug || '').trim();
+        const slug = slugInput || normalizeExerciseSlug(name);
+        if (!slug) {
+          alert(t('errors.exerciseNameRequired'));
+          return;
+        }
+        const difficulty =
+          (exerciseForm.value.difficulty || '').trim() || 'beginner';
+        const sortOrder = Number(exerciseForm.value.sort_order || 1);
+        creatingExercise.value = true;
+        try {
+          const { error } = await supabase.from('exercises').insert({
+            name,
+            slug,
+            difficulty,
+            sort_order: Number.isFinite(sortOrder) ? sortOrder : 1,
+          });
+          if (error) {
+            throw new Error('Create exercise failed: ' + error.message);
+          }
+          resetExerciseForm();
+          await loadExercises();
+        } catch (error) {
+          console.error(error);
+          alert(error.message || t('errors.createExercise'));
+        } finally {
+          creatingExercise.value = false;
+        }
+      }
+
+      async function saveExercise(exercise) {
+        if (!exercise?.id) return;
+        if (exerciseSaving.value[exercise.id]) return;
+        const form = exerciseEdits.value[exercise.id] || {};
+        const name = (form.name || '').trim();
+        if (!name) {
+          alert(t('errors.exerciseNameRequired'));
+          return;
+        }
+        const slugInput = (form.slug || '').trim();
+        const slug = slugInput || normalizeExerciseSlug(name);
+        if (!slug) {
+          alert(t('errors.exerciseNameRequired'));
+          return;
+        }
+        const difficulty = (form.difficulty || '').trim() || 'beginner';
+        const sortOrder = Number(form.sort_order || 1);
+        exerciseSaving.value = {
+          ...exerciseSaving.value,
+          [exercise.id]: true,
+        };
+        try {
+          const { error } = await supabase
+            .from('exercises')
+            .update({
+              name,
+              slug,
+              difficulty,
+              sort_order: Number.isFinite(sortOrder) ? sortOrder : 1,
+            })
+            .eq('id', exercise.id);
+          if (error) {
+            throw new Error('Update exercise failed: ' + error.message);
+          }
+          await loadExercises();
+        } catch (error) {
+          console.error(error);
+          alert(error.message || t('errors.updateExercise'));
+        } finally {
+          exerciseSaving.value = {
+            ...exerciseSaving.value,
+            [exercise.id]: false,
+          };
+        }
+      }
+
+      async function deleteExercise(exercise) {
+        if (!exercise?.id) return;
+        const confirmed = confirm(
+          t('confirm.deleteExercise', {
+            name: exercise.name || exercise.slug || exercise.id,
+          }),
+        );
+        if (!confirmed) return;
+        exerciseSaving.value = {
+          ...exerciseSaving.value,
+          [exercise.id]: true,
+        };
+        try {
+          const { error } = await supabase
+            .from('exercises')
+            .delete()
+            .eq('id', exercise.id);
+          if (error) {
+            throw new Error('Delete exercise failed: ' + error.message);
+          }
+          await loadExercises();
+        } catch (error) {
+          console.error(error);
+          alert(error.message || t('errors.deleteExercise'));
+        } finally {
+          exerciseSaving.value = {
+            ...exerciseSaving.value,
+            [exercise.id]: false,
+          };
+        }
       }
 
       async function loadUsers() {
@@ -2060,6 +2270,16 @@ import {
         trainerAssignmentSaving,
         current,
         days,
+        exercises,
+        exerciseFilter,
+        exerciseForm,
+        exerciseEdits,
+        exerciseDifficultyOptions,
+        filteredExercises,
+        loadingExercises,
+        exercisesError,
+        creatingExercise,
+        exerciseSaving,
         maxTests,
         maxTestHistory,
         completedExerciseLog,
@@ -2158,6 +2378,11 @@ import {
         saveCoachTip,
         assignTrainerToTrainee,
         removeTrainerAssignment,
+        loadExercises,
+        createExercise,
+        resetExerciseForm,
+        saveExercise,
+        deleteExercise,
         toggleDay,
         isDayOpen,
         jumpToDay,
@@ -2174,6 +2399,7 @@ import {
         shortId,
         togglePayment,
         markPaymentPaid,
+        formatDifficultyLabel,
       };
     },
   }).mount('#app');

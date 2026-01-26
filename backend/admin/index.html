@@ -62,6 +62,10 @@
                     <span>{{ t('sections.program') }}</span>
                     <span class="nav-badge">{{ current ? 1 : 0 }}</span>
                 </button>
+                <button :class="{active: activeSection==='exercises'}" @click="activeSection='exercises'">
+                    <span>{{ t('sections.exercises') }}</span>
+                    <span class="nav-badge">{{ exercises.length }}</span>
+                </button>
             </nav>
             <div class="sidebar-footer">
                 <div class="user-chip">
@@ -947,6 +951,123 @@
                     </template>
                 </div>
 
+            </div>
+
+            <div class="section-panel exercises-panel" :class="{active: activeSection==='exercises'}">
+                <div class="overview-grid">
+                    <div class="card">
+                        <div class="overview-card-header">
+                            <div class="stack">
+                                <h3>{{ t('sections.exercises') }}</h3>
+                                <span class="muted small">{{ t('exercises.available') }}</span>
+                            </div>
+                        </div>
+                        <div class="exercise-form-grid">
+                            <label class="stack small">
+                                <span class="muted small">{{ t('labels.name') }}</span>
+                                <input v-model="exerciseForm.name" :placeholder="t('placeholders.exerciseName')" />
+                            </label>
+                            <label class="stack small">
+                                <span class="muted small">{{ t('labels.slug') }}</span>
+                                <input v-model="exerciseForm.slug" :placeholder="t('placeholders.slugExample')" />
+                            </label>
+                            <label class="stack small">
+                                <span class="muted small">{{ t('labels.difficulty') }}</span>
+                                <select v-model="exerciseForm.difficulty">
+                                    <option v-for="option in exerciseDifficultyOptions" :key="option" :value="option">
+                                        {{ formatDifficultyLabel(option) }}
+                                    </option>
+                                </select>
+                            </label>
+                            <label class="stack small">
+                                <span class="muted small">{{ t('labels.sortOrder') }}</span>
+                                <input v-model.number="exerciseForm.sort_order" type="number" min="1" />
+                            </label>
+                        </div>
+                        <div class="exercise-form-actions">
+                            <button class="btn primary" type="button" @click="createExercise" :disabled="creatingExercise">
+                                {{ t('actions.add') }}
+                            </button>
+                            <button class="btn ghost" type="button" @click="resetExerciseForm" :disabled="creatingExercise">
+                                {{ t('actions.reset') }}
+                            </button>
+                            <span v-if="creatingExercise" class="muted small">{{ t('status.savingExercise') }}</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="overview-card-header">
+                            <div class="stack">
+                                <h3>{{ t('exercises.available') }}</h3>
+                                <span class="muted small">{{ t('labels.exercisesCount', { count: filteredExercises.length }) }}</span>
+                            </div>
+                            <div class="exercise-toolbar">
+                                <label class="stack small">
+                                    <span class="muted small">{{ t('placeholders.filterExercises') }}</span>
+                                    <input v-model="exerciseFilter" :placeholder="t('placeholders.filterExercises')" />
+                                </label>
+                                <button class="small" type="button" @click="loadExercises" :disabled="loadingExercises">
+                                    {{ t('actions.refresh') }}
+                                </button>
+                            </div>
+                        </div>
+                        <div v-if="loadingExercises" class="muted small">{{ t('status.loadingExercises') }}</div>
+                        <div v-else-if="exercisesError" class="muted small">{{ exercisesError }}</div>
+                        <div v-else-if="filteredExercises.length===0" class="muted small">{{ t('exercises.none') }}</div>
+                        <div v-else class="plan-builder-table-wrap">
+                            <table class="plan-builder-table">
+                                <thead>
+                                <tr>
+                                    <th>{{ t('labels.name') }}</th>
+                                    <th>{{ t('labels.slug') }}</th>
+                                    <th>{{ t('labels.difficulty') }}</th>
+                                    <th>{{ t('labels.sortOrder') }}</th>
+                                    <th>{{ t('labels.createdAt') }}</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="exercise in filteredExercises" :key="exercise.id">
+                                    <td>
+                                        <input v-model="exerciseEdits[exercise.id].name" :placeholder="t('placeholders.exerciseName')" />
+                                    </td>
+                                    <td>
+                                        <input v-model="exerciseEdits[exercise.id].slug" :placeholder="t('placeholders.slugExample')" />
+                                    </td>
+                                    <td>
+                                        <select v-model="exerciseEdits[exercise.id].difficulty">
+                                            <option v-for="option in exerciseDifficultyOptions" :key="option" :value="option">
+                                                {{ formatDifficultyLabel(option) }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input v-model.number="exerciseEdits[exercise.id].sort_order" type="number" min="1" />
+                                    </td>
+                                    <td>{{ formatDate(exercise.created_at) }}</td>
+                                    <td class="exercise-actions">
+                                        <button
+                                            class="btn"
+                                            type="button"
+                                            @click="saveExercise(exercise)"
+                                            :disabled="exerciseSaving[exercise.id]"
+                                        >
+                                            {{ t('actions.save') }}
+                                        </button>
+                                        <button
+                                            class="btn ghost"
+                                            type="button"
+                                            @click="deleteExercise(exercise)"
+                                            :disabled="exerciseSaving[exercise.id]"
+                                        >
+                                            {{ t('actions.delete') }}
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
