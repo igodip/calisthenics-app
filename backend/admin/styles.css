@@ -194,6 +194,10 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .history-meta{display:flex;justify-content:space-between;align-items:center;color:var(--muted)}
 .exercise-log-item{border:1px solid var(--line);border-radius:12px;padding:12px;background:#f8fafc}
 .dashboard-burndown-card{grid-column:1/-1}
+.exercise-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px}
+.exercise-form-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.exercise-actions{display:flex;flex-wrap:wrap;gap:8px}
+.exercise-toolbar{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
 .burndown-chart-wrap{display:flex;flex-direction:column;gap:16px;margin-top:12px}
 .burndown-chart{width:100%;height:260px;background:#f8fafc;border-radius:16px;border:1px solid var(--line);padding:12px;box-sizing:border-box}
 .burndown-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
