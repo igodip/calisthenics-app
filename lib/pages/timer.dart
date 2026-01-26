@@ -1,10 +1,9 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../l10n/app_localizations.dart';
-
-enum TimerMode { simple, amrap }
+enum IntervalPhase { work, rest }
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
@@ -14,101 +13,127 @@ class TimerPage extends StatefulWidget {
 }
 
 class _TimerPageState extends State<TimerPage> {
-  final _amrapDurationController = TextEditingController(text: '12');
-  final _countdownMinutesController = TextEditingController(text: '3');
-  final _countdownSecondsController = TextEditingController(text: '0');
+  static const int _defaultWorkSeconds = 40;
+  static const int _defaultRestSeconds = 20;
+  static const Color _neonGreen = Color(0xFF39FF14);
 
-  Timer? _amrapTimer;
-  Timer? _countdownTimer;
+  Timer? _intervalTimer;
 
-  bool _amrapRunning = false;
-  int _amrapTimeRemaining = 0;
+  bool _isRunning = false;
+  int _remainingSeconds = _defaultWorkSeconds;
+  IntervalPhase _phase = IntervalPhase.work;
 
-  bool _countdownRunning = false;
-  int _countdownTimeRemaining = 0;
+  int _nextExerciseIndex = 0;
+  int _nextSet = 1;
 
-  TimerMode? _activeTimerMode;
+  final List<_ExercisePlan> _exercisePlan = const [
+    _ExercisePlan(name: 'Push-ups', totalSets: 3),
+    _ExercisePlan(name: 'Pull-ups', totalSets: 3),
+    _ExercisePlan(name: 'Squats', totalSets: 4),
+    _ExercisePlan(name: 'Plank', totalSets: 2),
+  ];
 
   @override
   void dispose() {
-    _amrapTimer?.cancel();
-    _countdownTimer?.cancel();
-    _amrapDurationController.dispose();
-    _countdownMinutesController.dispose();
-    _countdownSecondsController.dispose();
+    _intervalTimer?.cancel();
     super.dispose();
   }
 
-  void _startAmrap() {
-    final durationMinutes = int.tryParse(_amrapDurationController.text) ?? 10;
-    final durationSeconds = durationMinutes * 60;
+  int get _workDurationSeconds => _defaultWorkSeconds;
+  int get _restDurationSeconds => _defaultRestSeconds;
 
-    _amrapTimer?.cancel();
+  int get _currentPhaseDuration {
+    return _phase == IntervalPhase.work
+        ? _workDurationSeconds
+        : _restDurationSeconds;
+  }
+
+  void _startTimer() {
+    if (_isRunning) {
+      return;
+    }
+    if (_remainingSeconds == 0) {
+      setState(() {
+        _remainingSeconds = _currentPhaseDuration;
+      });
+    }
     setState(() {
-      _amrapRunning = true;
-      _amrapTimeRemaining = durationSeconds;
-      _activeTimerMode = TimerMode.amrap;
+      _isRunning = true;
     });
-
-    _amrapTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_amrapTimeRemaining > 1) {
+    _intervalTimer?.cancel();
+    _intervalTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 1) {
         setState(() {
-          _amrapTimeRemaining -= 1;
+          _remainingSeconds -= 1;
         });
       } else {
-        timer.cancel();
         setState(() {
-          _amrapRunning = false;
-          _amrapTimeRemaining = 0;
-          _activeTimerMode = null;
+          _remainingSeconds = 0;
         });
+        _handlePhaseEnd();
       }
     });
   }
 
-  void _resetAmrap() {
-    _amrapTimer?.cancel();
+  void _pauseTimer() {
+    _intervalTimer?.cancel();
     setState(() {
-      _amrapRunning = false;
-      _amrapTimeRemaining = 0;
-      _activeTimerMode = null;
+      _isRunning = false;
     });
   }
 
-  void _startCountdown() {
-    final minutes = int.tryParse(_countdownMinutesController.text) ?? 0;
-    final seconds = int.tryParse(_countdownSecondsController.text) ?? 0;
-    final totalSeconds = (minutes * 60) + seconds;
+  void _toggleRunning() {
+    if (_isRunning) {
+      _pauseTimer();
+    } else {
+      _startTimer();
+    }
+  }
 
-    _countdownTimer?.cancel();
+  void _resetPhase() {
     setState(() {
-      _countdownRunning = true;
-      _countdownTimeRemaining = totalSeconds;
-      _activeTimerMode = TimerMode.simple;
-    });
-
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_countdownTimeRemaining > 1) {
-        setState(() {
-          _countdownTimeRemaining -= 1;
-        });
-      } else {
-        timer.cancel();
-        setState(() {
-          _countdownRunning = false;
-          _countdownTimeRemaining = 0;
-          _activeTimerMode = null;
-        });
-      }
+      _remainingSeconds = _currentPhaseDuration;
     });
   }
 
-  void _resetCountdown() {
-    _countdownTimer?.cancel();
+  void _skipPhase() {
+    _advancePhase();
+  }
+
+  void _handlePhaseEnd() {
+    _advancePhase();
+  }
+
+  void _advancePhase() {
     setState(() {
-      _countdownRunning = false;
-      _countdownTimeRemaining = 0;
-      _activeTimerMode = null;
+      _phase = _phase == IntervalPhase.work
+          ? IntervalPhase.rest
+          : IntervalPhase.work;
+      _remainingSeconds = _currentPhaseDuration;
+    });
+    _advanceWorkoutContext();
+  }
+
+  void _advanceWorkoutContext() {
+    if (_exercisePlan.isEmpty) {
+      return;
+    }
+    final currentPlan = _exercisePlan[_nextExerciseIndex];
+    if (_nextSet < currentPlan.totalSets) {
+      setState(() {
+        _nextSet += 1;
+      });
+    } else {
+      setState(() {
+        _nextExerciseIndex = (_nextExerciseIndex + 1) % _exercisePlan.length;
+        _nextSet = 1;
+      });
+    }
+  }
+
+  void _adjustTime(int deltaSeconds) {
+    setState(() {
+      _remainingSeconds = (_remainingSeconds + deltaSeconds).clamp(0, 36000);
     });
   }
 
@@ -118,239 +143,303 @@ class _TimerPageState extends State<TimerPage> {
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildNumberField({
-    required TextEditingController controller,
-    required String label,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+  String _nextExerciseLabel() {
+    if (_exercisePlan.isEmpty) {
+      return 'Next: --';
+    }
+    final plan = _exercisePlan[_nextExerciseIndex];
+    return 'Next: ${plan.name} · Set $_nextSet/${plan.totalSets}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isWork = _phase == IntervalPhase.work;
+    final phaseLabel = isWork ? 'WORK' : 'REST';
+    final phaseColor = isWork ? const Color(0xFFFF8A3D) : const Color(0xFF3D8BFF);
+    final progress = _currentPhaseDuration == 0
+        ? 0.0
+        : (1 - (_remainingSeconds / _currentPhaseDuration)).clamp(0.0, 1.0);
+
+    return Scaffold(
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final ringSize =
+                (constraints.maxWidth * 0.7).clamp(220, 420).toDouble();
+            final ringThickness = (ringSize * 0.12).clamp(16, 36).toDouble();
+            final timeFontSize = (ringSize * 0.26).clamp(48, 120).toDouble();
+            final labelFontSize = (ringSize * 0.08).clamp(18, 32).toDouble();
+            final buttonFontSize = (ringSize * 0.06).clamp(14, 22).toDouble();
+
+            return Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      phaseLabel,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: phaseColor,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                        fontSize: labelFontSize,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          width: ringSize,
+                          height: ringSize,
+                          child: CustomPaint(
+                            painter: _IntervalRingPainter(
+                              progress: progress,
+                              activeColor: phaseColor,
+                              inactiveColor:
+                                  theme.colorScheme.onSurface.withOpacity(0.1),
+                              thickness: ringThickness,
+                            ),
+                          ),
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _formatSeconds(_remainingSeconds),
+                              style: theme.textTheme.displayMedium?.copyWith(
+                                fontSize: timeFontSize,
+                                fontWeight: FontWeight.w700,
+                                color: _neonGreen,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Positioned(
+                          left: 0,
+                          child: _TimeAdjustButton(
+                            label: '+10s',
+                            onPressed: () => _adjustTime(10),
+                            fontSize: buttonFontSize,
+                          ),
+                        ),
+                        Positioned(
+                          right: 0,
+                          child: _TimeAdjustButton(
+                            label: '-10s',
+                            onPressed: () => _adjustTime(-10),
+                            fontSize: buttonFontSize,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _ControlButton(
+                          label: 'SKIP',
+                          icon: Icons.skip_next,
+                          onPressed: _skipPhase,
+                        ),
+                        const SizedBox(width: 16),
+                        _ControlButton(
+                          label: _isRunning ? 'PAUSE' : 'PLAY',
+                          icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                          onPressed: _toggleRunning,
+                          isPrimary: true,
+                        ),
+                        const SizedBox(width: 16),
+                        _ControlButton(
+                          label: 'RESET',
+                          icon: Icons.restart_alt,
+                          onPressed: _resetPhase,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      _nextExerciseLabel(),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
+}
 
-  Widget _buildFullscreenTimer(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+class _ExercisePlan {
+  final String name;
+  final int totalSets;
+
+  const _ExercisePlan({
+    required this.name,
+    required this.totalSets,
+  });
+}
+
+class _IntervalRingPainter extends CustomPainter {
+  final double progress;
+  final Color activeColor;
+  final Color inactiveColor;
+  final double thickness;
+
+  const _IntervalRingPainter({
+    required this.progress,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.thickness,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+    final radius = (size.shortestSide - thickness) / 2;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    const totalSweep = 5 * math.pi / 3;
+    const startAngle = 5 * math.pi / 6;
+    const segments = 60;
+    const gapRadians = 0.02;
+    final segmentSweep = (totalSweep / segments) - gapRadians;
+
+    final activePaint = Paint()
+      ..color = activeColor
+      ..strokeWidth = thickness
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    final inactivePaint = Paint()
+      ..color = inactiveColor
+      ..strokeWidth = thickness
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final activeSegments = (segments * progress).round();
+    for (var i = 0; i < segments; i += 1) {
+      final paint = i < activeSegments ? activePaint : inactivePaint;
+      final angle = startAngle + (i * (segmentSweep + gapRadians));
+      canvas.drawArc(rect, angle, segmentSweep, false, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _IntervalRingPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.activeColor != activeColor ||
+        oldDelegate.inactiveColor != inactiveColor ||
+        oldDelegate.thickness != thickness;
+  }
+}
+
+class _TimeAdjustButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+  final double fontSize;
+
+  const _TimeAdjustButton({
+    required this.label,
+    required this.onPressed,
+    required this.fontSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isAmrap = _activeTimerMode == TimerMode.amrap;
-    final timeRemaining =
-        isAmrap ? _amrapTimeRemaining : _countdownTimeRemaining;
-    final title = isAmrap ? l10n.amrapTimerTitle : l10n.countdownTitle;
-    final actionLabel =
-        isAmrap ? l10n.amrapResetButton : l10n.countdownResetButton;
-    final onStop = isAmrap ? _resetAmrap : _resetCountdown;
-
-    return Positioned.fill(
-      child: Material(
-        color: theme.colorScheme.surface,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final timeFontSize =
-                    (constraints.maxWidth * 0.18).clamp(48, 160).toDouble();
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            title,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            l10n.amrapTimeRemainingLabel,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          FilledButton(
-                            onPressed: onStop,
-                            child: Text(actionLabel),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          _countdownRunning || _amrapRunning
-                              ? _formatSeconds(timeRemaining)
-                              : '--:--',
-                          style: theme.textTheme.displayLarge?.copyWith(
-                            fontSize: timeFontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+    return SizedBox(
+      width: 72,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          shape: const StadiumBorder(),
+          side: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+        child: Text(
+          label,
+          style: theme.textTheme.labelLarge?.copyWith(
+            fontSize: fontSize,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
     );
   }
+}
+
+class _ControlButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onPressed;
+  final bool isPrimary;
+
+  const _ControlButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    this.isPrimary = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final style = isPrimary
+        ? FilledButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          )
+        : OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          );
+    final button = isPrimary
+        ? FilledButton(
+            onPressed: onPressed,
+            style: style,
+            child: _ControlContent(label: label, icon: icon),
+          )
+        : OutlinedButton(
+            onPressed: onPressed,
+            style: style,
+            child: _ControlContent(label: label, icon: icon),
+          );
 
-    return DefaultTabController(
-      length: 2,
-      child: Stack(
-        children: [
-          Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: TabBar(
-                  indicatorColor: theme.colorScheme.primary,
-                  labelColor: theme.colorScheme.primary,
-                  tabs: [
-                    Tab(text: l10n.countdownTitle),
-                    Tab(text: l10n.amrapTimerTitle),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    ListView(
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        Text(
-                          l10n.countdownSubtitle,
-                          style: theme.textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.countdownDescription,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildNumberField(
-                                controller: _countdownMinutesController,
-                                label: l10n.countdownMinutesLabel,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildNumberField(
-                                controller: _countdownSecondsController,
-                                label: l10n.countdownSecondsLabel,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _countdownRunning
-                              ? _formatSeconds(_countdownTimeRemaining)
-                              : '--:--',
-                          style: theme.textTheme.displaySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: FilledButton(
-                                onPressed:
-                                    _countdownRunning ? null : _startCountdown,
-                                child: Text(l10n.countdownStartButton),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: _resetCountdown,
-                                child: Text(l10n.countdownResetButton),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    ListView(
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        Text(
-                          l10n.amrapTimerSubtitle,
-                          style: theme.textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l10n.amrapTimerDescription,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildNumberField(
-                          controller: _amrapDurationController,
-                          label: l10n.amrapDurationLabel,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          l10n.amrapTimeRemainingLabel,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _amrapRunning
-                              ? _formatSeconds(_amrapTimeRemaining)
-                              : '--:--',
-                          style: theme.textTheme.displaySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: FilledButton(
-                                onPressed: _amrapRunning ? null : _startAmrap,
-                                child: Text(l10n.amrapStartButton),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: _resetAmrap,
-                                child: Text(l10n.amrapResetButton),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
+    return button;
+  }
+}
+
+class _ControlContent extends StatelessWidget {
+  final String label;
+  final IconData icon;
+
+  const _ControlContent({
+    required this.label,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 20),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: theme.textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.4,
           ),
-          if (_activeTimerMode != null) _buildFullscreenTimer(context),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
