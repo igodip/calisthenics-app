@@ -667,22 +667,6 @@ import {
         newDayNotes.value = '';
       }
 
-      function applyNextWeek() {
-        newDayWeek.value = nextWeek.value;
-      }
-
-      function setDayCode(code) {
-        newDayCode.value = code;
-      }
-
-      function resetDayEdit(day) {
-        setDayEdit(day);
-      }
-
-      function resetDayExerciseEdit(ex) {
-        setDayExerciseEdit(ex);
-      }
-
       function resetPlanForm() {
         newPlanName.value = '';
         newPlanStatus.value = planStatuses[0];
@@ -840,25 +824,6 @@ import {
 
       function setDayExpansion(dayId, open = true) {
         expandedDays.value = { ...expandedDays.value, [dayId]: open };
-      }
-
-      function isDayOpen(day) {
-        return !!expandedDays.value[day.id];
-      }
-
-      function toggleDay(day) {
-        setDayExpansion(day.id, !isDayOpen(day));
-      }
-
-      function jumpToDay(item) {
-        if (!item?.id) return;
-        setDayExpansion(item.id, true);
-        requestAnimationFrame(() => {
-          const target = document.getElementById(`day-${item.id}`);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        });
       }
 
       function setDayEdit(day) {
@@ -2385,8 +2350,6 @@ import {
         selectTemplateSlot,
         incrementTemplateDayCount,
         incrementTemplateSlotCount,
-        applyNextWeek,
-        setDayCode,
         emailPasswordSignIn,
         signOut,
         selectUser,
@@ -2410,18 +2373,13 @@ import {
         resetExerciseForm,
         saveExercise,
         deleteExercise,
-        toggleDay,
-        isDayOpen,
-        jumpToDay,
         saveDay,
-        resetDayEdit,
         deleteDay,
         resetPlanEdit,
         savePlan,
         deletePlan,
         saveTemplatePlan,
         saveDayExercise,
-        resetDayExerciseEdit,
         deleteDayExercise,
         shortId,
         togglePayment,

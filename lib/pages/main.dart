@@ -76,9 +76,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
-  bool? payed;
-
-  final supabase = Supabase.instance.client;
 
   @override
   void initState() {

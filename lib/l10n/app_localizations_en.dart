@@ -313,27 +313,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workoutPlanTitle => 'Workout plan';
 
   @override
-  String get traineeFeedbackTitle => 'Trainee feedback';
-
-  @override
-  String get traineeFeedbackSubtitle =>
-      'Tell your coach how you\'re feeling and how the plan is going.';
-
-  @override
-  String get traineeFeedbackQuestionLabel => 'How did your training feel?';
-
-  @override
-  String get traineeFeedbackQuestionHint =>
-      'Share anything going well or that needs attention.';
-
-  @override
-  String get traineeFeedbackSubmit => 'Send feedback';
-
-  @override
-  String get traineeFeedbackSubmitted =>
-      'Feedback saved. We\'ll share it with your coach.';
-
-  @override
   String get homeEmptyTitle => 'No workouts available';
 
   @override

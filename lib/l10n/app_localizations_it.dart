@@ -316,27 +316,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get workoutPlanTitle => 'Piano di allenamento';
 
   @override
-  String get traineeFeedbackTitle => 'Feedback atleta';
-
-  @override
-  String get traineeFeedbackSubtitle =>
-      'Racconta al tuo coach come ti senti e come procede il piano.';
-
-  @override
-  String get traineeFeedbackQuestionLabel => 'Come è andato l\'allenamento?';
-
-  @override
-  String get traineeFeedbackQuestionHint =>
-      'Condividi cosa sta andando bene o cosa richiede attenzione.';
-
-  @override
-  String get traineeFeedbackSubmit => 'Invia feedback';
-
-  @override
-  String get traineeFeedbackSubmitted =>
-      'Feedback salvato. Lo condivideremo con il tuo coach.';
-
-  @override
   String get homeEmptyTitle => 'Nessun allenamento disponibile';
 
   @override

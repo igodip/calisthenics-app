@@ -638,42 +638,6 @@ abstract class AppLocalizations {
   /// **'Piano di allenamento'**
   String get workoutPlanTitle;
 
-  /// No description provided for @traineeFeedbackTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Feedback atleta'**
-  String get traineeFeedbackTitle;
-
-  /// No description provided for @traineeFeedbackSubtitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Racconta al tuo coach come ti senti e come procede il piano.'**
-  String get traineeFeedbackSubtitle;
-
-  /// No description provided for @traineeFeedbackQuestionLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Come è andato l\'allenamento?'**
-  String get traineeFeedbackQuestionLabel;
-
-  /// No description provided for @traineeFeedbackQuestionHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Condividi cosa sta andando bene o cosa richiede attenzione.'**
-  String get traineeFeedbackQuestionHint;
-
-  /// No description provided for @traineeFeedbackSubmit.
-  ///
-  /// In it, this message translates to:
-  /// **'Invia feedback'**
-  String get traineeFeedbackSubmit;
-
-  /// No description provided for @traineeFeedbackSubmitted.
-  ///
-  /// In it, this message translates to:
-  /// **'Feedback salvato. Lo condivideremo con il tuo coach.'**
-  String get traineeFeedbackSubmitted;
-
   /// No description provided for @homeEmptyTitle.
   ///
   /// In it, this message translates to:
