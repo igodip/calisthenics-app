@@ -342,8 +342,6 @@ class _WorkoutPlanBody extends StatelessWidget {
             padding: listPadding,
             physics: const AlwaysScrollableScrollPhysics(),
             children: const [
-              _WorkoutPlanHeader(),
-              SizedBox(height: 32),
               Center(
                 child: CircularProgressIndicator(),
               ),
@@ -356,8 +354,6 @@ class _WorkoutPlanBody extends StatelessWidget {
             padding: listPadding,
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
-              const _WorkoutPlanHeader(),
-              const SizedBox(height: 24),
               Icon(
                 Icons.error_outline,
                 size: 56,
@@ -395,8 +391,6 @@ class _WorkoutPlanBody extends StatelessWidget {
             padding: listPadding,
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
-              const _WorkoutPlanHeader(),
-              const SizedBox(height: 24),
               _ExpiredPlanStub(
                 title: l10n.profilePlanExpired,
                 description: l10n.homeEmptyDescription,
@@ -416,8 +410,6 @@ class _WorkoutPlanBody extends StatelessWidget {
               padding: listPadding,
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                const _WorkoutPlanHeader(),
-                const SizedBox(height: 24),
                 Image.asset(
                   'assets/logo.png',
                   height: 56,
@@ -449,8 +441,6 @@ class _WorkoutPlanBody extends StatelessWidget {
             padding: listPadding,
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
-              const _WorkoutPlanHeader(),
-              const SizedBox(height: 16),
               planOverview,
               const SizedBox(height: 16),
               ...planGroups
@@ -509,34 +499,6 @@ class _ExpiredPlanStub extends StatelessWidget {
         Text(
           description,
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _WorkoutPlanHeader extends StatelessWidget {
-  const _WorkoutPlanHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.workoutPlanTitle,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          l10n.homePlansSectionSubtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
