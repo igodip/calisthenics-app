@@ -1,31 +1,65 @@
 import 'package:flutter/material.dart';
 
-class HomeContent extends StatelessWidget {
+import '../l10n/app_localizations.dart';
+import 'profile.dart';
+
+class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
 
   @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  late Future<UserProfileData> _profileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileFuture = getUserData();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-      children: const [
-        _HomeHeader(),
-        SizedBox(height: 16),
-        _ProgressCard(),
-        SizedBox(height: 16),
-        _GoalsCard(),
-        SizedBox(height: 16),
-        _ActionButtons(),
-        SizedBox(height: 16),
-        _StrengthLevelCard(),
-        SizedBox(height: 16),
-        _SkillProgressCard(),
-      ],
+    final l10n = AppLocalizations.of(context)!;
+    return FutureBuilder<UserProfileData>(
+      future: _profileFuture,
+      builder: (context, snapshot) {
+        final data = snapshot.data;
+        final displayName = data?.displayName(l10n) ?? l10n.profileFallbackName;
+        final initials = data?.initials(l10n) ?? '';
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+          children: [
+            _HomeHeader(
+              displayName: displayName,
+              initials: initials,
+            ),
+            const SizedBox(height: 16),
+            const _ProgressCard(),
+            const SizedBox(height: 16),
+            const _GoalsCard(),
+            const SizedBox(height: 16),
+            const _ActionButtons(),
+            const SizedBox(height: 16),
+            const _StrengthLevelCard(),
+            const SizedBox(height: 16),
+            const _SkillProgressCard(),
+          ],
+        );
+      },
     );
   }
 }
 
 class _HomeHeader extends StatelessWidget {
-  const _HomeHeader();
+  const _HomeHeader({
+    required this.displayName,
+    required this.initials,
+  });
+
+  final String displayName;
+  final String initials;
 
   @override
   Widget build(BuildContext context) {
@@ -34,35 +68,46 @@ class _HomeHeader extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            'Hi, Alex!',
+            'Hi, $displayName!',
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w700,
             ),
           ),
         ),
-        const _AvatarChip(),
+        _AvatarChip(initials: initials),
       ],
     );
   }
 }
 
 class _AvatarChip extends StatelessWidget {
-  const _AvatarChip();
+  const _AvatarChip({required this.initials});
+
+  final String initials;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final avatarText = initials.isEmpty ? null : initials;
     return CircleAvatar(
       radius: 18,
       backgroundColor: theme.colorScheme.primaryContainer,
       child: CircleAvatar(
         radius: 16,
         backgroundColor: theme.colorScheme.surface,
-        child: Icon(
-          Icons.person,
-          color: theme.colorScheme.onSurfaceVariant,
-          size: 18,
-        ),
+        child: avatarText == null
+            ? Icon(
+                Icons.person,
+                color: theme.colorScheme.onSurfaceVariant,
+                size: 18,
+              )
+            : Text(
+                avatarText,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
       ),
     );
   }
