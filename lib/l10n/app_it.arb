@@ -86,124 +86,13 @@
   "guidesHandstandFocus": "Spalle, core, equilibrio",
   "guidesHandstandTip": "Allinea polsi, spalle e anche e contrai i glutei.",
   "guidesHandstandDescription": "Sali in verticale contro il muro o in equilibrio libero e mantieni una linea lunga con le punte tese.",
-  "settingsComingSoon": "Le impostazioni saranno presto disponibili.",
-  "settingsGeneralSection": "Generali",
-  "settingsDailyReminder": "Promemoria allenamento quotidiano",
-  "settingsDailyReminderDescription": "Ricevi un promemoria per iniziare ad allenarti ogni giorno.",
-  "settingsReminderTime": "Orario promemoria",
-  "settingsReminderNotSet": "Non impostato",
-  "settingsSoundEffects": "Effetti sonori",
-  "settingsSoundEffectsDescription": "Riproduci brevi suoni durante la registrazione delle ripetizioni.",
-  "settingsHapticFeedback": "Feedback aptico",
-  "settingsHapticFeedbackDescription": "Leggera vibrazione per le azioni importanti.",
-  "settingsTrainingSection": "Preferenze di allenamento",
-  "settingsUnitSystem": "Sistema di unità",
-  "settingsUnitsMetric": "Metrico (kg)",
-  "settingsUnitsImperial": "Imperiale (lb)",
-  "settingsRestTimer": "Timer di recupero predefinito",
-  "settingsRestTimerDescription": "Usato quando avvii un timer di recupero dagli allenamenti.",
-  "settingsRestTimerMinutes": "{count, plural, one {# minuto} other {# minuti}}",
-  "@settingsRestTimerMinutes": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "settingsRestTimerMinutesSeconds": "{minutes, plural, one {# minuto} other {# minuti}} e {seconds, plural, one {# secondo} other {# secondi}}",
-  "@settingsRestTimerMinutesSeconds": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      },
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "settingsRestTimerSeconds": "{count, plural, one {# secondo} other {# secondi}}",
-  "@settingsRestTimerSeconds": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "settingsDataSection": "Dati e privacy",
-  "settingsClearCache": "Cancella allenamenti salvati",
-  "settingsClearCacheDescription": "Rimuovi gli allenamenti memorizzati su questo dispositivo.",
-  "settingsClearCacheSuccess": "Allenamenti locali rimossi.",
-  "settingsExportData": "Esporta riepilogo allenamenti",
-  "settingsExportDataDescription": "Ricevi via email un CSV delle ultime sessioni.",
-  "settingsExportDataSuccess": "Richiesta di esportazione inviata. Controlla la casella di posta a breve.",
-  "settingsSupportSection": "Supporto",
-  "settingsContactCoach": "Contatta il tuo coach",
-  "settingsContactCoachDescription": "Invia un messaggio rapido per chiedere modifiche.",
-  "settingsContactCoachHint": "Dicci come possiamo aiutarti.",
-  "settingsContactCoachSuccess": "Messaggio inviato al coach.",
-  "settingsSendMessage": "Invia messaggio",
-  "settingsAppVersion": "Versione app",
-  "settingsAppVersionValue": "Versione {version}",
-  "@settingsAppVersionValue": {
-    "placeholders": {
-      "version": {
-        "type": "Object"
-      }
-    }
-  },
-  "exerciseTrackerTitle": "Tracker esercizi",
-  "poseEstimationTitle": "Stima postura",
   "homeLoadErrorTitle": "Impossibile caricare gli allenamenti",
   "retry": "Riprova",
-  "homeCalendarTitle": "Calendario allenamenti",
-  "homeCalendarSubtitle": "I giorni di allenamento sono evidenziati.",
-  "homeScheduleTitle": "Focus settimanale",
-  "homeScheduleSubtitle": "Rimani sul pezzo con le prossime sessioni.",
-  "homeNextWorkoutTitle": "Prossimo allenamento",
-  "homeNextWorkoutEmpty": "Nessun allenamento programmato.",
-  "homeWorkoutsThisWeekTitle": "Questa settimana",
-  "homeWorkoutsThisMonthTitle": "Questo mese",
-  "homePlanProgressTitle": "Progresso complessivo del piano",
-  "homePlanProgressCurrentPlan": "Piano attuale",
-  "homePlanProgressEmpty": "Nessun progresso del piano da mostrare.",
-  "homePlanProgressValue": "{completed} di {total} sessioni completate",
-  "@homePlanProgressValue": {
-    "placeholders": {
-      "completed": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "homePlanProgressPercent": "{percent}% completato",
-  "@homePlanProgressPercent": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "homeUpcomingWeekTitle": "In arrivo questa settimana",
-  "homeUpcomingWeekEmpty": "Nessuna sessione programmata nei prossimi 7 giorni.",
-  "homeWorkoutPlanTitle": "Piano di allenamento",
-  "homeWorkoutPlanSubtitle": "Rivedi il piano assegnato e le prossime sessioni.",
-  "homeTraineeFeedbackTitle": "Feedback atleta",
-  "homeTraineeFeedbackSubtitle": "Condividi aggiornamenti con il tuo coach dopo le sessioni.",
-  "homeCoachTipTitle": "Consiglio del coach",
-  "homeCoachTipPlaceholder": "Qui troverai l'ultimo consiglio del tuo coach.",
   "workoutPlanTitle": "Piano di allenamento",
   "traineeFeedbackTitle": "Feedback atleta",
   "traineeFeedbackSubtitle": "Racconta al tuo coach come ti senti e come procede il piano.",
   "traineeFeedbackQuestionLabel": "Come è andato l'allenamento?",
   "traineeFeedbackQuestionHint": "Condividi cosa sta andando bene o cosa richiede attenzione.",
-  "traineeFeedbackHighlightsLabel": "Punti forti",
-  "traineeFeedbackHighlightsHint": "Cosa è andato bene o ti è piaciuto?",
-  "traineeFeedbackChallengesLabel": "Difficoltà",
-  "traineeFeedbackChallengesHint": "Cosa è stato difficile o da adattare?",
-  "traineeFeedbackNotesLabel": "Note per il coach",
-  "traineeFeedbackNotesHint": "Hai altro da condividere?",
   "traineeFeedbackSubmit": "Invia feedback",
   "traineeFeedbackSubmitted": "Feedback salvato. Lo condivideremo con il tuo coach.",
   "homeEmptyTitle": "Nessun allenamento disponibile",
@@ -228,32 +117,12 @@
   },
   "unauthenticated": "Utente non autenticato",
   "defaultExerciseName": "Esercizio",
-  "generalNotes": "Note generali",
   "trainingHeaderExercise": "Esercizio",
   "trainingHeaderSets": "Serie",
   "trainingHeaderReps": "Ripetizioni",
-  "trainingHeaderRest": "Recupero",
-  "trainingHeaderIntensity": "Intensità",
-  "trainingHeaderNotes": "Note",
-  "trainingNotesLabel": "Note dell'esercizio",
-  "trainingTraineeNotesLabel": "Note del tirocinante",
-  "trainingNotesSave": "Salva note",
-  "trainingNotesSaved": "Note salvate",
-  "trainingNotesError": "Impossibile salvare le note: {error}",
-  "@trainingNotesError": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
-  "trainingNotesUnavailable": "Impossibile aggiornare le note per questo esercizio.",
-  "trainingOpenTracker": "Apri tracker",
   "trainingTodayTitle": "Allenamento di oggi",
   "trainingStartWorkout": "Inizia allenamento",
   "trainingWorkoutCompleted": "Allenamento completato",
-  "trainingMarkComplete": "Segna giorno come completato",
-  "trainingMarkIncomplete": "Segna giorno come incompleto",
   "trainingCompletionSaved": "Allenamento aggiornato",
   "trainingCompletionError": "Impossibile aggiornare l'allenamento: {error}",
   "@trainingCompletionError": {
@@ -264,7 +133,6 @@
     }
   },
   "trainingCompletionUnavailable": "Impossibile aggiornare questo giorno di allenamento.",
-  "trainingExerciseCompletedLabel": "Esercizio completato",
   "trainingExerciseCompletionSaved": "Esercizio aggiornato",
   "trainingExerciseCompletionError": "Impossibile aggiornare l'esercizio: {error}",
   "@trainingExerciseCompletionError": {
@@ -293,11 +161,7 @@
   "profilePlanActive": "Piano attivo",
   "profilePlanExpired": "Piano scaduto",
   "profileUsername": "Username",
-  "profileLastUpdated": "Ultimo aggiornamento",
-  "profileValueUnavailable": "Non disponibile",
-  "profileTimezone": "Fuso orario",
   "profileNotSet": "Non impostato",
-  "profileUnitSystem": "Unità di misura",
   "profileWeight": "Peso",
   "profileWeightValue": "{weight} kg",
   "@profileWeightValue": {
@@ -398,7 +262,6 @@
   "profileMaxTestsShowMore": "Mostra tutti i tentativi",
   "profileMaxTestsShowLess": "Mostra meno tentativi",
   "profileEdit": "Modifica profilo",
-  "profileComingSoon": "Presto disponibile",
   "profileEditSubtitle": "Aggiorna le tue informazioni personali",
   "profileEditTitle": "Modifica profilo",
   "profileEditFullNameLabel": "Nome completo",
@@ -406,12 +269,6 @@
   "profileEditWeightLabel": "Peso",
   "profileEditWeightHint": "Inserisci il tuo peso in kg (opzionale)",
   "profileEditWeightInvalid": "Inserisci un peso valido e positivo.",
-  "profileEditTimezoneLabel": "Fuso orario",
-  "profileEditTimezoneHint": "Esempio: Europe/Rome",
-  "profileEditUnitSystemLabel": "Unità di misura preferita",
-  "profileEditUnitSystemNotSet": "Non specificato",
-  "profileEditUnitSystemMetric": "Metrico (kg, cm)",
-  "profileEditUnitSystemImperial": "Imperiale (lb, in)",
   "profileEditCancel": "Annulla",
   "profileEditSave": "Salva modifiche",
   "profileEditSuccess": "Profilo aggiornato correttamente",
@@ -423,7 +280,6 @@
       }
     }
   },
-  "featureUnavailable": "Funzionalità non ancora disponibile.",
   "logout": "Logout",
   "redirectError": "Errore durante il reindirizzamento: {error}",
   "@redirectError": {
@@ -479,127 +335,9 @@
   "passwordResetMismatch": "Le password non coincidono.",
   "passwordResetSuccess": "Password aggiornata con successo. Puoi continuare a usare l'app.",
   "passwordResetSubmit": "Aggiorna password",
-  "exerciseAddDialogTitle": "Aggiungi esercizio",
-  "exerciseNameLabel": "Nome esercizio",
-  "quickAddValuesLabel": "Valori rapidi",
-  "quickAddValuesHelper": "Ripetizioni separate da virgola (es. 1,5,10)",
   "cancel": "Annulla",
   "add": "Aggiungi",
-  "save": "Salva",
-  "exerciseNameMissing": "Inserisci un nome.",
-  "exerciseTargetRepsLabel": "Ripetizioni obiettivo",
-  "exerciseTargetRepsHelper": "Obiettivo totale opzionale per la sessione",
-  "exerciseRestDurationLabel": "Durata recupero (secondi)",
-  "exerciseRestDurationHelper": "Preset opzionale per il conto alla rovescia",
-  "exerciseTrackerEmpty": "Ancora nessun esercizio. Tocca + per aggiungerne uno!",
-  "exerciseAddButton": "Aggiungi esercizio",
-  "exercisePushUps": "Push-up",
-  "exercisePullUps": "Trazioni alla sbarra",
-  "exerciseChinUps": "Trazioni a presa inversa",
-  "exerciseTotalReps": "{count} ripetizioni totali",
-  "@exerciseTotalReps": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "exerciseGoalProgress": "{logged} / {goal} ripetizioni registrate",
-  "@exerciseGoalProgress": {
-    "placeholders": {
-      "logged": {
-        "type": "int"
-      },
-      "goal": {
-        "type": "int"
-      }
-    }
-  },
-  "exerciseRestFinished": "Recupero terminato per {exercise}!",
-  "@exerciseRestFinished": {
-    "placeholders": {
-      "exercise": {
-        "type": "String"
-      }
-    }
-  },
-  "exerciseSetRestDuration": "Imposta durata recupero",
-  "exerciseDurationSecondsLabel": "Durata (secondi)",
-  "restTimerLabel": "Timer di recupero",
-  "setDuration": "Imposta durata",
-  "undoLastSet": "Annulla ultima serie",
-  "custom": "Personalizzato",
-  "reset": "Reimposta",
-  "logRepsTitle": "Registra ripetizioni",
-  "repetitionsLabel": "Ripetizioni",
-  "positiveNumberError": "Inserisci un numero positivo.",
-  "repsChip": "{count} ripetizioni",
-  "@repsChip": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "goalCount": "Obiettivo: {count}",
-  "@goalCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "repGoalReached": "Obiettivo ripetizioni raggiunto!",
-  "pause": "Pausa",
   "start": "Avvia",
-  "seriesCount": "Serie: {count}",
-  "@seriesCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "resetReps": "Azzera ripetizioni",
-  "emomTrackerTitle": "Tracker EMOM",
-  "emomTrackerSubtitle": "Serie ogni minuto con conto alla rovescia.",
-  "emomTrackerDescription": "Configura serie, ripetizioni e intervalli per restare sul ritmo ogni minuto.",
-  "emomSetsLabel": "Serie totali",
-  "emomRepsLabel": "Ripetizioni per serie",
-  "emomIntervalLabel": "Intervallo (secondi)",
-  "emomStartButton": "Avvia EMOM",
-  "emomResetButton": "Reimposta sessione",
-  "emomSessionComplete": "EMOM completato",
-  "emomCurrentSet": "Serie {current} di {total}",
-  "@emomCurrentSet": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "emomRepsPerSet": "{count} ripetizioni per serie",
-  "@emomRepsPerSet": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "emomFinishedMessage": "Ottimo lavoro! Hai rispettato ogni minuto.",
-  "emomTimeRemainingLabel": "Tempo rimanente in questo minuto",
-  "emomPrepHeadline": "Preparati per la serie {set}",
-  "@emomPrepHeadline": {
-    "placeholders": {
-      "set": {
-        "type": "int"
-      }
-    }
-  },
-  "emomPrepSubhead": "La prossima serie parte alla fine del conto alla rovescia.",
   "timerTitle": "Timer",
   "amrapTimerTitle": "Timer AMRAP",
   "amrapTimerSubtitle": "Spingi per quante più serie possibile.",
@@ -615,13 +353,6 @@
   "countdownSecondsLabel": "Secondi",
   "countdownStartButton": "Avvia timer",
   "countdownResetButton": "Ferma timer",
-  "weekdayMonday": "Lunedì",
-  "weekdayTuesday": "Martedì",
-  "weekdayWednesday": "Mercoledì",
-  "weekdayThursday": "Giovedì",
-  "weekdayFriday": "Venerdì",
-  "weekdaySaturday": "Sabato",
-  "weekdaySunday": "Domenica",
   "weekNumber": "Settimana {week}",
   "@weekNumber": {
     "placeholders": {
@@ -655,47 +386,5 @@
   "termSomTitle": "SOM",
   "termSomDescription": "Indica la durata di ogni fase della ripetizione.",
   "termScaricoTitle": "Scarico",
-  "termScaricoDescription": "Ultima settimana della scheda per prepararsi ai massimali.",
-  "noCameras": "Nessuna fotocamera disponibile",
-  "cameraInitFailed": "Inizializzazione fotocamera fallita: {error}",
-  "@cameraInitFailed": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
-  "poseDetected": "Posa rilevata",
-  "processing": "Elaborazione…",
-  "idle": "In attesa",
-  "cameraFront": "frontale",
-  "cameraBack": "posteriore",
-  "hudMetrics": "fps: {fps}  ms: {milliseconds}  lmks: {landmarks}",
-  "@hudMetrics": {
-    "placeholders": {
-      "fps": {
-        "type": "String"
-      },
-      "milliseconds": {
-        "type": "String"
-      },
-      "landmarks": {
-        "type": "int"
-      }
-    }
-  },
-  "hudOrientation": "rot: {rotation}  cam: {camera}  fmt: {format}",
-  "@hudOrientation": {
-    "placeholders": {
-      "rotation": {
-        "type": "String"
-      },
-      "camera": {
-        "type": "String"
-      },
-      "format": {
-        "type": "String"
-      }
-    }
-  }
+  "termScaricoDescription": "Ultima settimana della scheda per prepararsi ai massimali."
 }

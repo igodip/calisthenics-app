@@ -304,230 +304,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Kick or press up to a wall or free balance and hold a tall line with toes pointed.';
 
   @override
-  String get settingsComingSoon => 'Settings coming soon.';
-
-  @override
-  String get settingsGeneralSection => 'General';
-
-  @override
-  String get settingsDailyReminder => 'Daily workout reminder';
-
-  @override
-  String get settingsDailyReminderDescription =>
-      'Get a gentle nudge to start training each day.';
-
-  @override
-  String get settingsReminderTime => 'Reminder time';
-
-  @override
-  String get settingsReminderNotSet => 'Not set';
-
-  @override
-  String get settingsSoundEffects => 'Sound effects';
-
-  @override
-  String get settingsSoundEffectsDescription =>
-      'Play short sounds when logging repetitions.';
-
-  @override
-  String get settingsHapticFeedback => 'Haptic feedback';
-
-  @override
-  String get settingsHapticFeedbackDescription =>
-      'Vibrate briefly on important actions.';
-
-  @override
-  String get settingsTrainingSection => 'Training preferences';
-
-  @override
-  String get settingsUnitSystem => 'Unit system';
-
-  @override
-  String get settingsUnitsMetric => 'Metric (kg)';
-
-  @override
-  String get settingsUnitsImperial => 'Imperial (lb)';
-
-  @override
-  String get settingsRestTimer => 'Default rest timer';
-
-  @override
-  String get settingsRestTimerDescription =>
-      'Used when starting a rest timer from workouts.';
-
-  @override
-  String settingsRestTimerMinutes(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# minutes',
-      one: '# minute',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String settingsRestTimerMinutesSeconds(int minutes, int seconds) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '# minutes',
-      one: '# minute',
-    );
-    String _temp1 = intl.Intl.pluralLogic(
-      seconds,
-      locale: localeName,
-      other: '# seconds',
-      one: '# second',
-    );
-    return '$_temp0 and $_temp1';
-  }
-
-  @override
-  String settingsRestTimerSeconds(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# seconds',
-      one: '# second',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get settingsDataSection => 'Data & privacy';
-
-  @override
-  String get settingsClearCache => 'Clear cached workouts';
-
-  @override
-  String get settingsClearCacheDescription =>
-      'Remove workouts saved on this device.';
-
-  @override
-  String get settingsClearCacheSuccess => 'Local workouts cleared.';
-
-  @override
-  String get settingsExportData => 'Export training summary';
-
-  @override
-  String get settingsExportDataDescription =>
-      'Receive a CSV of your recent sessions via email.';
-
-  @override
-  String get settingsExportDataSuccess =>
-      'Export request submitted. Check your inbox soon.';
-
-  @override
-  String get settingsSupportSection => 'Support';
-
-  @override
-  String get settingsContactCoach => 'Contact your coach';
-
-  @override
-  String get settingsContactCoachDescription =>
-      'Send a quick message for adjustments.';
-
-  @override
-  String get settingsContactCoachHint => 'Let us know how we can help.';
-
-  @override
-  String get settingsContactCoachSuccess => 'Message sent to your coach.';
-
-  @override
-  String get settingsSendMessage => 'Send message';
-
-  @override
-  String get settingsAppVersion => 'App version';
-
-  @override
-  String settingsAppVersionValue(Object version) {
-    return 'Version $version';
-  }
-
-  @override
-  String get exerciseTrackerTitle => 'Exercise tracker';
-
-  @override
-  String get poseEstimationTitle => 'Pose estimation';
-
-  @override
   String get homeLoadErrorTitle => 'Unable to load workouts';
 
   @override
   String get retry => 'Retry';
-
-  @override
-  String get homeCalendarTitle => 'Workout calendar';
-
-  @override
-  String get homeCalendarSubtitle => 'Workout days are highlighted.';
-
-  @override
-  String get homeScheduleTitle => 'Weekly focus';
-
-  @override
-  String get homeScheduleSubtitle =>
-      'Stay on track with your upcoming sessions.';
-
-  @override
-  String get homeNextWorkoutTitle => 'Next workout';
-
-  @override
-  String get homeNextWorkoutEmpty => 'No scheduled workouts yet.';
-
-  @override
-  String get homeWorkoutsThisWeekTitle => 'This week';
-
-  @override
-  String get homeWorkoutsThisMonthTitle => 'This month';
-
-  @override
-  String get homePlanProgressTitle => 'Overall plan progress';
-
-  @override
-  String get homePlanProgressCurrentPlan => 'Current plan';
-
-  @override
-  String get homePlanProgressEmpty => 'No plan progress to show yet.';
-
-  @override
-  String homePlanProgressValue(int completed, int total) {
-    return '$completed of $total sessions completed';
-  }
-
-  @override
-  String homePlanProgressPercent(int percent) {
-    return '$percent% complete';
-  }
-
-  @override
-  String get homeUpcomingWeekTitle => 'Coming up this week';
-
-  @override
-  String get homeUpcomingWeekEmpty =>
-      'No sessions scheduled for the next 7 days.';
-
-  @override
-  String get homeWorkoutPlanTitle => 'Workout plan';
-
-  @override
-  String get homeWorkoutPlanSubtitle =>
-      'Review your assigned plan and upcoming sessions.';
-
-  @override
-  String get homeTraineeFeedbackTitle => 'Trainee feedback';
-
-  @override
-  String get homeTraineeFeedbackSubtitle =>
-      'Share updates with your coach after sessions.';
-
-  @override
-  String get homeCoachTipTitle => 'Coach tip';
-
-  @override
-  String get homeCoachTipPlaceholder =>
-      'Your coach\'s latest tip will appear here.';
 
   @override
   String get workoutPlanTitle => 'Workout plan';
@@ -545,25 +325,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get traineeFeedbackQuestionHint =>
       'Share anything going well or that needs attention.';
-
-  @override
-  String get traineeFeedbackHighlightsLabel => 'Highlights';
-
-  @override
-  String get traineeFeedbackHighlightsHint => 'What felt good or went well?';
-
-  @override
-  String get traineeFeedbackChallengesLabel => 'Challenges';
-
-  @override
-  String get traineeFeedbackChallengesHint =>
-      'What felt difficult or needs adjustment?';
-
-  @override
-  String get traineeFeedbackNotesLabel => 'Coach notes';
-
-  @override
-  String get traineeFeedbackNotesHint => 'Anything else to share?';
 
   @override
   String get traineeFeedbackSubmit => 'Send feedback';
@@ -623,9 +384,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultExerciseName => 'Exercise';
 
   @override
-  String get generalNotes => 'General notes';
-
-  @override
   String get trainingHeaderExercise => 'Exercise';
 
   @override
@@ -633,39 +391,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainingHeaderReps => 'Repetitions';
-
-  @override
-  String get trainingHeaderRest => 'Rest';
-
-  @override
-  String get trainingHeaderIntensity => 'Intensity';
-
-  @override
-  String get trainingHeaderNotes => 'Notes';
-
-  @override
-  String get trainingNotesLabel => 'Exercise notes';
-
-  @override
-  String get trainingTraineeNotesLabel => 'Trainee notes';
-
-  @override
-  String get trainingNotesSave => 'Save notes';
-
-  @override
-  String get trainingNotesSaved => 'Notes saved';
-
-  @override
-  String trainingNotesError(Object error) {
-    return 'Unable to save notes: $error';
-  }
-
-  @override
-  String get trainingNotesUnavailable =>
-      'Cannot update notes for this exercise.';
-
-  @override
-  String get trainingOpenTracker => 'Open tracker';
 
   @override
   String get trainingTodayTitle => 'Today\'s Workout';
@@ -677,12 +402,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingWorkoutCompleted => 'Workout Completed';
 
   @override
-  String get trainingMarkComplete => 'Mark day as complete';
-
-  @override
-  String get trainingMarkIncomplete => 'Mark day as incomplete';
-
-  @override
   String get trainingCompletionSaved => 'Workout day updated';
 
   @override
@@ -692,9 +411,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainingCompletionUnavailable => 'Cannot update this workout day.';
-
-  @override
-  String get trainingExerciseCompletedLabel => 'Exercise completed';
 
   @override
   String get trainingExerciseCompletionSaved => 'Exercise updated';
@@ -744,19 +460,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUsername => 'Username';
 
   @override
-  String get profileLastUpdated => 'Last updated';
-
-  @override
-  String get profileValueUnavailable => 'Not available';
-
-  @override
-  String get profileTimezone => 'Time zone';
-
-  @override
   String get profileNotSet => 'Not set';
-
-  @override
-  String get profileUnitSystem => 'Unit system';
 
   @override
   String get profileWeight => 'Weight';
@@ -913,9 +617,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEdit => 'Edit profile';
 
   @override
-  String get profileComingSoon => 'Coming soon';
-
-  @override
   String get profileEditSubtitle => 'Update your personal details';
 
   @override
@@ -937,24 +638,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEditWeightInvalid => 'Enter a valid positive weight.';
 
   @override
-  String get profileEditTimezoneLabel => 'Time zone';
-
-  @override
-  String get profileEditTimezoneHint => 'Example: Europe/Rome';
-
-  @override
-  String get profileEditUnitSystemLabel => 'Preferred unit system';
-
-  @override
-  String get profileEditUnitSystemNotSet => 'Not specified';
-
-  @override
-  String get profileEditUnitSystemMetric => 'Metric (kg, cm)';
-
-  @override
-  String get profileEditUnitSystemImperial => 'Imperial (lb, in)';
-
-  @override
   String get profileEditCancel => 'Cancel';
 
   @override
@@ -967,9 +650,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String profileEditError(Object error) {
     return 'Unable to update profile: $error';
   }
-
-  @override
-  String get featureUnavailable => 'Feature not available yet.';
 
   @override
   String get logout => 'Log out';
@@ -1066,181 +746,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordResetSubmit => 'Update password';
 
   @override
-  String get exerciseAddDialogTitle => 'Add exercise';
-
-  @override
-  String get exerciseNameLabel => 'Exercise name';
-
-  @override
-  String get quickAddValuesLabel => 'Quick add values';
-
-  @override
-  String get quickAddValuesHelper =>
-      'Comma separated repetitions (e.g. 1,5,10)';
-
-  @override
   String get cancel => 'Cancel';
 
   @override
   String get add => 'Add';
 
   @override
-  String get save => 'Save';
-
-  @override
-  String get exerciseNameMissing => 'Please provide a name.';
-
-  @override
-  String get exerciseTargetRepsLabel => 'Target reps';
-
-  @override
-  String get exerciseTargetRepsHelper => 'Optional total goal for the session';
-
-  @override
-  String get exerciseRestDurationLabel => 'Rest duration (seconds)';
-
-  @override
-  String get exerciseRestDurationHelper => 'Optional countdown timer preset';
-
-  @override
-  String get exerciseTrackerEmpty => 'No exercises yet. Tap + to add one!';
-
-  @override
-  String get exerciseAddButton => 'Add exercise';
-
-  @override
-  String get exercisePushUps => 'Push-ups';
-
-  @override
-  String get exercisePullUps => 'Pull-ups';
-
-  @override
-  String get exerciseChinUps => 'Chin-ups';
-
-  @override
-  String exerciseTotalReps(int count) {
-    return '$count total reps';
-  }
-
-  @override
-  String exerciseGoalProgress(int logged, int goal) {
-    return '$logged / $goal reps logged';
-  }
-
-  @override
-  String exerciseRestFinished(String exercise) {
-    return 'Rest finished for $exercise!';
-  }
-
-  @override
-  String get exerciseSetRestDuration => 'Set rest duration';
-
-  @override
-  String get exerciseDurationSecondsLabel => 'Duration (seconds)';
-
-  @override
-  String get restTimerLabel => 'Rest timer';
-
-  @override
-  String get setDuration => 'Set duration';
-
-  @override
-  String get undoLastSet => 'Undo last set';
-
-  @override
-  String get custom => 'Custom';
-
-  @override
-  String get reset => 'Reset';
-
-  @override
-  String get logRepsTitle => 'Log reps';
-
-  @override
-  String get repetitionsLabel => 'Repetitions';
-
-  @override
-  String get positiveNumberError => 'Enter a positive number.';
-
-  @override
-  String repsChip(int count) {
-    return '$count reps';
-  }
-
-  @override
-  String goalCount(int count) {
-    return 'Goal: $count';
-  }
-
-  @override
-  String get repGoalReached => 'Rep goal reached!';
-
-  @override
-  String get pause => 'Pause';
-
-  @override
   String get start => 'Start';
-
-  @override
-  String seriesCount(int count) {
-    return 'Sets: $count';
-  }
-
-  @override
-  String get resetReps => 'Reset reps';
-
-  @override
-  String get emomTrackerTitle => 'EMOM tracker';
-
-  @override
-  String get emomTrackerSubtitle =>
-      'Guided every-minute sets with prep countdown.';
-
-  @override
-  String get emomTrackerDescription =>
-      'Configure sets, reps, and intervals to stay on pace each minute.';
-
-  @override
-  String get emomSetsLabel => 'Total sets';
-
-  @override
-  String get emomRepsLabel => 'Reps per set';
-
-  @override
-  String get emomIntervalLabel => 'Interval (seconds)';
-
-  @override
-  String get emomStartButton => 'Start EMOM';
-
-  @override
-  String get emomResetButton => 'Reset session';
-
-  @override
-  String get emomSessionComplete => 'EMOM complete';
-
-  @override
-  String emomCurrentSet(int current, int total) {
-    return 'Set $current of $total';
-  }
-
-  @override
-  String emomRepsPerSet(int count) {
-    return '$count reps per set';
-  }
-
-  @override
-  String get emomFinishedMessage => 'Nice work! You hit every minute.';
-
-  @override
-  String get emomTimeRemainingLabel => 'Time remaining this minute';
-
-  @override
-  String emomPrepHeadline(int set) {
-    return 'Get ready for set $set';
-  }
-
-  @override
-  String get emomPrepSubhead => 'The next set starts after this countdown.';
 
   @override
   String get timerTitle => 'Timer';
@@ -1288,27 +800,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get countdownResetButton => 'Stop timer';
-
-  @override
-  String get weekdayMonday => 'Monday';
-
-  @override
-  String get weekdayTuesday => 'Tuesday';
-
-  @override
-  String get weekdayWednesday => 'Wednesday';
-
-  @override
-  String get weekdayThursday => 'Thursday';
-
-  @override
-  String get weekdayFriday => 'Friday';
-
-  @override
-  String get weekdaySaturday => 'Saturday';
-
-  @override
-  String get weekdaySunday => 'Sunday';
 
   @override
   String weekNumber(int week) {
@@ -1404,37 +895,3 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get termScaricoDescription =>
       'Last week of the program to prepare for max attempts.';
-
-  @override
-  String get noCameras => 'No cameras available';
-
-  @override
-  String cameraInitFailed(Object error) {
-    return 'Camera init failed: $error';
-  }
-
-  @override
-  String get poseDetected => 'Pose detected';
-
-  @override
-  String get processing => 'Processing…';
-
-  @override
-  String get idle => 'Idle';
-
-  @override
-  String get cameraFront => 'front';
-
-  @override
-  String get cameraBack => 'back';
-
-  @override
-  String hudMetrics(String fps, String milliseconds, int landmarks) {
-    return 'fps: $fps  ms: $milliseconds  lmks: $landmarks';
-  }
-
-  @override
-  String hudOrientation(String rotation, String camera, String format) {
-    return 'rot: $rotation  cam: $camera  fmt: $format';
-  }
-}
