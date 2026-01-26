@@ -1,0 +1,27 @@
+-- Terminology seed data for Supabase
+
+INSERT INTO public.terminology (term_key, locale, title, description, sort_order) VALUES
+  ('reps', 'en', 'Reps', 'Number of times you perform an exercise consecutively.', 1),
+  ('set', 'en', 'Set', 'A group of repetitions. For example: 3 sets of 10 reps means 30 repetitions total divided into 3 groups.', 2),
+  ('rt', 'en', 'RT', 'Total Repetitions: perform all the reps with your preferred sets, reps, and tempo (if not specified).', 3),
+  ('amrap', 'en', 'AMRAP', 'As Many Reps As Possible: perform as many reps as you can in a given time.', 4),
+  ('emom', 'en', 'EMOM', 'Every Minute on the Minute: start a set every minute. Rest during the remaining time.', 5),
+  ('ramping', 'en', 'Ramping', 'Method where the load increases with each set.', 6),
+  ('mav', 'en', 'MAV', 'Massima Alzata Veloce: perform as many reps as possible with a load while keeping control and good speed.', 7),
+  ('isokinetic', 'en', 'Isokinetic', 'Exercises performed at a constant speed.', 8),
+  ('tut', 'en', 'TUT', 'Indicates how long a repetition should last. You can manage the duration of each phase.', 9),
+  ('iso', 'en', 'ISO', 'Indicates a pause at a specific point of the repetition.', 10),
+  ('som', 'en', 'SOM', 'Indicates the duration of each phase of the repetition.', 11),
+  ('deload', 'en', 'Deload', 'Last week of the program to prepare for max attempts.', 12),
+  ('reps', 'it', 'Reps (Ripetizioni)', 'Numero di volte che esegui un esercizio consecutivamente.', 1),
+  ('set', 'it', 'Set (Serie)', 'Un gruppo di ripetizioni. Es: 3 serie da 10 reps significa 30 ripetizioni totali, divise in 3 gruppi.', 2),
+  ('rt', 'it', 'RT', 'Ripetizioni Totali: indica che devi fare tutte quelle reps, con libera scelta di serie, ripetizioni e tempo (se non indicato).', 3),
+  ('amrap', 'it', 'AMRAP', 'As Many Reps As Possible: esegui quante più ripetizioni possibili in un tempo determinato.', 4),
+  ('emom', 'it', 'EMOM', 'Every Minute On Minute: inizi un set ogni minuto. Il tempo restante serve per riposare.', 5),
+  ('ramping', 'it', 'Ramping', 'Metodo che prevede un incremento del peso ad ogni serie', 6),
+  ('mav', 'it', 'MAV', 'Massima Alzata Veloce: si riferisce a una metodologia in cui si cerca di eseguire il maggior numero di ripetizioni possibili con un carico, mantenendo sempre il controllo del movimento e una buona velocità di esecuzione.', 7),
+  ('isokinetic', 'it', 'Isocinetici', 'Esercizi svolti a velocità costante.', 8),
+  ('tut', 'it', 'TUT', 'Indica quanto deve durare una ripetizione. Puoi gestire tu la durata di ogni fase della rep.', 9),
+  ('iso', 'it', 'ISO', 'Indica il fermo a un punto specifico dell''esecuzione della rep', 10),
+  ('som', 'it', 'SOM', 'Indica la durata di ogni fase della ripetizione.', 11),
+  ('deload', 'it', 'Scarico', 'Ultima settimana della scheda per prepararsi ai massimali.', 12);

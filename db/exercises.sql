@@ -1,5 +1,4 @@
 -- Exercise seed data for Supabase
--- Keep in sync with guides in lib/pages/exercise_guides.dart
 
 INSERT INTO public.exercises (slug, name, difficulty, sort_order)
 VALUES
