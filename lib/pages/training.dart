@@ -58,7 +58,7 @@ class _TrainingState extends State<Training> {
                 padding: const EdgeInsets.only(right: 8),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.08),
+                    color: Colors.white.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
@@ -83,7 +83,7 @@ class _TrainingState extends State<Training> {
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: Colors.white.withOpacity(0.08)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +153,7 @@ class _TrainingState extends State<Training> {
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF2B7BFF).withOpacity(0.35),
+                    color: const Color(0xFF2B7BFF).withValues(alpha: 0.35),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),
@@ -359,7 +359,7 @@ class _ExerciseCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF121C2B),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Material(
         color: Colors.transparent,

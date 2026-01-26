@@ -413,7 +413,7 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
         gradient: LinearGradient(
           colors: [
             colorScheme.surface,
-            colorScheme.surfaceVariant.withValues(alpha: 0.9),
+            colorScheme.surfaceContainerHighest.withValues(alpha: 0.9),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -675,7 +675,7 @@ class _TipsCard extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withValues(alpha: 0.6),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(16),
       ),
       child: ListTile(
