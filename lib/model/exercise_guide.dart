@@ -50,156 +50,180 @@ class ExerciseGuide {
     );
   }
 
-  static List<ExerciseGuide> buildGuides(AppLocalizations l10n) => [
-        ExerciseGuide(
-          id: 'pullup',
+  static ExerciseGuide fromDatabase(
+    Map<String, dynamic> row,
+    AppLocalizations l10n,
+  ) {
+    final slug = row['slug'] as String;
+    final strings = ExerciseGuideStrings.fromSlug(slug, l10n);
+    return ExerciseGuide(
+      id: slug,
+      name: strings.name,
+      difficulty: _difficultyFromString(row['difficulty'] as String?),
+      isUnlocked: row['default_unlocked'] as bool? ?? false,
+      focus: strings.focus,
+      tip: strings.tip,
+      description: strings.description,
+      accent: _accentFromHex(row['accent'] as String?),
+    );
+  }
+
+  static Difficulty _difficultyFromString(String? value) {
+    switch (value) {
+      case 'intermediate':
+        return Difficulty.intermediate;
+      case 'advanced':
+        return Difficulty.advanced;
+      case 'beginner':
+      default:
+        return Difficulty.beginner;
+    }
+  }
+
+  static Color _accentFromHex(String? value) {
+    if (value == null || value.isEmpty) {
+      return Colors.blueGrey;
+    }
+    final normalized = value.replaceAll('#', '').replaceAll('0x', '');
+    final hex = normalized.length == 6 ? 'FF$normalized' : normalized;
+    final colorValue = int.tryParse(hex, radix: 16);
+    if (colorValue == null) {
+      return Colors.blueGrey;
+    }
+    return Color(colorValue);
+  }
+}
+
+class ExerciseGuideStrings {
+  const ExerciseGuideStrings({
+    required this.name,
+    required this.focus,
+    required this.tip,
+    required this.description,
+  });
+
+  final String name;
+  final String focus;
+  final String tip;
+  final String description;
+
+  static ExerciseGuideStrings fromSlug(
+    String slug,
+    AppLocalizations l10n,
+  ) {
+    switch (slug) {
+      case 'pullup':
+        return ExerciseGuideStrings(
           name: l10n.guidesPullupName,
-          difficulty: Difficulty.intermediate,
-          isUnlocked: false,
           focus: l10n.guidesPullupFocus,
           tip: l10n.guidesPullupTip,
           description: l10n.guidesPullupDescription,
-          accent: Colors.blue,
-        ),
-        ExerciseGuide(
-          id: 'chinup',
+        );
+      case 'chinup':
+        return ExerciseGuideStrings(
           name: l10n.guidesChinUpName,
-          difficulty: Difficulty.intermediate,
-          isUnlocked: false,
           focus: l10n.guidesChinUpFocus,
           tip: l10n.guidesChinUpTip,
           description: l10n.guidesChinUpDescription,
-          accent: Colors.lightBlue,
-        ),
-        ExerciseGuide(
-          id: 'pushup',
+        );
+      case 'pushup':
+        return ExerciseGuideStrings(
           name: l10n.guidesPushupName,
-          difficulty: Difficulty.beginner,
-          isUnlocked: true,
           focus: l10n.guidesPushupFocus,
           tip: l10n.guidesPushupTip,
           description: l10n.guidesPushupDescription,
-          accent: Colors.orange,
-        ),
-        ExerciseGuide(
-          id: 'bodyweight-squat',
+        );
+      case 'bodyweight-squat':
+        return ExerciseGuideStrings(
           name: l10n.guidesBodyweightSquatName,
-          difficulty: Difficulty.beginner,
-          isUnlocked: true,
           focus: l10n.guidesBodyweightSquatFocus,
           tip: l10n.guidesBodyweightSquatTip,
           description: l10n.guidesBodyweightSquatDescription,
-          accent: Colors.green,
-        ),
-        ExerciseGuide(
-          id: 'glute-bridge',
+        );
+      case 'glute-bridge':
+        return ExerciseGuideStrings(
           name: l10n.guidesGluteBridgeName,
-          difficulty: Difficulty.beginner,
-          isUnlocked: true,
           focus: l10n.guidesGluteBridgeFocus,
           tip: l10n.guidesGluteBridgeTip,
           description: l10n.guidesGluteBridgeDescription,
-          accent: Colors.lightGreen,
-        ),
-        ExerciseGuide(
-          id: 'hanging-leg-raise',
+        );
+      case 'hanging-leg-raise':
+        return ExerciseGuideStrings(
           name: l10n.guidesHangingLegRaiseName,
-          difficulty: Difficulty.intermediate,
-          isUnlocked: false,
           focus: l10n.guidesHangingLegRaiseFocus,
           tip: l10n.guidesHangingLegRaiseTip,
           description: l10n.guidesHangingLegRaiseDescription,
-          accent: Colors.purple,
-        ),
-        ExerciseGuide(
-          id: 'muscle-up',
+        );
+      case 'muscle-up':
+        return ExerciseGuideStrings(
           name: l10n.guidesMuscleUpName,
-          difficulty: Difficulty.advanced,
-          isUnlocked: false,
           focus: l10n.guidesMuscleUpFocus,
           tip: l10n.guidesMuscleUpTip,
           description: l10n.guidesMuscleUpDescription,
-          accent: Colors.teal,
-        ),
-        ExerciseGuide(
-          id: 'straight-bar-dip',
+        );
+      case 'straight-bar-dip':
+        return ExerciseGuideStrings(
           name: l10n.guidesStraightBarDipName,
-          difficulty: Difficulty.intermediate,
-          isUnlocked: false,
           focus: l10n.guidesStraightBarDipFocus,
           tip: l10n.guidesStraightBarDipTip,
           description: l10n.guidesStraightBarDipDescription,
-          accent: Colors.deepOrange,
-        ),
-        ExerciseGuide(
-          id: 'dips',
+        );
+      case 'dips':
+        return ExerciseGuideStrings(
           name: l10n.guidesDipsName,
-          difficulty: Difficulty.intermediate,
-          isUnlocked: false,
           focus: l10n.guidesDipsFocus,
           tip: l10n.guidesDipsTip,
           description: l10n.guidesDipsDescription,
-          accent: Colors.red,
-        ),
-        ExerciseGuide(
-          id: 'australian-row',
+        );
+      case 'australian-row':
+        return ExerciseGuideStrings(
           name: l10n.guidesAustralianRowName,
-          difficulty: Difficulty.beginner,
-          isUnlocked: true,
           focus: l10n.guidesAustralianRowFocus,
           tip: l10n.guidesAustralianRowTip,
           description: l10n.guidesAustralianRowDescription,
-          accent: Colors.indigo,
-        ),
-        ExerciseGuide(
-          id: 'pike-pushup',
+        );
+      case 'pike-pushup':
+        return ExerciseGuideStrings(
           name: l10n.guidesPikePushUpName,
-          difficulty: Difficulty.intermediate,
-          isUnlocked: false,
           focus: l10n.guidesPikePushUpFocus,
           tip: l10n.guidesPikePushUpTip,
           description: l10n.guidesPikePushUpDescription,
-          accent: Colors.amber,
-        ),
-        ExerciseGuide(
-          id: 'hollow-hold',
+        );
+      case 'hollow-hold':
+        return ExerciseGuideStrings(
           name: l10n.guidesHollowHoldName,
-          difficulty: Difficulty.beginner,
-          isUnlocked: true,
           focus: l10n.guidesHollowHoldFocus,
           tip: l10n.guidesHollowHoldTip,
           description: l10n.guidesHollowHoldDescription,
-          accent: Colors.brown,
-        ),
-        ExerciseGuide(
-          id: 'plank',
+        );
+      case 'plank':
+        return ExerciseGuideStrings(
           name: l10n.guidesPlankName,
-          difficulty: Difficulty.beginner,
-          isUnlocked: true,
           focus: l10n.guidesPlankFocus,
           tip: l10n.guidesPlankTip,
           description: l10n.guidesPlankDescription,
-          accent: Colors.blueGrey,
-        ),
-        ExerciseGuide(
-          id: 'l-sit',
+        );
+      case 'l-sit':
+        return ExerciseGuideStrings(
           name: l10n.guidesLSitName,
-          difficulty: Difficulty.intermediate,
-          isUnlocked: false,
           focus: l10n.guidesLSitFocus,
           tip: l10n.guidesLSitTip,
           description: l10n.guidesLSitDescription,
-          accent: Colors.lightBlue,
-        ),
-        ExerciseGuide(
-          id: 'handstand',
+        );
+      case 'handstand':
+        return ExerciseGuideStrings(
           name: l10n.guidesHandstandName,
-          difficulty: Difficulty.advanced,
-          isUnlocked: false,
           focus: l10n.guidesHandstandFocus,
           tip: l10n.guidesHandstandTip,
           description: l10n.guidesHandstandDescription,
-          accent: Colors.deepPurple,
-        ),
-      ];
+        );
+      default:
+        return ExerciseGuideStrings(
+          name: slug,
+          focus: '',
+          tip: '',
+          description: '',
+        );
+    }
+  }
 }
