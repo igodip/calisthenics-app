@@ -68,6 +68,40 @@ class ExerciseGuide {
     );
   }
 
+  static List<ExerciseGuide> buildGuides(AppLocalizations l10n) {
+    const guideSeeds = [
+      ('pullup', 'intermediate', false, '#2196F3'),
+      ('chinup', 'intermediate', false, '#03A9F4'),
+      ('pushup', 'beginner', true, '#FF9800'),
+      ('bodyweight-squat', 'beginner', true, '#4CAF50'),
+      ('glute-bridge', 'beginner', true, '#8BC34A'),
+      ('hanging-leg-raise', 'intermediate', false, '#9C27B0'),
+      ('muscle-up', 'advanced', false, '#009688'),
+      ('straight-bar-dip', 'intermediate', false, '#FF5722'),
+      ('dips', 'intermediate', false, '#F44336'),
+      ('australian-row', 'beginner', true, '#3F51B5'),
+      ('pike-pushup', 'intermediate', false, '#FFC107'),
+      ('hollow-hold', 'beginner', true, '#795548'),
+      ('plank', 'beginner', true, '#607D8B'),
+      ('l-sit', 'intermediate', false, '#03A9F4'),
+      ('handstand', 'advanced', false, '#673AB7'),
+    ];
+
+    return guideSeeds.map((seed) {
+      final strings = ExerciseGuideStrings.fromSlug(seed.$1, l10n);
+      return ExerciseGuide(
+        id: seed.$1,
+        name: strings.name,
+        difficulty: _difficultyFromString(seed.$2),
+        isUnlocked: seed.$3,
+        focus: strings.focus,
+        tip: strings.tip,
+        description: strings.description,
+        accent: _accentFromHex(seed.$4),
+      );
+    }).toList();
+  }
+
   static Difficulty _difficultyFromString(String? value) {
     switch (value) {
       case 'intermediate':
