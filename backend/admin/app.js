@@ -1012,19 +1012,45 @@ import {
         };
       }
 
-      async function loadExercises() {
+      async function loadExercises(u = current.value) {
         loadingExercises.value = true;
         exercisesError.value = '';
         try {
-          const { data, error } = await supabase
-            .from('exercises')
-            .select('id, slug, name, difficulty, sort_order, created_at')
-            .order('sort_order', { ascending: true })
-            .order('name', { ascending: true });
+          let data = [];
+          let error = null;
+          if (u?.id) {
+            const response = await supabase
+              .from('trainee_exercise_unlocks')
+              .select(
+                'exercises ( id, slug, name, difficulty, sort_order, created_at )',
+              )
+              .eq('trainee_id', u.id)
+              .order('sort_order', {
+                ascending: true,
+                referencedTable: 'exercises',
+              })
+              .order('name', { ascending: true, referencedTable: 'exercises' });
+            data = response.data;
+            error = response.error;
+          } else {
+            const response = await supabase
+              .from('exercises')
+              .select('id, slug, name, difficulty, sort_order, created_at')
+              .order('sort_order', { ascending: true })
+              .order('name', { ascending: true });
+            data = response.data;
+            error = response.error;
+          }
           if (error) {
             throw new Error(t('errors.loadExercises', { message: error.message }));
           }
-          exercises.value = data || [];
+          if (u?.id) {
+            exercises.value = (data || [])
+              .map((row) => row.exercises)
+              .filter(Boolean);
+          } else {
+            exercises.value = data || [];
+          }
           exerciseEdits.value = {};
           (exercises.value || []).forEach(setExerciseEdit);
         } catch (error) {
@@ -1399,6 +1425,7 @@ import {
         paymentHistory.value = [];
         paymentsError.value = '';
         coachTipDraft.value = u?.coach_tip || '';
+        await loadExercises(u);
         await loadMaxTests(u);
       }
 
