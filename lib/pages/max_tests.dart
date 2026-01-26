@@ -807,7 +807,7 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _selectedExercise,
+                  initialValue: _selectedExercise,
                   decoration: InputDecoration(
                     labelText: l10n.profileMaxTestsExerciseLabel,
                     hintText: l10n.profileMaxTestsExerciseHint,
