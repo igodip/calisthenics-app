@@ -86,124 +86,13 @@
   "guidesHandstandFocus": "Shoulders, core, balance",
   "guidesHandstandTip": "Stack wrists, shoulders, and hips while squeezing your glutes.",
   "guidesHandstandDescription": "Kick or press up to a wall or free balance and hold a tall line with toes pointed.",
-  "settingsComingSoon": "Settings coming soon.",
-  "settingsGeneralSection": "General",
-  "settingsDailyReminder": "Daily workout reminder",
-  "settingsDailyReminderDescription": "Get a gentle nudge to start training each day.",
-  "settingsReminderTime": "Reminder time",
-  "settingsReminderNotSet": "Not set",
-  "settingsSoundEffects": "Sound effects",
-  "settingsSoundEffectsDescription": "Play short sounds when logging repetitions.",
-  "settingsHapticFeedback": "Haptic feedback",
-  "settingsHapticFeedbackDescription": "Vibrate briefly on important actions.",
-  "settingsTrainingSection": "Training preferences",
-  "settingsUnitSystem": "Unit system",
-  "settingsUnitsMetric": "Metric (kg)",
-  "settingsUnitsImperial": "Imperial (lb)",
-  "settingsRestTimer": "Default rest timer",
-  "settingsRestTimerDescription": "Used when starting a rest timer from workouts.",
-  "settingsRestTimerMinutes": "{count, plural, one {# minute} other {# minutes}}",
-  "@settingsRestTimerMinutes": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "settingsRestTimerMinutesSeconds": "{minutes, plural, one {# minute} other {# minutes}} and {seconds, plural, one {# second} other {# seconds}}",
-  "@settingsRestTimerMinutesSeconds": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      },
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "settingsRestTimerSeconds": "{count, plural, one {# second} other {# seconds}}",
-  "@settingsRestTimerSeconds": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "settingsDataSection": "Data & privacy",
-  "settingsClearCache": "Clear cached workouts",
-  "settingsClearCacheDescription": "Remove workouts saved on this device.",
-  "settingsClearCacheSuccess": "Local workouts cleared.",
-  "settingsExportData": "Export training summary",
-  "settingsExportDataDescription": "Receive a CSV of your recent sessions via email.",
-  "settingsExportDataSuccess": "Export request submitted. Check your inbox soon.",
-  "settingsSupportSection": "Support",
-  "settingsContactCoach": "Contact your coach",
-  "settingsContactCoachDescription": "Send a quick message for adjustments.",
-  "settingsContactCoachHint": "Let us know how we can help.",
-  "settingsContactCoachSuccess": "Message sent to your coach.",
-  "settingsSendMessage": "Send message",
-  "settingsAppVersion": "App version",
-  "settingsAppVersionValue": "Version {version}",
-  "@settingsAppVersionValue": {
-    "placeholders": {
-      "version": {
-        "type": "Object"
-      }
-    }
-  },
-  "exerciseTrackerTitle": "Exercise tracker",
-  "poseEstimationTitle": "Pose estimation",
   "homeLoadErrorTitle": "Unable to load workouts",
   "retry": "Retry",
-  "homeCalendarTitle": "Workout calendar",
-  "homeCalendarSubtitle": "Workout days are highlighted.",
-  "homeScheduleTitle": "Weekly focus",
-  "homeScheduleSubtitle": "Stay on track with your upcoming sessions.",
-  "homeNextWorkoutTitle": "Next workout",
-  "homeNextWorkoutEmpty": "No scheduled workouts yet.",
-  "homeWorkoutsThisWeekTitle": "This week",
-  "homeWorkoutsThisMonthTitle": "This month",
-  "homePlanProgressTitle": "Overall plan progress",
-  "homePlanProgressCurrentPlan": "Current plan",
-  "homePlanProgressEmpty": "No plan progress to show yet.",
-  "homePlanProgressValue": "{completed} of {total} sessions completed",
-  "@homePlanProgressValue": {
-    "placeholders": {
-      "completed": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "homePlanProgressPercent": "{percent}% complete",
-  "@homePlanProgressPercent": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "homeUpcomingWeekTitle": "Coming up this week",
-  "homeUpcomingWeekEmpty": "No sessions scheduled for the next 7 days.",
-  "homeWorkoutPlanTitle": "Workout plan",
-  "homeWorkoutPlanSubtitle": "Review your assigned plan and upcoming sessions.",
-  "homeTraineeFeedbackTitle": "Trainee feedback",
-  "homeTraineeFeedbackSubtitle": "Share updates with your coach after sessions.",
-  "homeCoachTipTitle": "Coach tip",
-  "homeCoachTipPlaceholder": "Your coach's latest tip will appear here.",
   "workoutPlanTitle": "Workout plan",
   "traineeFeedbackTitle": "Trainee feedback",
   "traineeFeedbackSubtitle": "Tell your coach how you're feeling and how the plan is going.",
   "traineeFeedbackQuestionLabel": "How did your training feel?",
   "traineeFeedbackQuestionHint": "Share anything going well or that needs attention.",
-  "traineeFeedbackHighlightsLabel": "Highlights",
-  "traineeFeedbackHighlightsHint": "What felt good or went well?",
-  "traineeFeedbackChallengesLabel": "Challenges",
-  "traineeFeedbackChallengesHint": "What felt difficult or needs adjustment?",
-  "traineeFeedbackNotesLabel": "Coach notes",
-  "traineeFeedbackNotesHint": "Anything else to share?",
   "traineeFeedbackSubmit": "Send feedback",
   "traineeFeedbackSubmitted": "Feedback saved. We'll share it with your coach.",
   "homeEmptyTitle": "No workouts available",
@@ -228,32 +117,12 @@
   },
   "unauthenticated": "User not authenticated",
   "defaultExerciseName": "Exercise",
-  "generalNotes": "General notes",
   "trainingHeaderExercise": "Exercise",
   "trainingHeaderSets": "Sets",
   "trainingHeaderReps": "Repetitions",
-  "trainingHeaderRest": "Rest",
-  "trainingHeaderIntensity": "Intensity",
-  "trainingHeaderNotes": "Notes",
-  "trainingNotesLabel": "Exercise notes",
-  "trainingTraineeNotesLabel": "Trainee notes",
-  "trainingNotesSave": "Save notes",
-  "trainingNotesSaved": "Notes saved",
-  "trainingNotesError": "Unable to save notes: {error}",
-  "@trainingNotesError": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
-  "trainingNotesUnavailable": "Cannot update notes for this exercise.",
-  "trainingOpenTracker": "Open tracker",
   "trainingTodayTitle": "Today's Workout",
   "trainingStartWorkout": "Start Workout",
   "trainingWorkoutCompleted": "Workout Completed",
-  "trainingMarkComplete": "Mark day as complete",
-  "trainingMarkIncomplete": "Mark day as incomplete",
   "trainingCompletionSaved": "Workout day updated",
   "trainingCompletionError": "Unable to update workout: {error}",
   "@trainingCompletionError": {
@@ -264,7 +133,6 @@
     }
   },
   "trainingCompletionUnavailable": "Cannot update this workout day.",
-  "trainingExerciseCompletedLabel": "Exercise completed",
   "trainingExerciseCompletionSaved": "Exercise updated",
   "trainingExerciseCompletionError": "Unable to update exercise: {error}",
   "@trainingExerciseCompletionError": {
@@ -293,11 +161,7 @@
   "profilePlanActive": "Active plan",
   "profilePlanExpired": "Plan expired",
   "profileUsername": "Username",
-  "profileLastUpdated": "Last updated",
-  "profileValueUnavailable": "Not available",
-  "profileTimezone": "Time zone",
   "profileNotSet": "Not set",
-  "profileUnitSystem": "Unit system",
   "profileWeight": "Weight",
   "profileWeightValue": "{weight} kg",
   "@profileWeightValue": {
@@ -398,7 +262,6 @@
   "profileMaxTestsShowMore": "Show all attempts",
   "profileMaxTestsShowLess": "Show fewer attempts",
   "profileEdit": "Edit profile",
-  "profileComingSoon": "Coming soon",
   "profileEditSubtitle": "Update your personal details",
   "profileEditTitle": "Edit profile",
   "profileEditFullNameLabel": "Full name",
@@ -406,12 +269,6 @@
   "profileEditWeightLabel": "Weight",
   "profileEditWeightHint": "Enter your weight in kg (optional)",
   "profileEditWeightInvalid": "Enter a valid positive weight.",
-  "profileEditTimezoneLabel": "Time zone",
-  "profileEditTimezoneHint": "Example: Europe/Rome",
-  "profileEditUnitSystemLabel": "Preferred unit system",
-  "profileEditUnitSystemNotSet": "Not specified",
-  "profileEditUnitSystemMetric": "Metric (kg, cm)",
-  "profileEditUnitSystemImperial": "Imperial (lb, in)",
   "profileEditCancel": "Cancel",
   "profileEditSave": "Save changes",
   "profileEditSuccess": "Profile updated successfully",
@@ -423,7 +280,6 @@
       }
     }
   },
-  "featureUnavailable": "Feature not available yet.",
   "logout": "Log out",
   "redirectError": "Error during redirect: {error}",
   "@redirectError": {
@@ -479,127 +335,9 @@
   "passwordResetMismatch": "Passwords do not match.",
   "passwordResetSuccess": "Password updated successfully. You can continue using the app.",
   "passwordResetSubmit": "Update password",
-  "exerciseAddDialogTitle": "Add exercise",
-  "exerciseNameLabel": "Exercise name",
-  "quickAddValuesLabel": "Quick add values",
-  "quickAddValuesHelper": "Comma separated repetitions (e.g. 1,5,10)",
   "cancel": "Cancel",
   "add": "Add",
-  "save": "Save",
-  "exerciseNameMissing": "Please provide a name.",
-  "exerciseTargetRepsLabel": "Target reps",
-  "exerciseTargetRepsHelper": "Optional total goal for the session",
-  "exerciseRestDurationLabel": "Rest duration (seconds)",
-  "exerciseRestDurationHelper": "Optional countdown timer preset",
-  "exerciseTrackerEmpty": "No exercises yet. Tap + to add one!",
-  "exerciseAddButton": "Add exercise",
-  "exercisePushUps": "Push-ups",
-  "exercisePullUps": "Pull-ups",
-  "exerciseChinUps": "Chin-ups",
-  "exerciseTotalReps": "{count} total reps",
-  "@exerciseTotalReps": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "exerciseGoalProgress": "{logged} / {goal} reps logged",
-  "@exerciseGoalProgress": {
-    "placeholders": {
-      "logged": {
-        "type": "int"
-      },
-      "goal": {
-        "type": "int"
-      }
-    }
-  },
-  "exerciseRestFinished": "Rest finished for {exercise}!",
-  "@exerciseRestFinished": {
-    "placeholders": {
-      "exercise": {
-        "type": "String"
-      }
-    }
-  },
-  "exerciseSetRestDuration": "Set rest duration",
-  "exerciseDurationSecondsLabel": "Duration (seconds)",
-  "restTimerLabel": "Rest timer",
-  "setDuration": "Set duration",
-  "undoLastSet": "Undo last set",
-  "custom": "Custom",
-  "reset": "Reset",
-  "logRepsTitle": "Log reps",
-  "repetitionsLabel": "Repetitions",
-  "positiveNumberError": "Enter a positive number.",
-  "repsChip": "{count} reps",
-  "@repsChip": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "goalCount": "Goal: {count}",
-  "@goalCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "repGoalReached": "Rep goal reached!",
-  "pause": "Pause",
   "start": "Start",
-  "seriesCount": "Sets: {count}",
-  "@seriesCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "resetReps": "Reset reps",
-  "emomTrackerTitle": "EMOM tracker",
-  "emomTrackerSubtitle": "Guided every-minute sets with prep countdown.",
-  "emomTrackerDescription": "Configure sets, reps, and intervals to stay on pace each minute.",
-  "emomSetsLabel": "Total sets",
-  "emomRepsLabel": "Reps per set",
-  "emomIntervalLabel": "Interval (seconds)",
-  "emomStartButton": "Start EMOM",
-  "emomResetButton": "Reset session",
-  "emomSessionComplete": "EMOM complete",
-  "emomCurrentSet": "Set {current} of {total}",
-  "@emomCurrentSet": {
-    "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "emomRepsPerSet": "{count} reps per set",
-  "@emomRepsPerSet": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "emomFinishedMessage": "Nice work! You hit every minute.",
-  "emomTimeRemainingLabel": "Time remaining this minute",
-  "emomPrepHeadline": "Get ready for set {set}",
-  "@emomPrepHeadline": {
-    "placeholders": {
-      "set": {
-        "type": "int"
-      }
-    }
-  },
-  "emomPrepSubhead": "The next set starts after this countdown.",
   "timerTitle": "Timer",
   "amrapTimerTitle": "AMRAP timer",
   "amrapTimerSubtitle": "Push through as many rounds as possible.",
@@ -615,13 +353,6 @@
   "countdownSecondsLabel": "Seconds",
   "countdownStartButton": "Start timer",
   "countdownResetButton": "Stop timer",
-  "weekdayMonday": "Monday",
-  "weekdayTuesday": "Tuesday",
-  "weekdayWednesday": "Wednesday",
-  "weekdayThursday": "Thursday",
-  "weekdayFriday": "Friday",
-  "weekdaySaturday": "Saturday",
-  "weekdaySunday": "Sunday",
   "weekNumber": "Week {week}",
   "@weekNumber": {
     "placeholders": {
@@ -655,47 +386,5 @@
   "termSomTitle": "SOM",
   "termSomDescription": "Indicates the duration of each phase of the repetition.",
   "termScaricoTitle": "Deload",
-  "termScaricoDescription": "Last week of the program to prepare for max attempts.",
-  "noCameras": "No cameras available",
-  "cameraInitFailed": "Camera init failed: {error}",
-  "@cameraInitFailed": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
-  "poseDetected": "Pose detected",
-  "processing": "Processing…",
-  "idle": "Idle",
-  "cameraFront": "front",
-  "cameraBack": "back",
-  "hudMetrics": "fps: {fps}  ms: {milliseconds}  lmks: {landmarks}",
-  "@hudMetrics": {
-    "placeholders": {
-      "fps": {
-        "type": "String"
-      },
-      "milliseconds": {
-        "type": "String"
-      },
-      "landmarks": {
-        "type": "int"
-      }
-    }
-  },
-  "hudOrientation": "rot: {rotation}  cam: {camera}  fmt: {format}",
-  "@hudOrientation": {
-    "placeholders": {
-      "rotation": {
-        "type": "String"
-      },
-      "camera": {
-        "type": "String"
-      },
-      "format": {
-        "type": "String"
-      }
-    }
-  }
+  "termScaricoDescription": "Last week of the program to prepare for max attempts."
 }

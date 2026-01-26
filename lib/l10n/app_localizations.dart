@@ -620,221 +620,41 @@ abstract class AppLocalizations {
   /// **'Sali in verticale contro il muro o in equilibrio libero e mantieni una linea lunga con le punte tese.'**
   String get guidesHandstandDescription;
 
-  /// No description provided for @settingsComingSoon.
-  ///
-  /// In it, this message translates to:
-  /// **'Le impostazioni saranno presto disponibili.'**
-  String get settingsComingSoon;
 
-  /// No description provided for @settingsGeneralSection.
-  ///
-  /// In it, this message translates to:
-  /// **'Generali'**
-  String get settingsGeneralSection;
 
-  /// No description provided for @settingsDailyReminder.
-  ///
-  /// In it, this message translates to:
-  /// **'Promemoria allenamento quotidiano'**
-  String get settingsDailyReminder;
 
-  /// No description provided for @settingsDailyReminderDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Ricevi un promemoria per iniziare ad allenarti ogni giorno.'**
-  String get settingsDailyReminderDescription;
 
-  /// No description provided for @settingsReminderTime.
-  ///
-  /// In it, this message translates to:
-  /// **'Orario promemoria'**
-  String get settingsReminderTime;
 
-  /// No description provided for @settingsReminderNotSet.
-  ///
-  /// In it, this message translates to:
-  /// **'Non impostato'**
-  String get settingsReminderNotSet;
 
-  /// No description provided for @settingsSoundEffects.
-  ///
-  /// In it, this message translates to:
-  /// **'Effetti sonori'**
-  String get settingsSoundEffects;
 
-  /// No description provided for @settingsSoundEffectsDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Riproduci brevi suoni durante la registrazione delle ripetizioni.'**
-  String get settingsSoundEffectsDescription;
 
-  /// No description provided for @settingsHapticFeedback.
-  ///
-  /// In it, this message translates to:
-  /// **'Feedback aptico'**
-  String get settingsHapticFeedback;
 
-  /// No description provided for @settingsHapticFeedbackDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Leggera vibrazione per le azioni importanti.'**
-  String get settingsHapticFeedbackDescription;
 
-  /// No description provided for @settingsTrainingSection.
-  ///
-  /// In it, this message translates to:
-  /// **'Preferenze di allenamento'**
-  String get settingsTrainingSection;
 
-  /// No description provided for @settingsUnitSystem.
-  ///
-  /// In it, this message translates to:
-  /// **'Sistema di unità'**
-  String get settingsUnitSystem;
 
-  /// No description provided for @settingsUnitsMetric.
-  ///
-  /// In it, this message translates to:
-  /// **'Metrico (kg)'**
-  String get settingsUnitsMetric;
 
-  /// No description provided for @settingsUnitsImperial.
-  ///
-  /// In it, this message translates to:
-  /// **'Imperiale (lb)'**
-  String get settingsUnitsImperial;
 
-  /// No description provided for @settingsRestTimer.
-  ///
-  /// In it, this message translates to:
-  /// **'Timer di recupero predefinito'**
-  String get settingsRestTimer;
 
-  /// No description provided for @settingsRestTimerDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Usato quando avvii un timer di recupero dagli allenamenti.'**
-  String get settingsRestTimerDescription;
 
-  /// No description provided for @settingsRestTimerMinutes.
-  ///
-  /// In it, this message translates to:
-  /// **'{count, plural, one {# minuto} other {# minuti}}'**
-  String settingsRestTimerMinutes(int count);
 
-  /// No description provided for @settingsRestTimerMinutesSeconds.
-  ///
-  /// In it, this message translates to:
-  /// **'{minutes, plural, one {# minuto} other {# minuti}} e {seconds, plural, one {# secondo} other {# secondi}}'**
-  String settingsRestTimerMinutesSeconds(int minutes, int seconds);
 
-  /// No description provided for @settingsRestTimerSeconds.
-  ///
-  /// In it, this message translates to:
-  /// **'{count, plural, one {# secondo} other {# secondi}}'**
-  String settingsRestTimerSeconds(int count);
 
-  /// No description provided for @settingsDataSection.
-  ///
-  /// In it, this message translates to:
-  /// **'Dati e privacy'**
-  String get settingsDataSection;
 
-  /// No description provided for @settingsClearCache.
-  ///
-  /// In it, this message translates to:
-  /// **'Cancella allenamenti salvati'**
-  String get settingsClearCache;
 
-  /// No description provided for @settingsClearCacheDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Rimuovi gli allenamenti memorizzati su questo dispositivo.'**
-  String get settingsClearCacheDescription;
 
-  /// No description provided for @settingsClearCacheSuccess.
-  ///
-  /// In it, this message translates to:
-  /// **'Allenamenti locali rimossi.'**
-  String get settingsClearCacheSuccess;
 
-  /// No description provided for @settingsExportData.
-  ///
-  /// In it, this message translates to:
-  /// **'Esporta riepilogo allenamenti'**
-  String get settingsExportData;
 
-  /// No description provided for @settingsExportDataDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Ricevi via email un CSV delle ultime sessioni.'**
-  String get settingsExportDataDescription;
 
-  /// No description provided for @settingsExportDataSuccess.
-  ///
-  /// In it, this message translates to:
-  /// **'Richiesta di esportazione inviata. Controlla la casella di posta a breve.'**
-  String get settingsExportDataSuccess;
 
-  /// No description provided for @settingsSupportSection.
-  ///
-  /// In it, this message translates to:
-  /// **'Supporto'**
-  String get settingsSupportSection;
 
-  /// No description provided for @settingsContactCoach.
-  ///
-  /// In it, this message translates to:
-  /// **'Contatta il tuo coach'**
-  String get settingsContactCoach;
 
-  /// No description provided for @settingsContactCoachDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Invia un messaggio rapido per chiedere modifiche.'**
-  String get settingsContactCoachDescription;
 
-  /// No description provided for @settingsContactCoachHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Dicci come possiamo aiutarti.'**
-  String get settingsContactCoachHint;
 
-  /// No description provided for @settingsContactCoachSuccess.
-  ///
-  /// In it, this message translates to:
-  /// **'Messaggio inviato al coach.'**
-  String get settingsContactCoachSuccess;
 
-  /// No description provided for @settingsSendMessage.
-  ///
-  /// In it, this message translates to:
-  /// **'Invia messaggio'**
-  String get settingsSendMessage;
 
-  /// No description provided for @settingsAppVersion.
-  ///
-  /// In it, this message translates to:
-  /// **'Versione app'**
-  String get settingsAppVersion;
 
-  /// No description provided for @settingsAppVersionValue.
-  ///
-  /// In it, this message translates to:
-  /// **'Versione {version}'**
-  String settingsAppVersionValue(Object version);
 
-  /// No description provided for @exerciseTrackerTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Tracker esercizi'**
-  String get exerciseTrackerTitle;
 
-  /// No description provided for @poseEstimationTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Stima postura'**
-  String get poseEstimationTitle;
 
   /// No description provided for @homeLoadErrorTitle.
   ///
@@ -848,131 +668,26 @@ abstract class AppLocalizations {
   /// **'Riprova'**
   String get retry;
 
-  /// No description provided for @homeCalendarTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Calendario allenamenti'**
-  String get homeCalendarTitle;
 
-  /// No description provided for @homeCalendarSubtitle.
-  ///
-  /// In it, this message translates to:
-  /// **'I giorni di allenamento sono evidenziati.'**
-  String get homeCalendarSubtitle;
 
-  /// No description provided for @homeScheduleTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Focus settimanale'**
-  String get homeScheduleTitle;
 
-  /// No description provided for @homeScheduleSubtitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Rimani sul pezzo con le prossime sessioni.'**
-  String get homeScheduleSubtitle;
 
-  /// No description provided for @homeNextWorkoutTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Prossimo allenamento'**
-  String get homeNextWorkoutTitle;
 
-  /// No description provided for @homeNextWorkoutEmpty.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun allenamento programmato.'**
-  String get homeNextWorkoutEmpty;
 
-  /// No description provided for @homeWorkoutsThisWeekTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Questa settimana'**
-  String get homeWorkoutsThisWeekTitle;
 
-  /// No description provided for @homeWorkoutsThisMonthTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Questo mese'**
-  String get homeWorkoutsThisMonthTitle;
 
-  /// No description provided for @homePlanProgressTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Progresso complessivo del piano'**
-  String get homePlanProgressTitle;
 
-  /// No description provided for @homePlanProgressCurrentPlan.
-  ///
-  /// In it, this message translates to:
-  /// **'Piano attuale'**
-  String get homePlanProgressCurrentPlan;
 
-  /// No description provided for @homePlanProgressEmpty.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun progresso del piano da mostrare.'**
-  String get homePlanProgressEmpty;
 
-  /// No description provided for @homePlanProgressValue.
-  ///
-  /// In it, this message translates to:
-  /// **'{completed} di {total} sessioni completate'**
-  String homePlanProgressValue(int completed, int total);
 
-  /// No description provided for @homePlanProgressPercent.
-  ///
-  /// In it, this message translates to:
-  /// **'{percent}% completato'**
-  String homePlanProgressPercent(int percent);
 
-  /// No description provided for @homeUpcomingWeekTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'In arrivo questa settimana'**
-  String get homeUpcomingWeekTitle;
 
-  /// No description provided for @homeUpcomingWeekEmpty.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessuna sessione programmata nei prossimi 7 giorni.'**
-  String get homeUpcomingWeekEmpty;
 
-  /// No description provided for @homeWorkoutPlanTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Piano di allenamento'**
-  String get homeWorkoutPlanTitle;
 
-  /// No description provided for @homeWorkoutPlanSubtitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Rivedi il piano assegnato e le prossime sessioni.'**
-  String get homeWorkoutPlanSubtitle;
 
-  /// No description provided for @homeTraineeFeedbackTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Feedback atleta'**
-  String get homeTraineeFeedbackTitle;
 
-  /// No description provided for @homeTraineeFeedbackSubtitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Condividi aggiornamenti con il tuo coach dopo le sessioni.'**
-  String get homeTraineeFeedbackSubtitle;
 
-  /// No description provided for @homeCoachTipTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Consiglio del coach'**
-  String get homeCoachTipTitle;
 
-  /// No description provided for @homeCoachTipPlaceholder.
-  ///
-  /// In it, this message translates to:
-  /// **'Qui troverai l\'ultimo consiglio del tuo coach.'**
-  String get homeCoachTipPlaceholder;
 
   /// No description provided for @workoutPlanTitle.
   ///
@@ -1004,41 +719,11 @@ abstract class AppLocalizations {
   /// **'Condividi cosa sta andando bene o cosa richiede attenzione.'**
   String get traineeFeedbackQuestionHint;
 
-  /// No description provided for @traineeFeedbackHighlightsLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Punti forti'**
-  String get traineeFeedbackHighlightsLabel;
 
-  /// No description provided for @traineeFeedbackHighlightsHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Cosa è andato bene o ti è piaciuto?'**
-  String get traineeFeedbackHighlightsHint;
 
-  /// No description provided for @traineeFeedbackChallengesLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Difficoltà'**
-  String get traineeFeedbackChallengesLabel;
 
-  /// No description provided for @traineeFeedbackChallengesHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Cosa è stato difficile o da adattare?'**
-  String get traineeFeedbackChallengesHint;
 
-  /// No description provided for @traineeFeedbackNotesLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Note per il coach'**
-  String get traineeFeedbackNotesLabel;
 
-  /// No description provided for @traineeFeedbackNotesHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Hai altro da condividere?'**
-  String get traineeFeedbackNotesHint;
 
   /// No description provided for @traineeFeedbackSubmit.
   ///
@@ -1142,11 +827,6 @@ abstract class AppLocalizations {
   /// **'Esercizio'**
   String get defaultExerciseName;
 
-  /// No description provided for @generalNotes.
-  ///
-  /// In it, this message translates to:
-  /// **'Note generali'**
-  String get generalNotes;
 
   /// No description provided for @trainingHeaderExercise.
   ///
@@ -1166,65 +846,15 @@ abstract class AppLocalizations {
   /// **'Ripetizioni'**
   String get trainingHeaderReps;
 
-  /// No description provided for @trainingHeaderRest.
-  ///
-  /// In it, this message translates to:
-  /// **'Recupero'**
-  String get trainingHeaderRest;
 
-  /// No description provided for @trainingHeaderIntensity.
-  ///
-  /// In it, this message translates to:
-  /// **'Intensità'**
-  String get trainingHeaderIntensity;
 
-  /// No description provided for @trainingHeaderNotes.
-  ///
-  /// In it, this message translates to:
-  /// **'Note'**
-  String get trainingHeaderNotes;
 
-  /// No description provided for @trainingNotesLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Note dell\'esercizio'**
-  String get trainingNotesLabel;
 
-  /// No description provided for @trainingTraineeNotesLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Note del tirocinante'**
-  String get trainingTraineeNotesLabel;
 
-  /// No description provided for @trainingNotesSave.
-  ///
-  /// In it, this message translates to:
-  /// **'Salva note'**
-  String get trainingNotesSave;
 
-  /// No description provided for @trainingNotesSaved.
-  ///
-  /// In it, this message translates to:
-  /// **'Note salvate'**
-  String get trainingNotesSaved;
 
-  /// No description provided for @trainingNotesError.
-  ///
-  /// In it, this message translates to:
-  /// **'Impossibile salvare le note: {error}'**
-  String trainingNotesError(Object error);
 
-  /// No description provided for @trainingNotesUnavailable.
-  ///
-  /// In it, this message translates to:
-  /// **'Impossibile aggiornare le note per questo esercizio.'**
-  String get trainingNotesUnavailable;
 
-  /// No description provided for @trainingOpenTracker.
-  ///
-  /// In it, this message translates to:
-  /// **'Apri tracker'**
-  String get trainingOpenTracker;
 
   /// No description provided for @trainingTodayTitle.
   ///
@@ -1244,17 +874,7 @@ abstract class AppLocalizations {
   /// **'Allenamento completato'**
   String get trainingWorkoutCompleted;
 
-  /// No description provided for @trainingMarkComplete.
-  ///
-  /// In it, this message translates to:
-  /// **'Segna giorno come completato'**
-  String get trainingMarkComplete;
 
-  /// No description provided for @trainingMarkIncomplete.
-  ///
-  /// In it, this message translates to:
-  /// **'Segna giorno come incompleto'**
-  String get trainingMarkIncomplete;
 
   /// No description provided for @trainingCompletionSaved.
   ///
@@ -1274,11 +894,6 @@ abstract class AppLocalizations {
   /// **'Impossibile aggiornare questo giorno di allenamento.'**
   String get trainingCompletionUnavailable;
 
-  /// No description provided for @trainingExerciseCompletedLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Esercizio completato'**
-  String get trainingExerciseCompletedLabel;
 
   /// No description provided for @trainingExerciseCompletionSaved.
   ///
@@ -1364,23 +979,8 @@ abstract class AppLocalizations {
   /// **'Username'**
   String get profileUsername;
 
-  /// No description provided for @profileLastUpdated.
-  ///
-  /// In it, this message translates to:
-  /// **'Ultimo aggiornamento'**
-  String get profileLastUpdated;
 
-  /// No description provided for @profileValueUnavailable.
-  ///
-  /// In it, this message translates to:
-  /// **'Non disponibile'**
-  String get profileValueUnavailable;
 
-  /// No description provided for @profileTimezone.
-  ///
-  /// In it, this message translates to:
-  /// **'Fuso orario'**
-  String get profileTimezone;
 
   /// No description provided for @profileNotSet.
   ///
@@ -1388,11 +988,6 @@ abstract class AppLocalizations {
   /// **'Non impostato'**
   String get profileNotSet;
 
-  /// No description provided for @profileUnitSystem.
-  ///
-  /// In it, this message translates to:
-  /// **'Unità di misura'**
-  String get profileUnitSystem;
 
   /// No description provided for @profileWeight.
   ///
@@ -1658,11 +1253,6 @@ abstract class AppLocalizations {
   /// **'Modifica profilo'**
   String get profileEdit;
 
-  /// No description provided for @profileComingSoon.
-  ///
-  /// In it, this message translates to:
-  /// **'Presto disponibile'**
-  String get profileComingSoon;
 
   /// No description provided for @profileEditSubtitle.
   ///
@@ -1706,41 +1296,11 @@ abstract class AppLocalizations {
   /// **'Inserisci un peso valido e positivo.'**
   String get profileEditWeightInvalid;
 
-  /// No description provided for @profileEditTimezoneLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Fuso orario'**
-  String get profileEditTimezoneLabel;
 
-  /// No description provided for @profileEditTimezoneHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Esempio: Europe/Rome'**
-  String get profileEditTimezoneHint;
 
-  /// No description provided for @profileEditUnitSystemLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Unità di misura preferita'**
-  String get profileEditUnitSystemLabel;
 
-  /// No description provided for @profileEditUnitSystemNotSet.
-  ///
-  /// In it, this message translates to:
-  /// **'Non specificato'**
-  String get profileEditUnitSystemNotSet;
 
-  /// No description provided for @profileEditUnitSystemMetric.
-  ///
-  /// In it, this message translates to:
-  /// **'Metrico (kg, cm)'**
-  String get profileEditUnitSystemMetric;
 
-  /// No description provided for @profileEditUnitSystemImperial.
-  ///
-  /// In it, this message translates to:
-  /// **'Imperiale (lb, in)'**
-  String get profileEditUnitSystemImperial;
 
   /// No description provided for @profileEditCancel.
   ///
@@ -1766,11 +1326,6 @@ abstract class AppLocalizations {
   /// **'Impossibile aggiornare il profilo: {error}'**
   String profileEditError(Object error);
 
-  /// No description provided for @featureUnavailable.
-  ///
-  /// In it, this message translates to:
-  /// **'Funzionalità non ancora disponibile.'**
-  String get featureUnavailable;
 
   /// No description provided for @logout.
   ///
@@ -1934,29 +1489,9 @@ abstract class AppLocalizations {
   /// **'Aggiorna password'**
   String get passwordResetSubmit;
 
-  /// No description provided for @exerciseAddDialogTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi esercizio'**
-  String get exerciseAddDialogTitle;
 
-  /// No description provided for @exerciseNameLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Nome esercizio'**
-  String get exerciseNameLabel;
 
-  /// No description provided for @quickAddValuesLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Valori rapidi'**
-  String get quickAddValuesLabel;
 
-  /// No description provided for @quickAddValuesHelper.
-  ///
-  /// In it, this message translates to:
-  /// **'Ripetizioni separate da virgola (es. 1,5,10)'**
-  String get quickAddValuesHelper;
 
   /// No description provided for @cancel.
   ///
@@ -1970,173 +1505,33 @@ abstract class AppLocalizations {
   /// **'Aggiungi'**
   String get add;
 
-  /// No description provided for @save.
-  ///
-  /// In it, this message translates to:
-  /// **'Salva'**
-  String get save;
 
-  /// No description provided for @exerciseNameMissing.
-  ///
-  /// In it, this message translates to:
-  /// **'Inserisci un nome.'**
-  String get exerciseNameMissing;
 
-  /// No description provided for @exerciseTargetRepsLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Ripetizioni obiettivo'**
-  String get exerciseTargetRepsLabel;
 
-  /// No description provided for @exerciseTargetRepsHelper.
-  ///
-  /// In it, this message translates to:
-  /// **'Obiettivo totale opzionale per la sessione'**
-  String get exerciseTargetRepsHelper;
 
-  /// No description provided for @exerciseRestDurationLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Durata recupero (secondi)'**
-  String get exerciseRestDurationLabel;
 
-  /// No description provided for @exerciseRestDurationHelper.
-  ///
-  /// In it, this message translates to:
-  /// **'Preset opzionale per il conto alla rovescia'**
-  String get exerciseRestDurationHelper;
 
-  /// No description provided for @exerciseTrackerEmpty.
-  ///
-  /// In it, this message translates to:
-  /// **'Ancora nessun esercizio. Tocca + per aggiungerne uno!'**
-  String get exerciseTrackerEmpty;
 
-  /// No description provided for @exerciseAddButton.
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi esercizio'**
-  String get exerciseAddButton;
 
-  /// No description provided for @exercisePushUps.
-  ///
-  /// In it, this message translates to:
-  /// **'Push-up'**
-  String get exercisePushUps;
 
-  /// No description provided for @exercisePullUps.
-  ///
-  /// In it, this message translates to:
-  /// **'Trazioni alla sbarra'**
-  String get exercisePullUps;
 
-  /// No description provided for @exerciseChinUps.
-  ///
-  /// In it, this message translates to:
-  /// **'Trazioni a presa inversa'**
-  String get exerciseChinUps;
 
-  /// No description provided for @exerciseTotalReps.
-  ///
-  /// In it, this message translates to:
-  /// **'{count} ripetizioni totali'**
-  String exerciseTotalReps(int count);
 
-  /// No description provided for @exerciseGoalProgress.
-  ///
-  /// In it, this message translates to:
-  /// **'{logged} / {goal} ripetizioni registrate'**
-  String exerciseGoalProgress(int logged, int goal);
 
-  /// No description provided for @exerciseRestFinished.
-  ///
-  /// In it, this message translates to:
-  /// **'Recupero terminato per {exercise}!'**
-  String exerciseRestFinished(String exercise);
 
-  /// No description provided for @exerciseSetRestDuration.
-  ///
-  /// In it, this message translates to:
-  /// **'Imposta durata recupero'**
-  String get exerciseSetRestDuration;
 
-  /// No description provided for @exerciseDurationSecondsLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Durata (secondi)'**
-  String get exerciseDurationSecondsLabel;
 
-  /// No description provided for @restTimerLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Timer di recupero'**
-  String get restTimerLabel;
 
-  /// No description provided for @setDuration.
-  ///
-  /// In it, this message translates to:
-  /// **'Imposta durata'**
-  String get setDuration;
 
-  /// No description provided for @undoLastSet.
-  ///
-  /// In it, this message translates to:
-  /// **'Annulla ultima serie'**
-  String get undoLastSet;
 
-  /// No description provided for @custom.
-  ///
-  /// In it, this message translates to:
-  /// **'Personalizzato'**
-  String get custom;
 
-  /// No description provided for @reset.
-  ///
-  /// In it, this message translates to:
-  /// **'Reimposta'**
-  String get reset;
 
-  /// No description provided for @logRepsTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Registra ripetizioni'**
-  String get logRepsTitle;
 
-  /// No description provided for @repetitionsLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Ripetizioni'**
-  String get repetitionsLabel;
 
-  /// No description provided for @positiveNumberError.
-  ///
-  /// In it, this message translates to:
-  /// **'Inserisci un numero positivo.'**
-  String get positiveNumberError;
 
-  /// No description provided for @repsChip.
-  ///
-  /// In it, this message translates to:
-  /// **'{count} ripetizioni'**
-  String repsChip(int count);
 
-  /// No description provided for @goalCount.
-  ///
-  /// In it, this message translates to:
-  /// **'Obiettivo: {count}'**
-  String goalCount(int count);
 
-  /// No description provided for @repGoalReached.
-  ///
-  /// In it, this message translates to:
-  /// **'Obiettivo ripetizioni raggiunto!'**
-  String get repGoalReached;
 
-  /// No description provided for @pause.
-  ///
-  /// In it, this message translates to:
-  /// **'Pausa'**
-  String get pause;
 
   /// No description provided for @start.
   ///
@@ -2144,107 +1539,22 @@ abstract class AppLocalizations {
   /// **'Avvia'**
   String get start;
 
-  /// No description provided for @seriesCount.
-  ///
-  /// In it, this message translates to:
-  /// **'Serie: {count}'**
-  String seriesCount(int count);
 
-  /// No description provided for @resetReps.
-  ///
-  /// In it, this message translates to:
-  /// **'Azzera ripetizioni'**
-  String get resetReps;
 
-  /// No description provided for @emomTrackerTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Tracker EMOM'**
-  String get emomTrackerTitle;
 
-  /// No description provided for @emomTrackerSubtitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Serie ogni minuto con conto alla rovescia.'**
-  String get emomTrackerSubtitle;
 
-  /// No description provided for @emomTrackerDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Configura serie, ripetizioni e intervalli per restare sul ritmo ogni minuto.'**
-  String get emomTrackerDescription;
 
-  /// No description provided for @emomSetsLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Serie totali'**
-  String get emomSetsLabel;
 
-  /// No description provided for @emomRepsLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Ripetizioni per serie'**
-  String get emomRepsLabel;
 
-  /// No description provided for @emomIntervalLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Intervallo (secondi)'**
-  String get emomIntervalLabel;
 
-  /// No description provided for @emomStartButton.
-  ///
-  /// In it, this message translates to:
-  /// **'Avvia EMOM'**
-  String get emomStartButton;
 
-  /// No description provided for @emomResetButton.
-  ///
-  /// In it, this message translates to:
-  /// **'Reimposta sessione'**
-  String get emomResetButton;
 
-  /// No description provided for @emomSessionComplete.
-  ///
-  /// In it, this message translates to:
-  /// **'EMOM completato'**
-  String get emomSessionComplete;
 
-  /// No description provided for @emomCurrentSet.
-  ///
-  /// In it, this message translates to:
-  /// **'Serie {current} di {total}'**
-  String emomCurrentSet(int current, int total);
 
-  /// No description provided for @emomRepsPerSet.
-  ///
-  /// In it, this message translates to:
-  /// **'{count} ripetizioni per serie'**
-  String emomRepsPerSet(int count);
 
-  /// No description provided for @emomFinishedMessage.
-  ///
-  /// In it, this message translates to:
-  /// **'Ottimo lavoro! Hai rispettato ogni minuto.'**
-  String get emomFinishedMessage;
 
-  /// No description provided for @emomTimeRemainingLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Tempo rimanente in questo minuto'**
-  String get emomTimeRemainingLabel;
 
-  /// No description provided for @emomPrepHeadline.
-  ///
-  /// In it, this message translates to:
-  /// **'Preparati per la serie {set}'**
-  String emomPrepHeadline(int set);
 
-  /// No description provided for @emomPrepSubhead.
-  ///
-  /// In it, this message translates to:
-  /// **'La prossima serie parte alla fine del conto alla rovescia.'**
-  String get emomPrepSubhead;
 
   /// No description provided for @timerTitle.
   ///
@@ -2336,47 +1646,12 @@ abstract class AppLocalizations {
   /// **'Ferma timer'**
   String get countdownResetButton;
 
-  /// No description provided for @weekdayMonday.
-  ///
-  /// In it, this message translates to:
-  /// **'Lunedì'**
-  String get weekdayMonday;
 
-  /// No description provided for @weekdayTuesday.
-  ///
-  /// In it, this message translates to:
-  /// **'Martedì'**
-  String get weekdayTuesday;
 
-  /// No description provided for @weekdayWednesday.
-  ///
-  /// In it, this message translates to:
-  /// **'Mercoledì'**
-  String get weekdayWednesday;
 
-  /// No description provided for @weekdayThursday.
-  ///
-  /// In it, this message translates to:
-  /// **'Giovedì'**
-  String get weekdayThursday;
 
-  /// No description provided for @weekdayFriday.
-  ///
-  /// In it, this message translates to:
-  /// **'Venerdì'**
-  String get weekdayFriday;
 
-  /// No description provided for @weekdaySaturday.
-  ///
-  /// In it, this message translates to:
-  /// **'Sabato'**
-  String get weekdaySaturday;
 
-  /// No description provided for @weekdaySunday.
-  ///
-  /// In it, this message translates to:
-  /// **'Domenica'**
-  String get weekdaySunday;
 
   /// No description provided for @weekNumber.
   ///
@@ -2540,59 +1815,14 @@ abstract class AppLocalizations {
   /// **'Ultima settimana della scheda per prepararsi ai massimali.'**
   String get termScaricoDescription;
 
-  /// No description provided for @noCameras.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessuna fotocamera disponibile'**
-  String get noCameras;
 
-  /// No description provided for @cameraInitFailed.
-  ///
-  /// In it, this message translates to:
-  /// **'Inizializzazione fotocamera fallita: {error}'**
-  String cameraInitFailed(Object error);
 
-  /// No description provided for @poseDetected.
-  ///
-  /// In it, this message translates to:
-  /// **'Posa rilevata'**
-  String get poseDetected;
 
-  /// No description provided for @processing.
-  ///
-  /// In it, this message translates to:
-  /// **'Elaborazione…'**
-  String get processing;
 
-  /// No description provided for @idle.
-  ///
-  /// In it, this message translates to:
-  /// **'In attesa'**
-  String get idle;
 
-  /// No description provided for @cameraFront.
-  ///
-  /// In it, this message translates to:
-  /// **'frontale'**
-  String get cameraFront;
 
-  /// No description provided for @cameraBack.
-  ///
-  /// In it, this message translates to:
-  /// **'posteriore'**
-  String get cameraBack;
 
-  /// No description provided for @hudMetrics.
-  ///
-  /// In it, this message translates to:
-  /// **'fps: {fps}  ms: {milliseconds}  lmks: {landmarks}'**
-  String hudMetrics(String fps, String milliseconds, int landmarks);
 
-  /// No description provided for @hudOrientation.
-  ///
-  /// In it, this message translates to:
-  /// **'rot: {rotation}  cam: {camera}  fmt: {format}'**
-  String hudOrientation(String rotation, String camera, String format);
 }
 
 class _AppLocalizationsDelegate

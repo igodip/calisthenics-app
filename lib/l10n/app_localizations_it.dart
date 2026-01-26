@@ -307,232 +307,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Sali in verticale contro il muro o in equilibrio libero e mantieni una linea lunga con le punte tese.';
 
   @override
-  String get settingsComingSoon =>
-      'Le impostazioni saranno presto disponibili.';
-
-  @override
-  String get settingsGeneralSection => 'Generali';
-
-  @override
-  String get settingsDailyReminder => 'Promemoria allenamento quotidiano';
-
-  @override
-  String get settingsDailyReminderDescription =>
-      'Ricevi un promemoria per iniziare ad allenarti ogni giorno.';
-
-  @override
-  String get settingsReminderTime => 'Orario promemoria';
-
-  @override
-  String get settingsReminderNotSet => 'Non impostato';
-
-  @override
-  String get settingsSoundEffects => 'Effetti sonori';
-
-  @override
-  String get settingsSoundEffectsDescription =>
-      'Riproduci brevi suoni durante la registrazione delle ripetizioni.';
-
-  @override
-  String get settingsHapticFeedback => 'Feedback aptico';
-
-  @override
-  String get settingsHapticFeedbackDescription =>
-      'Leggera vibrazione per le azioni importanti.';
-
-  @override
-  String get settingsTrainingSection => 'Preferenze di allenamento';
-
-  @override
-  String get settingsUnitSystem => 'Sistema di unità';
-
-  @override
-  String get settingsUnitsMetric => 'Metrico (kg)';
-
-  @override
-  String get settingsUnitsImperial => 'Imperiale (lb)';
-
-  @override
-  String get settingsRestTimer => 'Timer di recupero predefinito';
-
-  @override
-  String get settingsRestTimerDescription =>
-      'Usato quando avvii un timer di recupero dagli allenamenti.';
-
-  @override
-  String settingsRestTimerMinutes(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# minuti',
-      one: '# minuto',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String settingsRestTimerMinutesSeconds(int minutes, int seconds) {
-    String _temp0 = intl.Intl.pluralLogic(
-      minutes,
-      locale: localeName,
-      other: '# minuti',
-      one: '# minuto',
-    );
-    String _temp1 = intl.Intl.pluralLogic(
-      seconds,
-      locale: localeName,
-      other: '# secondi',
-      one: '# secondo',
-    );
-    return '$_temp0 e $_temp1';
-  }
-
-  @override
-  String settingsRestTimerSeconds(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# secondi',
-      one: '# secondo',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get settingsDataSection => 'Dati e privacy';
-
-  @override
-  String get settingsClearCache => 'Cancella allenamenti salvati';
-
-  @override
-  String get settingsClearCacheDescription =>
-      'Rimuovi gli allenamenti memorizzati su questo dispositivo.';
-
-  @override
-  String get settingsClearCacheSuccess => 'Allenamenti locali rimossi.';
-
-  @override
-  String get settingsExportData => 'Esporta riepilogo allenamenti';
-
-  @override
-  String get settingsExportDataDescription =>
-      'Ricevi via email un CSV delle ultime sessioni.';
-
-  @override
-  String get settingsExportDataSuccess =>
-      'Richiesta di esportazione inviata. Controlla la casella di posta a breve.';
-
-  @override
-  String get settingsSupportSection => 'Supporto';
-
-  @override
-  String get settingsContactCoach => 'Contatta il tuo coach';
-
-  @override
-  String get settingsContactCoachDescription =>
-      'Invia un messaggio rapido per chiedere modifiche.';
-
-  @override
-  String get settingsContactCoachHint => 'Dicci come possiamo aiutarti.';
-
-  @override
-  String get settingsContactCoachSuccess => 'Messaggio inviato al coach.';
-
-  @override
-  String get settingsSendMessage => 'Invia messaggio';
-
-  @override
-  String get settingsAppVersion => 'Versione app';
-
-  @override
-  String settingsAppVersionValue(Object version) {
-    return 'Versione $version';
-  }
-
-  @override
-  String get exerciseTrackerTitle => 'Tracker esercizi';
-
-  @override
-  String get poseEstimationTitle => 'Stima postura';
-
-  @override
   String get homeLoadErrorTitle => 'Impossibile caricare gli allenamenti';
 
   @override
   String get retry => 'Riprova';
-
-  @override
-  String get homeCalendarTitle => 'Calendario allenamenti';
-
-  @override
-  String get homeCalendarSubtitle =>
-      'I giorni di allenamento sono evidenziati.';
-
-  @override
-  String get homeScheduleTitle => 'Focus settimanale';
-
-  @override
-  String get homeScheduleSubtitle =>
-      'Rimani sul pezzo con le prossime sessioni.';
-
-  @override
-  String get homeNextWorkoutTitle => 'Prossimo allenamento';
-
-  @override
-  String get homeNextWorkoutEmpty => 'Nessun allenamento programmato.';
-
-  @override
-  String get homeWorkoutsThisWeekTitle => 'Questa settimana';
-
-  @override
-  String get homeWorkoutsThisMonthTitle => 'Questo mese';
-
-  @override
-  String get homePlanProgressTitle => 'Progresso complessivo del piano';
-
-  @override
-  String get homePlanProgressCurrentPlan => 'Piano attuale';
-
-  @override
-  String get homePlanProgressEmpty => 'Nessun progresso del piano da mostrare.';
-
-  @override
-  String homePlanProgressValue(int completed, int total) {
-    return '$completed di $total sessioni completate';
-  }
-
-  @override
-  String homePlanProgressPercent(int percent) {
-    return '$percent% completato';
-  }
-
-  @override
-  String get homeUpcomingWeekTitle => 'In arrivo questa settimana';
-
-  @override
-  String get homeUpcomingWeekEmpty =>
-      'Nessuna sessione programmata nei prossimi 7 giorni.';
-
-  @override
-  String get homeWorkoutPlanTitle => 'Piano di allenamento';
-
-  @override
-  String get homeWorkoutPlanSubtitle =>
-      'Rivedi il piano assegnato e le prossime sessioni.';
-
-  @override
-  String get homeTraineeFeedbackTitle => 'Feedback atleta';
-
-  @override
-  String get homeTraineeFeedbackSubtitle =>
-      'Condividi aggiornamenti con il tuo coach dopo le sessioni.';
-
-  @override
-  String get homeCoachTipTitle => 'Consiglio del coach';
-
-  @override
-  String get homeCoachTipPlaceholder =>
-      'Qui troverai l\'ultimo consiglio del tuo coach.';
 
   @override
   String get workoutPlanTitle => 'Piano di allenamento';
@@ -550,26 +328,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get traineeFeedbackQuestionHint =>
       'Condividi cosa sta andando bene o cosa richiede attenzione.';
-
-  @override
-  String get traineeFeedbackHighlightsLabel => 'Punti forti';
-
-  @override
-  String get traineeFeedbackHighlightsHint =>
-      'Cosa è andato bene o ti è piaciuto?';
-
-  @override
-  String get traineeFeedbackChallengesLabel => 'Difficoltà';
-
-  @override
-  String get traineeFeedbackChallengesHint =>
-      'Cosa è stato difficile o da adattare?';
-
-  @override
-  String get traineeFeedbackNotesLabel => 'Note per il coach';
-
-  @override
-  String get traineeFeedbackNotesHint => 'Hai altro da condividere?';
 
   @override
   String get traineeFeedbackSubmit => 'Invia feedback';
@@ -629,9 +387,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get defaultExerciseName => 'Esercizio';
 
   @override
-  String get generalNotes => 'Note generali';
-
-  @override
   String get trainingHeaderExercise => 'Esercizio';
 
   @override
@@ -641,39 +396,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainingHeaderReps => 'Ripetizioni';
 
   @override
-  String get trainingHeaderRest => 'Recupero';
-
-  @override
-  String get trainingHeaderIntensity => 'Intensità';
-
-  @override
-  String get trainingHeaderNotes => 'Note';
-
-  @override
-  String get trainingNotesLabel => 'Note dell\'esercizio';
-
-  @override
-  String get trainingTraineeNotesLabel => 'Note del tirocinante';
-
-  @override
-  String get trainingNotesSave => 'Salva note';
-
-  @override
-  String get trainingNotesSaved => 'Note salvate';
-
-  @override
-  String trainingNotesError(Object error) {
-    return 'Impossibile salvare le note: $error';
-  }
-
-  @override
-  String get trainingNotesUnavailable =>
-      'Impossibile aggiornare le note per questo esercizio.';
-
-  @override
-  String get trainingOpenTracker => 'Apri tracker';
-
-  @override
   String get trainingTodayTitle => 'Allenamento di oggi';
 
   @override
@@ -681,12 +403,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get trainingWorkoutCompleted => 'Allenamento completato';
-
-  @override
-  String get trainingMarkComplete => 'Segna giorno come completato';
-
-  @override
-  String get trainingMarkIncomplete => 'Segna giorno come incompleto';
 
   @override
   String get trainingCompletionSaved => 'Allenamento aggiornato';
@@ -699,9 +415,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get trainingCompletionUnavailable =>
       'Impossibile aggiornare questo giorno di allenamento.';
-
-  @override
-  String get trainingExerciseCompletedLabel => 'Esercizio completato';
 
   @override
   String get trainingExerciseCompletionSaved => 'Esercizio aggiornato';
@@ -751,19 +464,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileUsername => 'Username';
 
   @override
-  String get profileLastUpdated => 'Ultimo aggiornamento';
-
-  @override
-  String get profileValueUnavailable => 'Non disponibile';
-
-  @override
-  String get profileTimezone => 'Fuso orario';
-
-  @override
   String get profileNotSet => 'Non impostato';
-
-  @override
-  String get profileUnitSystem => 'Unità di misura';
 
   @override
   String get profileWeight => 'Peso';
@@ -921,9 +622,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileEdit => 'Modifica profilo';
 
   @override
-  String get profileComingSoon => 'Presto disponibile';
-
-  @override
   String get profileEditSubtitle => 'Aggiorna le tue informazioni personali';
 
   @override
@@ -945,24 +643,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileEditWeightInvalid => 'Inserisci un peso valido e positivo.';
 
   @override
-  String get profileEditTimezoneLabel => 'Fuso orario';
-
-  @override
-  String get profileEditTimezoneHint => 'Esempio: Europe/Rome';
-
-  @override
-  String get profileEditUnitSystemLabel => 'Unità di misura preferita';
-
-  @override
-  String get profileEditUnitSystemNotSet => 'Non specificato';
-
-  @override
-  String get profileEditUnitSystemMetric => 'Metrico (kg, cm)';
-
-  @override
-  String get profileEditUnitSystemImperial => 'Imperiale (lb, in)';
-
-  @override
   String get profileEditCancel => 'Annulla';
 
   @override
@@ -975,9 +655,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String profileEditError(Object error) {
     return 'Impossibile aggiornare il profilo: $error';
   }
-
-  @override
-  String get featureUnavailable => 'Funzionalità non ancora disponibile.';
 
   @override
   String get logout => 'Logout';
@@ -1075,186 +752,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get passwordResetSubmit => 'Aggiorna password';
 
   @override
-  String get exerciseAddDialogTitle => 'Aggiungi esercizio';
-
-  @override
-  String get exerciseNameLabel => 'Nome esercizio';
-
-  @override
-  String get quickAddValuesLabel => 'Valori rapidi';
-
-  @override
-  String get quickAddValuesHelper =>
-      'Ripetizioni separate da virgola (es. 1,5,10)';
-
-  @override
   String get cancel => 'Annulla';
 
   @override
   String get add => 'Aggiungi';
 
   @override
-  String get save => 'Salva';
-
-  @override
-  String get exerciseNameMissing => 'Inserisci un nome.';
-
-  @override
-  String get exerciseTargetRepsLabel => 'Ripetizioni obiettivo';
-
-  @override
-  String get exerciseTargetRepsHelper =>
-      'Obiettivo totale opzionale per la sessione';
-
-  @override
-  String get exerciseRestDurationLabel => 'Durata recupero (secondi)';
-
-  @override
-  String get exerciseRestDurationHelper =>
-      'Preset opzionale per il conto alla rovescia';
-
-  @override
-  String get exerciseTrackerEmpty =>
-      'Ancora nessun esercizio. Tocca + per aggiungerne uno!';
-
-  @override
-  String get exerciseAddButton => 'Aggiungi esercizio';
-
-  @override
-  String get exercisePushUps => 'Push-up';
-
-  @override
-  String get exercisePullUps => 'Trazioni alla sbarra';
-
-  @override
-  String get exerciseChinUps => 'Trazioni a presa inversa';
-
-  @override
-  String exerciseTotalReps(int count) {
-    return '$count ripetizioni totali';
-  }
-
-  @override
-  String exerciseGoalProgress(int logged, int goal) {
-    return '$logged / $goal ripetizioni registrate';
-  }
-
-  @override
-  String exerciseRestFinished(String exercise) {
-    return 'Recupero terminato per $exercise!';
-  }
-
-  @override
-  String get exerciseSetRestDuration => 'Imposta durata recupero';
-
-  @override
-  String get exerciseDurationSecondsLabel => 'Durata (secondi)';
-
-  @override
-  String get restTimerLabel => 'Timer di recupero';
-
-  @override
-  String get setDuration => 'Imposta durata';
-
-  @override
-  String get undoLastSet => 'Annulla ultima serie';
-
-  @override
-  String get custom => 'Personalizzato';
-
-  @override
-  String get reset => 'Reimposta';
-
-  @override
-  String get logRepsTitle => 'Registra ripetizioni';
-
-  @override
-  String get repetitionsLabel => 'Ripetizioni';
-
-  @override
-  String get positiveNumberError => 'Inserisci un numero positivo.';
-
-  @override
-  String repsChip(int count) {
-    return '$count ripetizioni';
-  }
-
-  @override
-  String goalCount(int count) {
-    return 'Obiettivo: $count';
-  }
-
-  @override
-  String get repGoalReached => 'Obiettivo ripetizioni raggiunto!';
-
-  @override
-  String get pause => 'Pausa';
-
-  @override
   String get start => 'Avvia';
-
-  @override
-  String seriesCount(int count) {
-    return 'Serie: $count';
-  }
-
-  @override
-  String get resetReps => 'Azzera ripetizioni';
-
-  @override
-  String get emomTrackerTitle => 'Tracker EMOM';
-
-  @override
-  String get emomTrackerSubtitle =>
-      'Serie ogni minuto con conto alla rovescia.';
-
-  @override
-  String get emomTrackerDescription =>
-      'Configura serie, ripetizioni e intervalli per restare sul ritmo ogni minuto.';
-
-  @override
-  String get emomSetsLabel => 'Serie totali';
-
-  @override
-  String get emomRepsLabel => 'Ripetizioni per serie';
-
-  @override
-  String get emomIntervalLabel => 'Intervallo (secondi)';
-
-  @override
-  String get emomStartButton => 'Avvia EMOM';
-
-  @override
-  String get emomResetButton => 'Reimposta sessione';
-
-  @override
-  String get emomSessionComplete => 'EMOM completato';
-
-  @override
-  String emomCurrentSet(int current, int total) {
-    return 'Serie $current di $total';
-  }
-
-  @override
-  String emomRepsPerSet(int count) {
-    return '$count ripetizioni per serie';
-  }
-
-  @override
-  String get emomFinishedMessage =>
-      'Ottimo lavoro! Hai rispettato ogni minuto.';
-
-  @override
-  String get emomTimeRemainingLabel => 'Tempo rimanente in questo minuto';
-
-  @override
-  String emomPrepHeadline(int set) {
-    return 'Preparati per la serie $set';
-  }
-
-  @override
-  String get emomPrepSubhead =>
-      'La prossima serie parte alla fine del conto alla rovescia.';
 
   @override
   String get timerTitle => 'Timer';
@@ -1303,27 +807,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get countdownResetButton => 'Ferma timer';
-
-  @override
-  String get weekdayMonday => 'Lunedì';
-
-  @override
-  String get weekdayTuesday => 'Martedì';
-
-  @override
-  String get weekdayWednesday => 'Mercoledì';
-
-  @override
-  String get weekdayThursday => 'Giovedì';
-
-  @override
-  String get weekdayFriday => 'Venerdì';
-
-  @override
-  String get weekdaySaturday => 'Sabato';
-
-  @override
-  String get weekdaySunday => 'Domenica';
 
   @override
   String weekNumber(int week) {
@@ -1419,37 +902,3 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get termScaricoDescription =>
       'Ultima settimana della scheda per prepararsi ai massimali.';
-
-  @override
-  String get noCameras => 'Nessuna fotocamera disponibile';
-
-  @override
-  String cameraInitFailed(Object error) {
-    return 'Inizializzazione fotocamera fallita: $error';
-  }
-
-  @override
-  String get poseDetected => 'Posa rilevata';
-
-  @override
-  String get processing => 'Elaborazione…';
-
-  @override
-  String get idle => 'In attesa';
-
-  @override
-  String get cameraFront => 'frontale';
-
-  @override
-  String get cameraBack => 'posteriore';
-
-  @override
-  String hudMetrics(String fps, String milliseconds, int landmarks) {
-    return 'fps: $fps  ms: $milliseconds  lmks: $landmarks';
-  }
-
-  @override
-  String hudOrientation(String rotation, String camera, String format) {
-    return 'rot: $rotation  cam: $camera  fmt: $format';
-  }
-}
