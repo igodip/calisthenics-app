@@ -6,6 +6,8 @@ class WorkoutExercise {
   final String? name;
   final String? notes;
   final String? traineeNotes;
+  final List<String> terminology;
+  final List<String> skills;
   final int? position;
   final bool isCompleted;
 
@@ -14,6 +16,8 @@ class WorkoutExercise {
     this.id,
     this.notes,
     this.traineeNotes,
+    this.terminology = const [],
+    this.skills = const [],
     this.position,
     this.isCompleted = false,
   });
