@@ -902,3 +902,4 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get termScaricoDescription =>
       'Ultima settimana della scheda per prepararsi ai massimali.';
+}

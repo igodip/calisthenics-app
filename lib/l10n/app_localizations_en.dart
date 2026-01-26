@@ -895,3 +895,4 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get termScaricoDescription =>
       'Last week of the program to prepare for max attempts.';
+}

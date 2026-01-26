@@ -620,42 +620,6 @@ abstract class AppLocalizations {
   /// **'Sali in verticale contro il muro o in equilibrio libero e mantieni una linea lunga con le punte tese.'**
   String get guidesHandstandDescription;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   /// No description provided for @homeLoadErrorTitle.
   ///
   /// In it, this message translates to:
@@ -667,27 +631,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Riprova'**
   String get retry;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /// No description provided for @workoutPlanTitle.
   ///
@@ -718,12 +661,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Condividi cosa sta andando bene o cosa richiede attenzione.'**
   String get traineeFeedbackQuestionHint;
-
-
-
-
-
-
 
   /// No description provided for @traineeFeedbackSubmit.
   ///
@@ -827,7 +764,6 @@ abstract class AppLocalizations {
   /// **'Esercizio'**
   String get defaultExerciseName;
 
-
   /// No description provided for @trainingHeaderExercise.
   ///
   /// In it, this message translates to:
@@ -845,16 +781,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Ripetizioni'**
   String get trainingHeaderReps;
-
-
-
-
-
-
-
-
-
-
 
   /// No description provided for @trainingTodayTitle.
   ///
@@ -874,8 +800,6 @@ abstract class AppLocalizations {
   /// **'Allenamento completato'**
   String get trainingWorkoutCompleted;
 
-
-
   /// No description provided for @trainingCompletionSaved.
   ///
   /// In it, this message translates to:
@@ -893,7 +817,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Impossibile aggiornare questo giorno di allenamento.'**
   String get trainingCompletionUnavailable;
-
 
   /// No description provided for @trainingExerciseCompletionSaved.
   ///
@@ -979,15 +902,11 @@ abstract class AppLocalizations {
   /// **'Username'**
   String get profileUsername;
 
-
-
-
   /// No description provided for @profileNotSet.
   ///
   /// In it, this message translates to:
   /// **'Non impostato'**
   String get profileNotSet;
-
 
   /// No description provided for @profileWeight.
   ///
@@ -1253,7 +1172,6 @@ abstract class AppLocalizations {
   /// **'Modifica profilo'**
   String get profileEdit;
 
-
   /// No description provided for @profileEditSubtitle.
   ///
   /// In it, this message translates to:
@@ -1296,12 +1214,6 @@ abstract class AppLocalizations {
   /// **'Inserisci un peso valido e positivo.'**
   String get profileEditWeightInvalid;
 
-
-
-
-
-
-
   /// No description provided for @profileEditCancel.
   ///
   /// In it, this message translates to:
@@ -1325,7 +1237,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Impossibile aggiornare il profilo: {error}'**
   String profileEditError(Object error);
-
 
   /// No description provided for @logout.
   ///
@@ -1489,10 +1400,6 @@ abstract class AppLocalizations {
   /// **'Aggiorna password'**
   String get passwordResetSubmit;
 
-
-
-
-
   /// No description provided for @cancel.
   ///
   /// In it, this message translates to:
@@ -1505,56 +1412,11 @@ abstract class AppLocalizations {
   /// **'Aggiungi'**
   String get add;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   /// No description provided for @start.
   ///
   /// In it, this message translates to:
   /// **'Avvia'**
   String get start;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /// No description provided for @timerTitle.
   ///
@@ -1645,13 +1507,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Ferma timer'**
   String get countdownResetButton;
-
-
-
-
-
-
-
 
   /// No description provided for @weekNumber.
   ///
@@ -1814,15 +1669,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Ultima settimana della scheda per prepararsi ai massimali.'**
   String get termScaricoDescription;
-
-
-
-
-
-
-
-
-
 }
 
 class _AppLocalizationsDelegate
