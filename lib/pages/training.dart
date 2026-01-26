@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
+import '../data/exercise_translations.dart';
+import '../data/terminology_translations.dart';
 import '../l10n/app_localizations.dart';
 
 class Training extends StatefulWidget {
@@ -356,8 +358,23 @@ class _ExerciseCard extends StatelessWidget {
       decoration: isCompleted ? TextDecoration.lineThrough : null,
     );
 
-    final hasTerminology = exercise.terminology.isNotEmpty;
-    final hasSkills = exercise.skills.isNotEmpty;
+    final localizedTerminology = exercise.terminology
+        .map(
+          (term) =>
+              TerminologyTranslations.lookup(term, l10n.localeName)?.title ??
+              term,
+        )
+        .toList();
+    final localizedSkills = exercise.skills
+        .map(
+          (skill) =>
+              ExerciseGuideTranslations.nameForSlug(skill, l10n.localeName) ??
+              skill,
+        )
+        .toList();
+
+    final hasTerminology = localizedTerminology.isNotEmpty;
+    final hasSkills = localizedSkills.isNotEmpty;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -410,14 +427,14 @@ class _ExerciseCard extends StatelessWidget {
                         if (hasTerminology)
                           _InfoChips(
                             title: l10n.terminologyTitle,
-                            items: exercise.terminology,
+                            items: localizedTerminology,
                           ),
                         if (hasTerminology && hasSkills)
                           const SizedBox(height: 8),
                         if (hasSkills)
                           _InfoChips(
                             title: l10n.guidesTitle,
-                            items: exercise.skills,
+                            items: localizedSkills,
                           ),
                       ],
                     ],

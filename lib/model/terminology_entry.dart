@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../data/terminology_translations.dart';
 
 class TerminologyEntry {
   const TerminologyEntry({
@@ -25,6 +26,20 @@ class TerminologyEntry {
       term: data['title']?.toString() ?? '',
       description: data['description']?.toString() ?? '',
       sortOrder: (data['sort_order'] as int?) ?? 0,
+    );
+  }
+
+  factory TerminologyEntry.fromTranslation(
+    TerminologyTranslation translation,
+    String locale,
+  ) {
+    return TerminologyEntry(
+      id: translation.termKey,
+      termKey: translation.termKey,
+      locale: locale,
+      term: translation.title,
+      description: translation.description,
+      sortOrder: translation.sortOrder,
     );
   }
 
