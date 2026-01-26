@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/exercise_translations.dart';
 import '../l10n/app_localizations.dart';
 
 enum Difficulty { beginner, intermediate, advanced }
@@ -52,10 +53,10 @@ class ExerciseGuide {
 
   static ExerciseGuide fromDatabase(
     Map<String, dynamic> row,
-    AppLocalizations l10n,
+    String localeName,
   ) {
     final slug = row['slug'] as String;
-    final strings = ExerciseGuideStrings.fromSlug(slug, l10n);
+    final strings = ExerciseGuideTranslations.forSlug(slug, localeName);
     return ExerciseGuide(
       id: slug,
       name: strings.name,
@@ -125,139 +126,5 @@ class ExerciseGuide {
       return Colors.blueGrey;
     }
     return Color(colorValue);
-  }
-}
-
-class ExerciseGuideStrings {
-  const ExerciseGuideStrings({
-    required this.name,
-    required this.focus,
-    required this.tip,
-    required this.description,
-  });
-
-  final String name;
-  final String focus;
-  final String tip;
-  final String description;
-
-  static ExerciseGuideStrings fromSlug(
-    String slug,
-    AppLocalizations l10n,
-  ) {
-    switch (slug) {
-      case 'pullup':
-        return ExerciseGuideStrings(
-          name: l10n.guidesPullupName,
-          focus: l10n.guidesPullupFocus,
-          tip: l10n.guidesPullupTip,
-          description: l10n.guidesPullupDescription,
-        );
-      case 'chinup':
-        return ExerciseGuideStrings(
-          name: l10n.guidesChinUpName,
-          focus: l10n.guidesChinUpFocus,
-          tip: l10n.guidesChinUpTip,
-          description: l10n.guidesChinUpDescription,
-        );
-      case 'pushup':
-        return ExerciseGuideStrings(
-          name: l10n.guidesPushupName,
-          focus: l10n.guidesPushupFocus,
-          tip: l10n.guidesPushupTip,
-          description: l10n.guidesPushupDescription,
-        );
-      case 'bodyweight-squat':
-        return ExerciseGuideStrings(
-          name: l10n.guidesBodyweightSquatName,
-          focus: l10n.guidesBodyweightSquatFocus,
-          tip: l10n.guidesBodyweightSquatTip,
-          description: l10n.guidesBodyweightSquatDescription,
-        );
-      case 'glute-bridge':
-        return ExerciseGuideStrings(
-          name: l10n.guidesGluteBridgeName,
-          focus: l10n.guidesGluteBridgeFocus,
-          tip: l10n.guidesGluteBridgeTip,
-          description: l10n.guidesGluteBridgeDescription,
-        );
-      case 'hanging-leg-raise':
-        return ExerciseGuideStrings(
-          name: l10n.guidesHangingLegRaiseName,
-          focus: l10n.guidesHangingLegRaiseFocus,
-          tip: l10n.guidesHangingLegRaiseTip,
-          description: l10n.guidesHangingLegRaiseDescription,
-        );
-      case 'muscle-up':
-        return ExerciseGuideStrings(
-          name: l10n.guidesMuscleUpName,
-          focus: l10n.guidesMuscleUpFocus,
-          tip: l10n.guidesMuscleUpTip,
-          description: l10n.guidesMuscleUpDescription,
-        );
-      case 'straight-bar-dip':
-        return ExerciseGuideStrings(
-          name: l10n.guidesStraightBarDipName,
-          focus: l10n.guidesStraightBarDipFocus,
-          tip: l10n.guidesStraightBarDipTip,
-          description: l10n.guidesStraightBarDipDescription,
-        );
-      case 'dips':
-        return ExerciseGuideStrings(
-          name: l10n.guidesDipsName,
-          focus: l10n.guidesDipsFocus,
-          tip: l10n.guidesDipsTip,
-          description: l10n.guidesDipsDescription,
-        );
-      case 'australian-row':
-        return ExerciseGuideStrings(
-          name: l10n.guidesAustralianRowName,
-          focus: l10n.guidesAustralianRowFocus,
-          tip: l10n.guidesAustralianRowTip,
-          description: l10n.guidesAustralianRowDescription,
-        );
-      case 'pike-pushup':
-        return ExerciseGuideStrings(
-          name: l10n.guidesPikePushUpName,
-          focus: l10n.guidesPikePushUpFocus,
-          tip: l10n.guidesPikePushUpTip,
-          description: l10n.guidesPikePushUpDescription,
-        );
-      case 'hollow-hold':
-        return ExerciseGuideStrings(
-          name: l10n.guidesHollowHoldName,
-          focus: l10n.guidesHollowHoldFocus,
-          tip: l10n.guidesHollowHoldTip,
-          description: l10n.guidesHollowHoldDescription,
-        );
-      case 'plank':
-        return ExerciseGuideStrings(
-          name: l10n.guidesPlankName,
-          focus: l10n.guidesPlankFocus,
-          tip: l10n.guidesPlankTip,
-          description: l10n.guidesPlankDescription,
-        );
-      case 'l-sit':
-        return ExerciseGuideStrings(
-          name: l10n.guidesLSitName,
-          focus: l10n.guidesLSitFocus,
-          tip: l10n.guidesLSitTip,
-          description: l10n.guidesLSitDescription,
-        );
-      case 'handstand':
-        return ExerciseGuideStrings(
-          name: l10n.guidesHandstandName,
-          focus: l10n.guidesHandstandFocus,
-          tip: l10n.guidesHandstandTip,
-          description: l10n.guidesHandstandDescription,
-        );
-      default:
-        return ExerciseGuideStrings(
-          name: slug,
-          focus: '',
-          tip: '',
-          description: '',
-        );
-    }
   }
 }

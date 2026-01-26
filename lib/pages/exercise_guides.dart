@@ -32,7 +32,9 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
         .select('slug, difficulty, default_unlocked, accent')
         .order('sort_order', ascending: true);
     final rows = (response as List<dynamic>).cast<Map<String, dynamic>>();
-    return rows.map((row) => ExerciseGuide.fromDatabase(row, l10n)).toList();
+    return rows
+        .map((row) => ExerciseGuide.fromDatabase(row, l10n.localeName))
+        .toList();
   }
 
   @override

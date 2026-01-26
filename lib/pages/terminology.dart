@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../data/terminology_translations.dart';
 import '../l10n/app_localizations.dart';
 import '../model/terminology_entry.dart';
 
@@ -27,9 +28,29 @@ class _TerminologyPageState extends State<TerminologyPage> {
 
   Future<List<TerminologyEntry>> _loadTerminology(String locale) async {
     final client = Supabase.instance.client;
-    final items = await TerminologyEntry.fetchByLocale(client, locale);
+    List<TerminologyEntry> items = const [];
+    try {
+      items = await TerminologyEntry.fetchByLocale(client, locale);
+    } catch (_) {
+      items = const [];
+    }
     if (items.isEmpty && locale != 'en') {
-      return TerminologyEntry.fetchByLocale(client, 'en');
+      try {
+        items = await TerminologyEntry.fetchByLocale(client, 'en');
+      } catch (_) {
+        items = const [];
+      }
+    }
+    if (items.isEmpty) {
+      final fallback = TerminologyTranslations.listForLocale(locale)
+          .map((entry) => TerminologyEntry.fromTranslation(entry, locale))
+          .toList();
+      if (fallback.isNotEmpty) {
+        return fallback;
+      }
+      return TerminologyTranslations.listForLocale('en')
+          .map((entry) => TerminologyEntry.fromTranslation(entry, 'en'))
+          .toList();
     }
     return items;
   }
