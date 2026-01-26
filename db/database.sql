@@ -148,21 +148,3 @@ CREATE TABLE public.workout_plans (
   CONSTRAINT workout_plans_pkey PRIMARY KEY (id)
 );
 
-INSERT INTO public.exercise_guides
-  (slug, difficulty, default_unlocked, accent, sort_order)
-VALUES
-  ('pullup', 'intermediate', false, '#2196F3', 1),
-  ('chinup', 'intermediate', false, '#03A9F4', 2),
-  ('pushup', 'beginner', true, '#FF9800', 3),
-  ('bodyweight-squat', 'beginner', true, '#4CAF50', 4),
-  ('glute-bridge', 'beginner', true, '#8BC34A', 5),
-  ('hanging-leg-raise', 'intermediate', false, '#9C27B0', 6),
-  ('muscle-up', 'advanced', false, '#009688', 7),
-  ('straight-bar-dip', 'intermediate', false, '#FF5722', 8),
-  ('dips', 'intermediate', false, '#F44336', 9),
-  ('australian-row', 'beginner', true, '#3F51B5', 10),
-  ('pike-pushup', 'intermediate', false, '#FFC107', 11),
-  ('hollow-hold', 'beginner', true, '#795548', 12),
-  ('plank', 'beginner', true, '#607D8B', 13),
-  ('l-sit', 'intermediate', false, '#03A9F4', 14),
-  ('handstand', 'advanced', false, '#673AB7', 15);
