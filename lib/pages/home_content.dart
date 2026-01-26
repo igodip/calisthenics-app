@@ -38,8 +38,6 @@ class _HomeContentState extends State<HomeContent> {
             const SizedBox(height: 16),
             const _ProgressCard(),
             const SizedBox(height: 16),
-            const _GoalsCard(),
-            const SizedBox(height: 16),
             const _ActionButtons(),
             const SizedBox(height: 16),
             const _StrengthLevelCard(),
@@ -149,47 +147,6 @@ class _ProgressCard extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GoalsCard extends StatelessWidget {
-  const _GoalsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return _SectionCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Current Goals',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const _GoalRow(
-            title: 'Muscle-Up',
-            progress: 0.7,
-            trailing: '7 / 10 Reps',
-          ),
-          const SizedBox(height: 12),
-          const _GoalRow(
-            title: 'Handstand Push-Up',
-            progress: 0.38,
-            trailing: '3 / 8 Reps',
           ),
         ],
       ),
@@ -390,58 +347,6 @@ class _StatTile extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _GoalRow extends StatelessWidget {
-  const _GoalRow({
-    required this.title,
-    required this.progress,
-    required this.trailing,
-  });
-
-  final String title;
-  final double progress;
-  final String trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            Text(
-              trailing,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: 6,
-            backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.5),
-            valueColor: AlwaysStoppedAnimation<Color>(
-              theme.colorScheme.primary,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
