@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../model/exercise_guide.dart';
 import '../model/max_test.dart';
 
 final supabase = Supabase.instance.client;
@@ -48,6 +49,29 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
     return items.map(MaxTest.fromMap).toList();
   }
 
+  String _resolveExerciseKey(
+    String exercise,
+    Map<String, ExerciseGuide> guidesById,
+    Map<String, ExerciseGuide> guidesByName,
+  ) {
+    final trimmed = exercise.trim();
+    if (guidesById.containsKey(trimmed)) {
+      return trimmed;
+    }
+    final nameMatch = guidesByName[trimmed.toLowerCase()];
+    return nameMatch?.id ?? trimmed.toLowerCase();
+  }
+
+  String _resolveExerciseLabel(
+    String exercise,
+    Map<String, ExerciseGuide> guidesById,
+    Map<String, ExerciseGuide> guidesByName,
+  ) {
+    final trimmed = exercise.trim();
+    final guide = guidesById[trimmed] ?? guidesByName[trimmed.toLowerCase()];
+    return guide?.name ?? trimmed;
+  }
+
   String _formatValue(MaxTest test) {
     final value = test.value;
     final formatted = value.toStringAsFixed(
@@ -59,6 +83,15 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final exerciseGuides = ExerciseGuide.buildGuides(l10n)
+      ..sort((a, b) => a.name.compareTo(b.name));
+    final exerciseGuideById = {
+      for (final guide in exerciseGuides) guide.id: guide,
+    };
+    final exerciseGuideByName = {
+      for (final guide in exerciseGuides)
+        guide.name.trim().toLowerCase(): guide,
+    };
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.profileMaxTestsHistoryTitle),
@@ -130,8 +163,16 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
                     final groupedTests = <String, List<MaxTest>>{};
                     final displayNames = <String, String>{};
                     for (final test in tests) {
-                      final displayName = test.exercise.trim();
-                      final key = displayName.toLowerCase();
+                      final displayName = _resolveExerciseLabel(
+                        test.exercise,
+                        exerciseGuideById,
+                        exerciseGuideByName,
+                      );
+                      final key = _resolveExerciseKey(
+                        test.exercise,
+                        exerciseGuideById,
+                        exerciseGuideByName,
+                      );
                       groupedTests.putIfAbsent(key, () => []).add(test);
                       displayNames.putIfAbsent(key, () => displayName);
                     }
