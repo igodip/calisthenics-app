@@ -120,7 +120,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         .select(
           'id, week, day_code, title, notes, completed, completed_at, '
           'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) ), '
-          'day_exercises ( id, position, notes, completed, trainee_notes, exercise )',
+          'day_exercises ( id, position, notes, completed, trainee_notes, exercise, terminology, skills )',
         )
         .eq('workout_plan_days.workout_plans.trainee_id', userId)
         .order('week', ascending: true)
@@ -137,6 +137,24 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         return DateTime.tryParse(value);
       }
       return null;
+    }
+
+    List<String> parseStringList(dynamic value) {
+      if (value == null) return const [];
+      if (value is List) {
+        return value
+            .map((entry) => entry?.toString().trim() ?? '')
+            .where((entry) => entry.isNotEmpty)
+            .toList();
+      }
+      if (value is String) {
+        return value
+            .split(',')
+            .map((entry) => entry.trim())
+            .where((entry) => entry.isNotEmpty)
+            .toList();
+      }
+      return const [];
     }
 
     return data.map((row) {
@@ -157,12 +175,26 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       final planName = planDetails['title'] as String?;
 
       final exercises = dayExercises.map((exercise) {
+        final exerciseValue = exercise['exercise'];
+        final exerciseMap =
+            exerciseValue is Map ? exerciseValue.cast<String, dynamic>() : null;
+        final name = exerciseMap?['name'] as String? ??
+            exerciseValue as String?;
+        final terminology = parseStringList(
+          exercise['terminology'] ?? exerciseMap?['terminology'],
+        );
+        final skills = parseStringList(
+          exercise['skills'] ?? exerciseMap?['skills'],
+        );
+
         return WorkoutExercise(
           id: exercise['id'] as String?,
-          name: exercise['exercise'] as String?,
+          name: name,
           position: (exercise['position'] as num?)?.toInt(),
           notes: exercise['notes'] as String?,
           traineeNotes: exercise['trainee_notes'] as String?,
+          terminology: terminology,
+          skills: skills,
           isCompleted: exercise['completed'] as bool? ?? false,
         );
       }).toList();

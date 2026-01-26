@@ -228,6 +228,8 @@ class _TrainingState extends State<Training> {
           notes: exercise.notes,
           traineeNotes: exercise.traineeNotes,
           position: exercise.position,
+          terminology: exercise.terminology,
+          skills: exercise.skills,
           isCompleted: newValue,
         );
         _completionChanged = true;
@@ -354,6 +356,9 @@ class _ExerciseCard extends StatelessWidget {
       decoration: isCompleted ? TextDecoration.lineThrough : null,
     );
 
+    final hasTerminology = exercise.terminology.isNotEmpty;
+    final hasSkills = exercise.skills.isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
@@ -400,6 +405,21 @@ class _ExerciseCard extends StatelessWidget {
                           color: Colors.white60,
                         ),
                       ),
+                      if (hasTerminology || hasSkills) ...[
+                        const SizedBox(height: 10),
+                        if (hasTerminology)
+                          _InfoChips(
+                            title: l10n.terminologyTitle,
+                            items: exercise.terminology,
+                          ),
+                        if (hasTerminology && hasSkills)
+                          const SizedBox(height: 8),
+                        if (hasSkills)
+                          _InfoChips(
+                            title: l10n.guidesTitle,
+                            items: exercise.skills,
+                          ),
+                      ],
                     ],
                   ),
                 ),
@@ -421,6 +441,61 @@ class _ExerciseCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _InfoChips extends StatelessWidget {
+  final String title;
+  final List<String> items;
+
+  const _InfoChips({
+    required this.title,
+    required this.items,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: textTheme.labelSmall?.copyWith(
+            color: Colors.white70,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: items
+              .map(
+                (item) => DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      item,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      ],
     );
   }
 }
