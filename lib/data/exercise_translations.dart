@@ -1,3 +1,5 @@
+import '../l10n/app_localizations.dart';
+
 class ExerciseGuideStrings {
   const ExerciseGuideStrings({
     required this.name,
@@ -18,6 +20,10 @@ class ExerciseGuideStrings {
       tip: '',
       description: '',
     );
+  }
+
+  static ExerciseGuideStrings fromSlug(String slug, AppLocalizations l10n) {
+    return ExerciseGuideTranslations.forSlug(slug, l10n.localeName);
   }
 }
 
