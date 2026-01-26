@@ -22,6 +22,8 @@ class _TimerPageState extends State<TimerPage> {
   bool _isRunning = false;
   int _remainingSeconds = _defaultWorkSeconds;
   IntervalPhase _phase = IntervalPhase.work;
+  int _workSeconds = _defaultWorkSeconds;
+  int _restSeconds = _defaultRestSeconds;
 
   int _nextExerciseIndex = 0;
   int _nextSet = 1;
@@ -39,8 +41,8 @@ class _TimerPageState extends State<TimerPage> {
     super.dispose();
   }
 
-  int get _workDurationSeconds => _defaultWorkSeconds;
-  int get _restDurationSeconds => _defaultRestSeconds;
+  int get _workDurationSeconds => _workSeconds;
+  int get _restDurationSeconds => _restSeconds;
 
   int get _currentPhaseDuration {
     return _phase == IntervalPhase.work
@@ -134,6 +136,28 @@ class _TimerPageState extends State<TimerPage> {
   void _adjustTime(int deltaSeconds) {
     setState(() {
       _remainingSeconds = (_remainingSeconds + deltaSeconds).clamp(0, 36000);
+    });
+  }
+
+  void _adjustPhaseDuration(IntervalPhase phase, int deltaSeconds) {
+    final currentValue =
+        phase == IntervalPhase.work ? _workSeconds : _restSeconds;
+    final updatedValue = (currentValue + deltaSeconds).clamp(5, 36000);
+
+    setState(() {
+      if (phase == IntervalPhase.work) {
+        _workSeconds = updatedValue;
+      } else {
+        _restSeconds = updatedValue;
+      }
+
+      if (_phase == phase) {
+        if (_isRunning) {
+          _remainingSeconds = math.min(_remainingSeconds, updatedValue);
+        } else {
+          _remainingSeconds = updatedValue;
+        }
+      }
     });
   }
 
@@ -236,6 +260,24 @@ class _TimerPageState extends State<TimerPage> {
                       ],
                     ),
                     const SizedBox(height: 24),
+                    _TimerConfigRow(
+                      title: 'Work duration',
+                      value: _formatSeconds(_workDurationSeconds),
+                      onDecrease: () =>
+                          _adjustPhaseDuration(IntervalPhase.work, -10),
+                      onIncrease: () =>
+                          _adjustPhaseDuration(IntervalPhase.work, 10),
+                    ),
+                    const SizedBox(height: 12),
+                    _TimerConfigRow(
+                      title: 'Rest duration',
+                      value: _formatSeconds(_restDurationSeconds),
+                      onDecrease: () =>
+                          _adjustPhaseDuration(IntervalPhase.rest, -10),
+                      onIncrease: () =>
+                          _adjustPhaseDuration(IntervalPhase.rest, 10),
+                    ),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -274,6 +316,95 @@ class _TimerPageState extends State<TimerPage> {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _TimerConfigRow extends StatelessWidget {
+  final String title;
+  final String value;
+  final VoidCallback onDecrease;
+  final VoidCallback onIncrease;
+
+  const _TimerConfigRow({
+    required this.title,
+    required this.value,
+    required this.onDecrease,
+    required this.onIncrease,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: theme.colorScheme.surfaceVariant.withOpacity(0.4),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              _ConfigAdjustButton(
+                label: '-10s',
+                onPressed: onDecrease,
+              ),
+              const SizedBox(width: 8),
+              _ConfigAdjustButton(
+                label: '+10s',
+                onPressed: onIncrease,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ConfigAdjustButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+
+  const _ConfigAdjustButton({
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        shape: const StadiumBorder(),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }
