@@ -2,26 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
-
-class TerminologyEntry {
-  const TerminologyEntry({
-    required this.term,
-    required this.description,
-    required this.sortOrder,
-  });
-
-  final String term;
-  final String description;
-  final int sortOrder;
-
-  factory TerminologyEntry.fromMap(Map<String, dynamic> data) {
-    return TerminologyEntry(
-      term: data['title']?.toString() ?? '',
-      description: data['description']?.toString() ?? '',
-      sortOrder: (data['sort_order'] as int?) ?? 0,
-    );
-  }
-}
+import '../model/terminology_entry.dart';
 
 class TerminologyPage extends StatefulWidget {
   const TerminologyPage({super.key});
@@ -46,25 +27,11 @@ class _TerminologyPageState extends State<TerminologyPage> {
 
   Future<List<TerminologyEntry>> _loadTerminology(String locale) async {
     final client = Supabase.instance.client;
-    final items = await _fetchTerminology(client, locale);
+    final items = await TerminologyEntry.fetchByLocale(client, locale);
     if (items.isEmpty && locale != 'en') {
-      return _fetchTerminology(client, 'en');
+      return TerminologyEntry.fetchByLocale(client, 'en');
     }
     return items;
-  }
-
-  Future<List<TerminologyEntry>> _fetchTerminology(
-    SupabaseClient client,
-    String locale,
-  ) async {
-    final response = await client
-        .from('terminology')
-        .select('title, description, sort_order')
-        .eq('locale', locale)
-        .order('sort_order', ascending: true);
-
-    final items = (response as List?)?.cast<Map<String, dynamic>>() ?? [];
-    return items.map(TerminologyEntry.fromMap).toList();
   }
 
   @override
