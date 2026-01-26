@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 
@@ -12,56 +13,98 @@ class ExerciseGuidesPage extends StatefulWidget {
 class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
   Difficulty _selectedDifficulty = Difficulty.beginner;
   final Set<String> _unlockedSkills = {};
+  Future<List<ExerciseGuide>>? _guidesFuture;
+  String? _localeName;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context)!;
+    if (_guidesFuture == null || _localeName != l10n.localeName) {
+      _localeName = l10n.localeName;
+      _guidesFuture = _loadGuides(l10n);
+    }
+  }
+
+  Future<List<ExerciseGuide>> _loadGuides(AppLocalizations l10n) async {
+    final response = await Supabase.instance.client
+        .from('exercise_guides')
+        .select('slug, difficulty, default_unlocked, accent')
+        .order('sort_order', ascending: true);
+    final rows = (response as List<dynamic>).cast<Map<String, dynamic>>();
+    return rows.map((row) => ExerciseGuide.fromDatabase(row, l10n)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final guides = ExerciseGuide.buildGuides(l10n)
-        .map(
-          (guide) => guide.copyWith(
-            isUnlocked:
-                guide.isUnlocked || _unlockedSkills.contains(guide.id),
-          ),
-        )
-        .toList();
-    final filteredGuides = guides
-        .where((guide) => guide.difficulty == _selectedDifficulty)
-        .toList();
+    return FutureBuilder<List<ExerciseGuide>>(
+      future: _guidesFuture,
+      builder: (context, snapshot) {
+        final guides = (snapshot.data ?? const <ExerciseGuide>[])
+            .map(
+              (guide) => guide.copyWith(
+                isUnlocked:
+                    guide.isUnlocked || _unlockedSkills.contains(guide.id),
+              ),
+            )
+            .toList();
+        final filteredGuides = guides
+            .where((guide) => guide.difficulty == _selectedDifficulty)
+            .toList();
 
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _PageHeader(
-          title: l10n.guidesTitle,
-          description: l10n.guidesSubtitle,
-        ),
-        const SizedBox(height: 16),
-        _DifficultySelector(
-          selected: _selectedDifficulty,
-          l10n: l10n,
-          onChanged: (difficulty) {
-            setState(() {
-              _selectedDifficulty = difficulty;
-            });
-          },
-        ),
-        const SizedBox(height: 16),
-        for (final guide in filteredGuides)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: _ExerciseGuideCard(
-              guide: guide,
-              l10n: l10n,
-              onUnlock: guide.isUnlocked
-                  ? null
-                  : () {
-                      setState(() {
-                        _unlockedSkills.add(guide.id);
-                      });
-                    },
+        return ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            _PageHeader(
+              title: l10n.guidesTitle,
+              description: l10n.guidesSubtitle,
             ),
-          ),
-      ],
+            const SizedBox(height: 16),
+            _DifficultySelector(
+              selected: _selectedDifficulty,
+              l10n: l10n,
+              onChanged: (difficulty) {
+                setState(() {
+                  _selectedDifficulty = difficulty;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            if (snapshot.connectionState == ConnectionState.waiting)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (snapshot.hasError)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  'Unable to load skill guides right now.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              )
+            else
+              for (final guide in filteredGuides)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: _ExerciseGuideCard(
+                    guide: guide,
+                    l10n: l10n,
+                    onUnlock: guide.isUnlocked
+                        ? null
+                        : () {
+                            setState(() {
+                              _unlockedSkills.add(guide.id);
+                            });
+                          },
+                  ),
+                ),
+          ],
+        );
+      },
     );
   }
 }

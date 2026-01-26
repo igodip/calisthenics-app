@@ -20,6 +20,15 @@ CREATE TABLE public.exercises (
   CONSTRAINT exercises_slug_key UNIQUE (slug),
   CONSTRAINT exercises_name_key UNIQUE (name)
 );
+CREATE TABLE public.exercise_guides (
+  slug text NOT NULL,
+  difficulty text NOT NULL DEFAULT 'beginner'::text,
+  default_unlocked boolean NOT NULL DEFAULT false,
+  accent text NOT NULL,
+  sort_order integer NOT NULL DEFAULT 1,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT exercise_guides_pkey PRIMARY KEY (slug)
+);
 CREATE TABLE public.terminology (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   term_key text NOT NULL,
@@ -138,3 +147,22 @@ CREATE TABLE public.workout_plans (
   notes text,
   CONSTRAINT workout_plans_pkey PRIMARY KEY (id)
 );
+
+INSERT INTO public.exercise_guides
+  (slug, difficulty, default_unlocked, accent, sort_order)
+VALUES
+  ('pullup', 'intermediate', false, '#2196F3', 1),
+  ('chinup', 'intermediate', false, '#03A9F4', 2),
+  ('pushup', 'beginner', true, '#FF9800', 3),
+  ('bodyweight-squat', 'beginner', true, '#4CAF50', 4),
+  ('glute-bridge', 'beginner', true, '#8BC34A', 5),
+  ('hanging-leg-raise', 'intermediate', false, '#9C27B0', 6),
+  ('muscle-up', 'advanced', false, '#009688', 7),
+  ('straight-bar-dip', 'intermediate', false, '#FF5722', 8),
+  ('dips', 'intermediate', false, '#F44336', 9),
+  ('australian-row', 'beginner', true, '#3F51B5', 10),
+  ('pike-pushup', 'intermediate', false, '#FFC107', 11),
+  ('hollow-hold', 'beginner', true, '#795548', 12),
+  ('plank', 'beginner', true, '#607D8B', 13),
+  ('l-sit', 'intermediate', false, '#03A9F4', 14),
+  ('handstand', 'advanced', false, '#673AB7', 15);
