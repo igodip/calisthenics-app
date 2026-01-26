@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../model/exercise_guide.dart';
 import '../model/max_test.dart';
 import 'max_tests_history.dart';
 
@@ -762,15 +763,14 @@ class _MaxTestBottomSheet extends StatefulWidget {
 
 class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _exerciseController = TextEditingController();
   final _valueController = TextEditingController();
   final _unitController = TextEditingController(text: 'reps');
+  String? _selectedExercise;
   DateTime _selectedDate = DateTime.now();
   bool _isSaving = false;
 
   @override
   void dispose() {
-    _exerciseController.dispose();
     _valueController.dispose();
     _unitController.dispose();
     super.dispose();
@@ -780,6 +780,8 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final exerciseOptions = ExerciseGuide.buildGuides(l10n)
+      ..sort((a, b) => a.name.compareTo(b.name));
 
     return Padding(
       padding: EdgeInsets.only(
@@ -804,18 +806,22 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _exerciseController,
+                DropdownButtonFormField<String>(
+                  value: _selectedExercise,
                   decoration: InputDecoration(
                     labelText: l10n.profileMaxTestsExerciseLabel,
                     hintText: l10n.profileMaxTestsExerciseHint,
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return l10n.profileMaxTestsExerciseHint;
-                    }
-                    return null;
-                  },
+                  items: [
+                    for (final guide in exerciseOptions)
+                      DropdownMenuItem(
+                        value: guide.name,
+                        child: Text(guide.name),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _selectedExercise = value),
+                  validator: (value) =>
+                      value == null ? l10n.profileMaxTestsExerciseHint : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -907,7 +913,7 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
     setState(() => _isSaving = true);
     final l10n = AppLocalizations.of(context)!;
 
-    final exercise = _exerciseController.text.trim();
+    final exercise = _selectedExercise ?? '';
     final value = double.parse(_valueController.text.trim().replaceAll(',', '.'));
     final unit = _unitController.text.trim().isEmpty
         ? l10n.profileMaxTestsDefaultUnit

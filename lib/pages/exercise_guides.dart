@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../model/exercise_guide.dart';
 
 class ExerciseGuidesPage extends StatefulWidget {
   const ExerciseGuidesPage({super.key});
@@ -9,166 +10,13 @@ class ExerciseGuidesPage extends StatefulWidget {
 }
 
 class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
-  _Difficulty _selectedDifficulty = _Difficulty.beginner;
+  Difficulty _selectedDifficulty = Difficulty.beginner;
   final Set<String> _unlockedSkills = {};
-
-  static List<_ExerciseGuide> _buildGuides(AppLocalizations l10n) => [
-    _ExerciseGuide(
-      id: 'pullup',
-      name: l10n.guidesPullupName,
-      difficulty: _Difficulty.intermediate,
-      isUnlocked: false,
-      focus: l10n.guidesPullupFocus,
-      tip: l10n.guidesPullupTip,
-      description: l10n.guidesPullupDescription,
-      accent: Colors.blue,
-    ),
-    _ExerciseGuide(
-      id: 'chinup',
-      name: l10n.guidesChinUpName,
-      difficulty: _Difficulty.intermediate,
-      isUnlocked: false,
-      focus: l10n.guidesChinUpFocus,
-      tip: l10n.guidesChinUpTip,
-      description: l10n.guidesChinUpDescription,
-      accent: Colors.lightBlue,
-    ),
-    _ExerciseGuide(
-      id: 'pushup',
-      name: l10n.guidesPushupName,
-      difficulty: _Difficulty.beginner,
-      isUnlocked: true,
-      focus: l10n.guidesPushupFocus,
-      tip: l10n.guidesPushupTip,
-      description: l10n.guidesPushupDescription,
-      accent: Colors.orange,
-    ),
-    _ExerciseGuide(
-      id: 'bodyweight-squat',
-      name: l10n.guidesBodyweightSquatName,
-      difficulty: _Difficulty.beginner,
-      isUnlocked: true,
-      focus: l10n.guidesBodyweightSquatFocus,
-      tip: l10n.guidesBodyweightSquatTip,
-      description: l10n.guidesBodyweightSquatDescription,
-      accent: Colors.green,
-    ),
-    _ExerciseGuide(
-      id: 'glute-bridge',
-      name: l10n.guidesGluteBridgeName,
-      difficulty: _Difficulty.beginner,
-      isUnlocked: true,
-      focus: l10n.guidesGluteBridgeFocus,
-      tip: l10n.guidesGluteBridgeTip,
-      description: l10n.guidesGluteBridgeDescription,
-      accent: Colors.lightGreen,
-    ),
-    _ExerciseGuide(
-      id: 'hanging-leg-raise',
-      name: l10n.guidesHangingLegRaiseName,
-      difficulty: _Difficulty.intermediate,
-      isUnlocked: false,
-      focus: l10n.guidesHangingLegRaiseFocus,
-      tip: l10n.guidesHangingLegRaiseTip,
-      description: l10n.guidesHangingLegRaiseDescription,
-      accent: Colors.purple,
-    ),
-    _ExerciseGuide(
-      id: 'muscle-up',
-      name: l10n.guidesMuscleUpName,
-      difficulty: _Difficulty.advanced,
-      isUnlocked: false,
-      focus: l10n.guidesMuscleUpFocus,
-      tip: l10n.guidesMuscleUpTip,
-      description: l10n.guidesMuscleUpDescription,
-      accent: Colors.teal,
-    ),
-    _ExerciseGuide(
-      id: 'straight-bar-dip',
-      name: l10n.guidesStraightBarDipName,
-      difficulty: _Difficulty.intermediate,
-      isUnlocked: false,
-      focus: l10n.guidesStraightBarDipFocus,
-      tip: l10n.guidesStraightBarDipTip,
-      description: l10n.guidesStraightBarDipDescription,
-      accent: Colors.deepOrange,
-    ),
-    _ExerciseGuide(
-      id: 'dips',
-      name: l10n.guidesDipsName,
-      difficulty: _Difficulty.intermediate,
-      isUnlocked: false,
-      focus: l10n.guidesDipsFocus,
-      tip: l10n.guidesDipsTip,
-      description: l10n.guidesDipsDescription,
-      accent: Colors.red,
-    ),
-    _ExerciseGuide(
-      id: 'australian-row',
-      name: l10n.guidesAustralianRowName,
-      difficulty: _Difficulty.beginner,
-      isUnlocked: true,
-      focus: l10n.guidesAustralianRowFocus,
-      tip: l10n.guidesAustralianRowTip,
-      description: l10n.guidesAustralianRowDescription,
-      accent: Colors.indigo,
-    ),
-    _ExerciseGuide(
-      id: 'pike-pushup',
-      name: l10n.guidesPikePushUpName,
-      difficulty: _Difficulty.intermediate,
-      isUnlocked: false,
-      focus: l10n.guidesPikePushUpFocus,
-      tip: l10n.guidesPikePushUpTip,
-      description: l10n.guidesPikePushUpDescription,
-      accent: Colors.amber,
-    ),
-    _ExerciseGuide(
-      id: 'hollow-hold',
-      name: l10n.guidesHollowHoldName,
-      difficulty: _Difficulty.beginner,
-      isUnlocked: true,
-      focus: l10n.guidesHollowHoldFocus,
-      tip: l10n.guidesHollowHoldTip,
-      description: l10n.guidesHollowHoldDescription,
-      accent: Colors.brown,
-    ),
-    _ExerciseGuide(
-      id: 'plank',
-      name: l10n.guidesPlankName,
-      difficulty: _Difficulty.beginner,
-      isUnlocked: true,
-      focus: l10n.guidesPlankFocus,
-      tip: l10n.guidesPlankTip,
-      description: l10n.guidesPlankDescription,
-      accent: Colors.blueGrey,
-    ),
-    _ExerciseGuide(
-      id: 'l-sit',
-      name: l10n.guidesLSitName,
-      difficulty: _Difficulty.intermediate,
-      isUnlocked: false,
-      focus: l10n.guidesLSitFocus,
-      tip: l10n.guidesLSitTip,
-      description: l10n.guidesLSitDescription,
-      accent: Colors.lightBlue,
-    ),
-    _ExerciseGuide(
-      id: 'handstand',
-      name: l10n.guidesHandstandName,
-      difficulty: _Difficulty.advanced,
-      isUnlocked: false,
-      focus: l10n.guidesHandstandFocus,
-      tip: l10n.guidesHandstandTip,
-      description: l10n.guidesHandstandDescription,
-      accent: Colors.deepPurple,
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final guides = _buildGuides(l10n)
+    final guides = ExerciseGuide.buildGuides(l10n)
         .map(
           (guide) => guide.copyWith(
             isUnlocked:
@@ -271,7 +119,7 @@ class _ExerciseGuideCard extends StatelessWidget {
     this.onUnlock,
   });
 
-  final _ExerciseGuide guide;
+  final ExerciseGuide guide;
   final AppLocalizations l10n;
   final VoidCallback? onUnlock;
 
@@ -481,56 +329,6 @@ class _ExerciseGuideCard extends StatelessWidget {
   }
 }
 
-class _ExerciseGuide {
-  const _ExerciseGuide({
-    required this.id,
-    required this.name,
-    required this.difficulty,
-    required this.isUnlocked,
-    required this.focus,
-    required this.tip,
-    required this.description,
-    required this.accent,
-  });
-
-  final String id;
-  final String name;
-  final _Difficulty difficulty;
-  final bool isUnlocked;
-  final String focus;
-  final String tip;
-  final String description;
-  final Color accent;
-
-  _ExerciseGuide copyWith({bool? isUnlocked}) {
-    return _ExerciseGuide(
-      id: id,
-      name: name,
-      difficulty: difficulty,
-      isUnlocked: isUnlocked ?? this.isUnlocked,
-      focus: focus,
-      tip: tip,
-      description: description,
-      accent: accent,
-    );
-  }
-}
-
-enum _Difficulty { beginner, intermediate, advanced }
-
-extension _DifficultyLabel on _Difficulty {
-  String label(AppLocalizations l10n) {
-    switch (this) {
-      case _Difficulty.beginner:
-        return l10n.difficultyBeginner;
-      case _Difficulty.intermediate:
-        return l10n.difficultyIntermediate;
-      case _Difficulty.advanced:
-        return l10n.difficultyAdvanced;
-    }
-  }
-}
-
 class _DifficultySelector extends StatelessWidget {
   const _DifficultySelector({
     required this.selected,
@@ -538,9 +336,9 @@ class _DifficultySelector extends StatelessWidget {
     required this.onChanged,
   });
 
-  final _Difficulty selected;
+  final Difficulty selected;
   final AppLocalizations l10n;
-  final ValueChanged<_Difficulty> onChanged;
+  final ValueChanged<Difficulty> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -549,7 +347,7 @@ class _DifficultySelector extends StatelessWidget {
     return Wrap(
       spacing: 10,
       runSpacing: 8,
-      children: _Difficulty.values.map((difficulty) {
+      children: Difficulty.values.map((difficulty) {
         return ChoiceChip(
           label: Text(difficulty.label(l10n)),
           selected: selected == difficulty,
