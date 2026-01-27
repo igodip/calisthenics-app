@@ -313,6 +313,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get retry => 'Riprova';
 
   @override
+  String get homeCoachTipTitle => 'Consiglio del coach';
+
+  @override
+  String get homeCoachTipPlaceholder =>
+      'Qui troverai l\'ultimo consiglio del tuo coach.';
+
+  @override
   String get workoutPlanTitle => 'Piano di allenamento';
 
   @override

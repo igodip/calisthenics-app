@@ -310,6 +310,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get homeCoachTipTitle => 'Coach Tip';
+
+  @override
+  String get homeCoachTipPlaceholder =>
+      'Your coach\'s latest tip will appear here.';
+
+  @override
   String get workoutPlanTitle => 'Workout plan';
 
   @override

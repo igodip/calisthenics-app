@@ -88,6 +88,8 @@
   "guidesHandstandDescription": "Sali in verticale contro il muro o in equilibrio libero e mantieni una linea lunga con le punte tese.",
   "homeLoadErrorTitle": "Impossibile caricare gli allenamenti",
   "retry": "Riprova",
+  "homeCoachTipTitle": "Consiglio del coach",
+  "homeCoachTipPlaceholder": "Qui troverai l'ultimo consiglio del tuo coach.",
   "workoutPlanTitle": "Piano di allenamento",
   "traineeFeedbackTitle": "Feedback atleta",
   "traineeFeedbackSubtitle": "Racconta al tuo coach come ti senti e come procede il piano.",

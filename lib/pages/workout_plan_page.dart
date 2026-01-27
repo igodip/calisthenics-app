@@ -1,4 +1,4 @@
-import 'package:calisync/components/cards/selection_card.dart';
+import 'package:calisync/components/selection_card.dart';
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/model/workout_plan.dart';
 import 'package:calisync/pages/training.dart';

@@ -88,6 +88,8 @@
   "guidesHandstandDescription": "Kick or press up to a wall or free balance and hold a tall line with toes pointed.",
   "homeLoadErrorTitle": "Unable to load workouts",
   "retry": "Retry",
+  "homeCoachTipTitle": "Coach Tip",
+  "homeCoachTipPlaceholder": "Your coach's latest tip will appear here.",
   "workoutPlanTitle": "Workout plan",
   "traineeFeedbackTitle": "Trainee feedback",
   "traineeFeedbackSubtitle": "Tell your coach how you're feeling and how the plan is going.",
