@@ -1,7 +1,8 @@
 import 'package:calisync/l10n/app_localizations.dart';
-import 'package:calisync/pages/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../components/auth_gate.dart';
 
 class OnboardingGate extends StatefulWidget {
   const OnboardingGate({super.key});
