@@ -331,6 +331,18 @@ class _WorkoutPlanBody extends StatelessWidget {
     required this.onOpenDay,
   });
 
+  static const double _maxContentWidth = 720;
+
+  Widget _wrapContent(Widget child) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+        child: child,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const listPadding = EdgeInsets.fromLTRB(16, 20, 16, 24);
@@ -338,48 +350,52 @@ class _WorkoutPlanBody extends StatelessWidget {
       future: planDataFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return ListView(
-            padding: listPadding,
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: const [
-              Center(
-                child: CircularProgressIndicator(),
-              ),
-            ],
+          return _wrapContent(
+            ListView(
+              padding: listPadding,
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: const [
+                Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ],
+            ),
           );
         }
 
         if (snapshot.hasError) {
-          return ListView(
-            padding: listPadding,
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 56,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                l10n.homeLoadErrorTitle,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${snapshot.error}',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 16),
-              Center(
-                child: FilledButton.icon(
-                  onPressed: onRetry,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(l10n.retry),
+          return _wrapContent(
+            ListView(
+              padding: listPadding,
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 56,
+                  color: Theme.of(context).colorScheme.error,
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                Text(
+                  l10n.homeLoadErrorTitle,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${snapshot.error}',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: FilledButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: Text(l10n.retry),
+                  ),
+                ),
+              ],
+            ),
           );
         }
 
@@ -387,15 +403,17 @@ class _WorkoutPlanBody extends StatelessWidget {
         final days = homeData.days;
         final plans = homeData.plans;
         if (_isPlanExpired(plans)) {
-          return ListView(
-            padding: listPadding,
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              _ExpiredPlanStub(
-                title: l10n.profilePlanExpired,
-                description: l10n.homeEmptyDescription,
-              ),
-            ],
+          return _wrapContent(
+            ListView(
+              padding: listPadding,
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                _ExpiredPlanStub(
+                  title: l10n.profilePlanExpired,
+                  description: l10n.homeEmptyDescription,
+                ),
+              ],
+            ),
           );
         }
 
@@ -404,59 +422,63 @@ class _WorkoutPlanBody extends StatelessWidget {
           onRefresh: onRefresh,
         );
         if (days.isEmpty) {
-          return RefreshIndicator(
-            onRefresh: onRefresh,
-            child: ListView(
-              padding: listPadding,
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                Image.asset(
-                  'assets/logo.png',
-                  height: 56,
-                  width: 56,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.homeEmptyTitle,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.homeEmptyDescription,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 24),
-                planOverview
-              ],
+          return _wrapContent(
+            RefreshIndicator(
+              onRefresh: onRefresh,
+              child: ListView(
+                padding: listPadding,
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  Image.asset(
+                    'assets/logo.png',
+                    height: 56,
+                    width: 56,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.homeEmptyTitle,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.homeEmptyDescription,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 24),
+                  planOverview
+                ],
+              ),
             ),
           );
         }
 
         final planGroups = buildPlanGroups(days, l10n);
-        return RefreshIndicator(
-          onRefresh: onRefresh,
-          child: ListView(
-            padding: listPadding,
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              planOverview,
-              const SizedBox(height: 16),
-              ...planGroups
-                  .asMap()
-                  .entries
-                  .map(
-                    (entry) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: _WorkoutPlanSection(
-                        plan: entry.value,
-                        isLatest: entry.key == 0,
-                        onOpenDay: onOpenDay,
+        return _wrapContent(
+          RefreshIndicator(
+            onRefresh: onRefresh,
+            child: ListView(
+              padding: listPadding,
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                planOverview,
+                const SizedBox(height: 16),
+                ...planGroups
+                    .asMap()
+                    .entries
+                    .map(
+                      (entry) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _WorkoutPlanSection(
+                          plan: entry.value,
+                          isLatest: entry.key == 0,
+                          onOpenDay: onOpenDay,
+                        ),
                       ),
                     ),
-                  ),
-            ],
+              ],
+            ),
           ),
         );
       },
