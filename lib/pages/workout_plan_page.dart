@@ -120,7 +120,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         .select(
           'id, week, day_code, title, notes, completed, completed_at, '
           'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) ), '
-          'day_exercises ( id, position, notes, completed, trainee_notes, exercise, terminology, skills )',
+          'day_exercises ( id, position, notes, completed, trainee_notes, exercise)',
         )
         .eq('workout_plan_days.workout_plans.trainee_id', userId)
         .order('week', ascending: true)
