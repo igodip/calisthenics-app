@@ -1,4 +1,5 @@
 import 'package:calisync/model/workout_day.dart';
+import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -34,7 +35,10 @@ class _TrainingState extends State<Training> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final appColors = theme.extension<AppColors>();
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -49,24 +53,26 @@ class _TrainingState extends State<Training> {
       },
       child: PlanExpiredGate(
         child: Scaffold(
-          backgroundColor: const Color(0xFF0D1626),
+          backgroundColor: theme.scaffoldBackgroundColor,
           appBar: AppBar(
-            backgroundColor: const Color(0xFF0D1626),
+            backgroundColor:
+                theme.appBarTheme.backgroundColor ?? colorScheme.surface,
             elevation: 0,
-            foregroundColor: Colors.white,
+            foregroundColor:
+                theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
             title: Text(l10n.trainingTodayTitle),
             actions: [
               Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: colorScheme.onSurface.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
                     onPressed: () {},
                     icon: const Icon(Icons.more_horiz),
-                    color: Colors.white70,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -79,13 +85,18 @@ class _TrainingState extends State<Training> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF202B3E), Color(0xFF151F33)],
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.surfaceVariant,
+                        colorScheme.surface,
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                    border: Border.all(
+                      color: colorScheme.outlineVariant,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +107,7 @@ class _TrainingState extends State<Training> {
                             child: Text(
                               widget.day.formattedTitle(l10n),
                               style: textTheme.titleMedium?.copyWith(
-                                color: Colors.white,
+                                color: colorScheme.onSurface,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -104,7 +115,7 @@ class _TrainingState extends State<Training> {
                           Text(
                             '45 min',
                             style: textTheme.bodyMedium?.copyWith(
-                              color: Colors.white70,
+                              color: colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -113,16 +124,16 @@ class _TrainingState extends State<Training> {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.location_on_outlined,
                             size: 16,
-                            color: Color(0xFF4DA6FF),
+                            color: colorScheme.primary,
                           ),
                           const SizedBox(width: 6),
                           Text(
                             '${_exercises.length} ${l10n.trainingHeaderExercise}${_exercises.length == 1 ? '' : 's'}',
                             style: textTheme.bodySmall?.copyWith(
-                              color: Colors.white60,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -147,15 +158,19 @@ class _TrainingState extends State<Training> {
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF2B7BFF), Color(0xFF1A5DDB)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                gradient: appColors?.primaryGradient ??
+                    LinearGradient(
+                      colors: [
+                        colorScheme.primary,
+                        colorScheme.secondary,
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF2B7BFF).withValues(alpha: 0.35),
+                    color: colorScheme.primary.withValues(alpha: 0.35),
                     blurRadius: 12,
                     offset: const Offset(0, 6),
                   ),
@@ -186,7 +201,7 @@ class _TrainingState extends State<Training> {
                             ? l10n.trainingWorkoutCompleted
                             : l10n.trainingStartWorkout,
                         style: textTheme.titleSmall?.copyWith(
-                          color: Colors.white,
+                          color: colorScheme.onPrimary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -351,10 +366,12 @@ class _ExerciseCard extends StatelessWidget {
         ? exercise.name!
         : l10n.defaultExerciseName;
     final isCompleted = exercise.isCompleted;
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
     final titleStyle = textTheme.titleSmall?.copyWith(
       fontWeight: FontWeight.w600,
-      color: Colors.white,
+      color: colorScheme.onSurface,
       decoration: isCompleted ? TextDecoration.lineThrough : null,
     );
 
@@ -379,9 +396,9 @@ class _ExerciseCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF121C2B),
+        color: colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: Material(
         color: Colors.transparent,
@@ -396,8 +413,11 @@ class _ExerciseCard extends StatelessWidget {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF324158), Color(0xFF1A2438)],
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.primaryContainer,
+                        colorScheme.surfaceVariant,
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -419,7 +439,7 @@ class _ExerciseCard extends StatelessWidget {
                       Text(
                         detailText,
                         style: textTheme.bodySmall?.copyWith(
-                          color: Colors.white60,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                       if (hasTerminology || hasSkills) ...[
@@ -450,8 +470,8 @@ class _ExerciseCard extends StatelessWidget {
                   Icon(
                     isCompleted ? Icons.check_circle : Icons.chevron_right,
                     color: isCompleted
-                        ? const Color(0xFF4DA6FF)
-                        : Colors.white38,
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                   ),
               ],
             ),
@@ -473,14 +493,16 @@ class _InfoChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
           style: textTheme.labelSmall?.copyWith(
-            color: Colors.white70,
+            color: colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -492,7 +514,7 @@ class _InfoChips extends StatelessWidget {
               .map(
                 (item) => DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: colorScheme.onSurface.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Padding(
@@ -503,7 +525,7 @@ class _InfoChips extends StatelessWidget {
                     child: Text(
                       item,
                       style: textTheme.labelSmall?.copyWith(
-                        color: Colors.white70,
+                        color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
