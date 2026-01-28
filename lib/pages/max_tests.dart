@@ -811,16 +811,30 @@ class _MaxTestBottomSheet extends StatefulWidget {
 class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _valueController = TextEditingController();
-  final _unitController = TextEditingController(text: 'reps');
+  final _unitController = TextEditingController();
   String? _selectedExercise;
   DateTime _selectedDate = DateTime.now();
   bool _isSaving = false;
+  bool _didSetDefaultUnit = false;
 
   @override
   void dispose() {
     _valueController.dispose();
     _unitController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didSetDefaultUnit) {
+      return;
+    }
+    final l10n = AppLocalizations.of(context)!;
+    if (_unitController.text.trim().isEmpty) {
+      _unitController.text = l10n.profileMaxTestsDefaultUnit;
+    }
+    _didSetDefaultUnit = true;
   }
 
   @override

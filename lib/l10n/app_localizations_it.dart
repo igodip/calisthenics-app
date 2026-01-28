@@ -67,6 +67,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Sblocca nuove skill man mano che impari le basi.';
 
   @override
+  String get guidesLoadError =>
+      'Impossibile caricare le guide delle skill al momento.';
+
+  @override
   String get guidesPrimaryFocus => 'Focus principale';
 
   @override
@@ -320,6 +324,42 @@ class AppLocalizationsIt extends AppLocalizations {
       'Qui troverai l\'ultimo consiglio del tuo coach.';
 
   @override
+  String homeGreeting(String name) {
+    return 'Ciao, $name!';
+  }
+
+  @override
+  String get homeViewStats => 'Vedi statistiche';
+
+  @override
+  String get homeProgressTitle => 'Progressi';
+
+  @override
+  String get homeProgressWorkoutsLabel => 'Allenamenti';
+
+  @override
+  String get homeProgressTimeTrainedLabel => 'Tempo di allenamento';
+
+  @override
+  String homeProgressTimeValue(int hours, int minutes) {
+    return '${hours}h ${minutes}m';
+  }
+
+  @override
+  String get homeSkillProgressTitle => 'Progressi skill';
+
+  @override
+  String homeSkillProgressValue(int unlocked, int total) {
+    return '$unlocked / $total';
+  }
+
+  @override
+  String get homeSkillProgressLabel => 'Skill sbloccate';
+
+  @override
+  String get homeStrengthLevelTitle => 'Livello di forza';
+
+  @override
   String get workoutPlanTitle => 'Piano di allenamento';
 
   @override
@@ -397,6 +437,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainingHeaderExercise => 'Esercizio';
 
   @override
+  String get trainingHeaderExercises => 'Esercizi';
+
+  @override
   String get trainingHeaderSets => 'Serie';
 
   @override
@@ -410,6 +453,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get trainingWorkoutCompleted => 'Allenamento completato';
+
+  @override
+  String trainingDurationMinutes(int minutes) {
+    return '$minutes min';
+  }
 
   @override
   String get trainingCompletionSaved => 'Allenamento aggiornato';
@@ -769,6 +817,56 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get timerTitle => 'Timer';
+
+  @override
+  String get timerExercisePushUps => 'Piegamenti';
+
+  @override
+  String get timerExercisePullUps => 'Trazioni';
+
+  @override
+  String get timerExerciseSquats => 'Squat';
+
+  @override
+  String get timerExercisePlank => 'Plank';
+
+  @override
+  String get timerPhaseWork => 'LAVORO';
+
+  @override
+  String get timerPhaseRest => 'RECUPERO';
+
+  @override
+  String get timerWorkDurationLabel => 'Durata lavoro';
+
+  @override
+  String get timerRestDurationLabel => 'Durata recupero';
+
+  @override
+  String get timerControlSkip => 'SALTA';
+
+  @override
+  String get timerControlPause => 'PAUSA';
+
+  @override
+  String get timerControlPlay => 'AVVIA';
+
+  @override
+  String get timerControlReset => 'RESET';
+
+  @override
+  String get timerAdjustDecrease => '-10s';
+
+  @override
+  String get timerAdjustIncrease => '+10s';
+
+  @override
+  String get timerNextPlaceholder => 'Prossimo: --';
+
+  @override
+  String timerNextLabel(String name, int current, int total) {
+    return 'Prossimo: $name · Serie $current/$total';
+  }
 
   @override
   String get amrapTimerTitle => 'Timer AMRAP';

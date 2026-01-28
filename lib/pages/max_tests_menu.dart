@@ -58,8 +58,9 @@ class _MaxTestsMenuPageState extends State<MaxTestsMenuPage> {
 
         if (snapshot.hasError) {
           final rawError = snapshot.error.toString();
-          final errorText =
-              rawError.contains('user-not-authenticated') ? l10n.userNotFound : rawError;
+          final errorText = rawError.contains('user-not-authenticated')
+              ? l10n.unauthenticated
+              : rawError;
           return Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),

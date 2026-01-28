@@ -17,6 +17,7 @@
   "onboardingGetStarted": "Get started",
   "guidesTitle": "Skills",
   "guidesSubtitle": "Unlock new skills as you master the basics.",
+  "guidesLoadError": "Unable to load skill guides right now.",
   "guidesPrimaryFocus": "Primary focus",
   "guidesCoachTip": "Coach tip",
   "skillsLockedLabel": "Locked",
@@ -90,6 +91,43 @@
   "retry": "Retry",
   "homeCoachTipTitle": "Coach Tip",
   "homeCoachTipPlaceholder": "Your coach's latest tip will appear here.",
+  "homeGreeting": "Hi, {name}!",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeViewStats": "View Stats",
+  "homeProgressTitle": "Progress",
+  "homeProgressWorkoutsLabel": "Workouts",
+  "homeProgressTimeTrainedLabel": "Time Trained",
+  "homeProgressTimeValue": "{hours}h {minutes}m",
+  "@homeProgressTimeValue": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeSkillProgressTitle": "Skill Progress",
+  "homeSkillProgressValue": "{unlocked} / {total}",
+  "@homeSkillProgressValue": {
+    "placeholders": {
+      "unlocked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeSkillProgressLabel": "Skills Unlocked",
+  "homeStrengthLevelTitle": "Strength Level",
   "workoutPlanTitle": "Workout plan",
   "traineeFeedbackTitle": "Trainee feedback",
   "traineeFeedbackSubtitle": "Tell your coach how you're feeling and how the plan is going.",
@@ -120,11 +158,20 @@
   "unauthenticated": "User not authenticated",
   "defaultExerciseName": "Exercise",
   "trainingHeaderExercise": "Exercise",
+  "trainingHeaderExercises": "Exercises",
   "trainingHeaderSets": "Sets",
   "trainingHeaderReps": "Repetitions",
   "trainingTodayTitle": "Today's Workout",
   "trainingStartWorkout": "Start Workout",
   "trainingWorkoutCompleted": "Workout Completed",
+  "trainingDurationMinutes": "{minutes} min",
+  "@trainingDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "trainingCompletionSaved": "Workout day updated",
   "trainingCompletionError": "Unable to update workout: {error}",
   "@trainingCompletionError": {
@@ -341,6 +388,35 @@
   "add": "Add",
   "start": "Start",
   "timerTitle": "Timer",
+  "timerExercisePushUps": "Push-ups",
+  "timerExercisePullUps": "Pull-ups",
+  "timerExerciseSquats": "Squats",
+  "timerExercisePlank": "Plank",
+  "timerPhaseWork": "WORK",
+  "timerPhaseRest": "REST",
+  "timerWorkDurationLabel": "Work duration",
+  "timerRestDurationLabel": "Rest duration",
+  "timerControlSkip": "SKIP",
+  "timerControlPause": "PAUSE",
+  "timerControlPlay": "PLAY",
+  "timerControlReset": "RESET",
+  "timerAdjustDecrease": "-10s",
+  "timerAdjustIncrease": "+10s",
+  "timerNextPlaceholder": "Next: --",
+  "timerNextLabel": "Next: {name} · Set {current}/{total}",
+  "@timerNextLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "amrapTimerTitle": "AMRAP timer",
   "amrapTimerSubtitle": "Push through as many rounds as possible.",
   "amrapTimerDescription": "Set the total duration and track the remaining time.",

@@ -206,6 +206,12 @@ abstract class AppLocalizations {
   /// **'Sblocca nuove skill man mano che impari le basi.'**
   String get guidesSubtitle;
 
+  /// No description provided for @guidesLoadError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare le guide delle skill al momento.'**
+  String get guidesLoadError;
+
   /// No description provided for @guidesPrimaryFocus.
   ///
   /// In it, this message translates to:
@@ -644,6 +650,66 @@ abstract class AppLocalizations {
   /// **'Qui troverai l\'ultimo consiglio del tuo coach.'**
   String get homeCoachTipPlaceholder;
 
+  /// No description provided for @homeGreeting.
+  ///
+  /// In it, this message translates to:
+  /// **'Ciao, {name}!'**
+  String homeGreeting(String name);
+
+  /// No description provided for @homeViewStats.
+  ///
+  /// In it, this message translates to:
+  /// **'Vedi statistiche'**
+  String get homeViewStats;
+
+  /// No description provided for @homeProgressTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Progressi'**
+  String get homeProgressTitle;
+
+  /// No description provided for @homeProgressWorkoutsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Allenamenti'**
+  String get homeProgressWorkoutsLabel;
+
+  /// No description provided for @homeProgressTimeTrainedLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Tempo di allenamento'**
+  String get homeProgressTimeTrainedLabel;
+
+  /// No description provided for @homeProgressTimeValue.
+  ///
+  /// In it, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String homeProgressTimeValue(int hours, int minutes);
+
+  /// No description provided for @homeSkillProgressTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Progressi skill'**
+  String get homeSkillProgressTitle;
+
+  /// No description provided for @homeSkillProgressValue.
+  ///
+  /// In it, this message translates to:
+  /// **'{unlocked} / {total}'**
+  String homeSkillProgressValue(int unlocked, int total);
+
+  /// No description provided for @homeSkillProgressLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Skill sbloccate'**
+  String get homeSkillProgressLabel;
+
+  /// No description provided for @homeStrengthLevelTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Livello di forza'**
+  String get homeStrengthLevelTitle;
+
   /// No description provided for @workoutPlanTitle.
   ///
   /// In it, this message translates to:
@@ -782,6 +848,12 @@ abstract class AppLocalizations {
   /// **'Esercizio'**
   String get trainingHeaderExercise;
 
+  /// No description provided for @trainingHeaderExercises.
+  ///
+  /// In it, this message translates to:
+  /// **'Esercizi'**
+  String get trainingHeaderExercises;
+
   /// No description provided for @trainingHeaderSets.
   ///
   /// In it, this message translates to:
@@ -811,6 +883,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Allenamento completato'**
   String get trainingWorkoutCompleted;
+
+  /// No description provided for @trainingDurationMinutes.
+  ///
+  /// In it, this message translates to:
+  /// **'{minutes} min'**
+  String trainingDurationMinutes(int minutes);
 
   /// No description provided for @trainingCompletionSaved.
   ///
@@ -1435,6 +1513,102 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Timer'**
   String get timerTitle;
+
+  /// No description provided for @timerExercisePushUps.
+  ///
+  /// In it, this message translates to:
+  /// **'Piegamenti'**
+  String get timerExercisePushUps;
+
+  /// No description provided for @timerExercisePullUps.
+  ///
+  /// In it, this message translates to:
+  /// **'Trazioni'**
+  String get timerExercisePullUps;
+
+  /// No description provided for @timerExerciseSquats.
+  ///
+  /// In it, this message translates to:
+  /// **'Squat'**
+  String get timerExerciseSquats;
+
+  /// No description provided for @timerExercisePlank.
+  ///
+  /// In it, this message translates to:
+  /// **'Plank'**
+  String get timerExercisePlank;
+
+  /// No description provided for @timerPhaseWork.
+  ///
+  /// In it, this message translates to:
+  /// **'LAVORO'**
+  String get timerPhaseWork;
+
+  /// No description provided for @timerPhaseRest.
+  ///
+  /// In it, this message translates to:
+  /// **'RECUPERO'**
+  String get timerPhaseRest;
+
+  /// No description provided for @timerWorkDurationLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Durata lavoro'**
+  String get timerWorkDurationLabel;
+
+  /// No description provided for @timerRestDurationLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Durata recupero'**
+  String get timerRestDurationLabel;
+
+  /// No description provided for @timerControlSkip.
+  ///
+  /// In it, this message translates to:
+  /// **'SALTA'**
+  String get timerControlSkip;
+
+  /// No description provided for @timerControlPause.
+  ///
+  /// In it, this message translates to:
+  /// **'PAUSA'**
+  String get timerControlPause;
+
+  /// No description provided for @timerControlPlay.
+  ///
+  /// In it, this message translates to:
+  /// **'AVVIA'**
+  String get timerControlPlay;
+
+  /// No description provided for @timerControlReset.
+  ///
+  /// In it, this message translates to:
+  /// **'RESET'**
+  String get timerControlReset;
+
+  /// No description provided for @timerAdjustDecrease.
+  ///
+  /// In it, this message translates to:
+  /// **'-10s'**
+  String get timerAdjustDecrease;
+
+  /// No description provided for @timerAdjustIncrease.
+  ///
+  /// In it, this message translates to:
+  /// **'+10s'**
+  String get timerAdjustIncrease;
+
+  /// No description provided for @timerNextPlaceholder.
+  ///
+  /// In it, this message translates to:
+  /// **'Prossimo: --'**
+  String get timerNextPlaceholder;
+
+  /// No description provided for @timerNextLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Prossimo: {name} · Serie {current}/{total}'**
+  String timerNextLabel(String name, int current, int total);
 
   /// No description provided for @amrapTimerTitle.
   ///

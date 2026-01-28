@@ -1,6 +1,8 @@
 import 'package:calisync/components/section_card.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 class ProgressCard extends StatelessWidget {
   const ProgressCard({
     super.key
@@ -8,13 +10,17 @@ class ProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    const workoutsCompleted = 245;
+    const hoursTrained = 75;
+    const minutesTrained = 30;
     return SectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Progress',
+            l10n.homeProgressTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
@@ -25,16 +31,16 @@ class ProgressCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _StatTile(
-                  value: '245',
-                  label: 'Workouts',
+                  value: workoutsCompleted.toString(),
+                  label: l10n.homeProgressWorkoutsLabel,
                   icon: Icons.fitness_center,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _StatTile(
-                  value: '75h 30m',
-                  label: 'Time Trained',
+                  value: l10n.homeProgressTimeValue(hoursTrained, minutesTrained),
+                  label: l10n.homeProgressTimeTrainedLabel,
                   icon: Icons.timer,
                 ),
               ),
@@ -99,4 +105,3 @@ class _StatTile extends StatelessWidget {
     );
   }
 }
-

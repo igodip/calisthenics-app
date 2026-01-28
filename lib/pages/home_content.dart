@@ -107,12 +107,13 @@ class _HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Row(
       children: [
         Expanded(
           child: Text(
-            'Hi, $displayName!',
+            l10n.homeGreeting(displayName),
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -165,24 +166,24 @@ class _ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
           child: FilledButton(
             onPressed: onOpenPlan,
-            child: const Text('Start Workout'),
+            child: Text(l10n.trainingStartWorkout),
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: OutlinedButton(
             onPressed: () {},
-            child: const Text('View Stats'),
+            child: Text(l10n.homeViewStats),
           ),
         ),
       ],
     );
   }
 }
-
 

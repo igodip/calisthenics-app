@@ -1,18 +1,23 @@
 import 'package:calisync/components/section_card.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 class SkillProgressCard extends StatelessWidget {
   const SkillProgressCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    const unlockedSkills = 5;
+    const totalSkills = 8;
     return SectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Skill Progress',
+            l10n.homeSkillProgressTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -21,14 +26,14 @@ class SkillProgressCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                '5 / 8',
+                l10n.homeSkillProgressValue(unlockedSkills, totalSkills),
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(width: 8),
               Text(
-                'Skills Unlocked',
+                l10n.homeSkillProgressLabel,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

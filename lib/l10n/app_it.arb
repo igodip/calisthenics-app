@@ -17,6 +17,7 @@
   "onboardingGetStarted": "Inizia",
   "guidesTitle": "Skill",
   "guidesSubtitle": "Sblocca nuove skill man mano che impari le basi.",
+  "guidesLoadError": "Impossibile caricare le guide delle skill al momento.",
   "guidesPrimaryFocus": "Focus principale",
   "guidesCoachTip": "Consiglio del coach",
   "skillsLockedLabel": "Bloccato",
@@ -90,6 +91,43 @@
   "retry": "Riprova",
   "homeCoachTipTitle": "Consiglio del coach",
   "homeCoachTipPlaceholder": "Qui troverai l'ultimo consiglio del tuo coach.",
+  "homeGreeting": "Ciao, {name}!",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeViewStats": "Vedi statistiche",
+  "homeProgressTitle": "Progressi",
+  "homeProgressWorkoutsLabel": "Allenamenti",
+  "homeProgressTimeTrainedLabel": "Tempo di allenamento",
+  "homeProgressTimeValue": "{hours}h {minutes}m",
+  "@homeProgressTimeValue": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeSkillProgressTitle": "Progressi skill",
+  "homeSkillProgressValue": "{unlocked} / {total}",
+  "@homeSkillProgressValue": {
+    "placeholders": {
+      "unlocked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeSkillProgressLabel": "Skill sbloccate",
+  "homeStrengthLevelTitle": "Livello di forza",
   "workoutPlanTitle": "Piano di allenamento",
   "traineeFeedbackTitle": "Feedback atleta",
   "traineeFeedbackSubtitle": "Racconta al tuo coach come ti senti e come procede il piano.",
@@ -120,11 +158,20 @@
   "unauthenticated": "Utente non autenticato",
   "defaultExerciseName": "Esercizio",
   "trainingHeaderExercise": "Esercizio",
+  "trainingHeaderExercises": "Esercizi",
   "trainingHeaderSets": "Serie",
   "trainingHeaderReps": "Ripetizioni",
   "trainingTodayTitle": "Allenamento di oggi",
   "trainingStartWorkout": "Inizia allenamento",
   "trainingWorkoutCompleted": "Allenamento completato",
+  "trainingDurationMinutes": "{minutes} min",
+  "@trainingDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "trainingCompletionSaved": "Allenamento aggiornato",
   "trainingCompletionError": "Impossibile aggiornare l'allenamento: {error}",
   "@trainingCompletionError": {
@@ -341,6 +388,35 @@
   "add": "Aggiungi",
   "start": "Avvia",
   "timerTitle": "Timer",
+  "timerExercisePushUps": "Piegamenti",
+  "timerExercisePullUps": "Trazioni",
+  "timerExerciseSquats": "Squat",
+  "timerExercisePlank": "Plank",
+  "timerPhaseWork": "LAVORO",
+  "timerPhaseRest": "RECUPERO",
+  "timerWorkDurationLabel": "Durata lavoro",
+  "timerRestDurationLabel": "Durata recupero",
+  "timerControlSkip": "SALTA",
+  "timerControlPause": "PAUSA",
+  "timerControlPlay": "AVVIA",
+  "timerControlReset": "RESET",
+  "timerAdjustDecrease": "-10s",
+  "timerAdjustIncrease": "+10s",
+  "timerNextPlaceholder": "Prossimo: --",
+  "timerNextLabel": "Prossimo: {name} · Serie {current}/{total}",
+  "@timerNextLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "amrapTimerTitle": "Timer AMRAP",
   "amrapTimerSubtitle": "Spingi per quante più serie possibile.",
   "amrapTimerDescription": "Imposta la durata totale e tieni il tempo rimanente.",

@@ -3,7 +3,26 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 enum IntervalPhase { work, rest }
+
+enum TimerExercise { pushUps, pullUps, squats, plank }
+
+extension TimerExerciseLabel on TimerExercise {
+  String label(AppLocalizations l10n) {
+    switch (this) {
+      case TimerExercise.pushUps:
+        return l10n.timerExercisePushUps;
+      case TimerExercise.pullUps:
+        return l10n.timerExercisePullUps;
+      case TimerExercise.squats:
+        return l10n.timerExerciseSquats;
+      case TimerExercise.plank:
+        return l10n.timerExercisePlank;
+    }
+  }
+}
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
@@ -29,10 +48,10 @@ class _TimerPageState extends State<TimerPage> {
   int _nextSet = 1;
 
   final List<_ExercisePlan> _exercisePlan = const [
-    _ExercisePlan(name: 'Push-ups', totalSets: 3),
-    _ExercisePlan(name: 'Pull-ups', totalSets: 3),
-    _ExercisePlan(name: 'Squats', totalSets: 4),
-    _ExercisePlan(name: 'Plank', totalSets: 2),
+    _ExercisePlan(exercise: TimerExercise.pushUps, totalSets: 3),
+    _ExercisePlan(exercise: TimerExercise.pullUps, totalSets: 3),
+    _ExercisePlan(exercise: TimerExercise.squats, totalSets: 4),
+    _ExercisePlan(exercise: TimerExercise.plank, totalSets: 2),
   ];
 
   @override
@@ -167,19 +186,24 @@ class _TimerPageState extends State<TimerPage> {
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
-  String _nextExerciseLabel() {
+  String _nextExerciseLabel(AppLocalizations l10n) {
     if (_exercisePlan.isEmpty) {
-      return 'Next: --';
+      return l10n.timerNextPlaceholder;
     }
     final plan = _exercisePlan[_nextExerciseIndex];
-    return 'Next: ${plan.name} · Set $_nextSet/${plan.totalSets}';
+    return l10n.timerNextLabel(
+      plan.exercise.label(l10n),
+      _nextSet,
+      plan.totalSets,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isWork = _phase == IntervalPhase.work;
-    final phaseLabel = isWork ? 'WORK' : 'REST';
+    final phaseLabel = isWork ? l10n.timerPhaseWork : l10n.timerPhaseRest;
     final phaseColor = isWork ? const Color(0xFFFF8A3D) : const Color(0xFF3D8BFF);
     final progress = _currentPhaseDuration == 0
         ? 0.0
@@ -245,7 +269,7 @@ class _TimerPageState extends State<TimerPage> {
                     ),
                     const SizedBox(height: 24),
                     _TimerConfigRow(
-                      title: 'Work duration',
+                      title: l10n.timerWorkDurationLabel,
                       value: _formatSeconds(_workDurationSeconds),
                       onDecrease: () =>
                           _adjustPhaseDuration(IntervalPhase.work, -10),
@@ -254,7 +278,7 @@ class _TimerPageState extends State<TimerPage> {
                     ),
                     const SizedBox(height: 12),
                     _TimerConfigRow(
-                      title: 'Rest duration',
+                      title: l10n.timerRestDurationLabel,
                       value: _formatSeconds(_restDurationSeconds),
                       onDecrease: () =>
                           _adjustPhaseDuration(IntervalPhase.rest, -10),
@@ -266,20 +290,20 @@ class _TimerPageState extends State<TimerPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _ControlButton(
-                          label: 'SKIP',
+                          label: l10n.timerControlSkip,
                           icon: Icons.skip_next,
                           onPressed: _skipPhase,
                         ),
                         const SizedBox(width: 16),
                         _ControlButton(
-                          label: _isRunning ? 'PAUSE' : 'PLAY',
+                          label: _isRunning ? l10n.timerControlPause : l10n.timerControlPlay,
                           icon: _isRunning ? Icons.pause : Icons.play_arrow,
                           onPressed: _toggleRunning,
                           isPrimary: true,
                         ),
                         const SizedBox(width: 16),
                         _ControlButton(
-                          label: 'RESET',
+                          label: l10n.timerControlReset,
                           icon: Icons.restart_alt,
                           onPressed: _resetPhase,
                         ),
@@ -287,7 +311,7 @@ class _TimerPageState extends State<TimerPage> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      _nextExerciseLabel(),
+                      _nextExerciseLabel(l10n),
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
@@ -351,12 +375,12 @@ class _TimerConfigRow extends StatelessWidget {
           Row(
             children: [
               _ConfigAdjustButton(
-                label: '-10s',
+                label: AppLocalizations.of(context)!.timerAdjustDecrease,
                 onPressed: onDecrease,
               ),
               const SizedBox(width: 8),
               _ConfigAdjustButton(
-                label: '+10s',
+                label: AppLocalizations.of(context)!.timerAdjustIncrease,
                 onPressed: onIncrease,
               ),
             ],
@@ -395,11 +419,11 @@ class _ConfigAdjustButton extends StatelessWidget {
 }
 
 class _ExercisePlan {
-  final String name;
+  final TimerExercise exercise;
   final int totalSets;
 
   const _ExercisePlan({
-    required this.name,
+    required this.exercise,
     required this.totalSets,
   });
 }

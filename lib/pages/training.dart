@@ -102,7 +102,7 @@ class _TrainingState extends State<Training> {
                             ),
                           ),
                           Text(
-                            '45 min',
+                            l10n.trainingDurationMinutes(45),
                             style: textTheme.bodyMedium?.copyWith(
                               color: Colors.white70,
                               fontWeight: FontWeight.w600,
@@ -120,7 +120,7 @@ class _TrainingState extends State<Training> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            '${_exercises.length} ${l10n.trainingHeaderExercise}${_exercises.length == 1 ? '' : 's'}',
+                            '${_exercises.length} ${_exercises.length == 1 ? l10n.trainingHeaderExercise : l10n.trainingHeaderExercises}',
                             style: textTheme.bodySmall?.copyWith(
                               color: Colors.white60,
                             ),
