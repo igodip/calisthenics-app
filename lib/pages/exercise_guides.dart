@@ -85,7 +85,7 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Text(
-                  'Unable to load skill guides right now.',
+                  l10n.guidesLoadError,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               )

@@ -53,7 +53,7 @@ class UserProfileData {
 Future<UserProfileData> getUserData() async {
   final user = supabase.auth.currentUser;
   if (user == null) {
-    throw Exception('Utente non autenticato');
+    throw Exception('user-not-authenticated');
   }
 
   final profileResponse = await supabase
@@ -159,8 +159,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
             if (snapshot.hasError) {
               final rawError = snapshot.error.toString();
-              final errorText =
-                  rawError.contains('user-not-found') ? l10n.userNotFound : rawError;
+              final errorText = rawError.contains('user-not-authenticated')
+                  ? l10n.unauthenticated
+                  : rawError.contains('user-not-found')
+                      ? l10n.userNotFound
+                      : rawError;
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),

@@ -1,11 +1,14 @@
 import 'package:calisync/components/section_card.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 class StrengthLevelCard extends StatelessWidget {
   const StrengthLevelCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return SectionCard(
       child: Row(
@@ -15,7 +18,7 @@ class StrengthLevelCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Strength Level',
+                  l10n.homeStrengthLevelTitle,
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -29,7 +32,7 @@ class StrengthLevelCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Advanced',
+                      l10n.difficultyAdvanced,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
