@@ -241,22 +241,6 @@ class _TimerPageState extends State<TimerPage> {
                             ),
                           ],
                         ),
-                        Positioned(
-                          left: 0,
-                          child: _TimeAdjustButton(
-                            label: '+10s',
-                            onPressed: () => _adjustTime(10),
-                            fontSize: buttonFontSize,
-                          ),
-                        ),
-                        Positioned(
-                          right: 0,
-                          child: _TimeAdjustButton(
-                            label: '-10s',
-                            onPressed: () => _adjustTime(-10),
-                            fontSize: buttonFontSize,
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 24),

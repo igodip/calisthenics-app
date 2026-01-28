@@ -1,5 +1,7 @@
 import 'package:calisync/components/coach_tip.dart';
+import 'package:calisync/pages/workout_plan_page.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/progress_card.dart';
 import '../components/skill_progress_card.dart';
@@ -16,11 +18,30 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   late Future<UserProfileData> _profileFuture;
+  late Future<String?> _coachTip;
 
   @override
   void initState() {
     super.initState();
+    final client = Supabase.instance.client;
     _profileFuture = getUserData();
+    _coachTip = _loadCoachTipForUser(Supabase.instance.client, client.auth.currentUser!.id);
+  }
+
+  Future<String?> _loadCoachTipForUser(
+      SupabaseClient client,
+      String userId,
+      ) async {
+    final response = await client
+        .from('trainee_trainers')
+        .select('coach_tip')
+        .eq('trainee_id', userId)
+        .maybeSingle();
+    if (response == null) {
+      return null;
+    }
+    final tip = response['coach_tip'] as String?;
+    return tip?.trim().isEmpty ?? true ? null : tip?.trim();
   }
 
   @override

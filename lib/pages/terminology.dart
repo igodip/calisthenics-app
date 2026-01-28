@@ -60,15 +60,6 @@ class _TerminologyPageState extends State<TerminologyPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final titleSliver = SliverPadding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-      sliver: SliverToBoxAdapter(
-        child: Text(
-          l10n.terminologyTitle,
-          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-        ),
-      ),
-    );
 
     return FutureBuilder<List<TerminologyEntry>>(
       future: _terminologyFuture,
@@ -76,7 +67,6 @@ class _TerminologyPageState extends State<TerminologyPage> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CustomScrollView(
             slivers: [
-              titleSliver,
               const SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(child: CircularProgressIndicator()),
@@ -88,7 +78,6 @@ class _TerminologyPageState extends State<TerminologyPage> {
         if (snapshot.hasError) {
           return CustomScrollView(
             slivers: [
-              titleSliver,
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(
@@ -110,7 +99,6 @@ class _TerminologyPageState extends State<TerminologyPage> {
         if (terms.isEmpty) {
           return CustomScrollView(
             slivers: [
-              titleSliver,
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(
@@ -126,7 +114,6 @@ class _TerminologyPageState extends State<TerminologyPage> {
 
         return CustomScrollView(
           slivers: [
-            titleSliver,
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
               sliver: SliverList.separated(
