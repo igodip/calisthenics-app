@@ -28,6 +28,12 @@ class _HomeContentState extends State<HomeContent> {
     _coachTip = _loadCoachTipForUser(Supabase.instance.client, client.auth.currentUser!.id);
   }
 
+  Future<void> _openWorkoutPlan() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const WorkoutPlanPage()),
+    );
+  }
+
   Future<String?> _loadCoachTipForUser(
       SupabaseClient client,
       String userId,
@@ -63,13 +69,26 @@ class _HomeContentState extends State<HomeContent> {
             const SizedBox(height: 16),
             const ProgressCard(),
             const SizedBox(height: 16),
-            const _ActionButtons(),
+            _ActionButtons(onOpenPlan: _openWorkoutPlan),
             const SizedBox(height: 16),
             const StrengthLevelCard(),
             const SizedBox(height: 16),
             const SkillProgressCard(),
             const SizedBox(height: 16),
-            const CoachTipSection()
+            FutureBuilder<String?>(
+              future: _coachTip,
+              builder: (context, tipSnap) {
+                if (tipSnap.connectionState != ConnectionState.done) {
+                  // optional: show placeholder while loading
+                  return const SizedBox.shrink();
+                }
+                if (tipSnap.hasError) {
+                  // optional: hide on error (or show a small error widget)
+                  return const SizedBox.shrink();
+                }
+                return CoachTipSection(tip: tipSnap.data);
+              },
+            ),
           ],
         );
       },
@@ -139,7 +158,10 @@ class _AvatarChip extends StatelessWidget {
 }
 
 class _ActionButtons extends StatelessWidget {
-  const _ActionButtons();
+  final VoidCallback onOpenPlan;
+  const _ActionButtons({
+      required this.onOpenPlan,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +169,7 @@ class _ActionButtons extends StatelessWidget {
       children: [
         Expanded(
           child: FilledButton(
-            onPressed: () {},
+            onPressed: onOpenPlan,
             child: const Text('Start Workout'),
           ),
         ),
