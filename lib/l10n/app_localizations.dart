@@ -128,11 +128,53 @@ abstract class AppLocalizations {
   /// **'Profilo'**
   String get navProfile;
 
+  /// No description provided for @navSettings.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni'**
+  String get navSettings;
+
   /// No description provided for @navTerminology.
   ///
   /// In it, this message translates to:
   /// **'Terminologia'**
   String get navTerminology;
+
+  /// No description provided for @settingsThemeTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Tema'**
+  String get settingsThemeTitle;
+
+  /// No description provided for @themeDefaultLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Predefinito'**
+  String get themeDefaultLabel;
+
+  /// No description provided for @themeBlackLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Nero'**
+  String get themeBlackLabel;
+
+  /// No description provided for @themePinkLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Rosa'**
+  String get themePinkLabel;
+
+  /// No description provided for @themeRedLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Rosso'**
+  String get themeRedLabel;
+
+  /// No description provided for @themeBlueLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Blu'**
+  String get themeBlueLabel;
 
   /// No description provided for @onboardingTitleOne.
   ///
