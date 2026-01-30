@@ -854,21 +854,30 @@
                                             </button>
                                         </div>
                                         <div class="workout-days">
-                                            <button
-                                                v-for="(day, dayIndex) in programTemplateDays"
-                                                :key="day.id"
-                                                class="workout-day-item"
-                                                :class="{ active: dayIndex === selectedTemplateDay }"
-                                                type="button"
-                                                @click="selectTemplateDay(dayIndex)"
+                                            <div
+                                                v-for="group in templateWeekGroups"
+                                                :key="`week-${group.week}`"
+                                                class="workout-week-group"
                                             >
-                                                <div class="stack">
-                                                    <strong>{{ templateDayLabel(dayIndex) }}</strong>
-                                                    <span class="muted small">
-                                                        {{ day.title || t('placeholders.workoutTitle') }}
-                                                    </span>
+                                                <div class="workout-week-header">
+                                                    {{ t('labels.weekNumber', { week: group.week }) }}
                                                 </div>
-                                            </button>
+                                                <button
+                                                    v-for="entry in group.days"
+                                                    :key="entry.day.id"
+                                                    class="workout-day-item"
+                                                    :class="{ active: entry.index === selectedTemplateDay }"
+                                                    type="button"
+                                                    @click="selectTemplateDay(entry.index)"
+                                                >
+                                                    <div class="stack">
+                                                        <strong>{{ templateDayLabel(entry.index) }}</strong>
+                                                        <span class="muted small">
+                                                            {{ entry.day.title || t('placeholders.workoutTitle') }}
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                            </div>
                                         </div>
                                         <label class="stack small workout-day-title">
                                             <span class="muted small">{{ t('labels.title') }}</span>

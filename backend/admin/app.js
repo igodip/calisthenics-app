@@ -660,6 +660,22 @@ import {
         return formatWeekDayLabel(week, dayCode);
       };
 
+      const templateWeekGroups = computed(() => {
+        const daysPerWeek = templateDayCount.value || dayCodeOptions.length;
+        const list = programTemplateDays.value || [];
+        const groups = [];
+        list.forEach((day, index) => {
+          const week = Math.floor(index / daysPerWeek) + 1;
+          let group = groups.find((item) => item.week === week);
+          if (!group) {
+            group = { week, days: [] };
+            groups.push(group);
+          }
+          group.days.push({ day, index });
+        });
+        return groups;
+      });
+
       function resetDayForm() {
         newDayWeek.value = 1;
         newDayCode.value = 'A';
@@ -2342,6 +2358,7 @@ import {
         templateExerciseOptions,
         templatePlanName,
         programTemplateDays,
+        templateWeekGroups,
         selectedTemplateDay,
         selectedTemplateSlot,
         activeTemplateDay,

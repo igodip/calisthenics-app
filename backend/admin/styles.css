@@ -141,6 +141,8 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .workout-card-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .workout-card-header h4{margin:0;font-size:16px;color:#3d2c3f}
 .workout-days,.workout-activity-list{display:flex;flex-direction:column;gap:10px}
+.workout-week-group{display:flex;flex-direction:column;gap:8px}
+.workout-week-header{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#64748b;padding:4px 8px}
 .workout-day-item,.workout-activity-item{border:1px solid transparent;background:#f8fafc;border-radius:16px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left}
 .workout-day-item.active,.workout-activity-item.active{border-color:#2fb3ff;background:#fff}
 .workout-day-item strong,.workout-activity-item strong{color:#3d2c3f}
