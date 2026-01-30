@@ -1760,10 +1760,16 @@ import {
           const { error } = await supabase
             .from('trainee_trainers')
             .update({ coach_tip: nextTip || null })
-            .eq('trainee_id', current.value.id);
+            .eq('trainee_id', current.value.id)
+            .eq('trainer_id', currentTrainer.value.id);
           if (error) {
             throw new Error(error.message);
           }
+
+          console.log(current.value.id);
+          console.log(currentTrainer.value.id);
+          console.log(nextTip);
+
           current.value = {
             ...current.value,
             coach_tip: nextTip,

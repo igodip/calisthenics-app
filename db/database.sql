@@ -43,7 +43,7 @@ CREATE TABLE public.trainee_exercise_unlocks (
 );
 CREATE TABLE public.day_exercises (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
-  day_id uuid NOT NULL,
+  day_id uuid NOT NULL,1
   exercise_id uuid NOT NULL,
   exercise text NOT NULL,
   position integer NOT NULL DEFAULT 1,
