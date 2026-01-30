@@ -531,7 +531,7 @@ export const translations = {
     payment: {
       onTime: 'Pagamenti in regola',
       overdue: 'Pagamento in ritardo',
-      toggle: 'In regola',
+      toggle: 'App attiva',
       amountLabel: 'Importo {amount}',
     },
     status: {

@@ -20,15 +20,6 @@ CREATE TABLE public.exercises (
   CONSTRAINT exercises_slug_key UNIQUE (slug),
   CONSTRAINT exercises_name_key UNIQUE (name)
 );
-CREATE TABLE public.exercise_guides (
-  slug text NOT NULL,
-  difficulty text NOT NULL DEFAULT 'beginner'::text,
-  default_unlocked boolean NOT NULL DEFAULT false,
-  accent text NOT NULL,
-  sort_order integer NOT NULL DEFAULT 1,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT exercise_guides_pkey PRIMARY KEY (slug)
-);
 CREATE TABLE public.terminology (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   term_key text NOT NULL,
