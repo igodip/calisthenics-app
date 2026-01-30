@@ -32,24 +32,24 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 12),
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Column(
-              children: [
-                for (final option in themeOptions)
-                  RadioListTile<AppThemeType>(
-                    value: option.$1,
-                    groupValue: controller.themeType,
-                    onChanged: (value) {
-                      if (value != null) {
-                        controller.setTheme(value);
-                      }
-                    },
-                    title: Text(option.$2),
-                    secondary: CircleAvatar(
-                      radius: 12,
-                      backgroundColor: AppTheme.previewColorFor(option.$1),
+            child: RadioGroup<AppThemeType>(
+              groupValue: controller.themeType,
+              onChanged: (value) {
+                if (value != null) controller.setTheme(value);
+              },
+              child: Column(
+                children: [
+                  for (final option in themeOptions)
+                    RadioListTile<AppThemeType>(
+                      value: option.$1,
+                      title: Text(option.$2),
+                      secondary: CircleAvatar(
+                        radius: 12,
+                        backgroundColor: AppTheme.previewColorFor(option.$1),
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
