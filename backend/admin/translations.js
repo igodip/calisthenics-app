@@ -163,6 +163,8 @@ export const translations = {
       maxTestsTitle: 'Max tests',
       coachTipTitle: 'Coach tip',
       coachTipPlaceholder: 'Share a short tip for this trainee.',
+      trainerNotesTitle: 'Trainer notes',
+      trainerNotesPlaceholder: 'Private notes only visible to you.',
       plansTitle: 'Plans assigned',
       plansSubtitle: 'Current workout plans for this trainee.',
       paymentsTitle: 'Payments done',
@@ -219,6 +221,7 @@ export const translations = {
       updatingTrainer: 'Updating trainer assignment…',
       noProgress: 'No progress logged yet.',
       savingCoachTip: 'Saving coach tip…',
+      savingTrainerNotes: 'Saving trainer notes…',
       loadingMaxTests: 'Loading max tests…',
       loadingPayments: 'Loading payments…',
       loadingCompletedExercises: 'Loading completed exercises…',
@@ -297,6 +300,9 @@ export const translations = {
       loadMaxTests: 'Failed to load max tests.',
       loadMaxTestsWithMessage: 'Failed to load max tests: {message}',
       updateCoachTip: 'Failed to update coach tip.',
+      updateTrainerNotes: 'Failed to update trainer notes.',
+      trainerNotesUnavailable:
+        'Trainer notes are only available for trainer accounts.',
       loadCompletedExercises: 'Failed to load completed exercises.',
     },
     confirm: {
@@ -487,6 +493,8 @@ export const translations = {
       maxTestsTitle: 'Test massimali',
       coachTipTitle: 'Consiglio del coach',
       coachTipPlaceholder: 'Condividi un breve consiglio per questo allievo.',
+      trainerNotesTitle: 'Note del coach',
+      trainerNotesPlaceholder: 'Note private visibili solo a te.',
       plansTitle: 'Piani assegnati',
       plansSubtitle: 'Piani di allenamento correnti per questo allievo.',
       paymentsTitle: 'Pagamenti effettuati',
@@ -543,6 +551,7 @@ export const translations = {
       updatingTrainer: 'Aggiornamento assegnazione trainer…',
       noProgress: 'Nessun progresso registrato.',
       savingCoachTip: 'Salvataggio consiglio…',
+      savingTrainerNotes: 'Salvataggio note…',
       loadingMaxTests: 'Caricamento test massimali…',
       loadingPayments: 'Caricamento pagamenti…',
       loadingCompletedExercises: 'Caricamento esercizi completati…',
@@ -621,6 +630,9 @@ export const translations = {
       loadMaxTests: 'Impossibile caricare i test massimali.',
       loadMaxTestsWithMessage: 'Impossibile caricare i test massimali: {message}',
       updateCoachTip: 'Impossibile aggiornare il consiglio del coach.',
+      updateTrainerNotes: 'Impossibile aggiornare le note del coach.',
+      trainerNotesUnavailable:
+        'Le note del coach sono disponibili solo per gli account trainer.',
       loadCompletedExercises: 'Impossibile caricare gli esercizi completati.',
     },
     confirm: {

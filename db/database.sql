@@ -99,6 +99,7 @@ CREATE TABLE public.trainee_trainers (
   trainer_id uuid NOT NULL,
   assigned_at timestamp with time zone NOT NULL DEFAULT now(),
   coach_tip text,
+  trainer_notes text,
   CONSTRAINT trainee_trainers_pkey PRIMARY KEY (id),
   CONSTRAINT trainee_trainers_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
   CONSTRAINT trainee_trainers_trainer_id_fkey FOREIGN KEY (trainer_id) REFERENCES public.trainers(id)
@@ -138,4 +139,3 @@ CREATE TABLE public.workout_plans (
   notes text,
   CONSTRAINT workout_plans_pkey PRIMARY KEY (id)
 );
-
