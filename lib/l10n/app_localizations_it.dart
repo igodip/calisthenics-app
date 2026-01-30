@@ -24,7 +24,28 @@ class AppLocalizationsIt extends AppLocalizations {
   String get navProfile => 'Profilo';
 
   @override
+  String get navSettings => 'Impostazioni';
+
+  @override
   String get navTerminology => 'Terminologia';
+
+  @override
+  String get settingsThemeTitle => 'Tema';
+
+  @override
+  String get themeDefaultLabel => 'Predefinito';
+
+  @override
+  String get themeBlackLabel => 'Nero';
+
+  @override
+  String get themePinkLabel => 'Rosa';
+
+  @override
+  String get themeRedLabel => 'Rosso';
+
+  @override
+  String get themeBlueLabel => 'Blu';
 
   @override
   String get onboardingTitleOne => 'Allenati meglio';

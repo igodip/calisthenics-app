@@ -24,7 +24,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
+  String get navSettings => 'Settings';
+
+  @override
   String get navTerminology => 'Terminology';
+
+  @override
+  String get settingsThemeTitle => 'Theme';
+
+  @override
+  String get themeDefaultLabel => 'Default';
+
+  @override
+  String get themeBlackLabel => 'Black';
+
+  @override
+  String get themePinkLabel => 'Pink';
+
+  @override
+  String get themeRedLabel => 'Red';
+
+  @override
+  String get themeBlueLabel => 'Blue';
 
   @override
   String get onboardingTitleOne => 'Train smarter';
