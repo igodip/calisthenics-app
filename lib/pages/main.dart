@@ -2,6 +2,7 @@
 import 'package:calisync/pages/terminology.dart';
 import 'package:flutter/material.dart';
 import 'package:calisync/pages/profile.dart';
+import 'package:calisync/pages/settings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
@@ -69,6 +70,11 @@ class _HomePageState extends State<HomePage> {
         title: l10n.navProfile,
         icon: Icons.person,
         page: const ProfilePage(),
+      ),
+      _NavigationItem(
+        title: l10n.navSettings,
+        icon: Icons.settings,
+        page: const SettingsPage(),
       ),
       _NavigationItem(
         title: l10n.profileMaxTestsTitle,
