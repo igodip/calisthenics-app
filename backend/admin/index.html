@@ -572,6 +572,20 @@
                                 </div>
                                 <div class="muted small" v-if="coachTipSaving">{{ t('status.savingCoachTip') }}</div>
                             </div>
+                            <div class="data-block" v-if="currentTrainer">
+                                <span class="muted small">{{ t('program.trainerNotesTitle') }}</span>
+                                <textarea
+                                    v-model="trainerNotesDraft"
+                                    :placeholder="t('program.trainerNotesPlaceholder')"
+                                    :disabled="trainerNotesSaving"
+                                ></textarea>
+                                <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap">
+                                    <button class="small" type="button" @click="saveTrainerNotes" :disabled="trainerNotesSaving">
+                                        {{ t('actions.save') }}
+                                    </button>
+                                </div>
+                                <div class="muted small" v-if="trainerNotesSaving">{{ t('status.savingTrainerNotes') }}</div>
+                            </div>
                         </div>
                     </div>
 

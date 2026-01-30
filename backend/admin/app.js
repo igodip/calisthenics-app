@@ -87,6 +87,8 @@ import {
       const maxTestsError = ref('');
       const coachTipDraft = ref('');
       const coachTipSaving = ref(false);
+      const trainerNotesDraft = ref('');
+      const trainerNotesSaving = ref(false);
       const paymentSaving = ref({});
       const paymentAmountEdits = ref({});
       const paymentAmountSaving = ref({});
@@ -1196,13 +1198,13 @@ import {
       async function loadUsers() {
         const isTrainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
         const baseSelect =
-          'id, name, trainee_trainers ( trainer_id, trainers ( id, name ) , coach_tip )';
+          'id, name, trainee_trainers ( trainer_id, trainers ( id, name ) , coach_tip, trainer_notes )';
         let query = supabase.from('trainees').select(baseSelect);
         if (isTrainerOnly) {
           query = supabase
             .from('trainees')
             .select(
-              'id, name, trainee_trainers!inner ( trainer_id, trainers ( id, name ), coach_tip )',
+              'id, name, trainee_trainers!inner ( trainer_id, trainers ( id, name ), coach_tip, trainer_notes )',
             )
             .eq('trainee_trainers.trainer_id', currentTrainer.value.id);
         }
@@ -1244,19 +1246,24 @@ import {
           }
         }
 
-        users.value = (traineeRows || []).map((row) => ({
-          ...row,
-          paid: paidMap.get(row.id) || false,
-          paymentAmount: amountMap.get(row.id) ?? null,
-          paymentPaidAt: paidAtMap.get(row.id) ?? null,
-          trainers: (row.trainee_trainers || [])
-            .map((assignment) => assignment.trainers)
-            .filter(Boolean),
-          trainerIds: (row.trainee_trainers || []).map(
-            (assignment) => assignment.trainer_id,
-          ),
-          displayName: row.name || shortId(row.id),
-        }));
+        users.value = (traineeRows || []).map((row) => {
+          const assignments = row.trainee_trainers || [];
+          const currentTrainerId = currentTrainer.value?.id;
+          const currentAssignment = currentTrainerId
+            ? assignments.find((assignment) => assignment.trainer_id === currentTrainerId)
+            : assignments[0];
+          return {
+            ...row,
+            paid: paidMap.get(row.id) || false,
+            paymentAmount: amountMap.get(row.id) ?? null,
+            paymentPaidAt: paidAtMap.get(row.id) ?? null,
+            trainers: assignments.map((assignment) => assignment.trainers).filter(Boolean),
+            trainerIds: assignments.map((assignment) => assignment.trainer_id),
+            coach_tip: currentAssignment?.coach_tip || '',
+            trainer_notes: currentAssignment?.trainer_notes || '',
+            displayName: row.name || shortId(row.id),
+          };
+        });
         users.value.forEach((trainee) => {
           if (!trainerSelections.value[trainee.id]) {
             trainerSelections.value = {
@@ -1441,6 +1448,7 @@ import {
         paymentHistory.value = [];
         paymentsError.value = '';
         coachTipDraft.value = u?.coach_tip || '';
+        trainerNotesDraft.value = u?.trainer_notes || '';
         await loadExercises(u);
         await loadMaxTests(u);
       }
@@ -1768,6 +1776,41 @@ import {
           alert(err.message || t('errors.updateCoachTip'));
         } finally {
           coachTipSaving.value = false;
+        }
+      }
+
+      async function saveTrainerNotes() {
+        if (!current.value) {
+          alert(t('errors.selectTrainee'));
+          return;
+        }
+        if (!currentTrainer.value?.id) {
+          alert(t('errors.trainerNotesUnavailable'));
+          return;
+        }
+        trainerNotesSaving.value = true;
+        try {
+          const nextNotes = trainerNotesDraft.value.trim();
+          const { error } = await supabase
+            .from('trainee_trainers')
+            .update({ trainer_notes: nextNotes || null })
+            .eq('trainee_id', current.value.id)
+            .eq('trainer_id', currentTrainer.value.id);
+          if (error) {
+            throw new Error(error.message);
+          }
+          current.value = {
+            ...current.value,
+            trainer_notes: nextNotes,
+          };
+          users.value = (users.value || []).map((u) =>
+            u.id === current.value.id ? { ...u, trainer_notes: nextNotes } : u,
+          );
+        } catch (err) {
+          console.error(err);
+          alert(err.message || t('errors.updateTrainerNotes'));
+        } finally {
+          trainerNotesSaving.value = false;
         }
       }
 
@@ -2312,6 +2355,7 @@ import {
         trainerSelections,
         trainerAssignmentSaving,
         current,
+        currentTrainer,
         days,
         exercises,
         exerciseFilter,
@@ -2378,6 +2422,8 @@ import {
         maxTestsError,
         coachTipDraft,
         coachTipSaving,
+        trainerNotesDraft,
+        trainerNotesSaving,
         paymentSaving,
         paymentAmountEdits,
         paymentAmountSaving,
@@ -2420,6 +2466,7 @@ import {
         resetPlanForm,
         addExerciseToDay,
         saveCoachTip,
+        saveTrainerNotes,
         assignTrainerToTrainee,
         removeTrainerAssignment,
         loadExercises,
