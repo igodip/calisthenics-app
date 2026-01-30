@@ -87,7 +87,7 @@ class _TrainingState extends State<Training> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        colorScheme.surfaceVariant,
+                        colorScheme.surfaceContainerHighest,
                         colorScheme.surface,
                       ],
                       begin: Alignment.topLeft,
@@ -396,7 +396,7 @@ class _ExerciseCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colorScheme.outlineVariant),
       ),
@@ -416,7 +416,7 @@ class _ExerciseCard extends StatelessWidget {
                     gradient: LinearGradient(
                       colors: [
                         colorScheme.primaryContainer,
-                        colorScheme.surfaceVariant,
+                        colorScheme.surfaceContainerHighest,
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,

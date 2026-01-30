@@ -152,12 +152,6 @@ class _TimerPageState extends State<TimerPage> {
     }
   }
 
-  void _adjustTime(int deltaSeconds) {
-    setState(() {
-      _remainingSeconds = (_remainingSeconds + deltaSeconds).clamp(0, 36000);
-    });
-  }
-
   void _adjustPhaseDuration(IntervalPhase phase, int deltaSeconds) {
     final currentValue =
         phase == IntervalPhase.work ? _workSeconds : _restSeconds;
@@ -218,7 +212,6 @@ class _TimerPageState extends State<TimerPage> {
             final ringThickness = (ringSize * 0.12).clamp(16, 36).toDouble();
             final timeFontSize = (ringSize * 0.26).clamp(48, 120).toDouble();
             final labelFontSize = (ringSize * 0.08).clamp(18, 32).toDouble();
-            final buttonFontSize = (ringSize * 0.06).clamp(14, 22).toDouble();
 
             return Center(
               child: SingleChildScrollView(
@@ -247,7 +240,7 @@ class _TimerPageState extends State<TimerPage> {
                               progress: progress,
                               activeColor: phaseColor,
                               inactiveColor:
-                                  theme.colorScheme.onSurface.withOpacity(0.1),
+                                  theme.colorScheme.onSurface.withValues(alpha: 0.1),
                               thickness: ringThickness,
                             ),
                           ),
@@ -349,7 +342,7 @@ class _TimerConfigRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.4),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -480,41 +473,6 @@ class _IntervalRingPainter extends CustomPainter {
   }
 }
 
-class _TimeAdjustButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onPressed;
-  final double fontSize;
-
-  const _TimeAdjustButton({
-    required this.label,
-    required this.onPressed,
-    required this.fontSize,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return SizedBox(
-      width: 72,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          shape: const StadiumBorder(),
-          side: BorderSide(color: theme.colorScheme.outlineVariant),
-        ),
-        child: Text(
-          label,
-          style: theme.textTheme.labelLarge?.copyWith(
-            fontSize: fontSize,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _ControlButton extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -530,7 +488,6 @@ class _ControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final style = isPrimary
         ? FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
