@@ -817,12 +817,22 @@
                                         :disabled="savingTemplatePlan"
                                     >
                                         <span class="workout-editor-create-icon">+</span>
-                                        {{ t('actions.createWorkout') }}
+                                        {{ selectedTemplatePlanId ? t('actions.save') : t('actions.createWorkout') }}
                                     </button>
                                     <span v-if="savingTemplatePlan" class="muted small">{{ t('status.savingPlan') }}</span>
+                                    <span v-if="templatePlanLoading" class="muted small">{{ t('status.loadingPlan') }}</span>
                                 </div>
                             </div>
                             <div class="workout-editor-settings">
+                                <label class="stack small">
+                                    <span class="muted small">{{ t('labels.plan') }}</span>
+                                    <select v-model="selectedTemplatePlanId" :disabled="templatePlanLoading">
+                                        <option value="">{{ t('placeholders.newPlan') }}</option>
+                                        <option v-for="plan in plans" :key="plan.id" :value="plan.id">
+                                            {{ plan.title || t('labels.untitled') }}
+                                        </option>
+                                    </select>
+                                </label>
                                 <label class="stack small">
                                     <span class="muted small">{{ t('labels.planName') }}</span>
                                     <input v-model="templatePlanName" :placeholder="t('program.planExample')" />

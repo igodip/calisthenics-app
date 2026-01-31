@@ -144,6 +144,8 @@ import {
       const templateWeekCount = ref(templateWeekOptions[0] || 1);
       const templateSlotCount = ref(templateSlotsPerDay);
       const templatePlanName = ref('');
+      const selectedTemplatePlanId = ref('');
+      const templatePlanLoading = ref(false);
       const programTemplateDays = ref(
         buildTemplateDays(
           templateDayCount.value * templateWeekCount.value,
@@ -157,6 +159,7 @@ import {
       watch(
         [templateDayCount, templateWeekCount, templateSlotCount],
         ([nextCount, nextWeeks, nextSlots]) => {
+          if (templatePlanLoading.value) return;
           const totalDays = nextCount * nextWeeks;
           programTemplateDays.value = buildTemplateDays(
             totalDays,
@@ -173,6 +176,10 @@ import {
         if (selectedTemplateSlot.value >= nextSlots.length) {
           selectedTemplateSlot.value = 0;
         }
+      });
+      watch(selectedTemplatePlanId, async (nextId) => {
+        if (templatePlanLoading.value) return;
+        await loadTemplatePlan(nextId);
       });
 
       function buildTemplateDays(count, slots, existing) {
@@ -197,6 +204,109 @@ import {
           });
         }
         return list;
+      }
+
+      function resetTemplateBuilder() {
+        templatePlanLoading.value = true;
+        templateDayCount.value = templateDayOptions[0] || 1;
+        templateWeekCount.value = templateWeekOptions[0] || 1;
+        templateSlotCount.value = templateSlotsPerDay;
+        templatePlanName.value = '';
+        programTemplateDays.value = buildTemplateDays(
+          templateDayCount.value * templateWeekCount.value,
+          templateSlotCount.value,
+          [],
+        );
+        selectedTemplateDay.value = 0;
+        selectedTemplateSlot.value = 0;
+        templatePlanLoading.value = false;
+      }
+
+      async function loadTemplatePlan(planId) {
+        if (!planId) {
+          resetTemplateBuilder();
+          return;
+        }
+        templatePlanLoading.value = true;
+        try {
+          const plan = (plans.value || []).find((entry) => entry.id === planId);
+          templatePlanName.value = plan?.title || '';
+          const { data, error } = await supabase
+            .from('days')
+            .select(
+              `
+                id, week, day_code, title,
+                day_exercises ( id, position, notes, exercise ),
+                workout_plan_days!inner ( plan_id, position )
+              `,
+            )
+            .eq('workout_plan_days.plan_id', planId);
+          if (error) {
+            throw new Error('Load plan days failed: ' + error.message);
+          }
+          const sortedDays = (data || [])
+            .map((day) => ({
+              ...day,
+              plan_position: day.workout_plan_days?.[0]?.position || 0,
+            }))
+            .sort((a, b) => a.plan_position - b.plan_position);
+          const weekValues = sortedDays.map((day) => Number(day.week || 1));
+          const maxWeek = weekValues.length ? Math.max(...weekValues) : 1;
+          const dayCodeIndexes = sortedDays.map((day) => {
+            const code = (day.day_code || '').toUpperCase();
+            const index = dayCodeOptions.indexOf(code);
+            return index >= 0 ? index : 0;
+          });
+          const defaultDaysPerWeek = templateDayOptions[0] || 1;
+          const maxDayIndex = dayCodeIndexes.length
+            ? Math.max(...dayCodeIndexes)
+            : defaultDaysPerWeek - 1;
+          const daysPerWeek = Math.max(maxDayIndex + 1, defaultDaysPerWeek);
+          const maxSlots = sortedDays.length
+            ? Math.max(
+                ...sortedDays.map((day) => (day.day_exercises || []).length),
+              )
+            : templateSlotsPerDay;
+          templateDayCount.value = daysPerWeek;
+          templateWeekCount.value = maxWeek;
+          templateSlotCount.value = maxSlots || templateSlotsPerDay;
+          const totalDays = daysPerWeek * maxWeek;
+          const templateDays = buildTemplateDays(totalDays, templateSlotCount.value, []);
+          sortedDays.forEach((day) => {
+            const weekIndex = Math.max(Number(day.week || 1) - 1, 0);
+            const dayIndex = dayCodeOptions.indexOf(
+              (day.day_code || '').toUpperCase(),
+            );
+            const safeDayIndex = dayIndex >= 0 ? dayIndex : 0;
+            const position = weekIndex * daysPerWeek + safeDayIndex;
+            if (position < 0 || position >= templateDays.length) return;
+            const entry = templateDays[position];
+            entry.id = day.id;
+            entry.title = day.title || '';
+            const slots = [...entry.slots];
+            const exercises = (day.day_exercises || [])
+              .slice()
+              .sort((a, b) => (a.position || 0) - (b.position || 0));
+            exercises.forEach((exercise, index) => {
+              if (!slots[index]) return;
+              slots[index] = {
+                ...slots[index],
+                exercise: exercise.exercise || '',
+                notes: exercise.notes || '',
+              };
+            });
+            entry.slots = slots;
+          });
+          programTemplateDays.value = templateDays;
+          selectedTemplateDay.value = 0;
+          selectedTemplateSlot.value = 0;
+        } catch (err) {
+          console.error(err);
+          alert(err.message || t('errors.loadDays'));
+          resetTemplateBuilder();
+        } finally {
+          templatePlanLoading.value = false;
+        }
       }
 
       const nextWeek = computed(() => {
@@ -790,19 +900,71 @@ import {
         }
         savingTemplatePlan.value = true;
         try {
-          const { data: planRow, error: planError } = await supabase
-            .from('workout_plans')
-            .insert({
-              trainee_id: current.value.id,
-              title: planTitle,
-              status: planStatuses[0],
-              starts_on: null,
-              notes: null,
-            })
-            .select('id')
-            .single();
-          if (planError) {
-            throw new Error('Create plan failed: ' + planError.message);
+          let planId = selectedTemplatePlanId.value;
+          const editingExistingPlan = Boolean(planId);
+          if (editingExistingPlan) {
+            const { error: planError } = await supabase
+              .from('workout_plans')
+              .update({ title: planTitle })
+              .eq('id', planId);
+            if (planError) {
+              throw new Error('Update plan failed: ' + planError.message);
+            }
+            const { data: existingLinks, error: linksError } = await supabase
+              .from('workout_plan_days')
+              .select('day_id')
+              .eq('plan_id', planId);
+            if (linksError) {
+              throw new Error('Load existing plan days failed: ' + linksError.message);
+            }
+            const existingDayIds = (existingLinks || [])
+              .map((row) => row.day_id)
+              .filter(Boolean);
+            if (existingDayIds.length) {
+              const { error: exerciseDeleteError } = await supabase
+                .from('day_exercises')
+                .delete()
+                .in('day_id', existingDayIds);
+              if (exerciseDeleteError) {
+                throw new Error(
+                  'Delete existing exercises failed: ' + exerciseDeleteError.message,
+                );
+              }
+              const { error: linkDeleteError } = await supabase
+                .from('workout_plan_days')
+                .delete()
+                .eq('plan_id', planId);
+              if (linkDeleteError) {
+                throw new Error(
+                  'Delete existing plan links failed: ' + linkDeleteError.message,
+                );
+              }
+              const { error: dayDeleteError } = await supabase
+                .from('days')
+                .delete()
+                .in('id', existingDayIds);
+              if (dayDeleteError) {
+                throw new Error(
+                  'Delete existing days failed: ' + dayDeleteError.message,
+                );
+              }
+            }
+          } else {
+            const { data: planRow, error: planError } = await supabase
+              .from('workout_plans')
+              .insert({
+                trainee_id: current.value.id,
+                title: planTitle,
+                status: planStatuses[0],
+                starts_on: null,
+                notes: null,
+              })
+              .select('id')
+              .single();
+            if (planError) {
+              throw new Error('Create plan failed: ' + planError.message);
+            }
+            planId = planRow.id;
           }
           const dayPayloads = (programTemplateDays.value || []).map(
             (day, index) => ({
@@ -821,7 +983,7 @@ import {
             throw new Error('Create days failed: ' + dayError.message);
           }
           const planDayPayloads = (dayRows || []).map((row, index) => ({
-            plan_id: planRow.id,
+            plan_id: planId,
             day_id: row.id,
             position: index + 1,
           }));
@@ -844,7 +1006,7 @@ import {
               exercisePayloads.push({
                 day_id: row.id,
                 position: slotIndex + 1,
-                notes: null,
+                notes: (slot.notes || '').trim() || null,
                 completed: false,
                 exercise,
               });
@@ -860,15 +1022,12 @@ import {
           }
           await loadDays();
           await loadPlans();
-          templateDayCount.value = templateDayOptions[0] || 1;
-          templateWeekCount.value = templateWeekOptions[0] || 1;
-          templateSlotCount.value = templateSlotsPerDay;
-          templatePlanName.value = '';
-          programTemplateDays.value = buildTemplateDays(
-            templateDayCount.value * templateWeekCount.value,
-            templateSlotCount.value,
-            [],
-          );
+          if (editingExistingPlan) {
+            await loadTemplatePlan(planId);
+          } else {
+            selectedTemplatePlanId.value = '';
+            resetTemplateBuilder();
+          }
         } catch (err) {
           console.error(err);
           alert(err.message || t('errors.createDay'));
@@ -1857,6 +2016,14 @@ import {
         plans.value = data || [];
         planEdits.value = {};
         (plans.value || []).forEach(setPlanEdit);
+        if (
+          selectedTemplatePlanId.value &&
+          !(plans.value || []).some(
+            (plan) => plan.id === selectedTemplatePlanId.value,
+          )
+        ) {
+          selectedTemplatePlanId.value = '';
+        }
       }
 
       async function loadDays(u = current.value) {
@@ -2610,6 +2777,8 @@ import {
         templateSlotCount,
         templateExerciseOptions,
         templatePlanName,
+        selectedTemplatePlanId,
+        templatePlanLoading,
         programTemplateDays,
         templateWeekGroups,
         selectedTemplateDay,
