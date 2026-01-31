@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/exercise_guide_card.dart';
+import '../data/exercise_guides.dart';
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 
@@ -23,19 +23,8 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
     final l10n = AppLocalizations.of(context)!;
     if (_guidesFuture == null || _localeName != l10n.localeName) {
       _localeName = l10n.localeName;
-      _guidesFuture = _loadGuides(l10n);
+      _guidesFuture = ExerciseGuides.load(l10n);
     }
-  }
-
-  Future<List<ExerciseGuide>> _loadGuides(AppLocalizations l10n) async {
-    final response = await Supabase.instance.client
-        .from('exercises')
-        .select('name, slug, difficulty')
-        .order('sort_order', ascending: true);
-    final rows = (response as List<dynamic>).cast<Map<String, dynamic>>();
-    return rows
-        .map((row) => ExerciseGuide.fromDatabase(row, l10n.localeName))
-        .toList();
   }
 
   @override
