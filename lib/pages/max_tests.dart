@@ -1,4 +1,3 @@
-import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -753,7 +752,9 @@ class _MaxTestTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final appColors = theme.extension<AppColors>();
+    final colorScheme = theme.colorScheme;
+    final highlightColor = colorScheme.secondary;
+    final highlightOnColor = colorScheme.onSecondary;
     final dateText = DateFormat.yMMMd().format(test.recordedAt);
 
     return ListTile(
@@ -761,10 +762,8 @@ class _MaxTestTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
         radius: 18,
-        backgroundColor:
-            isBest ? appColors?.success ?? Colors.green : Colors.transparent,
-        foregroundColor:
-            isBest ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
+        backgroundColor: isBest ? highlightColor : Colors.transparent,
+        foregroundColor: isBest ? highlightOnColor : colorScheme.primary,
         child: Icon(isBest ? Icons.military_tech : Icons.timeline),
       ),
       title: Text(
@@ -775,15 +774,14 @@ class _MaxTestTile extends StatelessWidget {
       trailing: isBest
           ? Container(
               decoration: BoxDecoration(
-                color: (appColors?.success ?? theme.colorScheme.secondary)
-                    .withValues(alpha: 0.15),
+                color: highlightColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Text(
                 badgeLabel,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: appColors?.success ?? theme.colorScheme.secondary,
+                  color: highlightColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),
