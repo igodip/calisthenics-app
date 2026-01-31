@@ -1319,7 +1319,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileThemeSettingsSubtitle.
   ///
   /// In it, this message translates to:
-  /// **'Scegli il colore del tema dell'app'**
+  /// **'Scegli il colore del tema dell\'app'**
   String get profileThemeSettingsSubtitle;
 
   /// No description provided for @profileEditTitle.

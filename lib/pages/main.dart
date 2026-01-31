@@ -72,11 +72,6 @@ class _HomePageState extends State<HomePage> {
         page: const ProfilePage(),
       ),
       _NavigationItem(
-        title: l10n.navSettings,
-        icon: Icons.settings,
-        page: const SettingsPage(),
-      ),
-      _NavigationItem(
         title: l10n.profileMaxTestsTitle,
         icon: Icons.emoji_events_outlined,
         page: const MaxTestsMenuPage(),
