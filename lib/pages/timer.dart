@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 
@@ -152,11 +153,8 @@ class _TimerPageState extends State<TimerPage> {
     }
   }
 
-  void _adjustPhaseDuration(IntervalPhase phase, int deltaSeconds) {
-    final currentValue =
-        phase == IntervalPhase.work ? _workSeconds : _restSeconds;
-    final updatedValue = (currentValue + deltaSeconds).clamp(5, 36000);
-
+  void _setPhaseDuration(IntervalPhase phase, int valueSeconds) {
+    final updatedValue = valueSeconds.clamp(5, 36000);
     setState(() {
       if (phase == IntervalPhase.work) {
         _workSeconds = updatedValue;
@@ -172,6 +170,53 @@ class _TimerPageState extends State<TimerPage> {
         }
       }
     });
+  }
+
+  Future<void> _editPhaseDuration(IntervalPhase phase) async {
+    final currentValue =
+        phase == IntervalPhase.work ? _workSeconds : _restSeconds;
+    final controller = TextEditingController(text: currentValue.toString());
+    final materialL10n = MaterialLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    final result = await showDialog<int>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            phase == IntervalPhase.work
+                ? l10n.timerWorkDurationLabel
+                : l10n.timerRestDurationLabel,
+          ),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: const InputDecoration(
+              hintText: '0',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(materialL10n.cancelButtonLabel),
+            ),
+            TextButton(
+              onPressed: () {
+                final parsed = int.tryParse(controller.text);
+                Navigator.of(context).pop(parsed);
+              },
+              child: Text(materialL10n.okButtonLabel),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == null) {
+      return;
+    }
+    _setPhaseDuration(phase, result);
   }
 
   String _formatSeconds(int seconds) {
@@ -264,19 +309,13 @@ class _TimerPageState extends State<TimerPage> {
                     _TimerConfigRow(
                       title: l10n.timerWorkDurationLabel,
                       value: _formatSeconds(_workDurationSeconds),
-                      onDecrease: () =>
-                          _adjustPhaseDuration(IntervalPhase.work, -10),
-                      onIncrease: () =>
-                          _adjustPhaseDuration(IntervalPhase.work, 10),
+                      onEdit: () => _editPhaseDuration(IntervalPhase.work),
                     ),
                     const SizedBox(height: 12),
                     _TimerConfigRow(
                       title: l10n.timerRestDurationLabel,
                       value: _formatSeconds(_restDurationSeconds),
-                      onDecrease: () =>
-                          _adjustPhaseDuration(IntervalPhase.rest, -10),
-                      onIncrease: () =>
-                          _adjustPhaseDuration(IntervalPhase.rest, 10),
+                      onEdit: () => _editPhaseDuration(IntervalPhase.rest),
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -325,14 +364,12 @@ class _TimerPageState extends State<TimerPage> {
 class _TimerConfigRow extends StatelessWidget {
   final String title;
   final String value;
-  final VoidCallback onDecrease;
-  final VoidCallback onIncrease;
+  final VoidCallback onEdit;
 
   const _TimerConfigRow({
     required this.title,
     required this.value,
-    required this.onDecrease,
-    required this.onIncrease,
+    required this.onEdit,
   });
 
   @override
@@ -365,47 +402,12 @@ class _TimerConfigRow extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            children: [
-              _ConfigAdjustButton(
-                label: AppLocalizations.of(context)!.timerAdjustDecrease,
-                onPressed: onDecrease,
-              ),
-              const SizedBox(width: 8),
-              _ConfigAdjustButton(
-                label: AppLocalizations.of(context)!.timerAdjustIncrease,
-                onPressed: onIncrease,
-              ),
-            ],
+          IconButton(
+            onPressed: onEdit,
+            tooltip: MaterialLocalizations.of(context).editButtonLabel,
+            icon: const Icon(Icons.edit),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ConfigAdjustButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onPressed;
-
-  const _ConfigAdjustButton({
-    required this.label,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        shape: const StadiumBorder(),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
       ),
     );
   }
