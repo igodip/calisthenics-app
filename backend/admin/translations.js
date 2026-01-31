@@ -45,6 +45,7 @@ export const translations = {
       loadPlans: 'Load plans',
       collapse: 'Collapse',
       expand: 'Expand',
+      closeFeedback: 'Close feedback',
     },
     labels: {
       totalCount: '{count} total',
@@ -331,6 +332,7 @@ export const translations = {
       loadMaxTestsWithMessage: 'Failed to load max tests: {message}',
       updateCoachTip: 'Failed to update coach tip.',
       updateTrainerNotes: 'Failed to update trainer notes.',
+      updateFeedback: 'Failed to update feedback.',
       trainerNotesUnavailable:
         'Trainer notes are only available for trainer accounts.',
       loadCompletedExercises: 'Failed to load completed exercises.',
@@ -405,6 +407,7 @@ export const translations = {
       loadPlans: 'Carica piani',
       collapse: 'Comprimi',
       expand: 'Espandi',
+      closeFeedback: 'Chiudi feedback',
     },
     labels: {
       totalCount: '{count} totali',
@@ -692,6 +695,7 @@ export const translations = {
       loadMaxTestsWithMessage: 'Impossibile caricare i test massimali: {message}',
       updateCoachTip: 'Impossibile aggiornare il consiglio del coach.',
       updateTrainerNotes: 'Impossibile aggiornare le note del coach.',
+      updateFeedback: 'Impossibile aggiornare il feedback.',
       trainerNotesUnavailable:
         'Le note del coach sono disponibili solo per gli account trainer.',
       loadCompletedExercises: 'Impossibile caricare gli esercizi completati.',
