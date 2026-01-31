@@ -50,12 +50,24 @@ class MaxTestsContent extends StatefulWidget {
 
 class _MaxTestsContentState extends State<MaxTestsContent> {
   Future<List<MaxTest>>? _maxTestsFuture;
+  Future<List<ExerciseGuide>>? _exerciseGuidesFuture;
+  String? _localeName;
   _MaxTestPeriod _selectedPeriod = _MaxTestPeriod.all;
 
   @override
   void initState() {
     super.initState();
     _refreshMaxTests();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context)!;
+    if (_exerciseGuidesFuture == null || _localeName != l10n.localeName) {
+      _localeName = l10n.localeName;
+      _exerciseGuidesFuture = _loadExerciseGuides(l10n.localeName);
+    }
   }
 
   void _refreshMaxTests() {
@@ -149,6 +161,17 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     return items.map(MaxTest.fromMap).toList();
   }
 
+  Future<List<ExerciseGuide>> _loadExerciseGuides(String localeName) async {
+    final response = await supabase
+        .from('exercise_guides')
+        .select('slug, difficulty, default_unlocked, accent')
+        .order('sort_order', ascending: true);
+    final rows = (response as List<dynamic>).cast<Map<String, dynamic>>();
+    return rows
+        .map((row) => ExerciseGuide.fromDatabase(row, localeName))
+        .toList();
+  }
+
   Future<void> _showAddMaxTest(List<ExerciseGuide> exerciseGuides) async {
     final l10n = AppLocalizations.of(context)!;
     final saved = await showModalBottomSheet<bool>(
@@ -173,15 +196,6 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     final colorScheme = theme.colorScheme;
     final now = DateTime.now();
     final periodStart = _periodStartDate(now);
-    final exerciseGuides = ExerciseGuide.buildGuides(l10n)
-      ..sort((a, b) => a.name.compareTo(b.name));
-    final exerciseGuideById = {
-      for (final guide in exerciseGuides) guide.id: guide,
-    };
-    final exerciseGuideByName = {
-      for (final guide in exerciseGuides)
-        guide.name.trim().toLowerCase(): guide,
-    };
 
     return Scaffold(
       body: SafeArea(
@@ -206,196 +220,247 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.displayName,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: _refreshMaxTests,
-                          tooltip: l10n.profileMaxTestsRefresh,
-                          icon: const Icon(Icons.refresh),
-                        ),
-                        IconButton(
-                          onPressed: _openHistoryPage,
-                          tooltip: l10n.profileMaxTestsHistoryAction,
-                          icon: const Icon(Icons.timeline_outlined),
-                        ),
-                        const SizedBox(width: 8),
-                        FilledButton.tonalIcon(
-                          onPressed: () => _showAddMaxTest(exerciseGuides),
-                          icon: const Icon(Icons.add),
-                          label: Text(l10n.profileMaxTestsAdd),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.profileMaxTestsDescription,
-                      style: theme.textTheme.bodyMedium
-                          ?.copyWith(color: colorScheme.onSurfaceVariant),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Text(
-                          l10n.profileMaxTestsPeriodLabel,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        DropdownButton<_MaxTestPeriod>(
-                          value: _selectedPeriod,
-                          onChanged: (value) {
-                            if (value == null) return;
-                            setState(() => _selectedPeriod = value);
-                          },
-                          items: _MaxTestPeriod.values
-                              .map(
-                                (period) => DropdownMenuItem<_MaxTestPeriod>(
-                                  value: period,
-                                  child: Text(_periodLabel(l10n, period)),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: FutureBuilder<List<MaxTest>>(
-                        future: _maxTestsFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
-                          }
+                    FutureBuilder<List<ExerciseGuide>>(
+                      future: _exerciseGuidesFuture,
+                      builder: (context, snapshot) {
+                        final exerciseGuides =
+                            snapshot.data ?? const <ExerciseGuide>[];
+                        final sortedGuides = [...exerciseGuides]
+                          ..sort((a, b) => a.name.compareTo(b.name));
+                        final exerciseGuideById = {
+                          for (final guide in sortedGuides) guide.id: guide,
+                        };
+                        final exerciseGuideByName = {
+                          for (final guide in sortedGuides)
+                            guide.name.trim().toLowerCase(): guide,
+                        };
 
-                          if (snapshot.hasError) {
-                            final errorText = snapshot.error.toString();
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Text(
-                                  l10n.profileMaxTestsError(errorText),
-                                  style: theme.textTheme.bodyMedium,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            );
-                          }
-
-                          final tests = snapshot.data ?? const [];
-                          if (tests.isEmpty) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.emoji_events_outlined),
-                                    const SizedBox(width: 12),
-                                    Flexible(
-                                      child: Text(
-                                        l10n.profileMaxTestsEmpty,
-                                        style: theme.textTheme.bodyMedium,
-                                      ),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    widget.displayName,
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          }
-
-                          final filteredTests =
-                              periodStart == null
-                                  ? tests
-                                  : tests
-                                      .where(
-                                        (test) => !test.recordedAt.isBefore(
-                                          periodStart,
+                                IconButton(
+                                  onPressed: _refreshMaxTests,
+                                  tooltip: l10n.profileMaxTestsRefresh,
+                                  icon: const Icon(Icons.refresh),
+                                ),
+                                IconButton(
+                                  onPressed: _openHistoryPage,
+                                  tooltip: l10n.profileMaxTestsHistoryAction,
+                                  icon: const Icon(Icons.timeline_outlined),
+                                ),
+                                const SizedBox(width: 8),
+                                FilledButton.tonalIcon(
+                                  onPressed: sortedGuides.isEmpty
+                                      ? null
+                                      : () => _showAddMaxTest(sortedGuides),
+                                  icon: const Icon(Icons.add),
+                                  label: Text(l10n.profileMaxTestsAdd),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n.profileMaxTestsDescription,
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(color: colorScheme.onSurfaceVariant),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Text(
+                                  l10n.profileMaxTestsPeriodLabel,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                DropdownButton<_MaxTestPeriod>(
+                                  value: _selectedPeriod,
+                                  onChanged: (value) {
+                                    if (value == null) return;
+                                    setState(() => _selectedPeriod = value);
+                                  },
+                                  items: _MaxTestPeriod.values
+                                      .map(
+                                        (period) =>
+                                            DropdownMenuItem<_MaxTestPeriod>(
+                                          value: period,
+                                          child: Text(_periodLabel(l10n, period)),
                                         ),
                                       )
-                                      .toList();
-
-                          if (filteredTests.isEmpty) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: Text(
-                                  l10n.profileMaxTestsEmptyPeriod(
-                                    _periodLabel(l10n, _selectedPeriod),
-                                  ),
-                                  style: theme.textTheme.bodyMedium,
-                                  textAlign: TextAlign.center,
+                                      .toList(),
                                 ),
-                              ),
-                            );
-                          }
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Expanded(
+                              child: FutureBuilder<List<MaxTest>>(
+                                future: _maxTestsFuture,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
 
-                          final groupedTests = <String, List<MaxTest>>{};
-                          final displayNames = <String, String>{};
-                          for (final test in filteredTests) {
-                            final displayName = _resolveExerciseLabel(
-                              test.exercise,
-                              exerciseGuideById,
-                              exerciseGuideByName,
-                            );
-                            final key = _resolveExerciseKey(
-                              test.exercise,
-                              exerciseGuideById,
-                              exerciseGuideByName,
-                            );
-                            groupedTests.putIfAbsent(key, () => []).add(test);
-                            displayNames.putIfAbsent(key, () => displayName);
-                          }
-
-                          return ListView.separated(
-                            itemCount: groupedTests.length,
-                            separatorBuilder: (context, index) => const SizedBox(height: 16),
-                            itemBuilder: (context, index) {
-                              final entry = groupedTests.entries.elementAt(index);
-                              final exerciseKey = entry.key;
-                              final groupTests = entry.value;
-                              final isAllPeriod = _selectedPeriod == _MaxTestPeriod.all;
-                              final displayTests = isAllPeriod
-                                  ? _buildProgression(groupTests)
-                                  : [
-                                      groupTests.reduce(
-                                        (a, b) => a.value >= b.value ? a : b,
+                                  if (snapshot.hasError) {
+                                    final errorText = snapshot.error.toString();
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                        ),
+                                        child: Text(
+                                          l10n.profileMaxTestsError(errorText),
+                                          style: theme.textTheme.bodyMedium,
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
-                                    ];
-                              final bestValue =
-                                  displayTests.isEmpty
-                                      ? 0
-                                      : displayTests
-                                          .map((test) => test.value)
-                                          .reduce((a, b) => a > b ? a : b);
-                              final exercise =
-                                  displayNames[exerciseKey] ??
-                                  groupTests.first.exercise.trim();
+                                    );
+                                  }
 
-                              return _ExerciseGroupCard(
-                                exercise: exercise,
-                                tests: displayTests,
-                                bestValue: bestValue,
-                                summaryLabel: isAllPeriod
-                                    ? l10n.profileMaxTestsBestLabel
-                                    : l10n.profileMaxTestsBestPeriodLabel,
-                                badgeLabel: isAllPeriod
-                                    ? l10n.profileMaxTestsBestLabel
-                                    : l10n.profileMaxTestsBestPeriodLabel,
-                                enableToggle: isAllPeriod,
-                              );
-                            },
-                          );
-                        },
-                      ),
+                                  final tests = snapshot.data ?? const [];
+                                  if (tests.isEmpty) {
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.emoji_events_outlined),
+                                            const SizedBox(width: 12),
+                                            Flexible(
+                                              child: Text(
+                                                l10n.profileMaxTestsEmpty,
+                                                style: theme.textTheme.bodyMedium,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  final filteredTests =
+                                      periodStart == null
+                                          ? tests
+                                          : tests
+                                              .where(
+                                                (test) =>
+                                                    !test.recordedAt.isBefore(
+                                                  periodStart,
+                                                ),
+                                              )
+                                              .toList();
+
+                                  if (filteredTests.isEmpty) {
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                        ),
+                                        child: Text(
+                                          l10n.profileMaxTestsEmptyPeriod(
+                                            _periodLabel(l10n, _selectedPeriod),
+                                          ),
+                                          style: theme.textTheme.bodyMedium,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  final groupedTests = <String, List<MaxTest>>{};
+                                  final displayNames = <String, String>{};
+                                  for (final test in filteredTests) {
+                                    final displayName = _resolveExerciseLabel(
+                                      test.exercise,
+                                      exerciseGuideById,
+                                      exerciseGuideByName,
+                                    );
+                                    final exerciseKey = _resolveExerciseKey(
+                                      test.exercise,
+                                      exerciseGuideById,
+                                      exerciseGuideByName,
+                                    );
+                                    final unitLabel = test.unit.trim();
+                                    final groupKey = unitLabel.isEmpty
+                                        ? exerciseKey
+                                        : '$exerciseKey::$unitLabel';
+                                    groupedTests
+                                        .putIfAbsent(groupKey, () => [])
+                                        .add(test);
+                                    displayNames.putIfAbsent(
+                                      groupKey,
+                                      unitLabel.isEmpty
+                                          ? displayName
+                                          : '$displayName · $unitLabel',
+                                    );
+                                  }
+
+                                  return ListView.separated(
+                                    itemCount: groupedTests.length,
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(height: 16),
+                                    itemBuilder: (context, index) {
+                                      final entry =
+                                          groupedTests.entries.elementAt(index);
+                                      final groupKey = entry.key;
+                                      final groupTests = entry.value;
+                                      final isAllPeriod =
+                                          _selectedPeriod == _MaxTestPeriod.all;
+                                      final displayTests = isAllPeriod
+                                          ? _buildProgression(groupTests)
+                                          : [
+                                              groupTests.reduce(
+                                                (a, b) =>
+                                                    a.value >= b.value ? a : b,
+                                              ),
+                                            ];
+                                      final bestValue =
+                                          displayTests.isEmpty
+                                              ? 0
+                                              : displayTests
+                                                  .map((test) => test.value)
+                                                  .reduce((a, b) => a > b ? a : b);
+                                      final exercise =
+                                          displayNames[groupKey] ??
+                                          groupTests.first.exercise.trim();
+
+                                      return _ExerciseGroupCard(
+                                        exercise: exercise,
+                                        tests: displayTests,
+                                        bestValue: bestValue,
+                                        summaryLabel: isAllPeriod
+                                            ? l10n.profileMaxTestsBestLabel
+                                            : l10n.profileMaxTestsBestPeriodLabel,
+                                        badgeLabel: isAllPeriod
+                                            ? l10n.profileMaxTestsBestLabel
+                                            : l10n.profileMaxTestsBestPeriodLabel,
+                                        enableToggle: isAllPeriod,
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -809,16 +874,22 @@ class _MaxTestBottomSheet extends StatefulWidget {
 class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _valueController = TextEditingController();
-  final _unitController = TextEditingController();
   String? _selectedExercise;
+  String? _selectedUnit;
   DateTime _selectedDate = DateTime.now();
   bool _isSaving = false;
   bool _didSetDefaultUnit = false;
 
+  static const List<String> _allowedUnits = [
+    'kg',
+    'reps',
+    'seconds',
+    'minutes',
+  ];
+
   @override
   void dispose() {
     _valueController.dispose();
-    _unitController.dispose();
     super.dispose();
   }
 
@@ -829,9 +900,9 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
       return;
     }
     final l10n = AppLocalizations.of(context)!;
-    if (_unitController.text.trim().isEmpty) {
-      _unitController.text = l10n.profileMaxTestsDefaultUnit;
-    }
+    final defaultUnit = l10n.profileMaxTestsDefaultUnit;
+    _selectedUnit =
+        _allowedUnits.contains(defaultUnit) ? defaultUnit : _allowedUnits[1];
     _didSetDefaultUnit = true;
   }
 
@@ -900,12 +971,23 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
                   },
                 ),
                 const SizedBox(height: 12),
-                TextFormField(
-                  controller: _unitController,
+                DropdownButtonFormField<String>(
+                  value: _selectedUnit,
                   decoration: InputDecoration(
                     labelText: l10n.profileMaxTestsUnitLabel,
                     hintText: l10n.profileMaxTestsUnitHint,
                   ),
+                  items: _allowedUnits
+                      .map(
+                        (unit) => DropdownMenuItem(
+                          value: unit,
+                          child: Text(unit),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) => setState(() => _selectedUnit = value),
+                  validator: (value) =>
+                      value == null ? l10n.profileMaxTestsUnitHint : null,
                 ),
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
@@ -973,9 +1055,7 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
 
     final exercise = _selectedExercise ?? '';
     final value = double.parse(_valueController.text.trim().replaceAll(',', '.'));
-    final unit = _unitController.text.trim().isEmpty
-        ? l10n.profileMaxTestsDefaultUnit
-        : _unitController.text.trim();
+    final unit = _selectedUnit ?? _allowedUnits[1];
 
     final payload = {
       'trainee_id': widget.userId,
