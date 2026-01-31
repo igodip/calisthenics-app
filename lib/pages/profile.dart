@@ -168,20 +168,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 12),
                   Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: Column(
-                      children: [
-                        for (final option in options)
-                          RadioListTile<String?>(
-                            value: option.$1,
-                            groupValue: currentCode,
-                            title: Text(option.$2),
-                            onChanged: (value) {
-                              controller.setLocale(
-                                value == null ? null : Locale(value),
-                              );
-                            },
-                          ),
-                      ],
+                    child: RadioGroup<String?>(
+                      groupValue: currentCode,
+                      onChanged: (value) {
+                        controller.setLocale(
+                          value == null ? null : Locale(value),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          for (final option in options)
+                            RadioListTile<String?>(
+                              value: option.$1,
+                              title: Text(option.$2),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
