@@ -38,9 +38,12 @@ import {
         updateDocumentLanguage,
       } = createI18n(locale);
 
-      watch(locale, (nextLocale) => {
+      watch(locale, async (nextLocale) => {
         localStorage.setItem('adminLocale', nextLocale);
         updateDocumentLanguage();
+        if (session.value) {
+          await loadTerminology();
+        }
       });
       const session = ref(null);
       const user = ref(null);
@@ -67,6 +70,19 @@ import {
       const creatingExercise = ref(false);
       const loadingExercises = ref(false);
       const exercisesError = ref('');
+      const terminology = ref([]);
+      const terminologyFilter = ref('');
+      const terminologyForm = ref({
+        term_key: '',
+        title: '',
+        description: '',
+        sort_order: 1,
+      });
+      const terminologyEdits = ref({});
+      const terminologySaving = ref({});
+      const creatingTerminology = ref(false);
+      const loadingTerminology = ref(false);
+      const terminologyError = ref('');
 
       const users = ref([]);
       const current = ref(null);
@@ -253,6 +269,21 @@ import {
             name.includes(query) ||
             slug.includes(query) ||
             difficulty.includes(query)
+          );
+        });
+      });
+      const filteredTerminology = computed(() => {
+        const query = (terminologyFilter.value || '').trim().toLowerCase();
+        const list = terminology.value || [];
+        if (!query) return list;
+        return list.filter((entry) => {
+          const key = (entry.term_key || '').toLowerCase();
+          const title = (entry.title || '').toLowerCase();
+          const description = (entry.description || '').toLowerCase();
+          return (
+            key.includes(query) ||
+            title.includes(query) ||
+            description.includes(query)
           );
         });
       });
@@ -939,6 +970,7 @@ import {
         }
         await loadUsers();
         await loadExercises();
+        await loadTerminology();
         await loadTraineeProgress();
         await loadDashboardBurndown();
         await loadDashboardNotes();
@@ -1029,6 +1061,26 @@ import {
           sort_order: 1,
         };
       }
+      function setTerminologyEdit(entry) {
+        if (!entry?.id) return;
+        terminologyEdits.value = {
+          ...terminologyEdits.value,
+          [entry.id]: {
+            term_key: entry.term_key || '',
+            title: entry.title || '',
+            description: entry.description || '',
+            sort_order: Number(entry.sort_order ?? 1),
+          },
+        };
+      }
+      function resetTerminologyForm() {
+        terminologyForm.value = {
+          term_key: '',
+          title: '',
+          description: '',
+          sort_order: 1,
+        };
+      }
 
       async function loadExercises(u = current.value) {
         loadingExercises.value = true;
@@ -1079,6 +1131,30 @@ import {
           loadingExercises.value = false;
         }
       }
+      async function loadTerminology() {
+        loadingTerminology.value = true;
+        terminologyError.value = '';
+        try {
+          const { data, error } = await supabase
+            .from('terminology')
+            .select('id, term_key, locale, title, description, sort_order, created_at')
+            .eq('locale', locale.value)
+            .order('sort_order', { ascending: true })
+            .order('title', { ascending: true });
+          if (error) {
+            throw new Error(t('errors.loadTerminology', { message: error.message }));
+          }
+          terminology.value = data || [];
+          terminologyEdits.value = {};
+          (terminology.value || []).forEach(setTerminologyEdit);
+        } catch (error) {
+          console.error(error);
+          terminology.value = [];
+          terminologyError.value = error.message || t('errors.loadTerminology');
+        } finally {
+          loadingTerminology.value = false;
+        }
+      }
 
       async function createExercise() {
         if (creatingExercise.value) return;
@@ -1114,6 +1190,45 @@ import {
           alert(error.message || t('errors.createExercise'));
         } finally {
           creatingExercise.value = false;
+        }
+      }
+      async function createTerminology() {
+        if (creatingTerminology.value) return;
+        const termKey = (terminologyForm.value.term_key || '').trim();
+        if (!termKey) {
+          alert(t('errors.terminologyKeyRequired'));
+          return;
+        }
+        const title = (terminologyForm.value.title || '').trim();
+        if (!title) {
+          alert(t('errors.terminologyTitleRequired'));
+          return;
+        }
+        const description = (terminologyForm.value.description || '').trim();
+        if (!description) {
+          alert(t('errors.terminologyDescriptionRequired'));
+          return;
+        }
+        const sortOrder = Number(terminologyForm.value.sort_order || 1);
+        creatingTerminology.value = true;
+        try {
+          const { error } = await supabase.from('terminology').insert({
+            term_key: termKey,
+            locale: locale.value,
+            title,
+            description,
+            sort_order: Number.isFinite(sortOrder) ? sortOrder : 1,
+          });
+          if (error) {
+            throw new Error('Create terminology failed: ' + error.message);
+          }
+          resetTerminologyForm();
+          await loadTerminology();
+        } catch (error) {
+          console.error(error);
+          alert(error.message || t('errors.createTerminology'));
+        } finally {
+          creatingTerminology.value = false;
         }
       }
 
@@ -1162,6 +1277,54 @@ import {
           };
         }
       }
+      async function saveTerminology(entry) {
+        if (!entry?.id) return;
+        if (terminologySaving.value[entry.id]) return;
+        const form = terminologyEdits.value[entry.id] || {};
+        const termKey = (form.term_key || '').trim();
+        if (!termKey) {
+          alert(t('errors.terminologyKeyRequired'));
+          return;
+        }
+        const title = (form.title || '').trim();
+        if (!title) {
+          alert(t('errors.terminologyTitleRequired'));
+          return;
+        }
+        const description = (form.description || '').trim();
+        if (!description) {
+          alert(t('errors.terminologyDescriptionRequired'));
+          return;
+        }
+        const sortOrder = Number(form.sort_order || 1);
+        terminologySaving.value = {
+          ...terminologySaving.value,
+          [entry.id]: true,
+        };
+        try {
+          const { error } = await supabase
+            .from('terminology')
+            .update({
+              term_key: termKey,
+              title,
+              description,
+              sort_order: Number.isFinite(sortOrder) ? sortOrder : 1,
+            })
+            .eq('id', entry.id);
+          if (error) {
+            throw new Error('Update terminology failed: ' + error.message);
+          }
+          await loadTerminology();
+        } catch (error) {
+          console.error(error);
+          alert(error.message || t('errors.updateTerminology'));
+        } finally {
+          terminologySaving.value = {
+            ...terminologySaving.value,
+            [entry.id]: false,
+          };
+        }
+      }
 
       async function deleteExercise(exercise) {
         if (!exercise?.id) return;
@@ -1191,6 +1354,37 @@ import {
           exerciseSaving.value = {
             ...exerciseSaving.value,
             [exercise.id]: false,
+          };
+        }
+      }
+      async function deleteTerminology(entry) {
+        if (!entry?.id) return;
+        const confirmed = confirm(
+          t('confirm.deleteTerminology', {
+            name: entry.title || entry.term_key || entry.id,
+          }),
+        );
+        if (!confirmed) return;
+        terminologySaving.value = {
+          ...terminologySaving.value,
+          [entry.id]: true,
+        };
+        try {
+          const { error } = await supabase
+            .from('terminology')
+            .delete()
+            .eq('id', entry.id);
+          if (error) {
+            throw new Error('Delete terminology failed: ' + error.message);
+          }
+          await loadTerminology();
+        } catch (error) {
+          console.error(error);
+          alert(error.message || t('errors.deleteTerminology'));
+        } finally {
+          terminologySaving.value = {
+            ...terminologySaving.value,
+            [entry.id]: false,
           };
         }
       }
@@ -2373,6 +2567,15 @@ import {
         exercisesError,
         creatingExercise,
         exerciseSaving,
+        terminology,
+        terminologyFilter,
+        terminologyForm,
+        terminologyEdits,
+        filteredTerminology,
+        loadingTerminology,
+        terminologyError,
+        creatingTerminology,
+        terminologySaving,
         maxTests,
         maxTestHistory,
         completedExerciseLog,
@@ -2480,6 +2683,11 @@ import {
         resetExerciseForm,
         saveExercise,
         deleteExercise,
+        loadTerminology,
+        createTerminology,
+        resetTerminologyForm,
+        saveTerminology,
+        deleteTerminology,
         toggleDay,
         isDayOpen,
         jumpToDay,
