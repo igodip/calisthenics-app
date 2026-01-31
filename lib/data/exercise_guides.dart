@@ -21,7 +21,7 @@ class ExerciseGuides {
       final translationResponse = await client
           .from('exercise_translations')
           .select('exercise_id, locale, name, focus, tip, description')
-          .in_('locale', locales);
+          .inFilter('locale', locales);
       final translations =
           (translationResponse as List<dynamic>).cast<Map<String, dynamic>>();
 
