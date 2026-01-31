@@ -225,14 +225,6 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                       children: [
                         Row(
                           children: [
-                            Expanded(
-                              child: Text(
-                                widget.displayName,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
                             IconButton(
                               onPressed: _refreshMaxTests,
                               tooltip: l10n.profileMaxTestsRefresh,
