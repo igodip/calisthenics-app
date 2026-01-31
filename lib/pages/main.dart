@@ -2,7 +2,6 @@
 import 'package:calisync/pages/terminology.dart';
 import 'package:flutter/material.dart';
 import 'package:calisync/pages/profile.dart';
-import 'package:calisync/pages/settings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
@@ -39,7 +38,7 @@ class _HomePageState extends State<HomePage> {
 
   final supabase = Supabase.instance.client;
   static const int _workoutPlanIndex = 1;
-  static const int _maxTestsIndex = 5;
+  static const int _maxTestsIndex = 4;
 
   @override
   void initState() {

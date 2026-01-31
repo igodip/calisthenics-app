@@ -20,7 +20,12 @@ class SettingsPage extends StatelessWidget {
       (AppThemeType.blue, l10n.themeBlueLabel),
     ];
 
-    return SingleChildScrollView(
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.settingsThemeTitle),
+        ),
+        body: SafeArea(
+        child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,6 +59,8 @@ class SettingsPage extends StatelessWidget {
           ),
         ],
       ),
+    )
+    )
     );
   }
 }
