@@ -4,7 +4,7 @@ import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The translations for Spanish (`es`).
+/// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
@@ -84,10 +84,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get guidesTitle => 'Habilidades';
 
   @override
-  String get guidesSubtitle => 'Desbloquea nuevas habilidades mientras dominas lo básico.';
+  String get guidesSubtitle =>
+      'Desbloquea nuevas habilidades mientras dominas lo básico.';
 
   @override
-  String get guidesLoadError => 'No se pueden cargar las guías de habilidades en este momento.';
+  String get guidesLoadError =>
+      'No se pueden cargar las guías de habilidades en este momento.';
 
   @override
   String get guidesPrimaryFocus => 'Enfoque principal';
@@ -191,7 +193,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get guidesHangingLegRaiseName => 'Elevación de piernas colgado';
 
   @override
-  String get guidesHangingLegRaiseFocus => 'Abdominales, flexores de cadera, agarre';
+  String get guidesHangingLegRaiseFocus =>
+      'Abdominales, flexores de cadera, agarre';
 
   @override
   String get guidesHangingLegRaiseTip =>
@@ -205,7 +208,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get guidesMuscleUpName => 'Muscle-up';
 
   @override
-  String get guidesMuscleUpFocus => 'Dorsales, pecho, tríceps, fuerza de transición';
+  String get guidesMuscleUpFocus =>
+      'Dorsales, pecho, tríceps, fuerza de transición';
 
   @override
   String get guidesMuscleUpTip =>
@@ -342,7 +346,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String homeGreeting(String name) {
-    return 'Hola, ${name}!';
+    return 'Hola, $name!';
   }
 
   @override
@@ -367,7 +371,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String homeSkillProgressValue(int unlocked, int total) {
-    return '${unlocked} / ${total}';
+    return '$unlocked / $total';
   }
 
   @override
@@ -387,7 +391,8 @@ class AppLocalizationsEs extends AppLocalizations {
       'Cuéntale a tu entrenador cómo te sientes y cómo va el plan.';
 
   @override
-  String get traineeFeedbackQuestionLabel => '¿Cómo se sintió tu entrenamiento?';
+  String get traineeFeedbackQuestionLabel =>
+      '¿Cómo se sintió tu entrenamiento?';
 
   @override
   String get traineeFeedbackQuestionHint =>
@@ -411,8 +416,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homePlansSectionTitle => 'Planes de entrenamiento';
 
   @override
-  String get homePlansSectionSubtitle =>
-      'Planes asignados y su estado actual.';
+  String get homePlansSectionSubtitle => 'Planes asignados y su estado actual.';
 
   @override
   String get homePlansEmptyTitle => 'Aún no hay planes de entrenamiento';
@@ -441,7 +445,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String homePlanStartedLabel(String date) {
-    return 'Iniciado ${date}';
+    return 'Iniciado $date';
   }
 
   @override
@@ -473,7 +477,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String trainingDurationMinutes(int minutes) {
-    return '${minutes} min';
+    return '$minutes min';
   }
 
   @override
@@ -481,18 +485,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String trainingCompletionError(Object error) {
-    return 'No se pudo actualizar el entrenamiento: ${error}';
+    return 'No se pudo actualizar el entrenamiento: $error';
   }
 
   @override
-  String get trainingCompletionUnavailable => 'No se puede actualizar este día de entrenamiento.';
+  String get trainingCompletionUnavailable =>
+      'No se puede actualizar este día de entrenamiento.';
 
   @override
   String get trainingExerciseCompletionSaved => 'Ejercicio actualizado';
 
   @override
   String trainingExerciseCompletionError(Object error) {
-    return 'No se pudo actualizar el ejercicio: ${error}';
+    return 'No se pudo actualizar el ejercicio: $error';
   }
 
   @override
@@ -525,7 +530,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String logoutError(Object error) {
-    return 'Error al cerrar sesión: ${error}';
+    return 'Error al cerrar sesión: $error';
   }
 
   @override
@@ -566,7 +571,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String profileWeightValue(String weight) {
-    return '${weight} kg';
+    return '$weight kg';
   }
 
   @override
@@ -593,11 +598,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String profileMaxTestsEmptyPeriod(String period) {
-    return 'No hay pruebas máximas registradas en ${period}. Prueba un rango de tiempo mayor.';
+    return 'No hay pruebas máximas registradas en $period. Prueba un rango de tiempo mayor.';
   }
 
   @override
-  String get profileMaxTestsBestPeriodLabel => 'Mejor en el período seleccionado';
+  String get profileMaxTestsBestPeriodLabel =>
+      'Mejor en el período seleccionado';
 
   @override
   String get profileMaxTestsAdd => 'Añadir prueba máxima';
@@ -642,17 +648,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String profileMaxTestsSessionLabel(int index) {
-    return 'Sesión ${index}';
+    return 'Sesión $index';
   }
 
   @override
   String profileMaxTestsHistoryError(Object error) {
-    return 'No se pudo cargar el historial de progreso: ${error}';
+    return 'No se pudo cargar el historial de progreso: $error';
   }
 
   @override
   String profileMaxTestsHistoryDeltaLabel(String delta) {
-    return 'Cambio ${delta}';
+    return 'Cambio $delta';
   }
 
   @override
@@ -660,7 +666,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String profileMaxTestsError(Object error) {
-    return 'No se pudieron cargar las pruebas máximas: ${error}';
+    return 'No se pudieron cargar las pruebas máximas: $error';
   }
 
   @override
@@ -683,7 +689,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String profileMaxTestsDateLabel(String date) {
-    return 'Registrado el ${date}';
+    return 'Registrado el $date';
   }
 
   @override
@@ -697,7 +703,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String profileMaxTestsSaveError(Object error) {
-    return 'No se pudo guardar la prueba: ${error}';
+    return 'No se pudo guardar la prueba: $error';
   }
 
   @override
@@ -762,7 +768,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String profileEditError(Object error) {
-    return 'No se pudo actualizar el perfil: ${error}';
+    return 'No se pudo actualizar el perfil: $error';
   }
 
   @override
@@ -782,16 +788,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String redirectError(Object error) {
-    return 'Error durante la redirección: ${error}';
+    return 'Error durante la redirección: $error';
   }
 
   @override
   String linkError(Object error) {
-    return 'Error de enlace: ${error}';
+    return 'Error de enlace: $error';
   }
 
   @override
-  String get missingFieldsError => 'Por favor completa todos los campos obligatorios.';
+  String get missingFieldsError =>
+      'Por favor completa todos los campos obligatorios.';
 
   @override
   String get passwordMismatch => 'Las contraseñas no coinciden.';
@@ -805,7 +812,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String unexpectedError(Object error) {
-    return 'Error inesperado: ${error}';
+    return 'Error inesperado: $error';
   }
 
   @override
@@ -813,7 +820,8 @@ class AppLocalizationsEs extends AppLocalizations {
       '¡Bienvenido de nuevo! Inicia sesión para continuar tu entrenamiento.';
 
   @override
-  String get signupGreeting => 'Crea una cuenta para desbloquear todos los entrenamientos.';
+  String get signupGreeting =>
+      'Crea una cuenta para desbloquear todos los entrenamientos.';
 
   @override
   String get emailLabel => 'Correo electrónico';
@@ -841,7 +849,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String passwordResetEmailSent(String email) {
-    return 'Enlace de restablecimiento enviado a ${email}. Revisa tu bandeja de entrada.';
+    return 'Enlace de restablecimiento enviado a $email. Revisa tu bandeja de entrada.';
   }
 
   @override
@@ -930,7 +938,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String timerNextLabel(String name, int current, int total) {
-    return 'Siguiente: ${name} · Serie ${current}/${total}';
+    return 'Siguiente: $name · Serie $current/$total';
   }
 
   @override
@@ -959,7 +967,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get countdownTitle => 'Temporizador simple';
 
   @override
-  String get countdownSubtitle => 'Un temporizador sencillo para cualquier intervalo.';
+  String get countdownSubtitle =>
+      'Un temporizador sencillo para cualquier intervalo.';
 
   @override
   String get countdownDescription =>
@@ -979,7 +988,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String weekNumber(int week) {
-    return 'Semana ${week}';
+    return 'Semana $week';
   }
 
   @override

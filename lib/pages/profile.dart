@@ -566,7 +566,8 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
                   child: Column(
                     children: [
                       CircleAvatar(
-                        radius: 44,
+                        minRadius: 40,
+                        maxRadius: 60,
                         backgroundColor: Theme.of(context)
                             .colorScheme
                             .surfaceContainerHighest,
