@@ -146,6 +146,7 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
       if (!mounted) return;
       _feedbackController.clear();
       await _loadFeedbacks();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.traineeFeedbackSubmitted)),
       );
@@ -155,10 +156,11 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
         SnackBar(content: Text(l10n.unexpectedError('$error'))),
       );
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isSubmitting = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 
@@ -205,10 +207,11 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
         _feedbacksError = l10n.traineeFeedbackLoadFailed;
       });
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isLoadingFeedbacks = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingFeedbacks = false;
+        });
+      }
     }
   }
 

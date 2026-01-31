@@ -69,17 +69,18 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
       }
     }
     if (matched == null) return;
-    if (_selectedDifficulty != matched.difficulty ||
-        _highlightedGuideId != matched.id) {
+    final matchedGuide = matched;
+    if (_selectedDifficulty != matchedGuide.difficulty ||
+        _highlightedGuideId != matchedGuide.id) {
       setState(() {
-        _selectedDifficulty = matched.difficulty;
-        _highlightedGuideId = matched.id;
+        _selectedDifficulty = matchedGuide.difficulty;
+        _highlightedGuideId = matchedGuide.id;
       });
     } else {
-      _highlightedGuideId = matched.id;
+      _highlightedGuideId = matchedGuide.id;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToGuide(matched.id);
+      _scrollToGuide(matchedGuide.id);
     });
   }
 
