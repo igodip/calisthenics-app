@@ -426,8 +426,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get traineeFeedbackDeleteSuccess => 'Feedback deleted.';
 
   @override
-  String get traineeFeedbackLoadFailed =>
-      'Unable to load feedback right now.';
+  String get traineeFeedbackLoadFailed => 'Unable to load feedback right now.';
 
   @override
   String get refresh => 'Refresh';
