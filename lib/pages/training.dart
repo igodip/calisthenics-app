@@ -264,6 +264,7 @@ class _TrainingState extends State<Training> {
           notes: exercise.notes,
           traineeNotes: exercise.traineeNotes,
           position: exercise.position,
+          durationMinutes: exercise.durationMinutes,
           terminology: exercise.terminology,
           skills: exercise.skills,
           isCompleted: newValue,
@@ -325,6 +326,7 @@ class _TrainingState extends State<Training> {
           notes: exercise.notes,
           traineeNotes: newNotes,
           position: exercise.position,
+          durationMinutes: exercise.durationMinutes,
           terminology: exercise.terminology,
           skills: exercise.skills,
           isCompleted: exercise.isCompleted,
@@ -764,11 +766,22 @@ String _exerciseDetailText(
   WorkoutExercise exercise,
   AppLocalizations l10n,
 ) {
+  final duration = exercise.durationMinutes;
+  final durationLabel = duration != null && duration > 0
+      ? l10n.trainingDurationMinutes(duration)
+      : null;
   final notes = (exercise.notes ?? '').trim();
-  if (notes.isNotEmpty) return notes;
+  if (notes.isNotEmpty) {
+    return durationLabel == null ? notes : '$durationLabel · $notes';
+  }
 
   final traineeNotes = (exercise.traineeNotes ?? '').trim();
-  if (traineeNotes.isNotEmpty) return traineeNotes;
+  if (traineeNotes.isNotEmpty) {
+    return durationLabel == null
+        ? traineeNotes
+        : '$durationLabel · $traineeNotes';
+  }
 
-  return '${l10n.trainingHeaderSets} · ${l10n.trainingHeaderReps}';
+  final fallback = '${l10n.trainingHeaderSets} · ${l10n.trainingHeaderReps}';
+  return durationLabel == null ? fallback : '$durationLabel · $fallback';
 }
