@@ -67,7 +67,7 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     final l10n = AppLocalizations.of(context)!;
     if (_guidesFuture == null || _localeName != l10n.localeName) {
       _localeName = l10n.localeName;
-      _guidesFuture = ExerciseGuides.load(l10n);
+      _guidesFuture = ExerciseGuides.load(l10n.localeName);
     }
   }
 

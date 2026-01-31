@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
-import '../data/exercise_translations.dart';
-import '../data/terminology_translations.dart';
+import '../data/exercise_guides.dart' as guide_data;
+import '../data/terminology_repository.dart';
 import '../l10n/app_localizations.dart';
+import '../model/exercise_guide.dart';
+import '../model/terminology_entry.dart';
 import 'terminology.dart';
 import 'exercise_guides.dart';
 
@@ -28,6 +30,8 @@ class _TrainingState extends State<Training> {
   late bool _isCompleted;
   bool _updatingCompletion = false;
   bool _completionChanged = false;
+  Future<_TrainingTranslations>? _translationsFuture;
+  String? _localeName;
 
   @override
   void initState() {
@@ -35,6 +39,16 @@ class _TrainingState extends State<Training> {
     _exercises = List<WorkoutExercise>.from(widget.day.exercises);
     _sortExercises();
     _isCompleted = widget.day.isCompleted;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final localeName = AppLocalizations.of(context)!.localeName;
+    if (_localeName != localeName) {
+      _localeName = localeName;
+      _translationsFuture = _loadTranslations(localeName);
+    }
   }
 
   @override
@@ -52,194 +66,203 @@ class _TrainingState extends State<Training> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
     final appColors = theme.extension<AppColors>();
-    final terminologyLookup =
-        _terminologyLookupForLocale(l10n.localeName);
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) {
-          return;
-        }
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            Navigator.of(context).pop(_completionChanged);
-          }
-        });
-      },
-      child: PlanExpiredGate(
-        child: Scaffold(
-          backgroundColor: theme.scaffoldBackgroundColor,
-          appBar: AppBar(
-            backgroundColor:
-                theme.appBarTheme.backgroundColor ?? colorScheme.surface,
-            elevation: 0,
-            foregroundColor:
-                theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
-            title: Text(l10n.trainingTodayTitle),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: colorScheme.onSurface.withValues(alpha: 0.08),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.more_horiz),
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          body: SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        colorScheme.surfaceContainerHighest,
-                        colorScheme.surface,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: colorScheme.outlineVariant,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              widget.day.formattedTitle(l10n),
-                              style: textTheme.titleMedium?.copyWith(
-                                color: colorScheme.onSurface,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            l10n.trainingDurationMinutes(45),
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+    return FutureBuilder<_TrainingTranslations>(
+      future: _translationsFuture,
+      builder: (context, snapshot) {
+        final translations = snapshot.data ?? _TrainingTranslations.empty;
+        final terminologyLookup = translations.terminologyLookup;
+        final guideLookup = translations.guideLookup;
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
+            if (didPop) {
+              return;
+            }
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                Navigator.of(context).pop(_completionChanged);
+              }
+            });
+          },
+          child: PlanExpiredGate(
+            child: Scaffold(
+              backgroundColor: theme.scaffoldBackgroundColor,
+              appBar: AppBar(
+                backgroundColor:
+                    theme.appBarTheme.backgroundColor ?? colorScheme.surface,
+                elevation: 0,
+                foregroundColor:
+                    theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
+                title: Text(l10n.trainingTodayTitle),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colorScheme.onSurface.withValues(alpha: 0.08),
+                        shape: BoxShape.circle,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 16,
-                            color: colorScheme.primary,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '${_exercises.length} ${_exercises.length == 1 ? l10n.trainingHeaderExercise : l10n.trainingHeaderExercises}',
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.more_horiz),
+                        color: colorScheme.onSurfaceVariant,
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                for (int index = 0; index < _exercises.length; index++)
-                  _ExerciseCard(
-                    exercise: _exercises[index],
-                    detailText:
-                        _exerciseDetailText(_exercises[index], l10n),
-                    isExpanded:
-                        _expandedExercises.contains(_exerciseKey(index)),
-                    updatingCompletion: _togglingExerciseCompletion
-                        .contains(_exercises[index].id),
-                    isSavingNotes:
-                        _savingNotes.contains(_exerciseKey(index)),
-                    notesController:
-                        _notesControllerFor(_exercises[index], index),
-                    terminologyTranslations: terminologyLookup,
-                    onOpenGuide:
-                        _exercises[index].exerciseSlug != null ||
-                                _exercises[index].exerciseId != null
-                            ? () => _openExerciseGuide(_exercises[index])
-                            : null,
-                    onToggleCompletion: () => _toggleExerciseCompletion(index),
-                    onToggleExpanded: () => _toggleExpanded(index),
-                    onSaveNotes: () => _saveExerciseNotes(index),
-                    onTermTap: _openTerminologyTerm,
-                  ),
-              ],
-            ),
-          ),
-          bottomNavigationBar: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: appColors?.primaryGradient ??
-                    LinearGradient(
-                      colors: [
-                        colorScheme.primary,
-                        colorScheme.secondary,
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
                     ),
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.primary.withValues(alpha: 0.35),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
-              child: FilledButton(
-                onPressed: _updatingCompletion ? null : _toggleCompletion,
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: _updatingCompletion
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+              body: SafeArea(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            colorScheme.surfaceContainerHighest,
+                            colorScheme.surface,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      )
-                    : Text(
-                        _isCompleted
-                            ? l10n.trainingWorkoutCompleted
-                            : l10n.trainingStartWorkout,
-                        style: textTheme.titleSmall?.copyWith(
-                          color: colorScheme.onPrimary,
-                          fontWeight: FontWeight.w600,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: colorScheme.outlineVariant,
                         ),
                       ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  widget.day.formattedTitle(l10n),
+                                  style: textTheme.titleMedium?.copyWith(
+                                    color: colorScheme.onSurface,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                l10n.trainingDurationMinutes(45),
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on_outlined,
+                                size: 16,
+                                color: colorScheme.primary,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${_exercises.length} ${_exercises.length == 1 ? l10n.trainingHeaderExercise : l10n.trainingHeaderExercises}',
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    for (int index = 0; index < _exercises.length; index++)
+                      _ExerciseCard(
+                        exercise: _exercises[index],
+                        detailText:
+                            _exerciseDetailText(_exercises[index], l10n),
+                        isExpanded:
+                            _expandedExercises.contains(_exerciseKey(index)),
+                        updatingCompletion: _togglingExerciseCompletion
+                            .contains(_exercises[index].id),
+                        isSavingNotes:
+                            _savingNotes.contains(_exerciseKey(index)),
+                        notesController:
+                            _notesControllerFor(_exercises[index], index),
+                        terminologyTranslations: terminologyLookup,
+                        guideLookup: guideLookup,
+                        onOpenGuide:
+                            _exercises[index].exerciseSlug != null ||
+                                    _exercises[index].exerciseId != null
+                                ? () => _openExerciseGuide(_exercises[index])
+                                : null,
+                        onToggleCompletion: () =>
+                            _toggleExerciseCompletion(index),
+                        onToggleExpanded: () => _toggleExpanded(index),
+                        onSaveNotes: () => _saveExerciseNotes(index),
+                        onTermTap: _openTerminologyTerm,
+                      ),
+                  ],
+                ),
+              ),
+              bottomNavigationBar: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: appColors?.primaryGradient ??
+                        LinearGradient(
+                          colors: [
+                            colorScheme.primary,
+                            colorScheme.secondary,
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.primary.withValues(alpha: 0.35),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: FilledButton(
+                    onPressed: _updatingCompletion ? null : _toggleCompletion,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: _updatingCompletion
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                        : Text(
+                            _isCompleted
+                                ? l10n.trainingWorkoutCompleted
+                                : l10n.trainingStartWorkout,
+                            style: textTheme.titleSmall?.copyWith(
+                              color: colorScheme.onPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -481,6 +504,19 @@ class _TrainingState extends State<Training> {
     return controller;
   }
 
+  Future<_TrainingTranslations> _loadTranslations(String locale) async {
+    final results = await Future.wait([
+      TerminologyRepository.load(locale),
+      guide_data.ExerciseGuides.load(locale),
+    ]);
+    final terms = results[0] as List<TerminologyEntry>;
+    final guides = results[1] as List<ExerciseGuide>;
+    return _TrainingTranslations(
+      terminologyLookup: TerminologyRepository.toLookup(terms),
+      guideLookup: guide_data.ExerciseGuides.toLookup(guides),
+    );
+  }
+
   void _openTerminologyTerm(String termKey) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -490,6 +526,21 @@ class _TrainingState extends State<Training> {
   }
 }
 
+class _TrainingTranslations {
+  const _TrainingTranslations({
+    required this.terminologyLookup,
+    required this.guideLookup,
+  });
+
+  final Map<String, TerminologyEntry> terminologyLookup;
+  final Map<String, ExerciseGuide> guideLookup;
+
+  static const empty = _TrainingTranslations(
+    terminologyLookup: {},
+    guideLookup: {},
+  );
+}
+
 class _ExerciseCard extends StatelessWidget {
   final WorkoutExercise exercise;
   final String detailText;
@@ -497,7 +548,8 @@ class _ExerciseCard extends StatelessWidget {
   final bool updatingCompletion;
   final bool isSavingNotes;
   final TextEditingController notesController;
-  final Map<String, TerminologyTranslation> terminologyTranslations;
+  final Map<String, TerminologyEntry> terminologyTranslations;
+  final Map<String, ExerciseGuide> guideLookup;
   final VoidCallback? onOpenGuide;
   final VoidCallback onToggleCompletion;
   final VoidCallback onToggleExpanded;
@@ -512,6 +564,7 @@ class _ExerciseCard extends StatelessWidget {
     required this.isSavingNotes,
     required this.notesController,
     required this.terminologyTranslations,
+    required this.guideLookup,
     this.onOpenGuide,
     required this.onToggleCompletion,
     required this.onToggleExpanded,
@@ -541,15 +594,13 @@ class _ExerciseCard extends StatelessWidget {
     final localizedTerminology = exercise.terminology
         .map(
           (term) =>
-              TerminologyTranslations.lookup(term, l10n.localeName)?.title ??
-              term,
+              terminologyTranslations[term.trim().toLowerCase()]?.term ?? term,
         )
         .toList();
     final localizedSkills = exercise.skills
         .map(
           (skill) =>
-              ExerciseGuideTranslations.nameForSlug(skill, l10n.localeName) ??
-              skill,
+              guideLookup[skill.trim().toLowerCase()]?.name ?? skill,
         )
         .toList();
 
@@ -865,20 +916,9 @@ String _exerciseDetailText(
   return durationLabel == null ? fallback : '$durationLabel · $fallback';
 }
 
-Map<String, TerminologyTranslation> _terminologyLookupForLocale(String locale) {
-  final translations = <String, TerminologyTranslation>{};
-  for (final entry in TerminologyTranslations.listForLocale('en')) {
-    translations[entry.termKey] = entry;
-  }
-  for (final entry in TerminologyTranslations.listForLocale(locale)) {
-    translations[entry.termKey] = entry;
-  }
-  return translations;
-}
-
 List<String> _scanTerminologyKeys(
   String notes,
-  Map<String, TerminologyTranslation> translations,
+  Map<String, TerminologyEntry> translations,
 ) {
   if (notes.trim().isEmpty || translations.isEmpty) return [];
   final terms = translations.keys.toList()
@@ -902,7 +942,7 @@ List<String> _scanTerminologyKeys(
 
 Widget _buildTerminologyNoteText({
   required String text,
-  required Map<String, TerminologyTranslation> translations,
+  required Map<String, TerminologyEntry> translations,
   required ValueChanged<String> onTap,
   required TextStyle? textStyle,
   required Color chipBackground,
@@ -930,7 +970,7 @@ Widget _buildTerminologyNoteText({
 
 List<InlineSpan> _buildTerminologySpans({
   required String text,
-  required Map<String, TerminologyTranslation> translations,
+  required Map<String, TerminologyEntry> translations,
   required List<String> detectedKeys,
   required ValueChanged<String> onTap,
   required Color chipBackground,
@@ -961,7 +1001,7 @@ List<InlineSpan> _buildTerminologySpans({
     final rawMatch = match.group(0) ?? '';
     final matchKey = rawMatch.toLowerCase();
     final translation = translations[matchKey];
-    final label = translation?.title ?? rawMatch;
+    final label = translation?.term ?? rawMatch;
     spans.add(
       WidgetSpan(
         alignment: PlaceholderAlignment.middle,

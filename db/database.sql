@@ -33,9 +33,12 @@ CREATE TABLE public.days (
 );
 CREATE TABLE public.exercise_translations (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
-  exercise_id uuid,
+  exercise_id uuid NOT NULL,
+  locale text NOT NULL,
+  name text NOT NULL,
   focus text,
-  coach_tip text,
+  tip text,
+  description text,
   CONSTRAINT exercise_translations_pkey PRIMARY KEY (id),
   CONSTRAINT exercise_translations_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id)
 );
@@ -45,6 +48,7 @@ CREATE TABLE public.exercises (
   name text NOT NULL UNIQUE,
   difficulty text NOT NULL DEFAULT 'beginner'::text,
   sort_order integer NOT NULL DEFAULT 1,
+  default_unlocked boolean NOT NULL DEFAULT false,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT exercises_pkey PRIMARY KEY (id)
 );
@@ -60,6 +64,7 @@ CREATE TABLE public.max_tests (
 CREATE TABLE public.terminology (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   term_key text NOT NULL,
+  locale text NOT NULL,
   title text NOT NULL,
   description text NOT NULL,
   sort_order integer NOT NULL DEFAULT 1,
