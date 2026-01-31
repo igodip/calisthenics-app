@@ -59,12 +59,14 @@ class _HomeContentState extends State<HomeContent> {
         final data = snapshot.data;
         final displayName = data?.displayName(l10n) ?? l10n.profileFallbackName;
         final initials = data?.initials(l10n) ?? '';
+        final avatarUrl = data?.profile?.profileImageUrl?.trim();
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
           children: [
             _HomeHeader(
               displayName: displayName,
               initials: initials,
+              imageUrl: (avatarUrl == null || avatarUrl.isEmpty) ? null : avatarUrl,
             ),
             const SizedBox(height: 16),
             const ProgressCard(),
@@ -100,10 +102,12 @@ class _HomeHeader extends StatelessWidget {
   const _HomeHeader({
     required this.displayName,
     required this.initials,
+    required this.imageUrl,
   });
 
   final String displayName;
   final String initials;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -119,20 +123,22 @@ class _HomeHeader extends StatelessWidget {
             ),
           ),
         ),
-        _AvatarChip(initials: initials),
+        _AvatarChip(initials: initials, imageUrl: imageUrl),
       ],
     );
   }
 }
 
 class _AvatarChip extends StatelessWidget {
-  const _AvatarChip({required this.initials});
+  const _AvatarChip({required this.initials, required this.imageUrl});
 
   final String initials;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final avatarUrl = imageUrl?.trim();
     final avatarText = initials.isEmpty ? null : initials;
     return CircleAvatar(
       radius: 18,
@@ -140,19 +146,24 @@ class _AvatarChip extends StatelessWidget {
       child: CircleAvatar(
         radius: 16,
         backgroundColor: theme.colorScheme.surface,
-        child: avatarText == null
-            ? Icon(
-                Icons.person,
-                color: theme.colorScheme.onSurfaceVariant,
-                size: 18,
-              )
-            : Text(
-                avatarText,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+        backgroundImage: avatarUrl == null || avatarUrl.isEmpty
+            ? null
+            : NetworkImage(avatarUrl),
+        child: avatarUrl == null || avatarUrl.isEmpty
+            ? (avatarText == null
+                ? Icon(
+                    Icons.person,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    size: 18,
+                  )
+                : Text(
+                    avatarText,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ))
+            : null,
       ),
     );
   }
@@ -186,4 +197,3 @@ class _ActionButtons extends StatelessWidget {
     );
   }
 }
-
