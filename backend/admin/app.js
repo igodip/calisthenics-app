@@ -111,6 +111,15 @@ import {
       const paymentHistory = ref([]);
       const loadingPayments = ref(false);
       const paymentsError = ref('');
+      const paymentTrends = ref({
+        chartWidth: 760,
+        chartHeight: 240,
+        months: [],
+        series: [],
+        maxValue: 0,
+      });
+      const paymentTrendsLoading = ref(false);
+      const paymentTrendsError = ref('');
       const completedExercises = ref([]);
       const loadingCompletedExercises = ref(false);
       const completedExercisesError = ref('');
@@ -797,6 +806,37 @@ import {
         return { start, end, dates };
       };
 
+      const monthKey = (value) => {
+        const parsed = value instanceof Date ? value : new Date(value);
+        if (Number.isNaN(parsed.valueOf())) return '';
+        const year = parsed.getFullYear();
+        const month = String(parsed.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}-01`;
+      };
+
+      const buildMonthRange = (monthsCount) => {
+        const now = new Date();
+        const end = new Date(now.getFullYear(), now.getMonth(), 1);
+        const months = [];
+        for (let i = monthsCount - 1; i >= 0; i -= 1) {
+          const next = new Date(end);
+          next.setMonth(end.getMonth() - i);
+          months.push(next);
+        }
+        return months;
+      };
+
+      const formatMonthLabel = (value) => {
+        if (!value) return '';
+        const parsed = value instanceof Date ? value : new Date(value);
+        if (Number.isNaN(parsed.valueOf())) return '';
+        const localeTag = locale.value === 'it' ? 'it-IT' : 'en-US';
+        return parsed.toLocaleDateString(localeTag, {
+          month: 'short',
+          year: 'numeric',
+        });
+      };
+
       const normalizePaymentAmount = (value) => {
         if (value === null || value === undefined || value === '') return null;
         const numeric = Number(value);
@@ -1136,6 +1176,7 @@ import {
           await loadTrainers();
         }
         await loadUsers();
+        await loadPaymentTrends();
         await loadExercises();
         await loadTerminology();
         await loadTraineeProgress();
@@ -1645,6 +1686,135 @@ import {
         await loadTraineeWeekStatus();
       }
 
+      async function loadPaymentTrends() {
+        paymentTrendsLoading.value = true;
+        paymentTrendsError.value = '';
+        try {
+          const months = buildMonthRange(6);
+          if (!months.length) {
+            paymentTrends.value = {
+              ...paymentTrends.value,
+              months: [],
+              series: [],
+              maxValue: 0,
+            };
+            return;
+          }
+          const startKey = monthKey(months[0]);
+          const endKey = monthKey(months[months.length - 1]);
+          const { data, error } = await supabase
+            .from('trainee_monthly_payments')
+            .select('month_start, amount, paid')
+            .gte('month_start', startKey)
+            .lte('month_start', endKey);
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          const totals = new Map();
+          months.forEach((month) => {
+            totals.set(monthKey(month), {
+              received: 0,
+              forecasted: 0,
+              due: 0,
+            });
+          });
+
+          (data || []).forEach((row) => {
+            const key = monthKey(row.month_start);
+            if (!totals.has(key)) return;
+            const numericAmount = Number(row.amount);
+            const amount = Number.isNaN(numericAmount) ? 0 : numericAmount;
+            const entry = totals.get(key);
+            entry.forecasted += amount;
+            if (row.paid) {
+              entry.received += amount;
+            } else {
+              entry.due += amount;
+            }
+          });
+
+          const chartWidth = paymentTrends.value.chartWidth;
+          const chartHeight = paymentTrends.value.chartHeight;
+          const padding = 28;
+          const seriesConfig = [
+            {
+              key: 'received',
+              labelKey: 'payments.receivedAmountLabel',
+              color: '#16a34a',
+            },
+            {
+              key: 'forecasted',
+              labelKey: 'payments.forecastedAmountLabel',
+              color: '#2563eb',
+            },
+            {
+              key: 'due',
+              labelKey: 'payments.dueAmountLabel',
+              color: '#f97316',
+            },
+          ];
+          const maxValue = Math.max(
+            0,
+            ...Array.from(totals.values()).flatMap((entry) => [
+              entry.received,
+              entry.forecasted,
+              entry.due,
+            ]),
+          );
+          const range = maxValue || 1;
+          const pointsBySeries = seriesConfig.map((series) => {
+            const points = months.map((month, index) => {
+              const entry = totals.get(monthKey(month)) || {
+                received: 0,
+                forecasted: 0,
+                due: 0,
+              };
+              const value = entry[series.key] || 0;
+              const x =
+                months.length === 1
+                  ? padding
+                  : padding +
+                    (index / (months.length - 1)) * (chartWidth - padding * 2);
+              const y =
+                chartHeight -
+                padding -
+                (value / range) * (chartHeight - padding * 2);
+              return {
+                x: Number(x.toFixed(2)),
+                y: Number(y.toFixed(2)),
+                value,
+              };
+            });
+            return {
+              ...series,
+              points,
+              polyline: points.map((point) => `${point.x},${point.y}`).join(' '),
+            };
+          });
+
+          paymentTrends.value = {
+            chartWidth,
+            chartHeight,
+            months,
+            series: pointsBySeries,
+            maxValue,
+          };
+        } catch (err) {
+          console.error(err);
+          paymentTrends.value = {
+            ...paymentTrends.value,
+            months: [],
+            series: [],
+            maxValue: 0,
+          };
+          paymentTrendsError.value =
+            err.message || t('errors.loadPayments');
+        } finally {
+          paymentTrendsLoading.value = false;
+        }
+      }
+
       async function assignTrainerToTrainee(trainee) {
         if (!canAssignTrainers.value || !trainee?.id) return;
         const trainerId = trainerSelections.value[trainee.id];
@@ -1734,6 +1904,7 @@ import {
           }
           u.paymentAmount = nextAmount;
           u.paymentPaidAt = nextPaidAt;
+          await loadPaymentTrends();
         } catch (err) {
           console.error(err);
           u.paid = previousPaid;
@@ -1785,6 +1956,7 @@ import {
           }
           u.paymentAmount = nextAmount;
           u.paymentPaidAt = nextPaidAt;
+          await loadPaymentTrends();
         } catch (err) {
           console.error(err);
           alert(err.message || t('errors.updatePayment'));
@@ -2725,6 +2897,9 @@ import {
         paymentFilter,
         paymentFilterOptions,
         paymentUsers,
+        paymentTrends,
+        paymentTrendsLoading,
+        paymentTrendsError,
         canAssignTrainers,
         trainers,
         trainerSelections,
@@ -2817,6 +2992,7 @@ import {
         paymentHistory,
         loadingPayments,
         paymentsError,
+        formatMonthLabel,
         loadingCompletedExercises,
         completedExercisesError,
         trainingCalendar,

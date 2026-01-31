@@ -80,6 +80,15 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .payment-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px}
 .payment-amount-row{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px}
 .payment-amount-row input{min-width:140px}
+.payment-trend-card{grid-column:1/-1}
+.payment-trend-body{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.payment-trend-chart{width:100%;height:240px;background:#f8fafc;border-radius:16px;border:1px solid var(--line);padding:12px;box-sizing:border-box}
+.payment-trend-line{fill:none;stroke-width:2.5;stroke-linecap:round}
+.payment-trend-axis-line{stroke:#cbd5f5;stroke-width:1}
+.payment-trend-axis{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+.payment-trend-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:4px}
+.payment-trend-legend .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.payment-trend-legend .legend-swatch{width:10px;height:10px;border-radius:999px;display:inline-block}
 .day-list{display:flex;flex-direction:column;gap:10px}
 .day-card{border:1px solid var(--line);border-radius:12px;background:#f8fafc;padding:12px;box-shadow:0 2px 12px rgba(15,23,42,.08)}
 .day-header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
