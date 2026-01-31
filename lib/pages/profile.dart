@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 import 'login.dart';
+import 'settings.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -300,6 +301,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       title: Text(l10n.profileEdit),
                       subtitle: Text(l10n.profileEditSubtitle),
                       onTap: () => _showEditProfile(data),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: ListTile(
+                      leading: const Icon(Icons.palette_outlined),
+                      title: Text(l10n.profileThemeSettingsTitle),
+                      subtitle: Text(l10n.profileThemeSettingsSubtitle),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => const SettingsPage()),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 12),

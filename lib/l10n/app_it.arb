@@ -319,6 +319,8 @@
   "profileMaxTestsShowLess": "Mostra meno tentativi",
   "profileEdit": "Modifica profilo",
   "profileEditSubtitle": "Aggiorna le tue informazioni personali",
+  "profileThemeSettingsTitle": "Colori del tema",
+  "profileThemeSettingsSubtitle": "Scegli il colore del tema dell'app",
   "profileEditTitle": "Modifica profilo",
   "profileEditFullNameLabel": "Nome completo",
   "profileEditFullNameHint": "Come vuoi essere chiamato?",

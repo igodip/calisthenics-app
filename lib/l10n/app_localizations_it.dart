@@ -701,6 +701,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileEditSubtitle => 'Aggiorna le tue informazioni personali';
 
   @override
+  String get profileThemeSettingsTitle => 'Colori del tema';
+
+  @override
+  String get profileThemeSettingsSubtitle => 'Scegli il colore del tema dell\'app';
+
+  @override
   String get profileEditTitle => 'Modifica profilo';
 
   @override
