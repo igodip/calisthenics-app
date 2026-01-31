@@ -472,6 +472,55 @@
                         </div>
                     </div>
                 </div>
+
+                    <div class="card payment-trend-card">
+                    <div class="dashboard-card-header">
+                        <div class="stack">
+                            <h2 style="margin:0">{{ t('payments.trendTitle') }}</h2>
+                            <span class="muted small">{{ t('payments.trendSubtitle') }}</span>
+                        </div>
+                    </div>
+                    <div v-if="paymentTrendsLoading" class="muted small">
+                        {{ t('status.loadingPaymentTrends') }}
+                    </div>
+                    <div v-else-if="paymentTrendsError" class="muted small">{{ paymentTrendsError }}</div>
+                    <div v-else-if="paymentTrends.series.length===0" class="muted small">
+                        {{ t('payments.trendEmpty') }}
+                    </div>
+                    <div v-else class="payment-trend-body">
+                        <svg
+                            class="payment-trend-chart"
+                            role="img"
+                            :aria-label="t('payments.trendTitle')"
+                            :viewBox="`0 0 ${paymentTrends.chartWidth} ${paymentTrends.chartHeight}`"
+                        >
+                            <line
+                                class="payment-trend-axis-line"
+                                x1="24"
+                                :x2="paymentTrends.chartWidth - 24"
+                                :y1="paymentTrends.chartHeight - 28"
+                                :y2="paymentTrends.chartHeight - 28"
+                            ></line>
+                            <polyline
+                                v-for="line in paymentTrends.series"
+                                :key="line.key"
+                                class="payment-trend-line"
+                                :stroke="line.color"
+                                :points="line.polyline"
+                            ></polyline>
+                        </svg>
+                        <div v-if="paymentTrends.months.length" class="payment-trend-axis">
+                            <span>{{ formatMonthLabel(paymentTrends.months[0]) }}</span>
+                            <span>{{ formatMonthLabel(paymentTrends.months[paymentTrends.months.length - 1]) }}</span>
+                        </div>
+                        <div class="payment-trend-legend">
+                            <div v-for="line in paymentTrends.series" :key="line.key" class="legend-item">
+                                <span class="legend-swatch" :style="{ backgroundColor: line.color }"></span>
+                                <span>{{ t(line.labelKey) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
 
