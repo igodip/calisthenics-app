@@ -796,6 +796,66 @@ abstract class AppLocalizations {
   /// **'Feedback salvato. Lo condivideremo con il tuo coach.'**
   String get traineeFeedbackSubmitted;
 
+  /// No description provided for @traineeFeedbackSharedTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback condiviso'**
+  String get traineeFeedbackSharedTitle;
+
+  /// No description provided for @traineeFeedbackEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Non hai ancora condiviso feedback.'**
+  String get traineeFeedbackEmpty;
+
+  /// No description provided for @traineeFeedbackRead.
+  ///
+  /// In it, this message translates to:
+  /// **'Letto'**
+  String get traineeFeedbackRead;
+
+  /// No description provided for @traineeFeedbackUnread.
+  ///
+  /// In it, this message translates to:
+  /// **'Non letto'**
+  String get traineeFeedbackUnread;
+
+  /// No description provided for @traineeFeedbackDelete.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get traineeFeedbackDelete;
+
+  /// No description provided for @traineeFeedbackDeleteConfirmTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare il feedback?'**
+  String get traineeFeedbackDeleteConfirmTitle;
+
+  /// No description provided for @traineeFeedbackDeleteConfirmBody.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo rimuoverà il feedback in modo permanente.'**
+  String get traineeFeedbackDeleteConfirmBody;
+
+  /// No description provided for @traineeFeedbackDeleteSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback eliminato.'**
+  String get traineeFeedbackDeleteSuccess;
+
+  /// No description provided for @traineeFeedbackLoadFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare il feedback in questo momento.'**
+  String get traineeFeedbackLoadFailed;
+
+  /// No description provided for @refresh.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiorna'**
+  String get refresh;
+
   /// No description provided for @homeEmptyTitle.
   ///
   /// In it, this message translates to:

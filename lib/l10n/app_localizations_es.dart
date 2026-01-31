@@ -406,6 +406,38 @@ class AppLocalizationsEs extends AppLocalizations {
       'Feedback guardado. Lo compartiremos con tu entrenador.';
 
   @override
+  String get traineeFeedbackSharedTitle => 'Comentarios compartidos';
+
+  @override
+  String get traineeFeedbackEmpty => 'Aún no has compartido comentarios.';
+
+  @override
+  String get traineeFeedbackRead => 'Leído';
+
+  @override
+  String get traineeFeedbackUnread => 'No leído';
+
+  @override
+  String get traineeFeedbackDelete => 'Eliminar';
+
+  @override
+  String get traineeFeedbackDeleteConfirmTitle => '¿Eliminar comentario?';
+
+  @override
+  String get traineeFeedbackDeleteConfirmBody =>
+      'Esto eliminará el comentario de forma permanente.';
+
+  @override
+  String get traineeFeedbackDeleteSuccess => 'Comentario eliminado.';
+
+  @override
+  String get traineeFeedbackLoadFailed =>
+      'No se pudo cargar el feedback en este momento.';
+
+  @override
+  String get refresh => 'Actualizar';
+
+  @override
   String get homeEmptyTitle => 'No hay entrenamientos disponibles';
 
   @override
