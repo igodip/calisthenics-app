@@ -500,6 +500,30 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se puede actualizar este ejercicio.';
 
   @override
+  String get trainingExerciseCoachNotesTitle => 'Notas del entrenador';
+
+  @override
+  String get trainingExerciseNoCoachNotes =>
+      'Todavía no hay notas del entrenador para este ejercicio.';
+
+  @override
+  String get trainingExerciseYourNotesLabel => 'Tus notas';
+
+  @override
+  String get trainingExerciseSaveNotes => 'Guardar notas';
+
+  @override
+  String get trainingExerciseResolvedLabel => 'Marcar como resuelto';
+
+  @override
+  String get trainingExerciseNotesSaved => 'Notas actualizadas';
+
+  @override
+  String trainingExerciseNotesError(Object error) {
+    return 'No se pudieron actualizar las notas: ${error}';
+  }
+
+  @override
   String logoutError(Object error) {
     return 'Error al cerrar sesión: ${error}';
   }

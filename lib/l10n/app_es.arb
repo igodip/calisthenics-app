@@ -199,6 +199,20 @@
     }
   },
   "trainingExerciseCompletionUnavailable": "No se puede actualizar este ejercicio.",
+  "trainingExerciseCoachNotesTitle": "Notas del entrenador",
+  "trainingExerciseNoCoachNotes": "Todavía no hay notas del entrenador para este ejercicio.",
+  "trainingExerciseYourNotesLabel": "Tus notas",
+  "trainingExerciseSaveNotes": "Guardar notas",
+  "trainingExerciseResolvedLabel": "Marcar como resuelto",
+  "trainingExerciseNotesSaved": "Notas actualizadas",
+  "trainingExerciseNotesError": "No se pudieron actualizar las notas: {error}",
+  "@trainingExerciseNotesError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "logoutError": "Error al cerrar sesión: {error}",
   "@logoutError": {
     "placeholders": {

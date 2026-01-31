@@ -20,6 +20,9 @@ class Training extends StatefulWidget {
 class _TrainingState extends State<Training> {
   late final List<WorkoutExercise> _exercises;
   final Set<String> _togglingExerciseCompletion = {};
+  final Set<String> _expandedExercises = {};
+  final Map<String, TextEditingController> _noteControllers = {};
+  final Set<String> _savingNotes = {};
   late bool _isCompleted;
   bool _updatingCompletion = false;
   bool _completionChanged = false;
@@ -30,6 +33,14 @@ class _TrainingState extends State<Training> {
     _exercises = List<WorkoutExercise>.from(widget.day.exercises);
     _sortExercises();
     _isCompleted = widget.day.isCompleted;
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _noteControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -147,9 +158,17 @@ class _TrainingState extends State<Training> {
                     exercise: _exercises[index],
                     detailText:
                         _exerciseDetailText(_exercises[index], l10n),
+                    isExpanded:
+                        _expandedExercises.contains(_exerciseKey(index)),
                     updatingCompletion: _togglingExerciseCompletion
                         .contains(_exercises[index].id),
+                    isSavingNotes:
+                        _savingNotes.contains(_exerciseKey(index)),
+                    notesController:
+                        _notesControllerFor(_exercises[index], index),
                     onToggleCompletion: () => _toggleExerciseCompletion(index),
+                    onToggleExpanded: () => _toggleExpanded(index),
+                    onSaveNotes: () => _saveExerciseNotes(index),
                   ),
               ],
             ),
@@ -270,6 +289,65 @@ class _TrainingState extends State<Training> {
     }
   }
 
+  Future<void> _saveExerciseNotes(int index) async {
+    final exercise = _exercises[index];
+    final l10n = AppLocalizations.of(context)!;
+    final exerciseId = exercise.id;
+
+    if (exerciseId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseCompletionUnavailable)),
+      );
+      return;
+    }
+
+    final key = _exerciseKey(index);
+    final controller = _noteControllers[key];
+    if (controller == null) return;
+
+    setState(() {
+      _savingNotes.add(key);
+    });
+
+    try {
+      final newNotes = controller.text.trim();
+      await Supabase.instance.client
+          .from('day_exercises')
+          .update({'trainee_notes': newNotes})
+          .eq('id', exerciseId);
+
+      if (!mounted) return;
+
+      setState(() {
+        _exercises[index] = WorkoutExercise(
+          id: exercise.id,
+          name: exercise.name,
+          notes: exercise.notes,
+          traineeNotes: newNotes,
+          position: exercise.position,
+          terminology: exercise.terminology,
+          skills: exercise.skills,
+          isCompleted: exercise.isCompleted,
+        );
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseNotesSaved)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseNotesError('$error'))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _savingNotes.remove(key);
+        });
+      }
+    }
+  }
+
   Future<void> _toggleCompletion() async {
     final dayId = widget.day.id;
     final l10n = AppLocalizations.of(context)!;
@@ -344,19 +422,59 @@ class _TrainingState extends State<Training> {
     final fallbackIndex = widget.day.exercises.indexOf(exercise);
     return fallbackIndex < 0 ? 0 : fallbackIndex;
   }
+
+  String _exerciseKey(int index) {
+    final exercise = _exercises[index];
+    return exercise.id ?? 'index-$index';
+  }
+
+  void _toggleExpanded(int index) {
+    final key = _exerciseKey(index);
+    setState(() {
+      if (_expandedExercises.contains(key)) {
+        _expandedExercises.remove(key);
+      } else {
+        _expandedExercises.add(key);
+      }
+    });
+  }
+
+  TextEditingController _notesControllerFor(
+    WorkoutExercise exercise,
+    int index,
+  ) {
+    final key = _exerciseKey(index);
+    final existing = _noteControllers[key];
+    if (existing != null) return existing;
+    final controller = TextEditingController(
+      text: (exercise.traineeNotes ?? '').trim(),
+    );
+    _noteControllers[key] = controller;
+    return controller;
+  }
 }
 
 class _ExerciseCard extends StatelessWidget {
   final WorkoutExercise exercise;
   final String detailText;
+  final bool isExpanded;
   final bool updatingCompletion;
+  final bool isSavingNotes;
+  final TextEditingController notesController;
   final VoidCallback onToggleCompletion;
+  final VoidCallback onToggleExpanded;
+  final VoidCallback onSaveNotes;
 
   const _ExerciseCard({
     required this.exercise,
     required this.detailText,
+    required this.isExpanded,
     required this.updatingCompletion,
+    required this.isSavingNotes,
+    required this.notesController,
     required this.onToggleCompletion,
+    required this.onToggleExpanded,
+    required this.onSaveNotes,
   });
 
   @override
@@ -402,80 +520,183 @@ class _ExerciseCard extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: updatingCompletion ? null : onToggleCompletion,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        colorScheme.primaryContainer,
-                        colorScheme.surfaceContainerHighest,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.fitness_center,
-                    color: Colors.white,
-                    size: 22,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(exerciseName, style: titleStyle),
-                      const SizedBox(height: 4),
-                      Text(
-                        detailText,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+        child: Column(
+          children: [
+            InkWell(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+              onTap: onToggleExpanded,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 46,
+                      height: 46,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            colorScheme.primaryContainer,
+                            colorScheme.surfaceContainerHighest,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      if (hasTerminology || hasSkills) ...[
-                        const SizedBox(height: 10),
-                        if (hasTerminology)
-                          _InfoChips(
-                            title: l10n.terminologyTitle,
-                            items: localizedTerminology,
+                      child: const Icon(
+                        Icons.fitness_center,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(exerciseName, style: titleStyle),
+                          const SizedBox(height: 4),
+                          Text(
+                            detailText,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        if (hasTerminology && hasSkills)
-                          const SizedBox(height: 8),
-                        if (hasSkills)
-                          _InfoChips(
-                            title: l10n.guidesTitle,
-                            items: localizedSkills,
-                          ),
-                      ],
-                    ],
-                  ),
+                          if (hasTerminology || hasSkills) ...[
+                            const SizedBox(height: 10),
+                            if (hasTerminology)
+                              _InfoChips(
+                                title: l10n.terminologyTitle,
+                                items: localizedTerminology,
+                              ),
+                            if (hasTerminology && hasSkills)
+                              const SizedBox(height: 8),
+                            if (hasSkills)
+                              _InfoChips(
+                                title: l10n.guidesTitle,
+                                items: localizedSkills,
+                              ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    if (updatingCompletion)
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    else
+                      Icon(
+                        isExpanded
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                        color: colorScheme.onSurfaceVariant
+                            .withValues(alpha: 0.6),
+                      ),
+                  ],
                 ),
-                if (updatingCompletion)
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                else
-                  Icon(
-                    isCompleted ? Icons.check_circle : Icons.chevron_right,
-                    color: isCompleted
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                  ),
-              ],
+              ),
             ),
-          ),
+            if (isExpanded)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.trainingExerciseCoachNotesTitle,
+                      style: textTheme.labelLarge?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      (exercise.notes ?? '').trim().isNotEmpty
+                          ? (exercise.notes ?? '').trim()
+                          : l10n.trainingExerciseNoCoachNotes,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: notesController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: l10n.trainingExerciseYourNotesLabel,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        fillColor: colorScheme.surface,
+                        filled: true,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed:
+                                isSavingNotes ? null : onSaveNotes,
+                            icon: isSavingNotes
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor:
+                                          AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : const Icon(Icons.save),
+                            label:
+                                Text(l10n.trainingExerciseSaveNotes),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.04),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: CheckboxListTile(
+                              value: isCompleted,
+                              onChanged: updatingCompletion
+                                  ? null
+                                  : (_) => onToggleCompletion(),
+                              title: Text(
+                                l10n.trainingExerciseResolvedLabel,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
     );

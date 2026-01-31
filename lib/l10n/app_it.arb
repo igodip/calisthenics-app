@@ -199,6 +199,20 @@
     }
   },
   "trainingExerciseCompletionUnavailable": "Impossibile aggiornare questo esercizio.",
+  "trainingExerciseCoachNotesTitle": "Note del coach",
+  "trainingExerciseNoCoachNotes": "Non ci sono ancora note del coach per questo esercizio.",
+  "trainingExerciseYourNotesLabel": "Le tue note",
+  "trainingExerciseSaveNotes": "Salva note",
+  "trainingExerciseResolvedLabel": "Contrassegna come risolto",
+  "trainingExerciseNotesSaved": "Note aggiornate",
+  "trainingExerciseNotesError": "Impossibile aggiornare le note: {error}",
+  "@trainingExerciseNotesError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "logoutError": "Errore durante il logout: {error}",
   "@logoutError": {
     "placeholders": {
