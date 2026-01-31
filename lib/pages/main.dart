@@ -38,10 +38,18 @@ class _HomePageState extends State<HomePage> {
   bool? payed;
 
   final supabase = Supabase.instance.client;
+  static const int _workoutPlanIndex = 1;
+  static const int _maxTestsIndex = 5;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  void _selectIndex(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
   }
 
   @override
@@ -54,7 +62,10 @@ class _HomePageState extends State<HomePage> {
       _NavigationItem(
         title: l10n.navHome,
         icon: Icons.home,
-        page: const HomeContent(),
+        page: HomeContent(
+          onOpenPlan: () => _selectIndex(_workoutPlanIndex),
+          onViewStats: () => _selectIndex(_maxTestsIndex),
+        ),
       ),
       _NavigationItem(
         title: l10n.workoutPlanTitle,
