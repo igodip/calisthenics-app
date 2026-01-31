@@ -412,20 +412,22 @@ import {
         (maxTests.value || []).forEach((test) => {
           const exercise =
             (test.exercise || '').trim() || t('labels.unknownExercise');
-          if (!grouped[exercise]) {
-            grouped[exercise] = {
+          const unit = (test.unit || '').trim();
+          const groupKey = unit ? `${exercise}::${unit}` : exercise;
+          if (!grouped[groupKey]) {
+            grouped[groupKey] = {
               exercise,
-              unit: test.unit || '',
+              unit,
               tests: [],
             };
           }
-          grouped[exercise].tests.push({
+          grouped[groupKey].tests.push({
             ...test,
             value: Number(test.value || 0),
             timestamp: Date.parse(test.recorded_at || '') || Date.now(),
           });
-          if (!grouped[exercise].unit && test.unit) {
-            grouped[exercise].unit = test.unit;
+          if (!grouped[groupKey].unit && unit) {
+            grouped[groupKey].unit = unit;
           }
         });
 
@@ -467,7 +469,9 @@ import {
             const polyline = points.map((point) => `${point.x},${point.y}`).join(' ');
             const latest = sorted[sorted.length - 1];
             return {
-              exercise: entry.exercise,
+              exercise: entry.unit
+                ? `${entry.exercise} · ${entry.unit}`
+                : entry.exercise,
               unit: entry.unit,
               count: sorted.length,
               minValue,
