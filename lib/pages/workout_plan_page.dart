@@ -120,7 +120,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         .select(
           'id, week, day_code, title, notes, completed, completed_at, '
           'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) ), '
-          'day_exercises ( id, position, notes, completed, trainee_notes, exercise, duration_minutes)',
+          'day_exercises ( id, position, notes, completed, trainee_notes, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes)',
         )
         .eq('workout_plan_days.workout_plans.trainee_id', userId)
         .order('week', ascending: true)
@@ -178,7 +178,10 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         final exerciseValue = exercise['exercise'];
         final exerciseMap =
             exerciseValue is Map ? exerciseValue.cast<String, dynamic>() : null;
-        final name = exerciseMap?['name'] as String? ??
+        final linkedExercise =
+            (exercise['exercises'] as Map?)?.cast<String, dynamic>();
+        final name = linkedExercise?['name'] as String? ??
+            exerciseMap?['name'] as String? ??
             exerciseValue as String?;
         final terminology = parseStringList(
           exercise['terminology'] ?? exerciseMap?['terminology'],
@@ -189,6 +192,11 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
 
         return WorkoutExercise(
           id: exercise['id'] as String?,
+          exerciseId: exercise['exercise_id'] as String? ??
+              linkedExercise?['id'] as String? ??
+              exerciseMap?['id'] as String?,
+          exerciseSlug: linkedExercise?['slug'] as String? ??
+              exerciseMap?['slug'] as String?,
           name: name,
           position: (exercise['position'] as num?)?.toInt(),
           durationMinutes: (exercise['duration_minutes'] as num?)?.toInt(),

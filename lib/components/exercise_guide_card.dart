@@ -9,11 +9,13 @@ class ExerciseGuideCard extends StatelessWidget {
     required this.guide,
     required this.l10n,
     this.onUnlock,
+    this.isHighlighted = false,
   });
 
   final ExerciseGuide guide;
   final AppLocalizations l10n;
   final VoidCallback? onUnlock;
+  final bool isHighlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,12 @@ class ExerciseGuideCard extends StatelessWidget {
       color: isUnlocked
           ? colorScheme.surface
           : colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: isHighlighted
+            ? BorderSide(color: colorScheme.primary, width: 2)
+            : BorderSide.none,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

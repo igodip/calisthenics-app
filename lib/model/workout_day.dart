@@ -3,6 +3,8 @@ import '../l10n/app_localizations.dart';
 
 class WorkoutExercise {
   final String? id;
+  final String? exerciseId;
+  final String? exerciseSlug;
   final String? name;
   final String? notes;
   final String? traineeNotes;
@@ -15,6 +17,8 @@ class WorkoutExercise {
   const WorkoutExercise({
     this.name,
     this.id,
+    this.exerciseId,
+    this.exerciseSlug,
     this.notes,
     this.traineeNotes,
     this.terminology = const [],

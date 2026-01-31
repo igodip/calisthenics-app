@@ -5,7 +5,14 @@ import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 
 class ExerciseGuidesPage extends StatefulWidget {
-  const ExerciseGuidesPage({super.key});
+  const ExerciseGuidesPage({
+    super.key,
+    this.initialGuideSlug,
+    this.initialGuideId,
+  });
+
+  final String? initialGuideSlug;
+  final String? initialGuideId;
 
   @override
   State<ExerciseGuidesPage> createState() => _ExerciseGuidesPageState();
@@ -16,6 +23,10 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
   final Set<String> _unlockedSkills = {};
   Future<List<ExerciseGuide>>? _guidesFuture;
   String? _localeName;
+  final ScrollController _scrollController = ScrollController();
+  final Map<String, GlobalKey> _guideKeys = {};
+  String? _highlightedGuideId;
+  bool _initialGuideHandled = false;
 
   @override
   void didChangeDependencies() {
@@ -25,6 +36,63 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
       _localeName = l10n.localeName;
       _guidesFuture = ExerciseGuides.load(l10n);
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  String? _initialGuideTarget() {
+    final slug = widget.initialGuideSlug?.trim();
+    if (slug != null && slug.isNotEmpty) {
+      return slug;
+    }
+    final id = widget.initialGuideId?.trim();
+    if (id != null && id.isNotEmpty) {
+      return id;
+    }
+    return null;
+  }
+
+  void _handleInitialGuide(List<ExerciseGuide> guides) {
+    if (_initialGuideHandled) return;
+    _initialGuideHandled = true;
+    final target = _initialGuideTarget();
+    if (target == null) return;
+    ExerciseGuide? matched;
+    for (final guide in guides) {
+      if (guide.id == target) {
+        matched = guide;
+        break;
+      }
+    }
+    if (matched == null) return;
+    if (_selectedDifficulty != matched.difficulty ||
+        _highlightedGuideId != matched.id) {
+      setState(() {
+        _selectedDifficulty = matched.difficulty;
+        _highlightedGuideId = matched.id;
+      });
+    } else {
+      _highlightedGuideId = matched.id;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToGuide(matched.id);
+    });
+  }
+
+  void _scrollToGuide(String guideId) {
+    final key = _guideKeys[guideId];
+    final context = key?.currentContext;
+    if (context == null) return;
+    Scrollable.ensureVisible(
+      context,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+      alignment: 0.12,
+    );
   }
 
   @override
@@ -44,8 +112,15 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
         final filteredGuides = guides
             .where((guide) => guide.difficulty == _selectedDifficulty)
             .toList();
+        if (!_initialGuideHandled &&
+            snapshot.connectionState == ConnectionState.done) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _handleInitialGuide(guides);
+          });
+        }
 
         return ListView(
+          controller: _scrollController,
           padding: const EdgeInsets.all(20),
           children: [
             _PageHeader(
@@ -82,16 +157,23 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
               for (final guide in filteredGuides)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: ExerciseGuideCard(
-                    guide: guide,
-                    l10n: l10n,
-                    onUnlock: guide.isUnlocked
-                        ? null
-                        : () {
-                            setState(() {
-                              _unlockedSkills.add(guide.id);
-                            });
-                          },
+                  child: Container(
+                    key: _guideKeys.putIfAbsent(
+                      guide.id,
+                      () => GlobalKey(),
+                    ),
+                    child: ExerciseGuideCard(
+                      guide: guide,
+                      l10n: l10n,
+                      isHighlighted: guide.id == _highlightedGuideId,
+                      onUnlock: guide.isUnlocked
+                          ? null
+                          : () {
+                              setState(() {
+                                _unlockedSkills.add(guide.id);
+                              });
+                            },
+                    ),
                   ),
                 ),
           ],
