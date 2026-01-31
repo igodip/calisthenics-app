@@ -168,13 +168,18 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
                         exerciseGuideById,
                         exerciseGuideByName,
                       );
+                      final unitLabel = test.unit.trim();
+                      final displayLabel = unitLabel.isEmpty
+                          ? displayName
+                          : '$displayName ($unitLabel)';
                       final key = _resolveExerciseKey(
                         test.exercise,
                         exerciseGuideById,
                         exerciseGuideByName,
                       );
-                      groupedTests.putIfAbsent(key, () => []).add(test);
-                      displayNames.putIfAbsent(key, () => displayName);
+                      final groupedKey = '$key|$unitLabel';
+                      groupedTests.putIfAbsent(groupedKey, () => []).add(test);
+                      displayNames.putIfAbsent(groupedKey, () => displayLabel);
                     }
 
                     return ListView.separated(
