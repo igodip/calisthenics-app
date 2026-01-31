@@ -460,7 +460,15 @@ import {
 
       const trainingCalendar = computed(() => {
         const order = new Map(dayCodeOptions.map((code, idx) => [code, idx]));
-        return (days.value || [])
+        const latestPlanId = plans.value?.[0]?.id;
+        const filteredDays = latestPlanId
+          ? (days.value || []).filter((day) =>
+              (day.workout_plan_days || []).some(
+                (entry) => entry.workout_plans?.id === latestPlanId,
+              ),
+            )
+          : days.value || [];
+        return filteredDays
           .map((day) => {
             const exercises = day.day_exercises || [];
             const completedCount = exercises.filter((ex) => ex.completed).length;
