@@ -1,5 +1,4 @@
 import 'package:calisync/components/coach_tip.dart';
-import 'package:calisync/pages/workout_plan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,7 +9,14 @@ import '../l10n/app_localizations.dart';
 import 'profile.dart';
 
 class HomeContent extends StatefulWidget {
-  const HomeContent({super.key});
+  const HomeContent({
+    super.key,
+    required this.onOpenPlan,
+    required this.onViewStats,
+  });
+
+  final VoidCallback onOpenPlan;
+  final VoidCallback onViewStats;
 
   @override
   State<HomeContent> createState() => _HomeContentState();
@@ -26,12 +32,6 @@ class _HomeContentState extends State<HomeContent> {
     final client = Supabase.instance.client;
     _profileFuture = getUserData();
     _coachTip = _loadCoachTipForUser(Supabase.instance.client, client.auth.currentUser!.id);
-  }
-
-  Future<void> _openWorkoutPlan() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const WorkoutPlanPage()),
-    );
   }
 
   Future<String?> _loadCoachTipForUser(
@@ -71,7 +71,10 @@ class _HomeContentState extends State<HomeContent> {
             const SizedBox(height: 16),
             const ProgressCard(),
             const SizedBox(height: 16),
-            _ActionButtons(onOpenPlan: _openWorkoutPlan),
+            _ActionButtons(
+              onOpenPlan: widget.onOpenPlan,
+              onViewStats: widget.onViewStats,
+            ),
             const SizedBox(height: 16),
             const StrengthLevelCard(),
             const SizedBox(height: 16),
@@ -171,8 +174,10 @@ class _AvatarChip extends StatelessWidget {
 
 class _ActionButtons extends StatelessWidget {
   final VoidCallback onOpenPlan;
+  final VoidCallback onViewStats;
   const _ActionButtons({
       required this.onOpenPlan,
+      required this.onViewStats,
   });
 
   @override
@@ -189,7 +194,7 @@ class _ActionButtons extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: OutlinedButton(
-            onPressed: () {},
+            onPressed: onViewStats,
             child: Text(l10n.homeViewStats),
           ),
         ),
