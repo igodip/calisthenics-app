@@ -6,6 +6,8 @@ import 'package:calisync/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
+import '../data/exercise_guides.dart' as guide_data;
+import '../data/terminology_repository.dart';
 import '../l10n/app_localizations.dart';
 import 'exercise_guides.dart';
 import 'home_content.dart';
@@ -36,6 +38,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   bool? payed;
+  String? _cachedLocale;
 
   final supabase = Supabase.instance.client;
   static const int _workoutPlanIndex = 1;
@@ -44,6 +47,17 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final localeName = AppLocalizations.of(context)!.localeName;
+    if (_cachedLocale != localeName) {
+      _cachedLocale = localeName;
+      guide_data.ExerciseGuides.load(localeName);
+      TerminologyRepository.load(localeName);
+    }
   }
 
   void _selectIndex(int index) {

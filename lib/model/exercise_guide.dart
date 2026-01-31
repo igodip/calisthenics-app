@@ -1,4 +1,3 @@
-import '../data/exercise_translations.dart';
 import '../l10n/app_localizations.dart';
 
 enum Difficulty { beginner, intermediate, advanced }
@@ -13,6 +12,35 @@ extension DifficultyLabel on Difficulty {
       case Difficulty.advanced:
         return l10n.difficultyAdvanced;
     }
+  }
+}
+
+class ExerciseGuideTranslation {
+  const ExerciseGuideTranslation({
+    required this.exerciseId,
+    required this.locale,
+    required this.name,
+    required this.focus,
+    required this.tip,
+    required this.description,
+  });
+
+  final String exerciseId;
+  final String locale;
+  final String name;
+  final String focus;
+  final String tip;
+  final String description;
+
+  factory ExerciseGuideTranslation.fromMap(Map<String, dynamic> data) {
+    return ExerciseGuideTranslation(
+      exerciseId: data['exercise_id']?.toString() ?? '',
+      locale: data['locale']?.toString() ?? '',
+      name: data['name']?.toString() ?? '',
+      focus: data['focus']?.toString() ?? '',
+      tip: data['tip']?.toString() ?? '',
+      description: data['description']?.toString() ?? '',
+    );
   }
 }
 
@@ -48,19 +76,36 @@ class ExerciseGuide {
   }
 
   static ExerciseGuide fromDatabase(
-    Map<String, dynamic> row,
-    String localeName,
-  ) {
-    final slug = row['slug'] as String;
-    final strings = ExerciseGuideTranslations.forSlug(slug, localeName);
+    Map<String, dynamic> row, {
+    ExerciseGuideTranslation? translation,
+    ExerciseGuideTranslation? fallbackTranslation,
+  }) {
+    final slug = row['slug']?.toString() ?? '';
+    final fallbackName = row['name']?.toString() ?? slug;
+    final resolvedName = (translation?.name ?? '').isNotEmpty
+        ? translation!.name
+        : (fallbackTranslation?.name ?? fallbackName);
+    String resolveField(String? primary, String? fallback) {
+      if (primary != null && primary.isNotEmpty) return primary;
+      return fallback ?? '';
+    }
     return ExerciseGuide(
       id: slug,
-      name: strings.name,
+      name: resolvedName,
       difficulty: _difficultyFromString(row['difficulty'] as String?),
       isUnlocked: row['default_unlocked'] as bool? ?? false,
-      focus: strings.focus,
-      tip: strings.tip,
-      description: strings.description,
+      focus: resolveField(
+        translation?.focus,
+        fallbackTranslation?.focus,
+      ),
+      tip: resolveField(
+        translation?.tip,
+        fallbackTranslation?.tip,
+      ),
+      description: resolveField(
+        translation?.description,
+        fallbackTranslation?.description,
+      ),
     );
   }
 
