@@ -303,8 +303,7 @@ import {
               .sort((a, b) => (a.position || 0) - (b.position || 0));
             exercises.forEach((exercise, index) => {
               if (!slots[index]) return;
-              const exerciseName =
-                exercise.exercises?.name || exercise.exercise || '';
+              const exerciseName = resolveExerciseName(exercise);
               slots[index] = {
                 ...slots[index],
                 exercise: exerciseName,
@@ -672,8 +671,7 @@ import {
             const traineeNotes = (entry.trainee_notes || '').trim();
             return {
               id: entry.id,
-              exercise:
-                (entry.exercise || '').trim() || t('labels.unknownExercise'),
+              exercise: resolveExerciseName(entry) || t('labels.unknownExercise'),
               dayLabel,
               timeLabel: completedAt ? formatTime(completedAt) : '',
               notes,
@@ -853,6 +851,29 @@ import {
         const numeric = Number(value);
         if (Number.isNaN(numeric)) return null;
         return numeric;
+      };
+
+      const exerciseNameLookup = computed(() => {
+        const map = new Map();
+        (exercises.value || []).forEach((exercise) => {
+          if (!exercise?.id) return;
+          const name = (exercise.name || exercise.slug || '').trim();
+          if (name) {
+            map.set(exercise.id, name);
+          }
+        });
+        return map;
+      });
+
+      const resolveExerciseName = (entry) => {
+        if (!entry) return '';
+        const relationName = (entry.exercises?.name || '').trim();
+        if (relationName) return relationName;
+        const lookupName = entry.exercise_id
+          ? exerciseNameLookup.value.get(entry.exercise_id)
+          : '';
+        if (lookupName) return lookupName;
+        return (entry.exercise || '').trim();
       };
 
       const templateDayLabel = (index) => {
@@ -2319,7 +2340,7 @@ import {
           const { data, error } = await supabase
             .from('day_exercises')
             .select(
-              'id, exercise, exercise_id, notes, trainee_notes, completed, duration_minutes, days!inner ( id, week, day_code, title, completed_at, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) ) )',
+              'id, exercise, exercise_id, notes, trainee_notes, completed, duration_minutes, exercises ( id, slug, name ), days!inner ( id, week, day_code, title, completed_at, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) ) )',
             )
             .eq('completed', true)
             .eq('days.workout_plan_days.workout_plans.trainee_id', u.id);
