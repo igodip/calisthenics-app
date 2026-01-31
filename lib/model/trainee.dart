@@ -3,11 +3,13 @@ class Trainee {
   final String id;
   final String? name;
   final double? weight;
+  final String? profileImageUrl;
 
   const Trainee({
     required this.id,
     this.name,
     this.weight,
+    this.profileImageUrl,
   });
 
   factory Trainee.fromMap(Map<String, dynamic> map) {
@@ -15,6 +17,7 @@ class Trainee {
       id: map['id'] as String,
       name: map['name'] as String?,
       weight: (map['weight'] as num?)?.toDouble(),
+      profileImageUrl: map['profile_image_url'] as String?,
     );
   }
 
@@ -23,6 +26,7 @@ class Trainee {
       'id': id,
       'name': name,
       'weight': weight,
+      'profile_image_url': profileImageUrl,
     };
   }
 
@@ -30,11 +34,13 @@ class Trainee {
     String? id,
     String? name,
     double? weight,
+    String? profileImageUrl,
   }) {
     return Trainee(
       id: id ?? this.id,
       name: name ?? this.name,
       weight: weight ?? this.weight,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
     );
   }
 
@@ -42,7 +48,8 @@ class Trainee {
   String toString() => 'Profiles(${{
         'id': id,
         'name': name,
-        'weight': weight
+        'weight': weight,
+        'profileImageUrl': profileImageUrl,
       }})';
 
   @override
@@ -52,13 +59,15 @@ class Trainee {
       runtimeType == other.runtimeType &&
       id == other.id &&
       name == other.name &&
-      weight == other.weight;
+      weight == other.weight &&
+      profileImageUrl == other.profileImageUrl;
 
   @override
   int get hashCode =>
       Object.hashAll([
         id,
         name,
-        weight
+        weight,
+        profileImageUrl,
       ]);
 }

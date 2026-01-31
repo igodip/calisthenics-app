@@ -1,7 +1,10 @@
 // lib/profile.dart
+import 'dart:typed_data';
+
 import 'package:calisync/model/trainee.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
@@ -58,7 +61,7 @@ Future<UserProfileData> getUserData() async {
 
   final profileResponse = await supabase
       .from('trainees')
-      .select('id, name, weight')
+      .select('id, name, weight, profile_image_url')
       .eq('id', user.id)
       .limit(1)
       .maybeSingle();
@@ -205,12 +208,27 @@ class _ProfilePageState extends State<ProfilePage> {
             final weightText = weight != null
                 ? l10n.profileWeightValue(weight.toStringAsFixed(1))
                 : l10n.profileNotSet;
+            final profileImageUrl = data.profile?.profileImageUrl;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  const SizedBox(height: 16),
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: colorScheme.surfaceContainerHighest,
+                    backgroundImage:
+                        profileImageUrl == null ? null : NetworkImage(profileImageUrl),
+                    child: profileImageUrl == null
+                        ? Text(
+                            data.initials(l10n),
+                            style: theme.textTheme.titleLarge
+                                ?.copyWith(color: colorScheme.onSurface),
+                          )
+                        : null,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     displayName,
@@ -316,6 +334,10 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _fullNameController;
   late final TextEditingController _weightController;
+  final ImagePicker _imagePicker = ImagePicker();
+  Uint8List? _selectedImageBytes;
+  String? _selectedImageName;
+  String? _selectedImageUrl;
   bool _isSubmitting = false;
 
   @override
@@ -324,6 +346,7 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     _fullNameController = TextEditingController(text: widget.data.profile?.name ?? '');
     final weight = widget.data.profile?.weight;
     _weightController = TextEditingController(text: weight != null ? '$weight' : '');
+    _selectedImageUrl = widget.data.profile?.profileImageUrl;
   }
 
   @override
@@ -331,6 +354,35 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     _fullNameController.dispose();
     _weightController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickProfileImage() async {
+    if (_isSubmitting) return;
+    final image = await _imagePicker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (image == null) return;
+    final bytes = await image.readAsBytes();
+    if (!mounted) return;
+    setState(() {
+      _selectedImageBytes = bytes;
+      _selectedImageName = image.name;
+    });
+  }
+
+  Future<String?> _uploadProfileImage() async {
+    if (_selectedImageBytes == null || _selectedImageBytes!.isEmpty) {
+      return _selectedImageUrl;
+    }
+
+    final safeName = (_selectedImageName ?? 'profile.jpg').replaceAll(' ', '_');
+    final path = '${widget.data.userId}/$safeName';
+
+    await supabase.storage.from('avatars').uploadBinary(
+          path,
+          _selectedImageBytes!,
+          fileOptions: const FileOptions(upsert: true),
+        );
+
+    return supabase.storage.from('avatars').getPublicUrl(path);
   }
 
   Future<void> _submit() async {
@@ -344,9 +396,26 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     final fullName = _fullNameController.text.trim();
     final weightText = _weightController.text.trim().replaceAll(',', '.');
     final weightValue = weightText.isEmpty ? null : double.tryParse(weightText);
+    String? imageUrl;
+
+    try {
+      imageUrl = await _uploadProfileImage();
+    } catch (error) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profileEditError(error.toString()))),
+      );
+      setState(() {
+        _isSubmitting = false;
+      });
+      return;
+    }
+
     final updates = <String, dynamic>{
       'name': fullName.isEmpty ? null : fullName,
       'weight': weightValue,
+      'profile_image_url': imageUrl,
     };
 
     try {
@@ -391,6 +460,38 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
                       .textTheme
                       .titleLarge
                       ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 44,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        backgroundImage: _selectedImageBytes == null
+                            ? (_selectedImageUrl == null
+                                ? null
+                                : NetworkImage(_selectedImageUrl!))
+                            : MemoryImage(_selectedImageBytes!),
+                        child: (_selectedImageBytes == null && _selectedImageUrl == null)
+                            ? Text(
+                                widget.data.initials(l10n),
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: _pickProfileImage,
+                        icon: const Icon(Icons.photo_camera_outlined),
+                        label: Text(l10n.profilePhotoEdit),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(

@@ -325,6 +325,7 @@
   "profileEditWeightLabel": "Peso",
   "profileEditWeightHint": "Inserisci il tuo peso in kg (opzionale)",
   "profileEditWeightInvalid": "Inserisci un peso valido e positivo.",
+  "profilePhotoEdit": "Cambia foto",
   "profileEditCancel": "Annulla",
   "profileEditSave": "Salva modifiche",
   "profileEditSuccess": "Profilo aggiornato correttamente",
