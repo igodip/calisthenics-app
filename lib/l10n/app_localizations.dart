@@ -970,6 +970,48 @@ abstract class AppLocalizations {
   /// **'Impossibile aggiornare questo esercizio.'**
   String get trainingExerciseCompletionUnavailable;
 
+  /// No description provided for @trainingExerciseCoachNotesTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Note del coach'**
+  String get trainingExerciseCoachNotesTitle;
+
+  /// No description provided for @trainingExerciseNoCoachNotes.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ci sono ancora note del coach per questo esercizio.'**
+  String get trainingExerciseNoCoachNotes;
+
+  /// No description provided for @trainingExerciseYourNotesLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Le tue note'**
+  String get trainingExerciseYourNotesLabel;
+
+  /// No description provided for @trainingExerciseSaveNotes.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva note'**
+  String get trainingExerciseSaveNotes;
+
+  /// No description provided for @trainingExerciseResolvedLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Contrassegna come risolto'**
+  String get trainingExerciseResolvedLabel;
+
+  /// No description provided for @trainingExerciseNotesSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Note aggiornate'**
+  String get trainingExerciseNotesSaved;
+
+  /// No description provided for @trainingExerciseNotesError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aggiornare le note: {error}'**
+  String trainingExerciseNotesError(Object error);
+
   /// No description provided for @logoutError.
   ///
   /// In it, this message translates to:

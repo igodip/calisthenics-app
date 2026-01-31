@@ -500,6 +500,30 @@ class AppLocalizationsEn extends AppLocalizations {
       'Cannot update this exercise.';
 
   @override
+  String get trainingExerciseCoachNotesTitle => 'Coach notes';
+
+  @override
+  String get trainingExerciseNoCoachNotes =>
+      'No coach notes for this exercise yet.';
+
+  @override
+  String get trainingExerciseYourNotesLabel => 'Your notes';
+
+  @override
+  String get trainingExerciseSaveNotes => 'Save notes';
+
+  @override
+  String get trainingExerciseResolvedLabel => 'Mark as resolved';
+
+  @override
+  String get trainingExerciseNotesSaved => 'Notes updated';
+
+  @override
+  String trainingExerciseNotesError(Object error) {
+    return 'Unable to update notes: $error';
+  }
+
+  @override
   String logoutError(Object error) {
     return 'Error while logging out: $error';
   }
