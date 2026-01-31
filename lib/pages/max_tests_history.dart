@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../data/exercise_guides.dart';
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 import '../model/max_test.dart';
@@ -25,11 +26,23 @@ class MaxTestsHistoryPage extends StatefulWidget {
 
 class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
   Future<List<MaxTest>>? _maxTestsFuture;
+  Future<List<ExerciseGuide>>? _guidesFuture;
+  String? _localeName;
 
   @override
   void initState() {
     super.initState();
     _refreshMaxTests();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context)!;
+    if (_guidesFuture == null || _localeName != l10n.localeName) {
+      _localeName = l10n.localeName;
+      _guidesFuture = ExerciseGuides.load(l10n);
+    }
   }
 
   void _refreshMaxTests() {
@@ -83,130 +96,148 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final exerciseGuides = ExerciseGuide.buildGuides(l10n)
-      ..sort((a, b) => a.name.compareTo(b.name));
-    final exerciseGuideById = {
-      for (final guide in exerciseGuides) guide.id: guide,
-    };
-    final exerciseGuideByName = {
-      for (final guide in exerciseGuides)
-        guide.name.trim().toLowerCase(): guide,
-    };
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.profileMaxTestsHistoryTitle),
-        actions: [
-          IconButton(
-            onPressed: _refreshMaxTests,
-            tooltip: l10n.profileMaxTestsRefresh,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.displayName,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.profileMaxTestsHistoryDescription,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: FutureBuilder<List<MaxTest>>(
-                  future: _maxTestsFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (snapshot.hasError) {
-                      final errorText = snapshot.error.toString();
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            l10n.profileMaxTestsHistoryError(errorText),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
-                    }
-
-                    final tests = snapshot.data ?? const [];
-                    if (tests.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            l10n.profileMaxTestsHistoryEmpty,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      );
-                    }
-
-                    final groupedTests = <String, List<MaxTest>>{};
-                    final displayNames = <String, String>{};
-                    for (final test in tests) {
-                      final displayName = _resolveExerciseLabel(
-                        test.exercise,
-                        exerciseGuideById,
-                        exerciseGuideByName,
-                      );
-                      final unitLabel = test.unit.trim();
-                      final displayLabel = unitLabel.isEmpty
-                          ? displayName
-                          : '$displayName ($unitLabel)';
-                      final key = _resolveExerciseKey(
-                        test.exercise,
-                        exerciseGuideById,
-                        exerciseGuideByName,
-                      );
-                      final groupedKey = '$key|$unitLabel';
-                      groupedTests.putIfAbsent(groupedKey, () => []).add(test);
-                      displayNames.putIfAbsent(groupedKey, () => displayLabel);
-                    }
-
-                    return ListView.separated(
-                      itemCount: groupedTests.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 16),
-                      itemBuilder: (context, index) {
-                        final entry = groupedTests.entries.elementAt(index);
-                        final exerciseKey = entry.key;
-                        final groupTests = entry.value
-                          ..sort((a, b) => a.recordedAt.compareTo(b.recordedAt));
-                        final exercise =
-                            displayNames[exerciseKey] ?? groupTests.first.exercise.trim();
-
-                        return _MaxTestHistoryCard(
-                          exercise: exercise,
-                          tests: groupTests,
-                          formatValue: _formatValue,
-                        );
-                      },
-                    );
-                  },
-                ),
+    return FutureBuilder<List<ExerciseGuide>>(
+      future: _guidesFuture,
+      builder: (context, snapshot) {
+        final exerciseGuides =
+            List<ExerciseGuide>.from(snapshot.data ?? const <ExerciseGuide>[])
+              ..sort((a, b) => a.name.compareTo(b.name));
+        final exerciseGuideById = {
+          for (final guide in exerciseGuides) guide.id: guide,
+        };
+        final exerciseGuideByName = {
+          for (final guide in exerciseGuides)
+            guide.name.trim().toLowerCase(): guide,
+        };
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(l10n.profileMaxTestsHistoryTitle),
+            actions: [
+              IconButton(
+                onPressed: _refreshMaxTests,
+                tooltip: l10n.profileMaxTestsRefresh,
+                icon: const Icon(Icons.refresh),
               ),
             ],
           ),
-        ),
-      ),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.displayName,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.profileMaxTestsHistoryDescription,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: FutureBuilder<List<MaxTest>>(
+                      future: _maxTestsFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        if (snapshot.hasError) {
+                          final errorText = snapshot.error.toString();
+                          return Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                l10n.profileMaxTestsHistoryError(errorText),
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                        }
+
+                        final tests = snapshot.data ?? const [];
+                        if (tests.isEmpty) {
+                          return Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                l10n.profileMaxTestsHistoryEmpty,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                        }
+
+                        final groupedTests = <String, List<MaxTest>>{};
+                        final displayNames = <String, String>{};
+                        for (final test in tests) {
+                          final displayName = _resolveExerciseLabel(
+                            test.exercise,
+                            exerciseGuideById,
+                            exerciseGuideByName,
+                          );
+                          final unitLabel = test.unit.trim();
+                          final displayLabel = unitLabel.isEmpty
+                              ? displayName
+                              : '$displayName ($unitLabel)';
+                          final key = _resolveExerciseKey(
+                            test.exercise,
+                            exerciseGuideById,
+                            exerciseGuideByName,
+                          );
+                          final groupedKey = '$key|$unitLabel';
+                          groupedTests
+                              .putIfAbsent(groupedKey, () => [])
+                              .add(test);
+                          displayNames.putIfAbsent(
+                            groupedKey,
+                            () => displayLabel,
+                          );
+                        }
+
+                        return ListView.separated(
+                          itemCount: groupedTests.length,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 16),
+                          itemBuilder: (context, index) {
+                            final entry = groupedTests.entries.elementAt(index);
+                            final exerciseKey = entry.key;
+                            final groupTests = entry.value
+                              ..sort(
+                                (a, b) => a.recordedAt.compareTo(b.recordedAt),
+                              );
+                            final exercise =
+                                displayNames[exerciseKey] ??
+                                groupTests.first.exercise.trim();
+
+                            return _MaxTestHistoryCard(
+                              exercise: exercise,
+                              tests: groupTests,
+                              formatValue: _formatValue,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
