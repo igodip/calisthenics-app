@@ -401,6 +401,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'Feedback saved. We\'ll share it with your coach.';
 
   @override
+  String get traineeFeedbackSharedTitle => 'Shared feedback';
+
+  @override
+  String get traineeFeedbackEmpty => 'No feedback shared yet.';
+
+  @override
+  String get traineeFeedbackRead => 'Read';
+
+  @override
+  String get traineeFeedbackUnread => 'Unread';
+
+  @override
+  String get traineeFeedbackDelete => 'Delete';
+
+  @override
+  String get traineeFeedbackDeleteConfirmTitle => 'Delete feedback?';
+
+  @override
+  String get traineeFeedbackDeleteConfirmBody =>
+      'This will remove the feedback permanently.';
+
+  @override
+  String get traineeFeedbackDeleteSuccess => 'Feedback deleted.';
+
+  @override
+  String get traineeFeedbackLoadFailed =>
+      'Unable to load feedback right now.';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
   String get homeEmptyTitle => 'No workouts available';
 
   @override

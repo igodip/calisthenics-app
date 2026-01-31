@@ -405,6 +405,38 @@ class AppLocalizationsIt extends AppLocalizations {
       'Feedback salvato. Lo condivideremo con il tuo coach.';
 
   @override
+  String get traineeFeedbackSharedTitle => 'Feedback condiviso';
+
+  @override
+  String get traineeFeedbackEmpty => 'Non hai ancora condiviso feedback.';
+
+  @override
+  String get traineeFeedbackRead => 'Letto';
+
+  @override
+  String get traineeFeedbackUnread => 'Non letto';
+
+  @override
+  String get traineeFeedbackDelete => 'Elimina';
+
+  @override
+  String get traineeFeedbackDeleteConfirmTitle => 'Eliminare il feedback?';
+
+  @override
+  String get traineeFeedbackDeleteConfirmBody =>
+      'Questo rimuoverà il feedback in modo permanente.';
+
+  @override
+  String get traineeFeedbackDeleteSuccess => 'Feedback eliminato.';
+
+  @override
+  String get traineeFeedbackLoadFailed =>
+      'Impossibile caricare il feedback in questo momento.';
+
+  @override
+  String get refresh => 'Aggiorna';
+
+  @override
   String get homeEmptyTitle => 'Nessun allenamento disponibile';
 
   @override
