@@ -66,6 +66,10 @@
                     <span>{{ t('sections.exercises') }}</span>
                     <span class="nav-badge">{{ exercises.length }}</span>
                 </button>
+                <button :class="{active: activeSection==='terminology'}" @click="activeSection='terminology'">
+                    <span>{{ t('sections.terminology') }}</span>
+                    <span class="nav-badge">{{ terminology.length }}</span>
+                </button>
             </nav>
             <div class="sidebar-footer">
                 <div class="user-chip">
@@ -1080,6 +1084,116 @@
                                             type="button"
                                             @click="deleteExercise(exercise)"
                                             :disabled="exerciseSaving[exercise.id]"
+                                        >
+                                            {{ t('actions.delete') }}
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-panel terminology-panel" :class="{active: activeSection==='terminology'}">
+                <div class="overview-grid">
+                    <div class="card">
+                        <div class="overview-card-header">
+                            <div class="stack">
+                                <h3>{{ t('sections.terminology') }}</h3>
+                                <span class="muted small">{{ t('terminology.subtitle') }}</span>
+                            </div>
+                            <span class="pill">{{ t('terminology.localeBadge', { locale: locale.toUpperCase() }) }}</span>
+                        </div>
+                        <div class="exercise-form-grid">
+                            <label class="stack small">
+                                <span class="muted small">{{ t('labels.termKey') }}</span>
+                                <input v-model="terminologyForm.term_key" :placeholder="t('placeholders.termKeyExample')" />
+                            </label>
+                            <label class="stack small">
+                                <span class="muted small">{{ t('labels.title') }}</span>
+                                <input v-model="terminologyForm.title" :placeholder="t('placeholders.terminologyTitle')" />
+                            </label>
+                            <label class="stack small">
+                                <span class="muted small">{{ t('labels.description') }}</span>
+                                <input v-model="terminologyForm.description" :placeholder="t('placeholders.terminologyDescription')" />
+                            </label>
+                            <label class="stack small">
+                                <span class="muted small">{{ t('labels.sortOrder') }}</span>
+                                <input v-model.number="terminologyForm.sort_order" type="number" min="1" />
+                            </label>
+                        </div>
+                        <div class="exercise-form-actions">
+                            <button class="btn primary" type="button" @click="createTerminology" :disabled="creatingTerminology">
+                                {{ t('actions.add') }}
+                            </button>
+                            <button class="btn ghost" type="button" @click="resetTerminologyForm" :disabled="creatingTerminology">
+                                {{ t('actions.reset') }}
+                            </button>
+                            <span v-if="creatingTerminology" class="muted small">{{ t('status.savingTerminology') }}</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="overview-card-header">
+                            <div class="stack">
+                                <h3>{{ t('terminology.available') }}</h3>
+                                <span class="muted small">{{ t('labels.terminologyCount', { count: filteredTerminology.length }) }}</span>
+                            </div>
+                            <div class="exercise-toolbar">
+                                <label class="stack small">
+                                    <span class="muted small">{{ t('placeholders.filterTerminology') }}</span>
+                                    <input v-model="terminologyFilter" :placeholder="t('placeholders.filterTerminology')" />
+                                </label>
+                                <button class="small" type="button" @click="loadTerminology" :disabled="loadingTerminology">
+                                    {{ t('actions.refresh') }}
+                                </button>
+                            </div>
+                        </div>
+                        <div v-if="loadingTerminology" class="muted small">{{ t('status.loadingTerminology') }}</div>
+                        <div v-else-if="terminologyError" class="muted small">{{ terminologyError }}</div>
+                        <div v-else-if="filteredTerminology.length===0" class="muted small">{{ t('terminology.none') }}</div>
+                        <div v-else class="plan-builder-table-wrap">
+                            <table class="plan-builder-table">
+                                <thead>
+                                <tr>
+                                    <th>{{ t('labels.termKey') }}</th>
+                                    <th>{{ t('labels.title') }}</th>
+                                    <th>{{ t('labels.description') }}</th>
+                                    <th>{{ t('labels.sortOrder') }}</th>
+                                    <th>{{ t('labels.createdAt') }}</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="entry in filteredTerminology" :key="entry.id">
+                                    <td>
+                                        <input v-model="terminologyEdits[entry.id].term_key" :placeholder="t('placeholders.termKeyExample')" />
+                                    </td>
+                                    <td>
+                                        <input v-model="terminologyEdits[entry.id].title" :placeholder="t('placeholders.terminologyTitle')" />
+                                    </td>
+                                    <td>
+                                        <input v-model="terminologyEdits[entry.id].description" :placeholder="t('placeholders.terminologyDescription')" />
+                                    </td>
+                                    <td>
+                                        <input v-model.number="terminologyEdits[entry.id].sort_order" type="number" min="1" />
+                                    </td>
+                                    <td>{{ formatDate(entry.created_at) }}</td>
+                                    <td class="exercise-actions">
+                                        <button
+                                            class="btn"
+                                            type="button"
+                                            @click="saveTerminology(entry)"
+                                            :disabled="terminologySaving[entry.id]"
+                                        >
+                                            {{ t('actions.save') }}
+                                        </button>
+                                        <button
+                                            class="btn ghost"
+                                            type="button"
+                                            @click="deleteTerminology(entry)"
+                                            :disabled="terminologySaving[entry.id]"
                                         >
                                             {{ t('actions.delete') }}
                                         </button>
