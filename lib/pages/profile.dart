@@ -147,6 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
           final options = <(String?, String)>[
             (null, l10n.languageSystemLabel),
             ('en', l10n.languageEnglishLabel),
+            ('es', l10n.languageSpanishLabel),
             ('it', l10n.languageItalianLabel),
           ];
           final currentCode = controller.locale?.languageCode;
@@ -196,6 +197,8 @@ class _ProfilePageState extends State<ProfilePage> {
     switch (locale?.languageCode) {
       case 'en':
         return l10n.languageEnglishLabel;
+      case 'es':
+        return l10n.languageSpanishLabel;
       case 'it':
         return l10n.languageItalianLabel;
       default:

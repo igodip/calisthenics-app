@@ -345,6 +345,7 @@
   "languageSystemLabel": "Sistema",
   "languageEnglishLabel": "Inglese",
   "languageItalianLabel": "Italiano",
+  "languageSpanishLabel": "Spagnolo",
   "redirectError": "Errore durante il reindirizzamento: {error}",
   "@redirectError": {
     "placeholders": {
