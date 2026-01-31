@@ -6,7 +6,9 @@ import '../l10n/app_localizations.dart';
 import '../model/terminology_entry.dart';
 
 class TerminologyPage extends StatefulWidget {
-  const TerminologyPage({super.key});
+  const TerminologyPage({super.key, this.termKey});
+
+  final String? termKey;
 
   @override
   State<TerminologyPage> createState() => _TerminologyPageState();
@@ -15,6 +17,16 @@ class TerminologyPage extends StatefulWidget {
 class _TerminologyPageState extends State<TerminologyPage> {
   Future<List<TerminologyEntry>>? _terminologyFuture;
   String? _localeCode;
+  final ScrollController _scrollController = ScrollController();
+  final Map<String, GlobalKey> _entryKeys = {};
+  String? _highlightedTermKey;
+  bool _didScrollToTarget = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _highlightedTermKey = widget.termKey?.trim().toLowerCase();
+  }
 
   @override
   void didChangeDependencies() {
@@ -23,7 +35,24 @@ class _TerminologyPageState extends State<TerminologyPage> {
     if (_localeCode != locale) {
       _localeCode = locale;
       _terminologyFuture = _loadTerminology(locale);
+      _entryKeys.clear();
+      _didScrollToTarget = false;
     }
+  }
+
+  @override
+  void didUpdateWidget(covariant TerminologyPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.termKey != widget.termKey) {
+      _highlightedTermKey = widget.termKey?.trim().toLowerCase();
+      _didScrollToTarget = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<List<TerminologyEntry>> _loadTerminology(String locale) async {
@@ -53,6 +82,35 @@ class _TerminologyPageState extends State<TerminologyPage> {
           .toList();
     }
     return items;
+  }
+
+  void _scrollToHighlightedEntry(List<TerminologyEntry> terms) {
+    if (_didScrollToTarget || _highlightedTermKey == null) {
+      return;
+    }
+    final targetKey = _highlightedTermKey!;
+    final exists =
+        terms.any((entry) => entry.termKey.toLowerCase() == targetKey);
+    if (!exists) {
+      _didScrollToTarget = true;
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final key = _entryKeys[targetKey];
+      final context = key?.currentContext;
+      if (!mounted || context == null) return;
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+        alignment: 0.1,
+      );
+      if (mounted) {
+        setState(() {
+          _didScrollToTarget = true;
+        });
+      }
+    });
   }
 
   @override
@@ -112,7 +170,10 @@ class _TerminologyPageState extends State<TerminologyPage> {
           );
         }
 
+        _scrollToHighlightedEntry(terms);
+
         return CustomScrollView(
+          controller: _scrollController,
           slivers: [
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
@@ -120,11 +181,29 @@ class _TerminologyPageState extends State<TerminologyPage> {
                 itemCount: terms.length,
                 itemBuilder: (context, index) {
                   final entry = terms[index];
+                  final termKey = entry.termKey.toLowerCase();
+                  final entryKey = _entryKeys.putIfAbsent(
+                    termKey,
+                    () => GlobalKey(),
+                  );
+                  final isHighlighted =
+                      termKey == _highlightedTermKey;
                   return DecoratedBox(
+                    key: entryKey,
                     decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                      color: isHighlighted
+                          ? colorScheme.primaryContainer.withValues(
+                              alpha: 0.6,
+                            )
+                          : colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: colorScheme.outlineVariant),
+                      border: Border.all(
+                        color: isHighlighted
+                            ? colorScheme.primary
+                            : colorScheme.outlineVariant,
+                        width: isHighlighted ? 1.5 : 1,
+                      ),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),

@@ -7,6 +7,7 @@ import '../components/plan_expired_gate.dart';
 import '../data/exercise_translations.dart';
 import '../data/terminology_translations.dart';
 import '../l10n/app_localizations.dart';
+import 'terminology.dart';
 
 class Training extends StatefulWidget {
   final WorkoutDay day;
@@ -50,6 +51,8 @@ class _TrainingState extends State<Training> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
     final appColors = theme.extension<AppColors>();
+    final terminologyLookup =
+        _terminologyLookupForLocale(l10n.localeName);
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -166,9 +169,11 @@ class _TrainingState extends State<Training> {
                         _savingNotes.contains(_exerciseKey(index)),
                     notesController:
                         _notesControllerFor(_exercises[index], index),
+                    terminologyTranslations: terminologyLookup,
                     onToggleCompletion: () => _toggleExerciseCompletion(index),
                     onToggleExpanded: () => _toggleExpanded(index),
                     onSaveNotes: () => _saveExerciseNotes(index),
+                    onTermTap: _openTerminologyTerm,
                   ),
               ],
             ),
@@ -454,6 +459,14 @@ class _TrainingState extends State<Training> {
     _noteControllers[key] = controller;
     return controller;
   }
+
+  void _openTerminologyTerm(String termKey) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => TerminologyPage(termKey: termKey),
+      ),
+    );
+  }
 }
 
 class _ExerciseCard extends StatelessWidget {
@@ -463,9 +476,11 @@ class _ExerciseCard extends StatelessWidget {
   final bool updatingCompletion;
   final bool isSavingNotes;
   final TextEditingController notesController;
+  final Map<String, TerminologyTranslation> terminologyTranslations;
   final VoidCallback onToggleCompletion;
   final VoidCallback onToggleExpanded;
   final VoidCallback onSaveNotes;
+  final ValueChanged<String> onTermTap;
 
   const _ExerciseCard({
     required this.exercise,
@@ -474,9 +489,11 @@ class _ExerciseCard extends StatelessWidget {
     required this.updatingCompletion,
     required this.isSavingNotes,
     required this.notesController,
+    required this.terminologyTranslations,
     required this.onToggleCompletion,
     required this.onToggleExpanded,
     required this.onSaveNotes,
+    required this.onTermTap,
   });
 
   @override
@@ -494,6 +511,9 @@ class _ExerciseCard extends StatelessWidget {
       color: colorScheme.onSurface,
       decoration: isCompleted ? TextDecoration.lineThrough : null,
     );
+    final detailNotes = (exercise.notes ?? '').trim();
+    final traineeNotes = (exercise.traineeNotes ?? '').trim();
+    final detailNotesText = detailNotes.isNotEmpty ? detailNotes : traineeNotes;
 
     final localizedTerminology = exercise.terminology
         .map(
@@ -561,12 +581,26 @@ class _ExerciseCard extends StatelessWidget {
                         children: [
                           Text(exerciseName, style: titleStyle),
                           const SizedBox(height: 4),
-                          Text(
-                            detailText,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
+                          detailNotesText.isNotEmpty
+                              ? _buildTerminologyNoteText(
+                                  text: detailNotesText,
+                                  translations: terminologyTranslations,
+                                  onTap: onTermTap,
+                                  textStyle: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  chipBackground:
+                                      colorScheme.primary.withValues(
+                                    alpha: 0.12,
+                                  ),
+                                  chipForeground: colorScheme.primary,
+                                )
+                              : Text(
+                                  detailText,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
                           if (hasTerminology || hasSkills) ...[
                             const SizedBox(height: 10),
                             if (hasTerminology)
@@ -617,14 +651,24 @@ class _ExerciseCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      (exercise.notes ?? '').trim().isNotEmpty
-                          ? (exercise.notes ?? '').trim()
-                          : l10n.trainingExerciseNoCoachNotes,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
+                    detailNotes.isNotEmpty
+                        ? _buildTerminologyNoteText(
+                            text: detailNotes,
+                            translations: terminologyTranslations,
+                            onTap: onTermTap,
+                            textStyle: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            chipBackground:
+                                colorScheme.primary.withValues(alpha: 0.12),
+                            chipForeground: colorScheme.primary,
+                          )
+                        : Text(
+                            l10n.trainingExerciseNoCoachNotes,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: notesController,
@@ -784,4 +828,136 @@ String _exerciseDetailText(
 
   final fallback = '${l10n.trainingHeaderSets} · ${l10n.trainingHeaderReps}';
   return durationLabel == null ? fallback : '$durationLabel · $fallback';
+}
+
+Map<String, TerminologyTranslation> _terminologyLookupForLocale(String locale) {
+  final translations = <String, TerminologyTranslation>{};
+  for (final entry in TerminologyTranslations.listForLocale('en')) {
+    translations[entry.termKey] = entry;
+  }
+  for (final entry in TerminologyTranslations.listForLocale(locale)) {
+    translations[entry.termKey] = entry;
+  }
+  return translations;
+}
+
+List<String> _scanTerminologyKeys(
+  String notes,
+  Map<String, TerminologyTranslation> translations,
+) {
+  if (notes.trim().isEmpty || translations.isEmpty) return [];
+  final terms = translations.keys.toList()
+    ..sort((a, b) => b.length.compareTo(a.length));
+  final pattern = terms.map(RegExp.escape).join('|');
+  if (pattern.isEmpty) return [];
+  final regex = RegExp(
+    r'\b(' + pattern + r')\b',
+    caseSensitive: false,
+  );
+  final matches = regex.allMatches(notes);
+  final found = <String>{};
+  for (final match in matches) {
+    final key = match.group(0);
+    if (key != null && key.trim().isNotEmpty) {
+      found.add(key.toLowerCase());
+    }
+  }
+  return found.toList();
+}
+
+Widget _buildTerminologyNoteText({
+  required String text,
+  required Map<String, TerminologyTranslation> translations,
+  required ValueChanged<String> onTap,
+  required TextStyle? textStyle,
+  required Color chipBackground,
+  required Color chipForeground,
+}) {
+  final detectedKeys = _scanTerminologyKeys(text, translations);
+  if (detectedKeys.isEmpty) {
+    return Text(text, style: textStyle);
+  }
+  return RichText(
+    text: TextSpan(
+      style: textStyle,
+      children: _buildTerminologySpans(
+        text: text,
+        translations: translations,
+        detectedKeys: detectedKeys,
+        onTap: onTap,
+        chipBackground: chipBackground,
+        chipForeground: chipForeground,
+        textStyle: textStyle,
+      ),
+    ),
+  );
+}
+
+List<InlineSpan> _buildTerminologySpans({
+  required String text,
+  required Map<String, TerminologyTranslation> translations,
+  required List<String> detectedKeys,
+  required ValueChanged<String> onTap,
+  required Color chipBackground,
+  required Color chipForeground,
+  required TextStyle? textStyle,
+}) {
+  final sortedKeys = detectedKeys.toList()
+    ..sort((a, b) => b.length.compareTo(a.length));
+  final pattern = sortedKeys.map(RegExp.escape).join('|');
+  if (pattern.isEmpty) {
+    return [TextSpan(text: text, style: textStyle)];
+  }
+  final regex = RegExp(
+    r'\b(' + pattern + r')\b',
+    caseSensitive: false,
+  );
+  final spans = <InlineSpan>[];
+  var currentIndex = 0;
+  for (final match in regex.allMatches(text)) {
+    if (match.start > currentIndex) {
+      spans.add(
+        TextSpan(
+          text: text.substring(currentIndex, match.start),
+          style: textStyle,
+        ),
+      );
+    }
+    final rawMatch = match.group(0) ?? '';
+    final matchKey = rawMatch.toLowerCase();
+    final translation = translations[matchKey];
+    final label = translation?.title ?? rawMatch;
+    spans.add(
+      WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          child: ActionChip(
+            label: Text(
+              label,
+              style: textStyle?.copyWith(
+                color: chipForeground,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onPressed: () => onTap(translation?.termKey ?? matchKey),
+            backgroundColor: chipBackground,
+            visualDensity: VisualDensity.compact,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape: const StadiumBorder(),
+          ),
+        ),
+      ),
+    );
+    currentIndex = match.end;
+  }
+  if (currentIndex < text.length) {
+    spans.add(
+      TextSpan(
+        text: text.substring(currentIndex),
+        style: textStyle,
+      ),
+    );
+  }
+  return spans;
 }
