@@ -47,6 +47,7 @@ CREATE TABLE public.day_exercises (
   exercise_id uuid NOT NULL,
   exercise text NOT NULL,
   position integer NOT NULL DEFAULT 1,
+  duration_minutes integer,
   notes text,
   trainee_notes text,
   completed boolean,

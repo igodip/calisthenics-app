@@ -9,6 +9,7 @@ class WorkoutExercise {
   final List<String> terminology;
   final List<String> skills;
   final int? position;
+  final int? durationMinutes;
   final bool isCompleted;
 
   const WorkoutExercise({
@@ -19,6 +20,7 @@ class WorkoutExercise {
     this.terminology = const [],
     this.skills = const [],
     this.position,
+    this.durationMinutes,
     this.isCompleted = false,
   });
 }
