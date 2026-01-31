@@ -1346,6 +1346,12 @@ abstract class AppLocalizations {
   /// **'Inserisci un peso valido e positivo.'**
   String get profileEditWeightInvalid;
 
+  /// No description provided for @profilePhotoEdit.
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia foto'**
+  String get profilePhotoEdit;
+
   /// No description provided for @profileEditCancel.
   ///
   /// In it, this message translates to:

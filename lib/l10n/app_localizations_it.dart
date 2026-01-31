@@ -719,6 +719,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileEditWeightInvalid => 'Inserisci un peso valido e positivo.';
 
   @override
+  String get profilePhotoEdit => 'Cambia foto';
+
+  @override
   String get profileEditCancel => 'Annulla';
 
   @override
