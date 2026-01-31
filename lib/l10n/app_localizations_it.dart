@@ -761,6 +761,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get languageItalianLabel => 'Italiano';
 
   @override
+  String get languageSpanishLabel => 'Spagnolo';
+
+  @override
   String redirectError(Object error) {
     return 'Errore durante il reindirizzamento: $error';
   }

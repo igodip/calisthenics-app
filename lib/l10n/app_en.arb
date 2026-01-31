@@ -345,6 +345,7 @@
   "languageSystemLabel": "System default",
   "languageEnglishLabel": "English",
   "languageItalianLabel": "Italian",
+  "languageSpanishLabel": "Spanish",
   "redirectError": "Error during redirect: {error}",
   "@redirectError": {
     "placeholders": {

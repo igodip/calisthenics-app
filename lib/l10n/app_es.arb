@@ -1,0 +1,484 @@
+{
+  "appTitle": "Calisync",
+  "authErrorMessage": "Error de autenticación",
+  "navHome": "Inicio",
+  "navGuides": "Guías",
+  "navProfile": "Perfil",
+  "navSettings": "Configuración",
+  "navTerminology": "Terminología",
+  "settingsThemeTitle": "Tema",
+  "themeDefaultLabel": "Predeterminado",
+  "themeBlackLabel": "Negro",
+  "themePinkLabel": "Rosa",
+  "themeRedLabel": "Rojo",
+  "themeBlueLabel": "Azul",
+  "onboardingTitleOne": "Entrena de forma inteligente",
+  "onboardingDescriptionOne": "Sigue entrenamientos guiados creados para tu plan de calistenia.",
+  "onboardingTitleTwo": "Haz seguimiento del progreso",
+  "onboardingDescriptionTwo": "Registra series, repeticiones y notas para ver tus mejoras.",
+  "onboardingTitleThree": "Mantén la constancia",
+  "onboardingDescriptionThree": "Mantén el impulso con acceso rápido a tu próxima sesión.",
+  "onboardingSkip": "Saltar",
+  "onboardingBack": "Atrás",
+  "onboardingNext": "Siguiente",
+  "onboardingGetStarted": "Empezar",
+  "guidesTitle": "Habilidades",
+  "guidesSubtitle": "Desbloquea nuevas habilidades mientras dominas lo básico.",
+  "guidesLoadError": "No se pueden cargar las guías de habilidades en este momento.",
+  "guidesPrimaryFocus": "Enfoque principal",
+  "guidesCoachTip": "Consejo del entrenador",
+  "skillsLockedLabel": "Bloqueado",
+  "skillsUnlockedLabel": "Desbloqueado",
+  "skillsLockedHint": "Completa habilidades anteriores para desbloquear el desglose completo.",
+  "skillsUnlockAction": "Desbloquear habilidad",
+  "difficultyBeginner": "Principiante",
+  "difficultyIntermediate": "Intermedio",
+  "difficultyAdvanced": "Avanzado",
+  "guidesPullupName": "Dominada",
+  "guidesPullupFocus": "Dorsales, bíceps, agarre",
+  "guidesPullupTip": "Lleva los codos hacia las costillas y mantén las costillas recogidas para evitar el balanceo.",
+  "guidesPullupDescription": "Empieza colgado con cuerpo en hollow, luego tira hasta que la barbilla supere la barra. Controla la bajada para repeticiones más fuertes.",
+  "guidesChinUpName": "Dominada supina",
+  "guidesChinUpFocus": "Dorsales, bíceps, agarre",
+  "guidesChinUpTip": "Mantén los hombros abajo y lleva los codos hacia las costillas para mantener fuerza arriba.",
+  "guidesChinUpDescription": "Empieza colgado con las palmas hacia ti, tira hasta que la barbilla supere la barra y baja con control.",
+  "guidesPushupName": "Flexión",
+  "guidesPushupFocus": "Pecho, tríceps, core",
+  "guidesPushupTip": "Aprieta los glúteos y mantén una línea recta de la cabeza a los talones.",
+  "guidesPushupDescription": "Baja con los codos a unos 45° del torso, toca ligeramente el pecho y vuelve a subir sin que las caderas se hundan.",
+  "guidesBodyweightSquatName": "Sentadilla con peso corporal",
+  "guidesBodyweightSquatFocus": "Cuádriceps, glúteos, core",
+  "guidesBodyweightSquatTip": "Empuja las rodillas hacia afuera al bajar y mantén los talones apoyados.",
+  "guidesBodyweightSquatDescription": "Lleva las caderas atrás y abajo hasta que los muslos estén al menos paralelos. Empuja de forma uniforme con todo el pie para ponerte de pie.",
+  "guidesGluteBridgeName": "Puente de glúteos",
+  "guidesGluteBridgeFocus": "Glúteos, isquiotibiales, core",
+  "guidesGluteBridgeTip": "Exhala al subir y evita arquear la espalda baja en la parte alta.",
+  "guidesGluteBridgeDescription": "Túmbate boca arriba con rodillas flexionadas, empuja con los talones para elevar las caderas hasta alinear muslos y torso, y baja con control.",
+  "guidesHangingLegRaiseName": "Elevación de piernas colgado",
+  "guidesHangingLegRaiseFocus": "Abdominales, flexores de cadera, agarre",
+  "guidesHangingLegRaiseTip": "Inicia cada repetición activando los dorsales para estabilizar el torso.",
+  "guidesHangingLegRaiseDescription": "Desde un colgado muerto, eleva las piernas juntas hasta la altura de la cadera o más. Baja despacio para mantener tensión.",
+  "guidesMuscleUpName": "Muscle-up",
+  "guidesMuscleUpFocus": "Dorsales, pecho, tríceps, fuerza de transición",
+  "guidesMuscleUpTip": "Tira alto hacia el pecho superior y mantén la barra cerca para reducir el balanceo.",
+  "guidesMuscleUpDescription": "Desde un colgado controlado, explota en un tirón alto, pasa las muñecas sobre la barra y presiona hasta el bloqueo.",
+  "guidesStraightBarDipName": "Fondos en barra recta",
+  "guidesStraightBarDipFocus": "Pecho, tríceps, hombros",
+  "guidesStraightBarDipTip": "Mantén los codos pegados y empuja hacia abajo inclinándote ligeramente hacia delante.",
+  "guidesStraightBarDipDescription": "Empieza arriba de la barra con los codos bloqueados, baja con control hasta que los hombros queden por debajo de los codos y vuelve a subir.",
+  "guidesDipsName": "Fondos",
+  "guidesDipsFocus": "Pecho, tríceps, hombros",
+  "guidesDipsTip": "Inclínate ligeramente hacia delante y mantén los hombros estables para proteger las articulaciones.",
+  "guidesDipsDescription": "Empieza bloqueado en barras paralelas, baja hasta que los hombros queden por debajo de los codos y vuelve a subir con fuerza.",
+  "guidesAustralianRowName": "Remo australiano",
+  "guidesAustralianRowFocus": "Espalda alta, bíceps, core",
+  "guidesAustralianRowTip": "Activa el core y mantén una línea recta de los hombros a los talones.",
+  "guidesAustralianRowDescription": "Coloca la barra a la altura de la cintura, cuélgate debajo y rema el pecho hacia la barra con los codos cerrados.",
+  "guidesPikePushUpName": "Flexión pike",
+  "guidesPikePushUpFocus": "Hombros, tríceps, core",
+  "guidesPikePushUpTip": "Mantén las caderas altas y baja la cabeza a un punto justo delante de las manos.",
+  "guidesPikePushUpDescription": "Desde la posición pike, flexiona los codos para bajar la cabeza y luego presiona hasta el bloqueo.",
+  "guidesHollowHoldName": "Hollow hold",
+  "guidesHollowHoldFocus": "Core, flexores de cadera, postura",
+  "guidesHollowHoldTip": "Presiona la zona lumbar contra el suelo y mantén las costillas recogidas.",
+  "guidesHollowHoldDescription": "Túmbate boca arriba, eleva hombros y piernas y mantén una forma de banana con brazos rectos sobre la cabeza.",
+  "guidesPlankName": "Plancha",
+  "guidesPlankFocus": "Core, hombros, glúteos",
+  "guidesPlankTip": "Aprieta los glúteos y mantén las costillas recogidas para que las caderas no se hundan.",
+  "guidesPlankDescription": "Coloca antebrazos bajo los hombros, estira las piernas y mantén una línea recta de la cabeza a los talones mientras respiras.",
+  "guidesLSitName": "L-sit",
+  "guidesLSitFocus": "Core, flexores de cadera, tríceps",
+  "guidesLSitTip": "Empuja el suelo, bloquea los codos y mantén las rodillas rectas.",
+  "guidesLSitDescription": "Desde barras paralelas o el suelo, eleva las piernas hasta la altura de la cadera y mantén una L firme.",
+  "guidesHandstandName": "Parada de manos",
+  "guidesHandstandFocus": "Hombros, core, equilibrio",
+  "guidesHandstandTip": "Alinea muñecas, hombros y caderas mientras aprietas los glúteos.",
+  "guidesHandstandDescription": "Sube con impulso o empuje a una pared o equilibrio libre y mantén una línea alta con los dedos apuntando.",
+  "homeLoadErrorTitle": "No se pueden cargar los entrenamientos",
+  "retry": "Reintentar",
+  "homeCoachTipTitle": "Consejo del entrenador",
+  "homeCoachTipPlaceholder": "El último consejo de tu entrenador aparecerá aquí.",
+  "homeGreeting": "Hola, {name}!",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeViewStats": "Ver estadísticas",
+  "homeProgressTitle": "Progreso mensual",
+  "homeProgressWorkoutsLabel": "Entrenamientos",
+  "homeProgressTimeTrainedLabel": "Tiempo entrenado",
+  "homeProgressTimeValue": "{hours}h {minutes}m",
+  "@homeProgressTimeValue": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeSkillProgressTitle": "Progreso de habilidades",
+  "homeSkillProgressValue": "{unlocked} / {total}",
+  "@homeSkillProgressValue": {
+    "placeholders": {
+      "unlocked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeSkillProgressLabel": "Habilidades desbloqueadas",
+  "homeStrengthLevelTitle": "Nivel de fuerza",
+  "workoutPlanTitle": "Plan de entrenamiento",
+  "traineeFeedbackTitle": "Comentarios del alumno",
+  "traineeFeedbackSubtitle": "Cuéntale a tu entrenador cómo te sientes y cómo va el plan.",
+  "traineeFeedbackQuestionLabel": "¿Cómo se sintió tu entrenamiento?",
+  "traineeFeedbackQuestionHint": "Comparte lo que va bien o lo que necesita atención.",
+  "traineeFeedbackSubmit": "Enviar feedback",
+  "traineeFeedbackSubmitted": "Feedback guardado. Lo compartiremos con tu entrenador.",
+  "homeEmptyTitle": "No hay entrenamientos disponibles",
+  "homeEmptyDescription": "Contacta a tu entrenador para recibir un nuevo plan.",
+  "homePlansSectionTitle": "Planes de entrenamiento",
+  "homePlansSectionSubtitle": "Planes asignados y su estado actual.",
+  "homePlansEmptyTitle": "Aún no hay planes de entrenamiento",
+  "homePlansEmptyDescription": "Pide a tu entrenador que asigne un plan para verlo aquí.",
+  "homePlanStatusDraft": "Borrador",
+  "homePlanStatusArchived": "Archivado",
+  "homePlanStatusUpcoming": "Próximo",
+  "homePlanStatusUnknown": "Estado desconocido",
+  "homePlanDefaultTitle": "Plan de entrenamiento",
+  "homePlanLatestLabel": "Último plan",
+  "homePlanStartedLabel": "Iniciado {date}",
+  "@homePlanStartedLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "unauthenticated": "Usuario no autenticado",
+  "defaultExerciseName": "Ejercicio",
+  "trainingHeaderExercise": "Ejercicio",
+  "trainingHeaderExercises": "Ejercicios",
+  "trainingHeaderSets": "Series",
+  "trainingHeaderReps": "Repeticiones",
+  "trainingTodayTitle": "Entrenamiento de hoy",
+  "trainingStartWorkout": "Iniciar entrenamiento",
+  "trainingWorkoutCompleted": "Entrenamiento completado",
+  "trainingDurationMinutes": "{minutes} min",
+  "@trainingDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingCompletionSaved": "Día de entrenamiento actualizado",
+  "trainingCompletionError": "No se pudo actualizar el entrenamiento: {error}",
+  "@trainingCompletionError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trainingCompletionUnavailable": "No se puede actualizar este día de entrenamiento.",
+  "trainingExerciseCompletionSaved": "Ejercicio actualizado",
+  "trainingExerciseCompletionError": "No se pudo actualizar el ejercicio: {error}",
+  "@trainingExerciseCompletionError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trainingExerciseCompletionUnavailable": "No se puede actualizar este ejercicio.",
+  "logoutError": "Error al cerrar sesión: {error}",
+  "@logoutError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileFallbackName": "Usuario",
+  "userNotFound": "Usuario no encontrado en la base de datos",
+  "profileLoadError": "Error al cargar los datos",
+  "profileNoData": "No hay datos disponibles",
+  "profileEmailUnavailable": "Correo electrónico no disponible",
+  "profileStatusActive": "Cuenta activa",
+  "profileStatusInactive": "Cuenta inactiva",
+  "profilePlanActive": "Plan activo",
+  "profilePlanExpired": "Plan caducado",
+  "profileUsername": "Nombre de usuario",
+  "profileNotSet": "No establecido",
+  "profileWeight": "Peso",
+  "profileWeightValue": "{weight} kg",
+  "@profileWeightValue": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "profileMaxTestsTitle": "Seguimiento de pruebas máximas",
+  "profileMaxTestsDescription": "Registra tus mejores intentos para ver cómo evoluciona tu fuerza con el tiempo.",
+  "profileMaxTestsPeriodLabel": "Período",
+  "profileMaxTestsPeriodMonth": "Último mes",
+  "profileMaxTestsPeriodHalfYear": "Últimos 6 meses",
+  "profileMaxTestsPeriodYear": "Último año",
+  "profileMaxTestsPeriodAll": "Todo el tiempo",
+  "profileMaxTestsEmptyPeriod": "No hay pruebas máximas registradas en {period}. Prueba un rango de tiempo mayor.",
+  "@profileMaxTestsEmptyPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "profileMaxTestsBestPeriodLabel": "Mejor en el período seleccionado",
+  "profileMaxTestsAdd": "Añadir prueba máxima",
+  "profileMaxTestsRefresh": "Actualizar",
+  "profileMaxTestsHistoryAction": "Ver progreso",
+  "profileMaxTestsEmpty": "Aún no hay pruebas máximas registradas. Añade tu primer intento para empezar a seguir el progreso.",
+  "profileMaxTestsHistoryTitle": "Progreso en el tiempo",
+  "profileMaxTestsHistoryDescription": "Revisa cada intento y observa cómo evolucionan tus valores máximos.",
+  "profileMaxTestsHistoryEmpty": "Aún no hay pruebas máximas registradas. Añade un nuevo intento para ver tu progreso con el tiempo.",
+  "profileMaxTestsRecentPerformanceLabel": "Rendimiento reciente",
+  "profileMaxTestsGoalLabel": "Objetivo",
+  "profileMaxTestsTipsTitle": "Consejos y tutoriales",
+  "profileMaxTestsTipsSubtitle": "Revisa indicaciones de técnica y ejercicios accesorios.",
+  "profileMaxTestsEmptyShort": "Añade una nueva prueba para ver tu gráfico de rendimiento.",
+  "profileMaxTestsSessionLabel": "Sesión {index}",
+  "@profileMaxTestsSessionLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "profileMaxTestsHistoryError": "No se pudo cargar el historial de progreso: {error}",
+  "@profileMaxTestsHistoryError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileMaxTestsHistoryDeltaLabel": "Cambio {delta}",
+  "@profileMaxTestsHistoryDeltaLabel": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "profileMaxTestsHistoryFirstEntry": "Primer intento registrado",
+  "profileMaxTestsError": "No se pudieron cargar las pruebas máximas: {error}",
+  "@profileMaxTestsError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileMaxTestsExerciseLabel": "Ejercicio",
+  "profileMaxTestsExerciseHint": "p. ej., dominadas o flexiones",
+  "profileMaxTestsValueLabel": "Resultado",
+  "profileMaxTestsValueHint": "Introduce un valor positivo",
+  "profileMaxTestsUnitLabel": "Unidad",
+  "profileMaxTestsUnitHint": "p. ej., reps, kg, seg",
+  "profileMaxTestsDateLabel": "Registrado el {date}",
+  "@profileMaxTestsDateLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "profileMaxTestsCancel": "Cancelar",
+  "profileMaxTestsSave": "Guardar prueba",
+  "profileMaxTestsSaveSuccess": "Prueba máxima guardada",
+  "profileMaxTestsSaveError": "No se pudo guardar la prueba: {error}",
+  "@profileMaxTestsSaveError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileMaxTestsDefaultUnit": "reps",
+  "profileMaxTestsBestLabel": "Mejor marca",
+  "profileMaxTestsShowMore": "Mostrar todos los intentos",
+  "profileMaxTestsShowLess": "Mostrar menos intentos",
+  "profileEdit": "Editar perfil",
+  "profileEditSubtitle": "Actualiza tus datos personales",
+  "profileThemeSettingsTitle": "Colores del tema",
+  "profileThemeSettingsSubtitle": "Elige el tema de color de la app",
+  "profileLanguageSettingsTitle": "Idioma",
+  "profileLanguageSettingsSubtitle": "Elige el idioma de la app",
+  "profileEditTitle": "Editar perfil",
+  "profileEditFullNameLabel": "Nombre completo",
+  "profileEditFullNameHint": "¿Cómo quieres que te llamemos?",
+  "profileEditWeightLabel": "Peso",
+  "profileEditWeightHint": "Introduce tu peso en kg (opcional)",
+  "profileEditWeightInvalid": "Introduce un peso positivo válido.",
+  "profilePhotoEdit": "Cambiar foto",
+  "profileEditCancel": "Cancelar",
+  "profileEditSave": "Guardar cambios",
+  "profileEditSuccess": "Perfil actualizado correctamente",
+  "profileEditError": "No se pudo actualizar el perfil: {error}",
+  "@profileEditError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "logout": "Cerrar sesión",
+  "languageSystemLabel": "Predeterminado del sistema",
+  "languageEnglishLabel": "Inglés",
+  "languageItalianLabel": "Italiano",
+  "languageSpanishLabel": "Español",
+  "redirectError": "Error durante la redirección: {error}",
+  "@redirectError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "linkError": "Error de enlace: {error}",
+  "@linkError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "missingFieldsError": "Por favor completa todos los campos obligatorios.",
+  "passwordMismatch": "Las contraseñas no coinciden.",
+  "invalidCredentials": "Credenciales inválidas.",
+  "signupEmailCheck": "¡Registro completo! Revisa tu correo para confirmar la cuenta.",
+  "unexpectedError": "Error inesperado: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "loginGreeting": "¡Bienvenido de nuevo! Inicia sesión para continuar tu entrenamiento.",
+  "signupGreeting": "Crea una cuenta para desbloquear todos los entrenamientos.",
+  "emailLabel": "Correo electrónico",
+  "passwordLabel": "Contraseña",
+  "confirmPasswordLabel": "Confirmar contraseña",
+  "loginButton": "Iniciar sesión",
+  "signupButton": "Registrarse",
+  "noAccountPrompt": "¿No tienes cuenta? Regístrate",
+  "existingAccountPrompt": "¿Ya tienes cuenta? Inicia sesión",
+  "forgotPasswordLink": "¿Olvidaste tu contraseña?",
+  "passwordResetEmailSent": "Enlace de restablecimiento enviado a {email}. Revisa tu bandeja de entrada.",
+  "@passwordResetEmailSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordResetEmailMissing": "Introduce tu correo para recibir un enlace de restablecimiento.",
+  "passwordResetDialogTitle": "Elige una nueva contraseña",
+  "passwordResetDialogDescription": "Introduce una nueva contraseña para asegurar tu cuenta.",
+  "passwordResetNewPasswordLabel": "Nueva contraseña",
+  "passwordResetConfirmPasswordLabel": "Confirmar nueva contraseña",
+  "passwordResetMismatch": "Las contraseñas no coinciden.",
+  "passwordResetSuccess": "Contraseña actualizada correctamente. Puedes seguir usando la app.",
+  "passwordResetSubmit": "Actualizar contraseña",
+  "cancel": "Cancelar",
+  "add": "Añadir",
+  "start": "Iniciar",
+  "timerTitle": "Temporizador",
+  "timerExercisePushUps": "Flexiones",
+  "timerExercisePullUps": "Dominadas",
+  "timerExerciseSquats": "Sentadillas",
+  "timerExercisePlank": "Plancha",
+  "timerPhaseWork": "TRABAJO",
+  "timerPhaseRest": "DESCANSO",
+  "timerWorkDurationLabel": "Duración del trabajo",
+  "timerRestDurationLabel": "Duración del descanso",
+  "timerControlSkip": "SALTAR",
+  "timerControlPause": "PAUSAR",
+  "timerControlPlay": "REPRODUCIR",
+  "timerControlReset": "REINICIAR",
+  "timerAdjustDecrease": "-10s",
+  "timerAdjustIncrease": "+10s",
+  "timerNextPlaceholder": "Siguiente: --",
+  "timerNextLabel": "Siguiente: {name} · Serie {current}/{total}",
+  "@timerNextLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "amrapTimerTitle": "Temporizador AMRAP",
+  "amrapTimerSubtitle": "Completa tantas rondas como sea posible.",
+  "amrapTimerDescription": "Configura la duración total y controla el tiempo restante.",
+  "amrapDurationLabel": "Duración (minutos)",
+  "amrapStartButton": "Iniciar AMRAP",
+  "amrapResetButton": "Reiniciar AMRAP",
+  "amrapTimeRemainingLabel": "Tiempo restante",
+  "countdownTitle": "Temporizador simple",
+  "countdownSubtitle": "Un temporizador sencillo para cualquier intervalo.",
+  "countdownDescription": "Configura minutos y segundos, luego inicia el temporizador.",
+  "countdownMinutesLabel": "Minutos",
+  "countdownSecondsLabel": "Segundos",
+  "countdownStartButton": "Iniciar temporizador",
+  "countdownResetButton": "Detener temporizador",
+  "weekNumber": "Semana {week}",
+  "@weekNumber": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "defaultWorkoutTitle": "Entrenamiento",
+  "terminologyTitle": "Terminología",
+  "termRepsTitle": "Repeticiones",
+  "termRepsDescription": "Número de veces que realizas un ejercicio consecutivamente.",
+  "termSetTitle": "Serie",
+  "termSetDescription": "Un grupo de repeticiones. Por ejemplo: 3 series de 10 repeticiones significa 30 repeticiones totales divididas en 3 grupos.",
+  "termRtTitle": "RT",
+  "termRtDescription": "Repeticiones totales: realiza todas las repeticiones con tus series, repeticiones y tempo preferidos (si no se especifica).",
+  "termAmrapTitle": "AMRAP",
+  "termAmrapDescription": "As Many Reps As Possible: realiza tantas repeticiones como puedas en un tiempo determinado.",
+  "termEmomTitle": "EMOM",
+  "termEmomDescription": "Every Minute on the Minute: inicia una serie cada minuto. Descansa durante el tiempo restante.",
+  "termRampingTitle": "Ramping",
+  "termRampingDescription": "Método en el que la carga aumenta con cada serie.",
+  "termMavTitle": "MAV",
+  "termMavDescription": "Massima Alzata Veloce: realiza tantas repeticiones como sea posible con una carga manteniendo el control y buena velocidad.",
+  "termIsocineticiTitle": "Isocinético",
+  "termIsocineticiDescription": "Ejercicios realizados a velocidad constante.",
+  "termTutTitle": "TUT",
+  "termTutDescription": "Indica cuánto debe durar una repetición. Puedes gestionar la duración de cada fase.",
+  "termIsoTitle": "ISO",
+  "termIsoDescription": "Indica una pausa en un punto específico de la repetición.",
+  "termSomTitle": "SOM",
+  "termSomDescription": "Indica la duración de cada fase de la repetición.",
+  "termScaricoTitle": "Descarga",
+  "termScaricoDescription": "Última semana del programa para prepararte para intentos máximos."
+}
