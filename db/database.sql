@@ -9,51 +9,17 @@ CREATE TABLE public.admins (
   CONSTRAINT admins_pkey PRIMARY KEY (id),
   CONSTRAINT admins_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
-CREATE TABLE public.exercises (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  slug text NOT NULL,
-  name text NOT NULL,
-  difficulty text NOT NULL DEFAULT 'beginner'::text,
-  sort_order integer NOT NULL DEFAULT 1,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT exercises_pkey PRIMARY KEY (id),
-  CONSTRAINT exercises_slug_key UNIQUE (slug),
-  CONSTRAINT exercises_name_key UNIQUE (name)
-);
-CREATE TABLE public.terminology (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  term_key text NOT NULL,
-  locale text NOT NULL,
-  title text NOT NULL,
-  description text NOT NULL,
-  sort_order integer NOT NULL DEFAULT 1,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT terminology_pkey PRIMARY KEY (id),
-  CONSTRAINT terminology_unique UNIQUE (term_key, locale)
-);
-CREATE TABLE public.trainee_exercise_unlocks (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  trainee_id uuid NOT NULL,
-  exercise_id uuid NOT NULL,
-  unlocked_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT trainee_exercise_unlocks_pkey PRIMARY KEY (id),
-  CONSTRAINT trainee_exercise_unlocks_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
-  CONSTRAINT trainee_exercise_unlocks_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id),
-  CONSTRAINT trainee_exercise_unlocks_unique UNIQUE (trainee_id, exercise_id)
-);
 CREATE TABLE public.day_exercises (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
-  day_id uuid NOT NULL,1
-  exercise_id uuid NOT NULL,
+  day_id uuid NOT NULL,
   exercise text NOT NULL,
   position integer NOT NULL DEFAULT 1,
-  duration_minutes integer,
   notes text,
   trainee_notes text,
   completed boolean,
+  duration_minutes numeric DEFAULT '0'::numeric,
   CONSTRAINT day_exercises_pkey PRIMARY KEY (id),
-  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id),
-  CONSTRAINT day_exercises_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id)
+  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id)
 );
 CREATE TABLE public.days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -65,6 +31,23 @@ CREATE TABLE public.days (
   completed_at timestamp with time zone,
   CONSTRAINT days_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.exercise_translations (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  exercise_id uuid,
+  focus text,
+  coach_tip text,
+  CONSTRAINT exercise_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT exercise_translations_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id)
+);
+CREATE TABLE public.exercises (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  slug text NOT NULL UNIQUE,
+  name text NOT NULL UNIQUE,
+  difficulty text NOT NULL DEFAULT 'beginner'::text,
+  sort_order integer NOT NULL DEFAULT 1,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT exercises_pkey PRIMARY KEY (id)
+);
 CREATE TABLE public.max_tests (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   exercise text NOT NULL,
@@ -73,6 +56,29 @@ CREATE TABLE public.max_tests (
   recorded_at date,
   trainee_id uuid,
   CONSTRAINT max_tests_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.terminology (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  term_key text NOT NULL,
+  title text NOT NULL,
+  description text NOT NULL,
+  sort_order integer NOT NULL DEFAULT 1,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT terminology_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.terminology_translations (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT terminology_translations_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.trainee_exercise_unlocks (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  trainee_id uuid NOT NULL,
+  exercise_id uuid NOT NULL,
+  unlocked_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT trainee_exercise_unlocks_pkey PRIMARY KEY (id),
+  CONSTRAINT trainee_exercise_unlocks_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id),
+  CONSTRAINT trainee_exercise_unlocks_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id)
 );
 CREATE TABLE public.trainee_feedbacks (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -121,6 +127,12 @@ CREATE TABLE public.trainers (
   CONSTRAINT trainers_pkey PRIMARY KEY (id),
   CONSTRAINT trainers_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
+CREATE TABLE public.translations (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  slug text,
+  CONSTRAINT translations_pkey PRIMARY KEY (id)
+);
 CREATE TABLE public.workout_plan_days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   plan_id uuid NOT NULL,
@@ -139,5 +151,6 @@ CREATE TABLE public.workout_plans (
   status text NOT NULL DEFAULT 'active'::text,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   notes text,
-  CONSTRAINT workout_plans_pkey PRIMARY KEY (id)
+  CONSTRAINT workout_plans_pkey PRIMARY KEY (id),
+  CONSTRAINT workout_plans_trainee_id_fkey FOREIGN KEY (trainee_id) REFERENCES public.trainees(id)
 );
