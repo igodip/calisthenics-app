@@ -321,6 +321,8 @@
   "profileEditSubtitle": "Aggiorna le tue informazioni personali",
   "profileThemeSettingsTitle": "Colori del tema",
   "profileThemeSettingsSubtitle": "Scegli il colore del tema dell'app",
+  "profileLanguageSettingsTitle": "Lingua",
+  "profileLanguageSettingsSubtitle": "Scegli la lingua dell'app",
   "profileEditTitle": "Modifica profilo",
   "profileEditFullNameLabel": "Nome completo",
   "profileEditFullNameHint": "Come vuoi essere chiamato?",
@@ -340,6 +342,9 @@
     }
   },
   "logout": "Logout",
+  "languageSystemLabel": "Sistema",
+  "languageEnglishLabel": "Inglese",
+  "languageItalianLabel": "Italiano",
   "redirectError": "Errore durante il reindirizzamento: {error}",
   "@redirectError": {
     "placeholders": {

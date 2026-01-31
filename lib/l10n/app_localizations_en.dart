@@ -701,6 +701,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileThemeSettingsSubtitle => 'Choose the app color theme';
 
   @override
+  String get profileLanguageSettingsTitle => 'Language';
+
+  @override
+  String get profileLanguageSettingsSubtitle => 'Choose the app language';
+
+  @override
   String get profileEditTitle => 'Edit profile';
 
   @override
@@ -737,6 +743,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logout => 'Log out';
+
+  @override
+  String get languageSystemLabel => 'System default';
+
+  @override
+  String get languageEnglishLabel => 'English';
+
+  @override
+  String get languageItalianLabel => 'Italian';
 
   @override
   String redirectError(Object error) {

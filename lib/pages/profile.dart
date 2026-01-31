@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/locale_controller.dart';
 import 'login.dart';
 import 'settings.dart';
 
@@ -135,6 +136,73 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  void _showLanguagePicker() {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = LocaleControllerScope.of(context);
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (context) => AnimatedBuilder(
+        animation: controller,
+        builder: (context, _) {
+          final options = <(String?, String)>[
+            (null, l10n.languageSystemLabel),
+            ('en', l10n.languageEnglishLabel),
+            ('it', l10n.languageItalianLabel),
+          ];
+          final currentCode = controller.locale?.languageCode;
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.profileLanguageSettingsTitle,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: Column(
+                      children: [
+                        for (final option in options)
+                          RadioListTile<String?>(
+                            value: option.$1,
+                            groupValue: currentCode,
+                            title: Text(option.$2),
+                            onChanged: (value) {
+                              controller.setLocale(
+                                value == null ? null : Locale(value),
+                              );
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  String _currentLanguageLabel(AppLocalizations l10n, Locale? locale) {
+    switch (locale?.languageCode) {
+      case 'en':
+        return l10n.languageEnglishLabel;
+      case 'it':
+        return l10n.languageItalianLabel;
+      default:
+        return l10n.languageSystemLabel;
+    }
+  }
+
   Future<void> _showEditProfile(UserProfileData data) async {
     final l10n = AppLocalizations.of(context)!;
     final updated = await showModalBottomSheet<bool>(
@@ -210,6 +278,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ? l10n.profileWeightValue(weight.toStringAsFixed(1))
                 : l10n.profileNotSet;
             final profileImageUrl = data.profile?.profileImageUrl;
+            final localeController = LocaleControllerScope.of(context);
+            final currentLanguageLabel =
+                _currentLanguageLabel(l10n, localeController.locale);
 
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -315,6 +386,17 @@ class _ProfilePageState extends State<ProfilePage> {
                           MaterialPageRoute(builder: (context) => const SettingsPage()),
                         );
                       },
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: ListTile(
+                      leading: const Icon(Icons.language_outlined),
+                      title: Text(l10n.profileLanguageSettingsTitle),
+                      subtitle: Text(l10n.profileLanguageSettingsSubtitle),
+                      trailing: Text(currentLanguageLabel),
+                      onTap: _showLanguagePicker,
                     ),
                   ),
                   const SizedBox(height: 12),

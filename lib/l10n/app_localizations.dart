@@ -1322,6 +1322,18 @@ abstract class AppLocalizations {
   /// **'Scegli il colore del tema dell\'app'**
   String get profileThemeSettingsSubtitle;
 
+  /// No description provided for @profileLanguageSettingsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua'**
+  String get profileLanguageSettingsTitle;
+
+  /// No description provided for @profileLanguageSettingsSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli la lingua dell\'app'**
+  String get profileLanguageSettingsSubtitle;
+
   /// No description provided for @profileEditTitle.
   ///
   /// In it, this message translates to:
@@ -1393,6 +1405,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Logout'**
   String get logout;
+
+  /// No description provided for @languageSystemLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Sistema'**
+  String get languageSystemLabel;
+
+  /// No description provided for @languageEnglishLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Inglese'**
+  String get languageEnglishLabel;
+
+  /// No description provided for @languageItalianLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Italiano'**
+  String get languageItalianLabel;
 
   /// No description provided for @redirectError.
   ///
