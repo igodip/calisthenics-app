@@ -141,7 +141,10 @@
                         <div v-for="note in dashboardNotes" :key="note.id" class="chat-item">
                             <div class="chat-meta">
                                 <strong>{{ note.traineeName }}</strong>
-                                <span class="pill">{{ note.statusLabel }}</span>
+                                <div class="chat-meta-actions">
+                                    <span class="pill">{{ note.statusLabel }}</span>
+                                    <button class="icon-button" type="button" @click="closeDashboardNote(note)" :disabled="dashboardNoteClosing[note.id]" :aria-label="t('actions.closeFeedback')" :title="t('actions.closeFeedback')">×</button>
+                                </div>
                             </div>
                             <div class="muted small" v-if="note.dateLabel">{{ note.dateLabel }}</div>
                             <div class="chat-message">{{ note.message }}</div>

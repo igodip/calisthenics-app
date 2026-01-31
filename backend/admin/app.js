@@ -126,6 +126,7 @@ import {
       const dashboardNotes = ref([]);
       const dashboardNotesLoading = ref(false);
       const dashboardNotesError = ref('');
+      const dashboardNoteClosing = ref({});
       const dashboardBurndown = ref({
         chartWidth: 760,
         chartHeight: 240,
@@ -2454,6 +2455,39 @@ import {
         }
       }
 
+      async function closeDashboardNote(note) {
+        if (!note?.id) {
+          return;
+        }
+        if (dashboardNoteClosing.value[note.id]) {
+          return;
+        }
+        dashboardNoteClosing.value = {
+          ...dashboardNoteClosing.value,
+          [note.id]: true,
+        };
+        try {
+          const { error } = await supabase
+            .from('trainee_feedbacks')
+            .update({ read_at: new Date().toISOString() })
+            .eq('id', note.id);
+          if (error) {
+            throw new Error(error.message);
+          }
+          dashboardNotes.value = (dashboardNotes.value || []).filter(
+            (item) => item.id !== note.id,
+          );
+        } catch (err) {
+          console.error(err);
+          alert(err.message || t('errors.updateFeedback'));
+        } finally {
+          dashboardNoteClosing.value = {
+            ...dashboardNoteClosing.value,
+            [note.id]: false,
+          };
+        }
+      }
+
       async function loadDashboardBurndown() {
         dashboardBurndownLoading.value = true;
         dashboardBurndownError.value = '';
@@ -3038,6 +3072,7 @@ import {
         dashboardNotes,
         dashboardNotesLoading,
         dashboardNotesError,
+        dashboardNoteClosing,
         dashboardBurndown,
         dashboardBurndownLoading,
         dashboardBurndownError,
@@ -3087,6 +3122,7 @@ import {
         loadPaymentHistory,
         loadCompletedExercises,
         loadDashboardNotes,
+        closeDashboardNote,
         addPlan,
         addDay,
         resetDayForm,

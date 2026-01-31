@@ -61,6 +61,7 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .chat-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .chat-item{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:10px}
 .chat-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.chat-meta-actions{display:flex;align-items:center;gap:6px}
 .chat-message{white-space:pre-wrap;margin-top:6px}
 .dashboard-trainee-list{display:flex;flex-direction:column;gap:10px;margin-top:12px;max-height:520px}
 .dashboard-trainee-item{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px;background:#f8fafc}
