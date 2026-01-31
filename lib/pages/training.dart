@@ -8,6 +8,7 @@ import '../data/exercise_translations.dart';
 import '../data/terminology_translations.dart';
 import '../l10n/app_localizations.dart';
 import 'terminology.dart';
+import 'exercise_guides.dart';
 
 class Training extends StatefulWidget {
   final WorkoutDay day;
@@ -170,6 +171,11 @@ class _TrainingState extends State<Training> {
                     notesController:
                         _notesControllerFor(_exercises[index], index),
                     terminologyTranslations: terminologyLookup,
+                    onOpenGuide:
+                        _exercises[index].exerciseSlug != null ||
+                                _exercises[index].exerciseId != null
+                            ? () => _openExerciseGuide(_exercises[index])
+                            : null,
                     onToggleCompletion: () => _toggleExerciseCompletion(index),
                     onToggleExpanded: () => _toggleExpanded(index),
                     onSaveNotes: () => _saveExerciseNotes(index),
@@ -265,6 +271,8 @@ class _TrainingState extends State<Training> {
       setState(() {
         _exercises[index] = WorkoutExercise(
           id: exercise.id,
+          exerciseId: exercise.exerciseId,
+          exerciseSlug: exercise.exerciseSlug,
           name: exercise.name,
           notes: exercise.notes,
           traineeNotes: exercise.traineeNotes,
@@ -327,6 +335,8 @@ class _TrainingState extends State<Training> {
       setState(() {
         _exercises[index] = WorkoutExercise(
           id: exercise.id,
+          exerciseId: exercise.exerciseId,
+          exerciseSlug: exercise.exerciseSlug,
           name: exercise.name,
           notes: exercise.notes,
           traineeNotes: newNotes,
@@ -415,6 +425,17 @@ class _TrainingState extends State<Training> {
     });
   }
 
+  void _openExerciseGuide(WorkoutExercise exercise) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ExerciseGuidesPage(
+          initialGuideSlug: exercise.exerciseSlug,
+          initialGuideId: exercise.exerciseId,
+        ),
+      ),
+    );
+  }
+
   int _exerciseOrderValue(WorkoutExercise exercise) {
     if (exercise.position != null) return exercise.position!;
 
@@ -477,6 +498,7 @@ class _ExerciseCard extends StatelessWidget {
   final bool isSavingNotes;
   final TextEditingController notesController;
   final Map<String, TerminologyTranslation> terminologyTranslations;
+  final VoidCallback? onOpenGuide;
   final VoidCallback onToggleCompletion;
   final VoidCallback onToggleExpanded;
   final VoidCallback onSaveNotes;
@@ -490,6 +512,7 @@ class _ExerciseCard extends StatelessWidget {
     required this.isSavingNotes,
     required this.notesController,
     required this.terminologyTranslations,
+    this.onOpenGuide,
     required this.onToggleCompletion,
     required this.onToggleExpanded,
     required this.onSaveNotes,
@@ -626,12 +649,24 @@ class _ExerciseCard extends StatelessWidget {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     else
-                      Icon(
-                        isExpanded
-                            ? Icons.expand_less
-                            : Icons.expand_more,
-                        color: colorScheme.onSurfaceVariant
-                            .withValues(alpha: 0.6),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (onOpenGuide != null)
+                            IconButton(
+                              tooltip: l10n.guidesTitle,
+                              icon: const Icon(Icons.menu_book),
+                              color: colorScheme.primary,
+                              onPressed: onOpenGuide,
+                            ),
+                          Icon(
+                            isExpanded
+                                ? Icons.expand_less
+                                : Icons.expand_more,
+                            color: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.6),
+                          ),
+                        ],
                       ),
                   ],
                 ),

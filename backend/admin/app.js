@@ -249,7 +249,7 @@ import {
             .select(
               `
                 id, week, day_code, title,
-                day_exercises ( id, position, notes, exercise, duration_minutes ),
+                day_exercises ( id, position, notes, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes ),
                 workout_plan_days!inner ( plan_id, position )
               `,
             )
@@ -302,9 +302,11 @@ import {
               .sort((a, b) => (a.position || 0) - (b.position || 0));
             exercises.forEach((exercise, index) => {
               if (!slots[index]) return;
+              const exerciseName =
+                exercise.exercises?.name || exercise.exercise || '';
               slots[index] = {
                 ...slots[index],
-                exercise: exercise.exercise || '',
+                exercise: exerciseName,
                 notes: exercise.notes || '',
                 duration_minutes:
                   exercise.duration_minutes === undefined
@@ -1054,24 +1056,36 @@ import {
             }
           }
           const exercisePayloads = [];
+          const unresolvedExercises = new Set();
           (dayRows || []).forEach((row, dayIndex) => {
             const slots = programTemplateDays.value?.[dayIndex]?.slots || [];
             slots.forEach((slot, slotIndex) => {
               const exercise = (slot.exercise || '').trim();
               if (!exercise) return;
+              const resolved = resolveExerciseReference(exercise);
+              if (!resolved) {
+                unresolvedExercises.add(exercise);
+                return;
+              }
               exercisePayloads.push({
                 day_id: row.id,
                 position: slotIndex + 1,
                 notes: (slot.notes || '').trim() || null,
                 completed: false,
-                exercise,
                 duration_minutes:
                   slot.duration_minutes === undefined
                     ? null
                     : slot.duration_minutes,
+                exercise: resolved.name,
+                exercise_id: resolved.id,
               });
             });
           });
+          if (unresolvedExercises.size) {
+            throw new Error(
+              `Missing exercises: ${Array.from(unresolvedExercises).join(', ')}`,
+            );
+          }
           if (exercisePayloads.length) {
             const { error: exerciseError } = await supabase
               .from('day_exercises')
@@ -1269,6 +1283,22 @@ import {
           .trim()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/(^-|-$)+/g, '');
+      }
+
+      function resolveExerciseReference(value) {
+        const trimmed = (value || '').trim();
+        if (!trimmed) return null;
+        const normalizedSlug = normalizeExerciseSlug(trimmed);
+        const list = exercises.value || [];
+        const match = list.find((exercise) => {
+          if (!exercise) return false;
+          if (exercise.id === trimmed) return true;
+          if (exercise.slug === trimmed) return true;
+          if (exercise.slug === normalizedSlug) return true;
+          return (exercise.name || '').toLowerCase() === trimmed.toLowerCase();
+        });
+        if (!match) return null;
+        return { id: match.id, slug: match.slug, name: match.name };
       }
 
       function formatDifficultyLabel(value) {
@@ -2233,7 +2263,7 @@ import {
                   workout_plans ( id, title, starts_on, created_at )
                 ),
                 day_exercises (
-                  id, position, notes, completed, exercise, duration_minutes
+                  id, position, notes, completed, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes
                 )
               `)
           .eq('workout_plan_days.workout_plans.trainee_id', u.id)
@@ -2288,7 +2318,7 @@ import {
           const { data, error } = await supabase
             .from('day_exercises')
             .select(
-              'id, exercise, notes, trainee_notes, completed, duration_minutes, days!inner ( id, week, day_code, title, completed_at, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) ) )',
+              'id, exercise, exercise_id, notes, trainee_notes, completed, duration_minutes, exercises ( id, slug, name ), days!inner ( id, week, day_code, title, completed_at, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) ) )',
             )
             .eq('completed', true)
             .eq('days.workout_plan_days.workout_plans.trainee_id', u.id);
@@ -2771,6 +2801,11 @@ import {
           alert(t('errors.chooseExercise'));
           return;
         }
+        const resolved = resolveExerciseReference(exercise);
+        if (!resolved) {
+          alert(t('errors.chooseExercise'));
+          return;
+        }
         addingExercise.value = true;
         try {
           const positions = (day.day_exercises || []).map((ex) =>
@@ -2779,7 +2814,8 @@ import {
           const nextPosition = (positions.length ? Math.max(...positions) : 0) + 1;
           const { error } = await supabase.from('day_exercises').insert({
             day_id: day.id,
-            exercise,
+            exercise: resolved.name,
+            exercise_id: resolved.id,
             notes: (selection.notes || '').trim() || null,
             position: nextPosition,
             duration_minutes:
@@ -2858,6 +2894,11 @@ import {
               ? null
               : Number(form.duration_minutes),
         };
+        const resolved = resolveExerciseReference(form.exercise || ex.exercise || '');
+        if (resolved) {
+          payload.exercise = resolved.name;
+          payload.exercise_id = resolved.id;
+        }
         const { error } = await supabase
           .from('day_exercises')
           .update(payload)
