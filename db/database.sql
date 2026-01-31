@@ -13,13 +13,15 @@ CREATE TABLE public.day_exercises (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   day_id uuid NOT NULL,
   exercise text NOT NULL,
+  exercise_id uuid,
   position integer NOT NULL DEFAULT 1,
   notes text,
   trainee_notes text,
   completed boolean,
   duration_minutes numeric DEFAULT '0'::numeric,
   CONSTRAINT day_exercises_pkey PRIMARY KEY (id),
-  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id)
+  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id),
+  CONSTRAINT day_exercises_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id)
 );
 CREATE TABLE public.days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
