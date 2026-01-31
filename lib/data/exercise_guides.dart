@@ -12,7 +12,7 @@ class ExerciseGuides {
     return _cachedByLocale.putIfAbsent(l10n.localeName, () async {
       final response = await Supabase.instance.client
           .from('exercises')
-          .select('name, slug, difficulty, default_unlocked')
+          .select('name, slug, difficulty')
           .order('sort_order', ascending: true);
       final rows = (response as List<dynamic>).cast<Map<String, dynamic>>();
       return rows

@@ -20,7 +20,7 @@ class ExerciseGuideCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isUnlocked = guide.isUnlocked;
-    final accent = isUnlocked ? guide.accent : colorScheme.outline;
+    final accent = isUnlocked ? colorScheme.onPrimary : colorScheme.outline;
     final statusBackground = isUnlocked
         ? colorScheme.primaryContainer
         : colorScheme.surfaceContainerHighest;
