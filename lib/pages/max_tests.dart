@@ -809,30 +809,31 @@ class _MaxTestBottomSheet extends StatefulWidget {
 class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _valueController = TextEditingController();
-  final _unitController = TextEditingController();
+  static const List<String> _unitOptions = [
+    'kg',
+    'reps',
+    'seconds',
+    'minutes',
+  ];
   String? _selectedExercise;
+  String? _selectedUnit;
   DateTime _selectedDate = DateTime.now();
   bool _isSaving = false;
-  bool _didSetDefaultUnit = false;
 
   @override
   void dispose() {
     _valueController.dispose();
-    _unitController.dispose();
     super.dispose();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_didSetDefaultUnit) {
-      return;
-    }
     final l10n = AppLocalizations.of(context)!;
-    if (_unitController.text.trim().isEmpty) {
-      _unitController.text = l10n.profileMaxTestsDefaultUnit;
+    final defaultUnit = l10n.profileMaxTestsDefaultUnit.trim().toLowerCase();
+    if (_selectedUnit == null && _unitOptions.contains(defaultUnit)) {
+      _selectedUnit = defaultUnit;
     }
-    _didSetDefaultUnit = true;
   }
 
   @override
@@ -900,12 +901,22 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
                   },
                 ),
                 const SizedBox(height: 12),
-                TextFormField(
-                  controller: _unitController,
+                DropdownButtonFormField<String>(
+                  value: _selectedUnit,
                   decoration: InputDecoration(
                     labelText: l10n.profileMaxTestsUnitLabel,
                     hintText: l10n.profileMaxTestsUnitHint,
                   ),
+                  items: [
+                    for (final unit in _unitOptions)
+                      DropdownMenuItem(
+                        value: unit,
+                        child: Text(unit),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _selectedUnit = value),
+                  validator: (value) =>
+                      value == null ? l10n.profileMaxTestsUnitHint : null,
                 ),
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
@@ -973,9 +984,7 @@ class _MaxTestBottomSheetState extends State<_MaxTestBottomSheet> {
 
     final exercise = _selectedExercise ?? '';
     final value = double.parse(_valueController.text.trim().replaceAll(',', '.'));
-    final unit = _unitController.text.trim().isEmpty
-        ? l10n.profileMaxTestsDefaultUnit
-        : _unitController.text.trim();
+    final unit = _selectedUnit?.trim().toLowerCase() ?? '';
 
     final payload = {
       'trainee_id': widget.userId,
