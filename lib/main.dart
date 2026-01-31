@@ -1,4 +1,5 @@
 
+import 'package:calisync/l10n/locale_controller.dart';
 import 'package:calisync/pages/onboarding.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:calisync/theme/theme_controller.dart';
@@ -27,34 +28,57 @@ void main() async {
     preferences: preferences,
     initialTheme: storedTheme,
   );
+  final storedLocaleCode = preferences.getString(LocaleController.storageKey);
+  final storedLocale = storedLocaleCode == null
+      ? null
+      : AppLocalizations.supportedLocales
+          .where((locale) => locale.languageCode == storedLocaleCode)
+          .cast<Locale?>()
+          .firstWhere((locale) => locale != null, orElse: () => null);
+  final localeController = LocaleController(
+    preferences: preferences,
+    initialLocale: storedLocale,
+  );
 
-  runApp(CalisthenicsApp(controller: themeController));
+  runApp(CalisthenicsApp(
+    themeController: themeController,
+    localeController: localeController,
+  ));
 }
 
 class CalisthenicsApp extends StatelessWidget {
-  const CalisthenicsApp({super.key, required this.controller});
+  const CalisthenicsApp({
+    super.key,
+    required this.themeController,
+    required this.localeController,
+  });
 
-  final ThemeController controller;
+  final ThemeController themeController;
+  final LocaleController localeController;
 
   @override
   Widget build(BuildContext context) {
     return ThemeControllerScope(
-      controller: controller,
-      child: AnimatedBuilder(
-        animation: controller,
-        builder: (context, _) {
-          final theme = AppTheme.themeFor(controller.themeType);
-          return MaterialApp(
-            onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
-            theme: theme,
-            darkTheme: theme,
-            themeMode: ThemeMode.dark,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const OnboardingGate(),
-            debugShowCheckedModeBanner: false,
-          );
-        },
+      controller: themeController,
+      child: LocaleControllerScope(
+        controller: localeController,
+        child: AnimatedBuilder(
+          animation: Listenable.merge([themeController, localeController]),
+          builder: (context, _) {
+            final theme = AppTheme.themeFor(themeController.themeType);
+            return MaterialApp(
+              onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+              theme: theme,
+              darkTheme: theme,
+              themeMode: ThemeMode.dark,
+              locale: localeController.locale,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const OnboardingGate(),
+              debugShowCheckedModeBanner: false,
+            );
+          },
+        ),
       ),
     );
   }
