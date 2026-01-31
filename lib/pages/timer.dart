@@ -35,7 +35,6 @@ class TimerPage extends StatefulWidget {
 class _TimerPageState extends State<TimerPage> {
   static const int _defaultWorkSeconds = 40;
   static const int _defaultRestSeconds = 20;
-  static const Color _neonGreen = Color(0xFF39FF14);
 
   Timer? _intervalTimer;
 
@@ -241,9 +240,10 @@ class _TimerPageState extends State<TimerPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isWork = _phase == IntervalPhase.work;
     final phaseLabel = isWork ? l10n.timerPhaseWork : l10n.timerPhaseRest;
-    final phaseColor = isWork ? const Color(0xFFFF8A3D) : const Color(0xFF3D8BFF);
+    final phaseColor = isWork ? colorScheme.primary : colorScheme.secondary;
     final progress = _currentPhaseDuration == 0
         ? 0.0
         : (1 - (_remainingSeconds / _currentPhaseDuration)).clamp(0.0, 1.0);
@@ -298,7 +298,7 @@ class _TimerPageState extends State<TimerPage> {
                               style: theme.textTheme.displayMedium?.copyWith(
                                 fontSize: timeFontSize,
                                 fontWeight: FontWeight.w700,
-                                color: _neonGreen,
+                                color: phaseColor,
                               ),
                             ),
                           ],
