@@ -661,7 +661,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileMaxTestsUnitLabel => 'Unità';
 
   @override
-  String get profileMaxTestsUnitHint => 'es. rip, kg, sec';
+  String get profileMaxTestsUnitHint => 'es. kg, reps, seconds, minutes';
 
   @override
   String profileMaxTestsDateLabel(String date) {
@@ -683,7 +683,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get profileMaxTestsDefaultUnit => 'ripetizioni';
+  String get profileMaxTestsDefaultUnit => 'reps';
 
   @override
   String get profileMaxTestsBestLabel => 'Miglior risultato';

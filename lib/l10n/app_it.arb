@@ -293,7 +293,7 @@
   "profileMaxTestsValueLabel": "Risultato",
   "profileMaxTestsValueHint": "Inserisci un valore positivo",
   "profileMaxTestsUnitLabel": "Unità",
-  "profileMaxTestsUnitHint": "es. rip, kg, sec",
+  "profileMaxTestsUnitHint": "es. kg, reps, seconds, minutes",
   "profileMaxTestsDateLabel": "Registrato il {date}",
   "@profileMaxTestsDateLabel": {
     "placeholders": {
@@ -313,7 +313,7 @@
       }
     }
   },
-  "profileMaxTestsDefaultUnit": "ripetizioni",
+  "profileMaxTestsDefaultUnit": "reps",
   "profileMaxTestsBestLabel": "Miglior risultato",
   "profileMaxTestsShowMore": "Mostra tutti i tentativi",
   "profileMaxTestsShowLess": "Mostra meno tentativi",

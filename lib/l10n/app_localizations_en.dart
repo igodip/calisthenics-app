@@ -655,7 +655,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileMaxTestsUnitLabel => 'Unit';
 
   @override
-  String get profileMaxTestsUnitHint => 'e.g. reps, kg, sec';
+  String get profileMaxTestsUnitHint => 'e.g. kg, reps, seconds, minutes';
 
   @override
   String profileMaxTestsDateLabel(String date) {

@@ -293,7 +293,7 @@
   "profileMaxTestsValueLabel": "Result",
   "profileMaxTestsValueHint": "Enter a positive value",
   "profileMaxTestsUnitLabel": "Unit",
-  "profileMaxTestsUnitHint": "e.g. reps, kg, sec",
+  "profileMaxTestsUnitHint": "e.g. kg, reps, seconds, minutes",
   "profileMaxTestsDateLabel": "Recorded on {date}",
   "@profileMaxTestsDateLabel": {
     "placeholders": {
