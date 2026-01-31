@@ -1,5 +1,6 @@
 // lib/main.dart
 import 'package:calisync/pages/terminology.dart';
+import 'package:calisync/pages/trainee_feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:calisync/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -85,6 +86,10 @@ class _HomePageState extends State<HomePage> {
         title: l10n.profileMaxTestsTitle,
         icon: Icons.emoji_events_outlined,
         page: const MaxTestsMenuPage(),
+      ),
+      _NavigationItem(title: l10n.traineeFeedbackTitle,
+          icon: Icons.feedback,
+          page: const TraineeFeedbackPage()
       ),
       _NavigationItem(
         title: l10n.navTerminology,

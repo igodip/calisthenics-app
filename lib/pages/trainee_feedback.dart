@@ -36,9 +36,6 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.traineeFeedbackTitle),
-      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),

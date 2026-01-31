@@ -557,7 +557,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String trainingExerciseNotesError(Object error) {
-    return 'No se pudieron actualizar las notas: ${error}';
+    return 'No se pudieron actualizar las notas: $error';
   }
 
   @override
