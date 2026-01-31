@@ -374,6 +374,7 @@ class _TimerConfigRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -404,7 +405,7 @@ class _TimerConfigRow extends StatelessWidget {
           ),
           IconButton(
             onPressed: onEdit,
-            tooltip: MaterialLocalizations.of(context).editButtonLabel,
+            tooltip: 'Edit',
             icon: const Icon(Icons.edit),
           ),
         ],

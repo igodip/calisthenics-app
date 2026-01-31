@@ -173,7 +173,7 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
     final colorScheme = theme.colorScheme;
     final now = DateTime.now();
     final periodStart = _periodStartDate(now);
-    final exerciseGuides = ExerciseGuide.buildGuides(l10n)
+    final exerciseGuides = ExerciseGuide.(l10n)
       ..sort((a, b) => a.name.compareTo(b.name));
     final exerciseGuideById = {
       for (final guide in exerciseGuides) guide.id: guide,

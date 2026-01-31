@@ -29,8 +29,8 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
 
   Future<List<ExerciseGuide>> _loadGuides(AppLocalizations l10n) async {
     final response = await Supabase.instance.client
-        .from('exercise_guides')
-        .select('slug, difficulty, default_unlocked, accent')
+        .from('exercises')
+        .select('name, slug, difficulty')
         .order('sort_order', ascending: true);
     final rows = (response as List<dynamic>).cast<Map<String, dynamic>>();
     return rows
