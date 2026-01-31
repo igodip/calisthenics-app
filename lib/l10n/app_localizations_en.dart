@@ -349,7 +349,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeViewStats => 'View Stats';
 
   @override
-  String get homeProgressTitle => 'Progress';
+  String get homeProgressTitle => 'Monthly Progress';
 
   @override
   String get homeProgressWorkoutsLabel => 'Workouts';

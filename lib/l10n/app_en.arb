@@ -107,7 +107,7 @@
     }
   },
   "homeViewStats": "View Stats",
-  "homeProgressTitle": "Progress",
+  "homeProgressTitle": "Monthly Progress",
   "homeProgressWorkoutsLabel": "Workouts",
   "homeProgressTimeTrainedLabel": "Time Trained",
   "homeProgressTimeValue": "{hours}h {minutes}m",

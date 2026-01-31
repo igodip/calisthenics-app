@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeProgressTitle.
   ///
   /// In it, this message translates to:
-  /// **'Progressi'**
+  /// **'Progressi mensili'**
   String get homeProgressTitle;
 
   /// No description provided for @homeProgressWorkoutsLabel.
