@@ -17,10 +17,18 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
   bool _isLoadingFeedbacks = false;
   String? _feedbacksError;
   List<_FeedbackEntry> _feedbacks = [];
+  bool _didLoadFeedbacks = false;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didLoadFeedbacks) return;
+    _didLoadFeedbacks = true;
     _loadFeedbacks();
   }
 
