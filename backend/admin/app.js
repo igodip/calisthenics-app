@@ -250,7 +250,7 @@ import {
             .select(
               `
                 id, week, day_code, title,
-                day_exercises ( id, position, notes, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes ),
+                day_exercises ( id, position, notes, exercise, exercise_id, duration_minutes ),
                 workout_plan_days!inner ( plan_id, position )
               `,
             )
@@ -2285,7 +2285,7 @@ import {
                   workout_plans ( id, title, starts_on, created_at )
                 ),
                 day_exercises (
-                  id, position, notes, completed, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes
+                  id, position, notes, completed, exercise, exercise_id, duration_minutes
                 )
               `)
           .eq('workout_plan_days.workout_plans.trainee_id', u.id)
@@ -2340,7 +2340,7 @@ import {
           const { data, error } = await supabase
             .from('day_exercises')
             .select(
-              'id, exercise, exercise_id, notes, trainee_notes, completed, duration_minutes, exercises ( id, slug, name ), days!inner ( id, week, day_code, title, completed_at, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) ) )',
+              'id, exercise, exercise_id, notes, trainee_notes, completed, duration_minutes, days!inner ( id, week, day_code, title, completed_at, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) ) )',
             )
             .eq('completed', true)
             .eq('days.workout_plan_days.workout_plans.trainee_id', u.id);
