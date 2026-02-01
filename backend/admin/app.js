@@ -91,6 +91,7 @@ import {
       const exerciseSelection = ref({});
       const dayEdits = ref({});
       const dayExerciseEdits = ref({});
+      const exercisesContext = ref('none');
       const planEdits = ref({});
       const expandedDays = ref({});
       const traineeProgress = ref({});
@@ -191,6 +192,11 @@ import {
       watch(selectedTemplatePlanId, async (nextId) => {
         if (templatePlanLoading.value) return;
         await loadTemplatePlan(nextId);
+      });
+      watch(activeSection, async (nextSection) => {
+        if (nextSection !== 'exercises') return;
+        if (exercisesContext.value === 'all' || loadingExercises.value) return;
+        await loadExercises(null);
       });
 
       function buildTemplateDays(count, slots, existing) {
@@ -1269,7 +1275,6 @@ import {
         }
         await loadUsers();
         await loadPaymentTrends();
-        await loadExercises();
         await loadTerminology();
         await loadTraineeProgress();
         await loadDashboardBurndown();
@@ -1434,14 +1439,17 @@ import {
             exercises.value = (data || [])
               .map((row) => row.exercises)
               .filter(Boolean);
+            exercisesContext.value = 'trainee';
           } else {
             exercises.value = data || [];
+            exercisesContext.value = 'all';
           }
           exerciseEdits.value = {};
           (exercises.value || []).forEach(setExerciseEdit);
         } catch (error) {
           console.error(error);
           exercises.value = [];
+          exercisesContext.value = 'none';
           exercisesError.value = error.message || t('errors.loadExercises');
         } finally {
           loadingExercises.value = false;
