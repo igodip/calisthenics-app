@@ -96,8 +96,21 @@ class _HomeContentState extends State<HomeContent> {
         .limit(1)
         .maybeSingle();
 
-    final isPaid = paymentResponse?['paid'] as bool? ?? true;
-    return !isPaid;
+    if (paymentResponse == null) return false;
+
+    final paid = paymentResponse['paid'] as bool? ?? true;
+    final monthStartStr = paymentResponse['month_start'] as String?;
+    if (monthStartStr == null) return false;
+
+    final monthStart = DateTime.parse(monthStartStr);
+    final now = DateTime.now();
+
+    final isCurrentMonth =
+        monthStart.year == now.year && monthStart.month == now.month;
+
+    if (!isCurrentMonth) return true;
+
+    return !paid;
   }
 
   @override
@@ -113,6 +126,12 @@ class _HomeContentState extends State<HomeContent> {
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
           children: [
+            _HomeHeader(
+              displayName: displayName,
+              initials: initials,
+              imageUrl: (avatarUrl == null || avatarUrl.isEmpty) ? null : avatarUrl,
+            ),
+            const SizedBox(height: 16),
             FutureBuilder<bool>(
               future: _latePaymentFuture,
               builder: (context, paymentSnap) {
@@ -133,12 +152,6 @@ class _HomeContentState extends State<HomeContent> {
                 );
               },
             ),
-            _HomeHeader(
-              displayName: displayName,
-              initials: initials,
-              imageUrl: (avatarUrl == null || avatarUrl.isEmpty) ? null : avatarUrl,
-            ),
-            const SizedBox(height: 16),
             const ProgressCard(),
             const SizedBox(height: 16),
             _ActionButtons(
