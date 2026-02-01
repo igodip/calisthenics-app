@@ -8,22 +8,6 @@ import '../l10n/app_localizations.dart';
 
 enum IntervalPhase { work, rest }
 
-enum TimerExercise { pushUps, pullUps, squats, plank }
-
-extension TimerExerciseLabel on TimerExercise {
-  String label(AppLocalizations l10n) {
-    switch (this) {
-      case TimerExercise.pushUps:
-        return l10n.timerExercisePushUps;
-      case TimerExercise.pullUps:
-        return l10n.timerExercisePullUps;
-      case TimerExercise.squats:
-        return l10n.timerExerciseSquats;
-      case TimerExercise.plank:
-        return l10n.timerExercisePlank;
-    }
-  }
-}
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
@@ -43,16 +27,6 @@ class _TimerPageState extends State<TimerPage> {
   IntervalPhase _phase = IntervalPhase.work;
   int _workSeconds = _defaultWorkSeconds;
   int _restSeconds = _defaultRestSeconds;
-
-  int _nextExerciseIndex = 0;
-  int _nextSet = 1;
-
-  final List<_ExercisePlan> _exercisePlan = const [
-    _ExercisePlan(exercise: TimerExercise.pushUps, totalSets: 3),
-    _ExercisePlan(exercise: TimerExercise.pullUps, totalSets: 3),
-    _ExercisePlan(exercise: TimerExercise.squats, totalSets: 4),
-    _ExercisePlan(exercise: TimerExercise.plank, totalSets: 2),
-  ];
 
   @override
   void dispose() {
@@ -132,24 +106,6 @@ class _TimerPageState extends State<TimerPage> {
           : IntervalPhase.work;
       _remainingSeconds = _currentPhaseDuration;
     });
-    _advanceWorkoutContext();
-  }
-
-  void _advanceWorkoutContext() {
-    if (_exercisePlan.isEmpty) {
-      return;
-    }
-    final currentPlan = _exercisePlan[_nextExerciseIndex];
-    if (_nextSet < currentPlan.totalSets) {
-      setState(() {
-        _nextSet += 1;
-      });
-    } else {
-      setState(() {
-        _nextExerciseIndex = (_nextExerciseIndex + 1) % _exercisePlan.length;
-        _nextSet = 1;
-      });
-    }
   }
 
   void _setPhaseDuration(IntervalPhase phase, int valueSeconds) {
@@ -222,18 +178,6 @@ class _TimerPageState extends State<TimerPage> {
     final minutes = seconds ~/ 60;
     final remainingSeconds = seconds % 60;
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
-  }
-
-  String _nextExerciseLabel(AppLocalizations l10n) {
-    if (_exercisePlan.isEmpty) {
-      return l10n.timerNextPlaceholder;
-    }
-    final plan = _exercisePlan[_nextExerciseIndex];
-    return l10n.timerNextLabel(
-      plan.exercise.label(l10n),
-      _nextSet,
-      plan.totalSets,
-    );
   }
 
   @override
@@ -341,15 +285,6 @@ class _TimerPageState extends State<TimerPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      _nextExerciseLabel(l10n),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
                   ],
                 ),
               ),
@@ -411,16 +346,6 @@ class _TimerConfigRow extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ExercisePlan {
-  final TimerExercise exercise;
-  final int totalSets;
-
-  const _ExercisePlan({
-    required this.exercise,
-    required this.totalSets,
-  });
 }
 
 class _IntervalRingPainter extends CustomPainter {
