@@ -18,8 +18,10 @@ CREATE TABLE public.day_exercises (
   trainee_notes text,
   completed boolean,
   duration_minutes numeric DEFAULT '0'::numeric,
+  exercise_id uuid,
   CONSTRAINT day_exercises_pkey PRIMARY KEY (id),
-  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id)
+  CONSTRAINT day_exercises_day_id_fkey FOREIGN KEY (day_id) REFERENCES public.days(id),
+  CONSTRAINT day_exercises_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES public.exercises(id)
 );
 CREATE TABLE public.days (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -48,8 +50,8 @@ CREATE TABLE public.exercises (
   name text NOT NULL UNIQUE,
   difficulty text NOT NULL DEFAULT 'beginner'::text,
   sort_order integer NOT NULL DEFAULT 1,
-  default_unlocked boolean NOT NULL DEFAULT false,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
+  default_unlocked boolean DEFAULT false,
   CONSTRAINT exercises_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.max_tests (
@@ -64,11 +66,11 @@ CREATE TABLE public.max_tests (
 CREATE TABLE public.terminology (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   term_key text NOT NULL,
-  locale text NOT NULL,
   title text NOT NULL,
   description text NOT NULL,
   sort_order integer NOT NULL DEFAULT 1,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
+  locale text,
   CONSTRAINT terminology_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.trainee_exercise_unlocks (
