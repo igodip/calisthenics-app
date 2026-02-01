@@ -105,8 +105,6 @@ class _HomeContentState extends State<HomeContent> {
               onViewStats: widget.onViewStats,
             ),
             const SizedBox(height: 16),
-            const StrengthLevelCard(),
-            const SizedBox(height: 16),
             FutureBuilder<_ExerciseUnlockSummary>(
               future: _unlockSummaryFuture,
               builder: (context, summarySnap) {
@@ -115,9 +113,18 @@ class _HomeContentState extends State<HomeContent> {
                       unlockedSkills: 0,
                       totalSkills: 0,
                     );
-                return SkillProgressCard(
-                  unlockedSkills: summary.unlockedSkills,
-                  totalSkills: summary.totalSkills,
+                return Column(
+                  children: [
+                    StrengthLevelCard(
+                      unlockedSkills: summary.unlockedSkills,
+                      totalSkills: summary.totalSkills,
+                    ),
+                    const SizedBox(height: 16),
+                    SkillProgressCard(
+                      unlockedSkills: summary.unlockedSkills,
+                      totalSkills: summary.totalSkills,
+                    ),
+                  ],
                 );
               },
             ),
