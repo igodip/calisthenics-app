@@ -71,11 +71,6 @@ CREATE TABLE public.terminology (
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT terminology_pkey PRIMARY KEY (id)
 );
-CREATE TABLE public.terminology_translations (
-  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT terminology_translations_pkey PRIMARY KEY (id)
-);
 CREATE TABLE public.trainee_exercise_unlocks (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   trainee_id uuid NOT NULL,
