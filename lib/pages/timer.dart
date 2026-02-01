@@ -6,9 +6,6 @@ import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
 
-enum IntervalPhase { work, rest }
-
-
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
 
@@ -17,16 +14,13 @@ class TimerPage extends StatefulWidget {
 }
 
 class _TimerPageState extends State<TimerPage> {
-  static const int _defaultWorkSeconds = 40;
-  static const int _defaultRestSeconds = 20;
+  static const int _defaultDurationSeconds = 60;
 
   Timer? _intervalTimer;
 
   bool _isRunning = false;
-  int _remainingSeconds = _defaultWorkSeconds;
-  IntervalPhase _phase = IntervalPhase.work;
-  int _workSeconds = _defaultWorkSeconds;
-  int _restSeconds = _defaultRestSeconds;
+  int _remainingSeconds = _defaultDurationSeconds;
+  int _durationSeconds = _defaultDurationSeconds;
 
   @override
   void dispose() {
@@ -34,14 +28,7 @@ class _TimerPageState extends State<TimerPage> {
     super.dispose();
   }
 
-  int get _workDurationSeconds => _workSeconds;
-  int get _restDurationSeconds => _restSeconds;
-
-  int get _currentPhaseDuration {
-    return _phase == IntervalPhase.work
-        ? _workDurationSeconds
-        : _restDurationSeconds;
-  }
+  int get _currentDurationSeconds => _durationSeconds;
 
   void _startTimer() {
     if (_isRunning) {
@@ -49,7 +36,7 @@ class _TimerPageState extends State<TimerPage> {
     }
     if (_remainingSeconds == 0) {
       setState(() {
-        _remainingSeconds = _currentPhaseDuration;
+        _remainingSeconds = _currentDurationSeconds;
       });
     }
     setState(() {
@@ -65,7 +52,7 @@ class _TimerPageState extends State<TimerPage> {
         setState(() {
           _remainingSeconds = 0;
         });
-        _handlePhaseEnd();
+        _handleTimerEnd();
       }
     });
   }
@@ -87,49 +74,32 @@ class _TimerPageState extends State<TimerPage> {
 
   void _resetPhase() {
     setState(() {
-      _remainingSeconds = _currentPhaseDuration;
+      _remainingSeconds = _currentDurationSeconds;
     });
   }
 
-  void _skipPhase() {
-    _advancePhase();
-  }
-
-  void _handlePhaseEnd() {
-    _advancePhase();
-  }
-
-  void _advancePhase() {
+  void _handleTimerEnd() {
+    _intervalTimer?.cancel();
     setState(() {
-      _phase = _phase == IntervalPhase.work
-          ? IntervalPhase.rest
-          : IntervalPhase.work;
-      _remainingSeconds = _currentPhaseDuration;
+      _isRunning = false;
+      _remainingSeconds = 0;
     });
   }
 
-  void _setPhaseDuration(IntervalPhase phase, int valueSeconds) {
+  void _setDuration(int valueSeconds) {
     final updatedValue = valueSeconds.clamp(5, 36000);
     setState(() {
-      if (phase == IntervalPhase.work) {
-        _workSeconds = updatedValue;
+      _durationSeconds = updatedValue;
+      if (_isRunning) {
+        _remainingSeconds = math.min(_remainingSeconds, updatedValue);
       } else {
-        _restSeconds = updatedValue;
-      }
-
-      if (_phase == phase) {
-        if (_isRunning) {
-          _remainingSeconds = math.min(_remainingSeconds, updatedValue);
-        } else {
-          _remainingSeconds = updatedValue;
-        }
+        _remainingSeconds = updatedValue;
       }
     });
   }
 
-  Future<void> _editPhaseDuration(IntervalPhase phase) async {
-    final currentValue =
-        phase == IntervalPhase.work ? _workSeconds : _restSeconds;
+  Future<void> _editDuration() async {
+    final currentValue = _durationSeconds;
     final controller = TextEditingController(text: currentValue.toString());
     final materialL10n = MaterialLocalizations.of(context);
     final l10n = AppLocalizations.of(context)!;
@@ -139,9 +109,7 @@ class _TimerPageState extends State<TimerPage> {
       builder: (context) {
         return AlertDialog(
           title: Text(
-            phase == IntervalPhase.work
-                ? l10n.timerWorkDurationLabel
-                : l10n.timerRestDurationLabel,
+            l10n.timerWorkDurationLabel,
           ),
           content: TextField(
             controller: controller,
@@ -171,7 +139,7 @@ class _TimerPageState extends State<TimerPage> {
     if (result == null) {
       return;
     }
-    _setPhaseDuration(phase, result);
+    _setDuration(result);
   }
 
   String _formatSeconds(int seconds) {
@@ -185,12 +153,11 @@ class _TimerPageState extends State<TimerPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isWork = _phase == IntervalPhase.work;
-    final phaseLabel = isWork ? l10n.timerPhaseWork : l10n.timerPhaseRest;
-    final phaseColor = isWork ? colorScheme.primary : colorScheme.secondary;
-    final progress = _currentPhaseDuration == 0
+    final phaseLabel = l10n.timerTitle;
+    final phaseColor = colorScheme.primary;
+    final progress = _currentDurationSeconds == 0
         ? 0.0
-        : (1 - (_remainingSeconds / _currentPhaseDuration)).clamp(0.0, 1.0);
+        : (1 - (_remainingSeconds / _currentDurationSeconds)).clamp(0.0, 1.0);
 
     return Scaffold(
       body: SafeArea(
@@ -252,25 +219,13 @@ class _TimerPageState extends State<TimerPage> {
                     const SizedBox(height: 24),
                     _TimerConfigRow(
                       title: l10n.timerWorkDurationLabel,
-                      value: _formatSeconds(_workDurationSeconds),
-                      onEdit: () => _editPhaseDuration(IntervalPhase.work),
-                    ),
-                    const SizedBox(height: 12),
-                    _TimerConfigRow(
-                      title: l10n.timerRestDurationLabel,
-                      value: _formatSeconds(_restDurationSeconds),
-                      onEdit: () => _editPhaseDuration(IntervalPhase.rest),
+                      value: _formatSeconds(_currentDurationSeconds),
+                      onEdit: _editDuration,
                     ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _ControlButton(
-                          label: l10n.timerControlSkip,
-                          icon: Icons.skip_next,
-                          onPressed: _skipPhase,
-                        ),
-                        const SizedBox(width: 16),
                         _ControlButton(
                           label: _isRunning ? l10n.timerControlPause : l10n.timerControlPlay,
                           icon: _isRunning ? Icons.pause : Icons.play_arrow,
