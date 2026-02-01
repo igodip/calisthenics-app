@@ -24,4 +24,16 @@ INSERT INTO public.terminology (term_key, locale, title, description, sort_order
   ('tut', 'it', 'TUT', 'Indica quanto deve durare una ripetizione. Puoi gestire tu la durata di ogni fase della rep.', 9),
   ('iso', 'it', 'ISO', 'Indica il fermo a un punto specifico dell''esecuzione della rep', 10),
   ('som', 'it', 'SOM', 'Indica la durata di ogni fase della ripetizione.', 11),
-  ('deload', 'it', 'Scarico', 'Ultima settimana della scheda per prepararsi ai massimali.', 12);
+  ('deload', 'it', 'Scarico', 'Ultima settimana della scheda per prepararsi ai massimali.', 12),
+  ('reps', 'es', 'Reps (Repeticiones)', 'Número de veces que realizas un ejercicio de forma consecutiva.', 1),
+  ('set', 'es', 'Set (Series)', 'Un grupo de repeticiones. Por ejemplo: 3 series de 10 reps son 30 repeticiones en total divididas en 3 grupos.', 2),
+  ('rt', 'es', 'RT', 'Repeticiones Totales: realiza todas las reps con las series, repeticiones y tempo que prefieras (si no se indica).', 3),
+  ('amrap', 'es', 'AMRAP', 'As Many Reps As Possible: haz tantas repeticiones como puedas en un tiempo determinado.', 4),
+  ('emom', 'es', 'EMOM', 'Every Minute on the Minute: comienza una serie cada minuto. Descansa el tiempo restante.', 5),
+  ('ramping', 'es', 'Ramping', 'Método en el que la carga aumenta en cada serie.', 6),
+  ('mav', 'es', 'MAV', 'Massima Alzata Veloce: realiza el mayor número de repeticiones posible con una carga manteniendo el control y una buena velocidad de ejecución.', 7),
+  ('isokinetic', 'es', 'Isocinéticos', 'Ejercicios realizados a velocidad constante.', 8),
+  ('tut', 'es', 'TUT', 'Indica cuánto debe durar una repetición. Puedes gestionar la duración de cada fase.', 9),
+  ('iso', 'es', 'ISO', 'Indica la pausa en un punto específico de la repetición.', 10),
+  ('som', 'es', 'SOM', 'Indica la duración de cada fase de la repetición.', 11),
+  ('deload', 'es', 'Descarga', 'Última semana del programa para prepararse para los máximos.', 12);
