@@ -2167,7 +2167,7 @@ import {
           let dayQuery = supabase
             .from('days')
             .select(
-              'week, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) )',
+              'week, completed_at, workout_plan_days!inner ( workout_plans!inner ( trainee_id ) )',
             );
           if (trainerOnly) {
             dayQuery = dayQuery.in(
@@ -2181,6 +2181,7 @@ import {
           }
 
           const maxWeekByTrainee = {};
+          const weekProgressByTrainee = {};
           (dayRows || []).forEach((row) => {
             const planEntries = row.workout_plan_days || [];
             const traineeId = planEntries?.[0]?.workout_plans?.trainee_id;
@@ -2190,6 +2191,19 @@ import {
             if (week > current) {
               maxWeekByTrainee[traineeId] = week;
             }
+            if (!week) return;
+            if (!weekProgressByTrainee[traineeId]) {
+              weekProgressByTrainee[traineeId] = {};
+            }
+            const existingProgress = weekProgressByTrainee[traineeId][week] || {
+              totalDays: 0,
+              completedDays: 0,
+            };
+            existingProgress.totalDays += 1;
+            if (row.completed_at) {
+              existingProgress.completedDays += 1;
+            }
+            weekProgressByTrainee[traineeId][week] = existingProgress;
           });
 
           let completedQuery = supabase
@@ -2241,12 +2255,28 @@ import {
           const nextStatus = {};
           (users.value || []).forEach((trainee) => {
             const lastWeek = maxWeekByTrainee[trainee.id] || 0;
+            let previousWeeksComplete = Boolean(lastWeek);
+            if (lastWeek > 1) {
+              for (let week = 1; week < lastWeek; week += 1) {
+                const progress = weekProgressByTrainee[trainee.id]?.[week];
+                if (
+                  !progress ||
+                  progress.totalDays === 0 ||
+                  progress.completedDays < progress.totalDays
+                ) {
+                  previousWeeksComplete = false;
+                  break;
+                }
+              }
+            }
             const currentEntry = latestByTrainee[trainee.id];
-            const currentWeek = currentEntry?.week || (lastWeek ? 1 : 0);
+            const currentWeek = previousWeeksComplete
+              ? lastWeek
+              : currentEntry?.week || (lastWeek ? 1 : 0);
             nextStatus[trainee.id] = {
               currentWeek,
               lastWeek,
-              isLastWeek: Boolean(lastWeek && currentWeek >= lastWeek),
+              isLastWeek: Boolean(lastWeek && previousWeeksComplete),
             };
           });
           traineeWeekStatus.value = nextStatus;
