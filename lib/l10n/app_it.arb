@@ -154,6 +154,7 @@
   "refresh": "Aggiorna",
   "homeEmptyTitle": "Nessun allenamento disponibile",
   "homeEmptyDescription": "Contatta il tuo coach per ricevere una nuova scheda.",
+  "homeLatePaymentDescription": "Il pagamento è in scadenza. Effettualo per mantenere attivo il tuo piano.",
   "homePlansSectionTitle": "Piani di allenamento",
   "homePlansSectionSubtitle": "Piani assegnati e il loro stato attuale.",
   "homePlansEmptyTitle": "Nessun piano di allenamento",
