@@ -27,6 +27,7 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   late Future<UserProfileData> _profileFuture;
   late Future<String?> _coachTip;
+  late Future<bool> _latePaymentFuture;
   Future<_ExerciseUnlockSummary>? _unlockSummaryFuture;
   String? _localeName;
 
@@ -36,6 +37,7 @@ class _HomeContentState extends State<HomeContent> {
     final client = Supabase.instance.client;
     _profileFuture = getUserData();
     _coachTip = _loadCoachTipForUser(Supabase.instance.client, client.auth.currentUser!.id);
+    _latePaymentFuture = _fetchIsPaymentLate();
   }
 
   @override
@@ -79,6 +81,25 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
+  Future<bool> _fetchIsPaymentLate() async {
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      return false;
+    }
+
+    final paymentResponse = await client
+        .from('trainee_monthly_payments')
+        .select('paid, month_start')
+        .eq('trainee_id', userId)
+        .order('month_start', ascending: false)
+        .limit(1)
+        .maybeSingle();
+
+    final isPaid = paymentResponse?['paid'] as bool? ?? true;
+    return !isPaid;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -92,6 +113,26 @@ class _HomeContentState extends State<HomeContent> {
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
           children: [
+            FutureBuilder<bool>(
+              future: _latePaymentFuture,
+              builder: (context, paymentSnap) {
+                if (paymentSnap.connectionState != ConnectionState.done) {
+                  return const SizedBox.shrink();
+                }
+                if (paymentSnap.hasError || paymentSnap.data != true) {
+                  return const SizedBox.shrink();
+                }
+                return Column(
+                  children: [
+                    _LatePaymentCard(
+                      title: l10n.profilePlanExpired,
+                      description: l10n.homeEmptyDescription,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              },
+            ),
             _HomeHeader(
               displayName: displayName,
               initials: initials,
@@ -260,4 +301,59 @@ class _ExerciseUnlockSummary {
 
   final int unlockedSkills;
   final int totalSkills;
+}
+
+class _LatePaymentCard extends StatelessWidget {
+  const _LatePaymentCard({
+    required this.title,
+    required this.description,
+  });
+
+  final String title;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: theme.colorScheme.error.withValues(alpha: 0.3)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.assignment_late_outlined,
+              color: theme.colorScheme.error,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
