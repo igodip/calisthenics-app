@@ -5,6 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/progress_card.dart';
 import '../components/skill_progress_card.dart';
 import '../components/strength_level_card.dart';
+import '../data/exercise_guides.dart';
+import '../data/exercise_unlocks.dart';
 import '../l10n/app_localizations.dart';
 import 'profile.dart';
 
@@ -25,6 +27,8 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   late Future<UserProfileData> _profileFuture;
   late Future<String?> _coachTip;
+  Future<_ExerciseUnlockSummary>? _unlockSummaryFuture;
+  String? _localeName;
 
   @override
   void initState() {
@@ -32,6 +36,16 @@ class _HomeContentState extends State<HomeContent> {
     final client = Supabase.instance.client;
     _profileFuture = getUserData();
     _coachTip = _loadCoachTipForUser(Supabase.instance.client, client.auth.currentUser!.id);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context)!;
+    if (_unlockSummaryFuture == null || _localeName != l10n.localeName) {
+      _localeName = l10n.localeName;
+      _unlockSummaryFuture = _loadExerciseSummary(l10n.localeName);
+    }
   }
 
   Future<String?> _loadCoachTipForUser(
@@ -48,6 +62,21 @@ class _HomeContentState extends State<HomeContent> {
     }
     final tip = response['coach_tip'] as String?;
     return tip?.trim().isEmpty ?? true ? null : tip?.trim();
+  }
+
+  Future<_ExerciseUnlockSummary> _loadExerciseSummary(String localeName) async {
+    final guides = await ExerciseGuides.load(localeName);
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    final unlockedSlugs = userId == null
+        ? <String>{}
+        : await ExerciseUnlocks.loadUnlockedExerciseSlugs(userId);
+    final unlockedCount = guides
+        .where((guide) => guide.isUnlocked || unlockedSlugs.contains(guide.id))
+        .length;
+    return _ExerciseUnlockSummary(
+      unlockedSkills: unlockedCount,
+      totalSkills: guides.length,
+    );
   }
 
   @override
@@ -78,7 +107,20 @@ class _HomeContentState extends State<HomeContent> {
             const SizedBox(height: 16),
             const StrengthLevelCard(),
             const SizedBox(height: 16),
-            const SkillProgressCard(),
+            FutureBuilder<_ExerciseUnlockSummary>(
+              future: _unlockSummaryFuture,
+              builder: (context, summarySnap) {
+                final summary = summarySnap.data ??
+                    const _ExerciseUnlockSummary(
+                      unlockedSkills: 0,
+                      totalSkills: 0,
+                    );
+                return SkillProgressCard(
+                  unlockedSkills: summary.unlockedSkills,
+                  totalSkills: summary.totalSkills,
+                );
+              },
+            ),
             const SizedBox(height: 16),
             FutureBuilder<String?>(
               future: _coachTip,
@@ -201,4 +243,14 @@ class _ActionButtons extends StatelessWidget {
       ],
     );
   }
+}
+
+class _ExerciseUnlockSummary {
+  const _ExerciseUnlockSummary({
+    required this.unlockedSkills,
+    required this.totalSkills,
+  });
+
+  final int unlockedSkills;
+  final int totalSkills;
 }

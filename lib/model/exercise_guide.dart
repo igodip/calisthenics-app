@@ -47,6 +47,7 @@ class ExerciseGuideTranslation {
 class ExerciseGuide {
   const ExerciseGuide({
     required this.id,
+    required this.exerciseId,
     required this.name,
     required this.difficulty,
     required this.isUnlocked,
@@ -56,6 +57,7 @@ class ExerciseGuide {
   });
 
   final String id;
+  final String exerciseId;
   final String name;
   final Difficulty difficulty;
   final bool isUnlocked;
@@ -66,6 +68,7 @@ class ExerciseGuide {
   ExerciseGuide copyWith({bool? isUnlocked}) {
     return ExerciseGuide(
       id: id,
+      exerciseId: exerciseId,
       name: name,
       difficulty: difficulty,
       isUnlocked: isUnlocked ?? this.isUnlocked,
@@ -91,6 +94,7 @@ class ExerciseGuide {
     }
     return ExerciseGuide(
       id: slug,
+      exerciseId: row['id']?.toString() ?? '',
       name: resolvedName,
       difficulty: _difficultyFromString(row['difficulty'] as String?),
       isUnlocked: row['default_unlocked'] as bool? ?? false,
