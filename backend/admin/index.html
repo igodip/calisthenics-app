@@ -988,10 +988,7 @@
                                                 @click="selectTemplateSlot(slotIndex)"
                                             >
                                                 <div class="stack">
-                                                    <strong>{{ slot.exercise || t('placeholders.exerciseName') }}</strong>
-                                                    <span class="muted small">
-                                                        {{ slot.sets ? `${slot.sets} ${t('labels.sets')}` : t('labels.setsPlaceholder') }}
-                                                    </span>
+                                                    <strong>{{ resolveTemplateSlotName(slot) || t('placeholders.exerciseName') }}</strong>
                                                 </div>
                                                 <span class="workout-activity-check" :class="{ active: slotIndex === selectedTemplateSlot }">
                                                     ✓
@@ -1003,7 +1000,7 @@
                                 <div class="workout-editor-column">
                                     <div class="workout-card workout-detail-card">
                                         <div class="workout-card-header">
-                                            <h4>{{ activeTemplateSlot.exercise || t('labels.exercise') }}</h4>
+                                            <h4>{{ resolveTemplateSlotName(activeTemplateSlot) || t('labels.exercise') }}</h4>
                                         </div>
                                         <div class="workout-detail-image">
                                             <span class="muted small">{{ t('labels.preview') }}</span>
@@ -1011,17 +1008,18 @@
                                         <div class="workout-detail-grid">
                                             <label class="stack small">
                                                 <span class="muted small">{{ t('labels.exercise') }}</span>
-                                                <input
-                                                    v-model="activeTemplateSlot.exercise"
-                                                    :placeholder="t('placeholders.exerciseName')"
-                                                />
-                                            </label>
-                                            <label class="stack small">
-                                                <span class="muted small">{{ t('labels.sets') }}</span>
-                                                <input
-                                                    v-model="activeTemplateSlot.sets"
-                                                    :placeholder="t('placeholders.setsExample')"
-                                                />
+                                                <select v-model="activeTemplateSlot.exercise_id">
+                                                    <option value="">
+                                                        {{ t('placeholders.exerciseName') }}
+                                                    </option>
+                                                    <option
+                                                        v-for="exercise in exercises"
+                                                        :key="exercise.id"
+                                                        :value="exercise.id"
+                                                    >
+                                                        {{ exercise.name || exercise.slug || exercise.id }}
+                                                    </option>
+                                                </select>
                                             </label>
                                         </div>
                                         <label class="stack small">
