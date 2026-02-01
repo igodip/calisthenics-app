@@ -137,6 +137,15 @@ import {
         minDateLabel: '',
         maxDateLabel: '',
       });
+      const selectedBurndownTrainees = ref(new Set());
+      const visibleBurndownLines = computed(() => {
+        const selected = selectedBurndownTrainees.value;
+        const lines = dashboardBurndown.value.lines || [];
+        if (!selected.size) {
+          return lines;
+        }
+        return lines.filter((line) => selected.has(line.traineeId));
+      });
       const dashboardBurndownLoading = ref(false);
       const dashboardBurndownError = ref('');
       const addingDay = ref(false);
@@ -2595,6 +2604,23 @@ import {
         }
       }
 
+      function toggleBurndownTraineeSelection(traineeId) {
+        if (!traineeId) return;
+        const next = new Set(selectedBurndownTrainees.value);
+        if (next.has(traineeId)) {
+          next.delete(traineeId);
+        } else {
+          next.add(traineeId);
+        }
+        selectedBurndownTrainees.value = next;
+      }
+
+      function isBurndownTraineeSelected(traineeId) {
+        const selected = selectedBurndownTrainees.value;
+        if (!selected.size) return true;
+        return selected.has(traineeId);
+      }
+
       async function loadDashboardBurndown() {
         dashboardBurndownLoading.value = true;
         dashboardBurndownError.value = '';
@@ -3181,6 +3207,7 @@ import {
         dashboardNotesError,
         dashboardNoteClosing,
         dashboardBurndown,
+        visibleBurndownLines,
         dashboardBurndownLoading,
         dashboardBurndownError,
         loadingProgress,
@@ -3231,6 +3258,8 @@ import {
         loadCompletedExercises,
         loadDashboardNotes,
         closeDashboardNote,
+        toggleBurndownTraineeSelection,
+        isBurndownTraineeSelected,
         addPlan,
         addDay,
         resetDayForm,

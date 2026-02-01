@@ -116,6 +116,8 @@ export const translations = {
       burndownLoading: 'Loading plan progress…',
       burndownEmpty: 'No plan progress found for the last month.',
       burndownRemaining: '{remaining} of {total} exercises remaining',
+      burndownXAxis: '30 days',
+      burndownYAxis: 'Exercises left',
     },
     crud: {
       title: 'CRUD terminology',
@@ -479,6 +481,8 @@ export const translations = {
       burndownLoading: 'Caricamento progresso piano…',
       burndownEmpty: 'Nessun progresso del piano trovato nell’ultimo mese.',
       burndownRemaining: '{remaining} di {total} esercizi rimanenti',
+      burndownXAxis: '30 giorni',
+      burndownYAxis: 'Esercizi rimanenti',
     },
     crud: {
       title: 'Terminologia CRUD',
