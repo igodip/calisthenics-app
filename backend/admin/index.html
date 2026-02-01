@@ -497,6 +497,17 @@
                             :aria-label="t('payments.trendTitle')"
                             :viewBox="`0 0 ${paymentTrends.chartWidth} ${paymentTrends.chartHeight}`"
                         >
+                            <g class="payment-trend-axis-ticks">
+                                <text
+                                    v-for="(tick, index) in paymentTrends.axisTicks"
+                                    :key="index"
+                                    class="payment-trend-axis-label"
+                                    x="6"
+                                    :y="tick.y + 4"
+                                >
+                                    {{ tick.label }}
+                                </text>
+                            </g>
                             <line
                                 class="payment-trend-axis-line"
                                 x1="24"

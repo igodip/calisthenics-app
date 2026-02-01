@@ -117,6 +117,7 @@ import {
         months: [],
         series: [],
         maxValue: 0,
+        axisTicks: [],
       });
       const paymentTrendsLoading = ref(false);
       const paymentTrendsError = ref('');
@@ -1804,6 +1805,7 @@ import {
               months: [],
               series: [],
               maxValue: 0,
+              axisTicks: [],
             };
             return;
           }
@@ -1870,6 +1872,19 @@ import {
             ]),
           );
           const range = maxValue || 1;
+          const axisTicks = Array.from({ length: 4 }, (_, index) => {
+            const ratio = index / 3;
+            const value = maxValue * (1 - ratio);
+            const y =
+              chartHeight -
+              padding -
+              (value / range) * (chartHeight - padding * 2);
+            return {
+              value,
+              y: Number(y.toFixed(2)),
+              label: formatAmount(value),
+            };
+          });
           const pointsBySeries = seriesConfig.map((series) => {
             const points = months.map((month, index) => {
               const entry = totals.get(monthKey(month)) || {
@@ -1906,6 +1921,7 @@ import {
             months,
             series: pointsBySeries,
             maxValue,
+            axisTicks,
           };
         } catch (err) {
           console.error(err);
@@ -1914,6 +1930,7 @@ import {
             months: [],
             series: [],
             maxValue: 0,
+            axisTicks: [],
           };
           paymentTrendsError.value =
             err.message || t('errors.loadPayments');
