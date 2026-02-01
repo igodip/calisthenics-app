@@ -4,14 +4,27 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 
 class SkillProgressCard extends StatelessWidget {
-  const SkillProgressCard({super.key});
+  const SkillProgressCard({
+    super.key,
+    required this.unlockedSkills,
+    required this.totalSkills,
+  });
+
+  final int unlockedSkills;
+  final int totalSkills;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    const unlockedSkills = 5;
-    const totalSkills = 8;
+    final displayTotal = totalSkills < 0 ? 0 : totalSkills;
+    final displayUnlocked = unlockedSkills < 0 ? 0 : unlockedSkills;
+    final iconCount = displayTotal == 0 ? 0 : (displayTotal <= 8 ? displayTotal : 8);
+    final filledIcons = iconCount == 0
+        ? 0
+        : ((displayUnlocked / displayTotal) * iconCount)
+            .round()
+            .clamp(0, iconCount);
     return SectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,7 +39,7 @@ class SkillProgressCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                l10n.homeSkillProgressValue(unlockedSkills, totalSkills),
+                l10n.homeSkillProgressValue(displayUnlocked, displayTotal),
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -44,11 +57,11 @@ class SkillProgressCard extends StatelessWidget {
           Wrap(
             spacing: 8,
             children: List.generate(
-              6,
-                  (index) => Icon(
+              iconCount,
+              (index) => Icon(
                 Icons.fitness_center,
                 size: 20,
-                color: index < 5
+                color: index < filledIcons
                     ? theme.colorScheme.primary
                     : theme.colorScheme.onSurfaceVariant,
               ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/exercise_guide_card.dart';
 import '../data/exercise_guides.dart';
+import '../data/exercise_unlocks.dart';
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 
@@ -20,8 +22,9 @@ class ExerciseGuidesPage extends StatefulWidget {
 
 class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
   Difficulty _selectedDifficulty = Difficulty.beginner;
-  final Set<String> _unlockedSkills = {};
-  Future<List<ExerciseGuide>>? _guidesFuture;
+  final Set<String> _newlyUnlockedSkills = {};
+  final Set<String> _unlockingSkills = {};
+  Future<_ExerciseGuidesData>? _guidesFuture;
   String? _localeName;
   final ScrollController _scrollController = ScrollController();
   final Map<String, GlobalKey> _guideKeys = {};
@@ -34,7 +37,7 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
     final l10n = AppLocalizations.of(context)!;
     if (_guidesFuture == null || _localeName != l10n.localeName) {
       _localeName = l10n.localeName;
-      _guidesFuture = ExerciseGuides.load(l10n.localeName);
+      _guidesFuture = _loadGuides(l10n.localeName);
     }
   }
 
@@ -96,17 +99,58 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
     );
   }
 
+  Future<_ExerciseGuidesData> _loadGuides(String localeName) async {
+    final guides = await ExerciseGuides.load(localeName);
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    final unlocked = userId == null
+        ? <String>{}
+        : await ExerciseUnlocks.loadUnlockedExerciseSlugs(userId);
+    return _ExerciseGuidesData(guides: guides, unlockedSkills: unlocked);
+  }
+
+  Future<void> _unlockGuide(ExerciseGuide guide) async {
+    if (_unlockingSkills.contains(guide.id)) {
+      return;
+    }
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null || guide.exerciseId.isEmpty) {
+      return;
+    }
+    setState(() {
+      _unlockingSkills.add(guide.id);
+    });
+    try {
+      await ExerciseUnlocks.unlockExercise(
+        traineeId: userId,
+        exerciseId: guide.exerciseId,
+      );
+      if (!mounted) return;
+      setState(() {
+        _newlyUnlockedSkills.add(guide.id);
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _unlockingSkills.remove(guide.id);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return FutureBuilder<List<ExerciseGuide>>(
+    return FutureBuilder<_ExerciseGuidesData>(
       future: _guidesFuture,
       builder: (context, snapshot) {
-        final guides = (snapshot.data ?? const <ExerciseGuide>[])
+        final unlockedSkills = {
+          ...?snapshot.data?.unlockedSkills,
+          ..._newlyUnlockedSkills,
+        };
+        final guides = (snapshot.data?.guides ?? const <ExerciseGuide>[])
             .map(
               (guide) => guide.copyWith(
                 isUnlocked:
-                    guide.isUnlocked || _unlockedSkills.contains(guide.id),
+                    guide.isUnlocked || unlockedSkills.contains(guide.id),
               ),
             )
             .toList();
@@ -167,13 +211,10 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
                       guide: guide,
                       l10n: l10n,
                       isHighlighted: guide.id == _highlightedGuideId,
-                      onUnlock: guide.isUnlocked
+                      onUnlock: guide.isUnlocked ||
+                              _unlockingSkills.contains(guide.id)
                           ? null
-                          : () {
-                              setState(() {
-                                _unlockedSkills.add(guide.id);
-                              });
-                            },
+                          : () => _unlockGuide(guide),
                     ),
                   ),
                 ),
@@ -182,6 +223,16 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
       },
     );
   }
+}
+
+class _ExerciseGuidesData {
+  const _ExerciseGuidesData({
+    required this.guides,
+    required this.unlockedSkills,
+  });
+
+  final List<ExerciseGuide> guides;
+  final Set<String> unlockedSkills;
 }
 
 class _PageHeader extends StatelessWidget {
