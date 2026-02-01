@@ -202,7 +202,7 @@ import {
             const prevSlot = previous?.slots?.[j] || {};
             nextSlots.push({
               exercise: prevSlot.exercise || '',
-              sets: prevSlot.sets || '',
+              exercise_id: prevSlot.exercise_id || '',
               notes: prevSlot.notes || '',
               duration_minutes:
                 prevSlot.duration_minutes === undefined
@@ -304,9 +304,14 @@ import {
             exercises.forEach((exercise, index) => {
               if (!slots[index]) return;
               const exerciseName = resolveExerciseName(exercise);
+              const exerciseId =
+                exercise.exercise_id ||
+                resolveExerciseReference(exerciseName)?.id ||
+                '';
               slots[index] = {
                 ...slots[index],
                 exercise: exerciseName,
+                exercise_id: exerciseId,
                 notes: exercise.notes || '',
                 duration_minutes:
                   exercise.duration_minutes === undefined
@@ -428,7 +433,7 @@ import {
         () =>
           activeTemplateSlots.value[selectedTemplateSlot.value] ||
           activeTemplateSlots.value[0] ||
-          { exercise: '', sets: '', notes: '' },
+          { exercise: '', exercise_id: '', notes: '' },
       );
 
       const selectTemplateDay = (index) => {
@@ -881,6 +886,20 @@ import {
         return (entry.exercise || '').trim();
       };
 
+      const resolveTemplateSlotName = (slot) => {
+        if (!slot) return '';
+        if (slot.exercise_id) {
+          const name = exerciseNameLookup.value.get(slot.exercise_id);
+          if (name) return name;
+        }
+        return (slot.exercise || '').trim();
+      };
+
+      const getExerciseById = (id) => {
+        if (!id) return null;
+        return (exercises.value || []).find((exercise) => exercise.id === id) || null;
+      };
+
       const templateDayLabel = (index) => {
         const daysPerWeek = templateDayCount.value || dayCodeOptions.length;
         const week = Math.floor(index / daysPerWeek) + 1;
@@ -1087,11 +1106,26 @@ import {
           (dayRows || []).forEach((row, dayIndex) => {
             const slots = programTemplateDays.value?.[dayIndex]?.slots || [];
             slots.forEach((slot, slotIndex) => {
-              const exercise = (slot.exercise || '').trim();
-              if (!exercise) return;
-              const resolved = resolveExerciseReference(exercise);
+              const exerciseId = (slot.exercise_id || '').trim();
+              const exerciseName = (slot.exercise || '').trim();
+              if (!exerciseId && !exerciseName) return;
+              let resolved = null;
+              if (exerciseId) {
+                const record = getExerciseById(exerciseId);
+                if (record) {
+                  resolved = {
+                    id: record.id,
+                    name: record.name || record.slug || '',
+                  };
+                } else {
+                  unresolvedExercises.add(exerciseId);
+                  return;
+                }
+              } else {
+                resolved = resolveExerciseReference(exerciseName);
+              }
               if (!resolved) {
-                unresolvedExercises.add(exercise);
+                unresolvedExercises.add(exerciseName || exerciseId);
                 return;
               }
               exercisePayloads.push({
@@ -1103,7 +1137,7 @@ import {
                   slot.duration_minutes === undefined
                     ? null
                     : slot.duration_minutes,
-                exercise: resolved.name,
+                exercise: resolved.name || exerciseName,
                 exercise_id: resolved.id,
               });
             });
@@ -3132,6 +3166,7 @@ import {
         dayCodeLabel,
         planStatusLabel,
         templateDayLabel,
+        resolveTemplateSlotName,
         selectTemplateDay,
         selectTemplateSlot,
         incrementTemplateDayCount,
