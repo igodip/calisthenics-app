@@ -591,6 +591,10 @@
                                     <strong>{{ current.displayName || shortId(current.id) }}</strong>
                                 </div>
                                 <div class="data-row">
+                                    <span class="muted small">{{ t('labels.weight') }}</span>
+                                    <span>{{ formatWeight(current.weight) }}</span>
+                                </div>
+                                <div class="data-row">
                                     <span class="muted small">{{ t('labels.id') }}</span>
                                     <span class="mono">{{ current.id }}</span>
                                 </div>

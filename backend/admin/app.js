@@ -744,6 +744,16 @@ import {
         return Number.isInteger(numeric) ? numeric.toFixed(0) : numeric.toFixed(1);
       };
 
+      const formatWeight = (value) => {
+        if (value === null || value === undefined || value === '') return '—';
+        const numeric = Number(value);
+        if (Number.isNaN(numeric)) return `${value} kg`;
+        const formatted = Number.isInteger(numeric)
+          ? numeric.toFixed(0)
+          : numeric.toFixed(1);
+        return `${formatted} kg`;
+      };
+
       const formatAmount = (value) => {
         if (value === null || value === undefined || value === '') return '';
         const numeric = Number(value);
@@ -1708,13 +1718,13 @@ import {
       async function loadUsers() {
         const isTrainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
         const baseSelect =
-          'id, name, trainee_trainers ( trainer_id, trainers ( id, name ) , coach_tip, trainer_notes )';
+          'id, name, weight, trainee_trainers ( trainer_id, trainers ( id, name ) , coach_tip, trainer_notes )';
         let query = supabase.from('trainees').select(baseSelect);
         if (isTrainerOnly) {
           query = supabase
             .from('trainees')
             .select(
-              'id, name, trainee_trainers!inner ( trainer_id, trainers ( id, name ), coach_tip, trainer_notes )',
+              'id, name, weight, trainee_trainers!inner ( trainer_id, trainers ( id, name ), coach_tip, trainer_notes )',
             )
             .eq('trainee_trainers.trainer_id', currentTrainer.value.id);
         }
@@ -3206,6 +3216,7 @@ import {
         progressFor,
         weekStatusFor,
         formatTestValue,
+        formatWeight,
         formatDate,
         formatTime,
         formatAmount,
