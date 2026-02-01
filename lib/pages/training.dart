@@ -10,7 +10,6 @@ import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 import '../model/terminology_entry.dart';
 import 'main.dart';
-import 'exercise_guides.dart';
 
 class Training extends StatefulWidget {
   final WorkoutDay day;
@@ -449,9 +448,12 @@ class _TrainingState extends State<Training> {
   }
 
   void _openExerciseGuide(WorkoutExercise exercise) {
+    final l10n = AppLocalizations.of(context)!;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ExerciseGuidesPage(
+        builder: (context) => HomePage(
+          title: l10n.appTitle,
+          initialIndex: HomePage.guidesIndex,
           initialGuideSlug: exercise.exerciseSlug,
           initialGuideId: exercise.exerciseId,
         ),
