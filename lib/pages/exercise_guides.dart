@@ -129,10 +129,11 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
         _newlyUnlockedSkills.add(guide.id);
       });
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _unlockingSkills.remove(guide.id);
-      });
+      if (mounted) {
+        setState(() {
+          _unlockingSkills.remove(guide.id);
+        });
+      }
     }
   }
 
