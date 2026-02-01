@@ -9,7 +9,7 @@ import '../data/terminology_repository.dart';
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 import '../model/terminology_entry.dart';
-import 'terminology.dart';
+import 'main.dart';
 import 'exercise_guides.dart';
 
 class Training extends StatefulWidget {
@@ -518,9 +518,14 @@ class _TrainingState extends State<Training> {
   }
 
   void _openTerminologyTerm(String termKey) {
+    final l10n = AppLocalizations.of(context)!;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => TerminologyPage(termKey: termKey),
+        builder: (context) => HomePage(
+          title: l10n.appTitle,
+          initialIndex: HomePage.terminologyIndex,
+          initialTerminologyTermKey: termKey,
+        ),
       ),
     );
   }
