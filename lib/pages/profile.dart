@@ -5,6 +5,7 @@ import 'package:calisync/model/trainee.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
@@ -13,6 +14,27 @@ import 'login.dart';
 import 'settings.dart';
 
 final supabase = Supabase.instance.client;
+
+class ProfileImageCache {
+  static const String _baseKey = 'cached_profile_image_url';
+
+  static Future<String?> loadForUser(String userId) async {
+    final preferences = await SharedPreferences.getInstance();
+    final cached = preferences.getString('$_baseKey:$userId');
+    return cached?.trim().isEmpty ?? true ? null : cached;
+  }
+
+  static Future<void> saveForUser(String userId, String? imageUrl) async {
+    final preferences = await SharedPreferences.getInstance();
+    final key = '$_baseKey:$userId';
+    final trimmed = imageUrl?.trim();
+    if (trimmed == null || trimmed.isEmpty) {
+      await preferences.remove(key);
+      return;
+    }
+    await preferences.setString(key, trimmed);
+  }
+}
 
 class UserProfileData {
   const UserProfileData({
@@ -72,7 +94,16 @@ Future<UserProfileData> getUserData() async {
     throw Exception('user-not-found');
   }
 
-  final profile = Trainee.fromMap(profileResponse);
+  var profile = Trainee.fromMap(profileResponse);
+  final profileImageUrl = profile.profileImageUrl?.trim();
+  if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
+    await ProfileImageCache.saveForUser(user.id, profileImageUrl);
+  } else {
+    final cachedImageUrl = await ProfileImageCache.loadForUser(user.id);
+    if (cachedImageUrl != null && cachedImageUrl.isNotEmpty) {
+      profile = profile.copyWith(profileImageUrl: cachedImageUrl);
+    }
+  }
   final name = profile.name ??
       (user.email != null ? user.email!.split('@').first : '');
 
@@ -522,6 +553,7 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
 
     try {
       await supabase.from('trainees').update(updates).eq('id', widget.data.userId);
+      await ProfileImageCache.saveForUser(widget.data.userId, imageUrl);
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (error) {
