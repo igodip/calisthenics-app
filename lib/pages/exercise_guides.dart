@@ -296,17 +296,20 @@ class _DifficultySelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Wrap(
-      spacing: 10,
-      runSpacing: 8,
-      children: Difficulty.values.map((difficulty) {
-        return ChoiceChip(
-          label: Text(difficulty.label(l10n)),
-          selected: selected == difficulty,
-          selectedColor: theme.colorScheme.primaryContainer,
-          onSelected: (_) => onChanged(difficulty),
-        );
-      }).toList(),
+    return Material(
+      type: MaterialType.transparency,
+      child: Wrap(
+        spacing: 10,
+        runSpacing: 8,
+        children: Difficulty.values.map((difficulty) {
+          return ChoiceChip(
+            label: Text(difficulty.label(l10n)),
+            selected: selected == difficulty,
+            selectedColor: theme.colorScheme.primaryContainer,
+            onSelected: (_) => onChanged(difficulty),
+          );
+        }).toList(),
+      ),
     );
   }
 }
