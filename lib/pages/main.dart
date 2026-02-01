@@ -33,12 +33,17 @@ class HomePage extends StatefulWidget {
     required this.title,
     this.initialIndex = 0,
     this.initialTerminologyTermKey,
+    this.initialGuideSlug,
+    this.initialGuideId,
   });
   final String title;
   final int initialIndex;
   final String? initialTerminologyTermKey;
+  final String? initialGuideSlug;
+  final String? initialGuideId;
 
   static const int terminologyIndex = 6;
+  static const int guidesIndex = 2;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -101,7 +106,10 @@ class _HomePageState extends State<HomePage> {
       _NavigationItem(
         title: l10n.navGuides,
         icon: Icons.fitness_center,
-        page: const ExerciseGuidesPage(),
+        page: ExerciseGuidesPage(
+          initialGuideSlug: widget.initialGuideSlug,
+          initialGuideId: widget.initialGuideId,
+        ),
       ),
       _NavigationItem(
         title: l10n.navProfile,
