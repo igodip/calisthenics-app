@@ -236,7 +236,7 @@
                             :viewBox="`0 0 ${dashboardBurndown.chartWidth} ${dashboardBurndown.chartHeight}`"
                         >
                             <polyline
-                                v-for="line in dashboardBurndown.lines"
+                                v-for="line in visibleBurndownLines"
                                 :key="line.traineeId"
                                 :points="line.polyline"
                                 :stroke="line.color"
@@ -246,8 +246,21 @@
                                 stroke-linejoin="round"
                             />
                         </svg>
+                        <div class="burndown-axis-label burndown-axis-label-y">
+                            {{ t('dashboard.burndownYAxis') }}
+                        </div>
+                        <div class="burndown-axis-label burndown-axis-label-x">
+                            {{ t('dashboard.burndownXAxis') }}
+                        </div>
                         <div class="burndown-legend">
-                            <div class="burndown-legend-item" v-for="line in dashboardBurndown.lines" :key="line.traineeId">
+                            <button
+                                class="burndown-legend-item"
+                                :class="{ active: isBurndownTraineeSelected(line.traineeId) }"
+                                v-for="line in dashboardBurndown.lines"
+                                :key="line.traineeId"
+                                type="button"
+                                @click="toggleBurndownTraineeSelection(line.traineeId)"
+                            >
                                 <span class="burndown-legend-swatch" :style="{ backgroundColor: line.color }"></span>
                                 <div>
                                     <strong>{{ line.traineeName }}</strong>
@@ -255,7 +268,7 @@
                                         {{ t('dashboard.burndownRemaining', { remaining: line.latestRemaining, total: line.total }) }}
                                     </div>
                                 </div>
-                            </div>
+                            </button>
                         </div>
                     </div>
                 </div>
