@@ -28,17 +28,27 @@ class _NavigationItem {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
+  const HomePage({
+    super.key,
+    required this.title,
+    this.initialIndex = 0,
+    this.initialTerminologyTermKey,
+  });
   final String title;
+  final int initialIndex;
+  final String? initialTerminologyTermKey;
+
+  static const int terminologyIndex = 6;
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  int selectedIndex = 0;
+  late int selectedIndex;
   bool? payed;
   String? _cachedLocale;
+  String? _terminologyTermKey;
 
   final supabase = Supabase.instance.client;
   static const int _workoutPlanIndex = 1;
@@ -47,6 +57,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    selectedIndex = widget.initialIndex;
+    _terminologyTermKey = widget.initialTerminologyTermKey;
   }
 
   @override
@@ -108,7 +120,7 @@ class _HomePageState extends State<HomePage> {
       _NavigationItem(
         title: l10n.navTerminology,
         icon: Icons.menu_book,
-        page: const TerminologyPage(),
+        page: TerminologyPage(termKey: _terminologyTermKey),
       ),
       _NavigationItem(
         title: l10n.timerTitle,
