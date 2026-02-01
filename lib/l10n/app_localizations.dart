@@ -868,6 +868,12 @@ abstract class AppLocalizations {
   /// **'Contatta il tuo coach per ricevere una nuova scheda.'**
   String get homeEmptyDescription;
 
+  /// No description provided for @homeLatePaymentDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Il pagamento è in scadenza. Effettualo per mantenere attivo il tuo piano.'**
+  String get homeLatePaymentDescription;
+
   /// No description provided for @homePlansSectionTitle.
   ///
   /// In it, this message translates to:

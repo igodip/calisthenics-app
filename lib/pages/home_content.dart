@@ -145,7 +145,7 @@ class _HomeContentState extends State<HomeContent> {
                   children: [
                     _LatePaymentCard(
                       title: l10n.profilePlanExpired,
-                      description: l10n.homeEmptyDescription,
+                      description: l10n.homeLatePaymentDescription,
                     ),
                     const SizedBox(height: 16),
                   ],
