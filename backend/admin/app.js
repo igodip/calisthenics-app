@@ -47,6 +47,7 @@ import {
       });
       const session = ref(null);
       const user = ref(null);
+      const hasBootstrapped = ref(false);
       const email = ref('');
       const password = ref('');
       const search = ref('');
@@ -1305,6 +1306,7 @@ import {
           await loadPaymentHistory(users.value[0]);
           await loadCompletedExercises(users.value[0]);
         }
+        hasBootstrapped.value = true;
       }
 
       async function loadAccess() {
@@ -3119,10 +3121,18 @@ import {
         user.value = sess?.user || null;
         if (session.value) await bootstrap();
 
-        supabase.auth.onAuthStateChange((_e, s) => {
+        supabase.auth.onAuthStateChange((event, s) => {
           session.value = s;
           user.value = s?.user || null;
-          if (s) bootstrap();
+          if (!s) return;
+          if (
+            !hasBootstrapped.value ||
+            event === 'SIGNED_IN' ||
+            event === 'USER_UPDATED' ||
+            event === 'PASSWORD_RECOVERY'
+          ) {
+            void bootstrap();
+          }
         });
       });
 
