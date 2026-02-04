@@ -605,6 +605,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get profileHeight => 'Height';
+
+  @override
+  String profileHeightValue(String height) {
+    return '$height cm';
+  }
+
+  @override
   String get profileMaxTestsTitle => 'Max test tracking';
 
   @override
@@ -782,6 +790,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileEditWeightInvalid => 'Enter a valid positive weight.';
+
+  @override
+  String get profileEditHeightLabel => 'Height';
+
+  @override
+  String get profileEditHeightHint => 'Enter your height in cm (optional)';
+
+  @override
+  String get profileEditHeightInvalid => 'Enter a valid positive height.';
 
   @override
   String get profilePhotoEdit => 'Change photo';

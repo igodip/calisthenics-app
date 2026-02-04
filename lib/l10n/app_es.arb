@@ -252,6 +252,15 @@
       }
     }
   },
+  "profileHeight": "Altura",
+  "profileHeightValue": "{height} cm",
+  "@profileHeightValue": {
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
   "profileMaxTestsTitle": "Seguimiento de pruebas máximas",
   "profileMaxTestsDescription": "Registra tus mejores intentos para ver cómo evoluciona tu fuerza con el tiempo.",
   "profileMaxTestsPeriodLabel": "Período",
@@ -354,6 +363,9 @@
   "profileEditWeightLabel": "Peso",
   "profileEditWeightHint": "Introduce tu peso en kg (opcional)",
   "profileEditWeightInvalid": "Introduce un peso positivo válido.",
+  "profileEditHeightLabel": "Altura",
+  "profileEditHeightHint": "Introduce tu altura en cm (opcional)",
+  "profileEditHeightInvalid": "Introduce una altura positiva válida.",
   "profilePhotoEdit": "Cambiar foto",
   "profileEditCancel": "Cancelar",
   "profileEditSave": "Guardar cambios",
