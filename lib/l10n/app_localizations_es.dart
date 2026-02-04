@@ -805,7 +805,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileEditHeightHint => 'Introduce tu altura en cm (opcional)';
 
   @override
-  String get profileEditHeightInvalid => 'Introduce una altura positiva válida.';
+  String get profileEditHeightInvalid =>
+      'Introduce una altura positiva válida.';
 
   @override
   String get profilePhotoEdit => 'Cambiar foto';

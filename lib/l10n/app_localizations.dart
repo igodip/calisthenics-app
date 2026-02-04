@@ -1507,7 +1507,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileEditHeightInvalid.
   ///
   /// In it, this message translates to:
-  /// **\"Inserisci un'altezza valida e positiva.\"**
+  /// **'Inserisci un\'altezza valida e positiva.'**
   String get profileEditHeightInvalid;
 
   /// No description provided for @profilePhotoEdit.

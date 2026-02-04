@@ -803,10 +803,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileEditHeightLabel => 'Altezza';
 
   @override
-  String get profileEditHeightHint => 'Inserisci la tua altezza in cm (opzionale)';
+  String get profileEditHeightHint =>
+      'Inserisci la tua altezza in cm (opzionale)';
 
   @override
-  String get profileEditHeightInvalid => 'Inserisci un\'altezza valida e positiva.';
+  String get profileEditHeightInvalid =>
+      'Inserisci un\'altezza valida e positiva.';
 
   @override
   String get profilePhotoEdit => 'Cambia foto';
