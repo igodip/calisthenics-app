@@ -3,12 +3,14 @@ class Trainee {
   final String id;
   final String? name;
   final double? weight;
+  final double? height;
   final String? profileImageUrl;
 
   const Trainee({
     required this.id,
     this.name,
     this.weight,
+    this.height,
     this.profileImageUrl,
   });
 
@@ -17,6 +19,7 @@ class Trainee {
       id: map['id'] as String,
       name: map['name'] as String?,
       weight: (map['weight'] as num?)?.toDouble(),
+      height: (map['height'] as num?)?.toDouble(),
       profileImageUrl: map['profile_image_url'] as String?,
     );
   }
@@ -26,6 +29,7 @@ class Trainee {
       'id': id,
       'name': name,
       'weight': weight,
+      'height': height,
       'profile_image_url': profileImageUrl,
     };
   }
@@ -34,12 +38,14 @@ class Trainee {
     String? id,
     String? name,
     double? weight,
+    double? height,
     String? profileImageUrl,
   }) {
     return Trainee(
       id: id ?? this.id,
       name: name ?? this.name,
       weight: weight ?? this.weight,
+      height: height ?? this.height,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
     );
   }
@@ -49,6 +55,7 @@ class Trainee {
         'id': id,
         'name': name,
         'weight': weight,
+        'height': height,
         'profileImageUrl': profileImageUrl,
       }})';
 
@@ -60,6 +67,7 @@ class Trainee {
       id == other.id &&
       name == other.name &&
       weight == other.weight &&
+      height == other.height &&
       profileImageUrl == other.profileImageUrl;
 
   @override
@@ -68,6 +76,7 @@ class Trainee {
         id,
         name,
         weight,
+        height,
         profileImageUrl,
       ]);
 }

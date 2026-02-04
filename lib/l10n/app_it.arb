@@ -252,6 +252,15 @@
       }
     }
   },
+  "profileHeight": "Altezza",
+  "profileHeightValue": "{height} cm",
+  "@profileHeightValue": {
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
   "profileMaxTestsTitle": "Test massimali",
   "profileMaxTestsDescription": "Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.",
   "profileMaxTestsPeriodLabel": "Periodo",
@@ -354,6 +363,9 @@
   "profileEditWeightLabel": "Peso",
   "profileEditWeightHint": "Inserisci il tuo peso in kg (opzionale)",
   "profileEditWeightInvalid": "Inserisci un peso valido e positivo.",
+  "profileEditHeightLabel": "Altezza",
+  "profileEditHeightHint": "Inserisci la tua altezza in cm (opzionale)",
+  "profileEditHeightInvalid": "Inserisci un'altezza valida e positiva.",
   "profilePhotoEdit": "Cambia foto",
   "profileEditCancel": "Annulla",
   "profileEditSave": "Salva modifiche",

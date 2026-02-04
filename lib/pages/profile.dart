@@ -85,7 +85,7 @@ Future<UserProfileData> getUserData() async {
 
   final profileResponse = await supabase
       .from('trainees')
-      .select('id, name, weight, profile_image_url')
+      .select('id, name, weight, height, profile_image_url')
       .eq('id', user.id)
       .limit(1)
       .maybeSingle();
@@ -313,6 +313,10 @@ class _ProfilePageState extends State<ProfilePage> {
             final weightText = weight != null
                 ? l10n.profileWeightValue(weight.toStringAsFixed(1))
                 : l10n.profileNotSet;
+            final height = data.profile?.height;
+            final heightText = height != null
+                ? l10n.profileHeightValue(height.toStringAsFixed(1))
+                : l10n.profileNotSet;
             final profileImageUrl = data.profile?.profileImageUrl;
             final localeController = LocaleControllerScope.of(context);
             final currentLanguageLabel =
@@ -397,6 +401,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           title: Text(l10n.profileWeight),
                           subtitle: Text(weightText),
                         ),
+                        const Divider(height: 0),
+                        ListTile(
+                          leading: const Icon(Icons.height),
+                          title: Text(l10n.profileHeight),
+                          subtitle: Text(heightText),
+                        ),
                       ],
                     ),
                   ),
@@ -467,6 +477,7 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _fullNameController;
   late final TextEditingController _weightController;
+  late final TextEditingController _heightController;
   final ImagePicker _imagePicker = ImagePicker();
   Uint8List? _selectedImageBytes;
   String? _selectedImageName;
@@ -479,6 +490,8 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     _fullNameController = TextEditingController(text: widget.data.profile?.name ?? '');
     final weight = widget.data.profile?.weight;
     _weightController = TextEditingController(text: weight != null ? '$weight' : '');
+    final height = widget.data.profile?.height;
+    _heightController = TextEditingController(text: height != null ? '$height' : '');
     _selectedImageUrl = widget.data.profile?.profileImageUrl;
   }
 
@@ -486,6 +499,7 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
   void dispose() {
     _fullNameController.dispose();
     _weightController.dispose();
+    _heightController.dispose();
     super.dispose();
   }
 
@@ -529,6 +543,8 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     final fullName = _fullNameController.text.trim();
     final weightText = _weightController.text.trim().replaceAll(',', '.');
     final weightValue = weightText.isEmpty ? null : double.tryParse(weightText);
+    final heightText = _heightController.text.trim().replaceAll(',', '.');
+    final heightValue = heightText.isEmpty ? null : double.tryParse(heightText);
     String? imageUrl;
 
     try {
@@ -548,6 +564,7 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     final updates = <String, dynamic>{
       'name': fullName.isEmpty ? null : fullName,
       'weight': weightValue,
+      'height': heightValue,
       'profile_image_url': imageUrl,
     };
 
@@ -660,6 +677,27 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
                     final parsed = double.tryParse(text.replaceAll(',', '.'));
                     if (parsed == null || parsed <= 0) {
                       return l10n.profileEditWeightInvalid;
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _heightController,
+                  decoration: InputDecoration(
+                    labelText: l10n.profileEditHeightLabel,
+                    hintText: l10n.profileEditHeightHint,
+                  ),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true, signed: false),
+                  validator: (value) {
+                    final text = value?.trim();
+                    if (text == null || text.isEmpty) {
+                      return null;
+                    }
+                    final parsed = double.tryParse(text.replaceAll(',', '.'));
+                    if (parsed == null || parsed <= 0) {
+                      return l10n.profileEditHeightInvalid;
                     }
                     return null;
                   },

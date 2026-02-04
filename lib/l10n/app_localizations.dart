@@ -1162,6 +1162,18 @@ abstract class AppLocalizations {
   /// **'{weight} kg'**
   String profileWeightValue(String weight);
 
+  /// No description provided for @profileHeight.
+  ///
+  /// In it, this message translates to:
+  /// **'Altezza'**
+  String get profileHeight;
+
+  /// No description provided for @profileHeightValue.
+  ///
+  /// In it, this message translates to:
+  /// **'{height} cm'**
+  String profileHeightValue(String height);
+
   /// No description provided for @profileMaxTestsTitle.
   ///
   /// In it, this message translates to:
@@ -1479,6 +1491,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Inserisci un peso valido e positivo.'**
   String get profileEditWeightInvalid;
+
+  /// No description provided for @profileEditHeightLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Altezza'**
+  String get profileEditHeightLabel;
+
+  /// No description provided for @profileEditHeightHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci la tua altezza in cm (opzionale)'**
+  String get profileEditHeightHint;
+
+  /// No description provided for @profileEditHeightInvalid.
+  ///
+  /// In it, this message translates to:
+  /// **\"Inserisci un'altezza valida e positiva.\"**
+  String get profileEditHeightInvalid;
 
   /// No description provided for @profilePhotoEdit.
   ///

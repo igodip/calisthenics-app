@@ -118,6 +118,7 @@ CREATE TABLE public.trainees (
   name text NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   weight numeric,
+  height numeric,
   profile_image_url text,
   CONSTRAINT trainees_pkey PRIMARY KEY (id),
   CONSTRAINT trainees_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
