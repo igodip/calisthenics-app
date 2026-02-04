@@ -1430,6 +1430,7 @@ import {
         try {
           let data = [];
           let error = null;
+          let context = 'all';
           if (u?.id) {
             const response = await supabase
               .from('trainee_exercise_unlocks')
@@ -1444,7 +1445,22 @@ import {
               .order('name', { ascending: true, referencedTable: 'exercises' });
             data = response.data;
             error = response.error;
+            if (!error) {
+              exercises.value = (data || [])
+                .map((row) => row.exercises)
+                .filter(Boolean);
+              context = 'trainee';
+            }
           } else {
+            const response = await supabase
+              .from('exercises')
+              .select('id, slug, name, difficulty, sort_order, created_at')
+              .order('sort_order', { ascending: true })
+              .order('name', { ascending: true });
+            data = response.data;
+            error = response.error;
+          }
+          if (error && u?.id) {
             const response = await supabase
               .from('exercises')
               .select('id, slug, name, difficulty, sort_order, created_at')
@@ -1456,15 +1472,10 @@ import {
           if (error) {
             throw new Error(t('errors.loadExercises', { message: error.message }));
           }
-          if (u?.id) {
-            exercises.value = (data || [])
-              .map((row) => row.exercises)
-              .filter(Boolean);
-            exercisesContext.value = 'trainee';
-          } else {
+          if (context === 'all') {
             exercises.value = data || [];
-            exercisesContext.value = 'all';
           }
+          exercisesContext.value = context;
           exerciseEdits.value = {};
           (exercises.value || []).forEach(setExerciseEdit);
         } catch (error) {
