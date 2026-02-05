@@ -2563,6 +2563,7 @@ import {
             .from('trainee_feedbacks')
             .select('id, message, created_at, read_at, trainee_id, trainees ( name )')
             .order(orderColumn, { ascending: false })
+            .is('read_at',null)
             .limit(8);
         try {
           const trainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
