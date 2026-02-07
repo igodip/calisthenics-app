@@ -17,6 +17,7 @@ export const translations = {
     },
     sections: {
       dashboard: 'Overview',
+      feedback: 'Feedback',
       trainees: 'Trainees',
       payments: 'Payments',
       program: 'Program',
@@ -46,6 +47,8 @@ export const translations = {
       collapse: 'Collapse',
       expand: 'Expand',
       closeFeedback: 'Close feedback',
+      markRead: 'Mark read',
+      markUnread: 'Mark unread',
     },
     labels: {
       totalCount: '{count} total',
@@ -63,6 +66,7 @@ export const translations = {
       id: 'ID',
       status: 'Status',
       createdAt: 'Created at',
+      readAt: 'Read at',
       slug: 'Slug',
       difficulty: 'Difficulty',
       sortOrder: 'Sort order',
@@ -119,6 +123,15 @@ export const translations = {
       burndownRemaining: '{remaining} of {total} exercises remaining',
       burndownXAxis: '30 days',
       burndownYAxis: 'Exercises left',
+    },
+    feedback: {
+      title: 'Feedback management',
+      subtitle: 'Review every trainee note, including messages already marked as seen.',
+      loading: 'Loading feedback…',
+      empty: 'No feedback available.',
+      filterAll: 'All',
+      filterUnread: 'Unread',
+      filterRead: 'Read',
     },
     crud: {
       title: 'CRUD terminology',
@@ -382,6 +395,7 @@ export const translations = {
     },
     sections: {
       dashboard: 'Panoramica',
+      feedback: 'Feedback',
       trainees: 'Allievi',
       payments: 'Pagamenti',
       program: 'Programma',
@@ -411,6 +425,8 @@ export const translations = {
       collapse: 'Comprimi',
       expand: 'Espandi',
       closeFeedback: 'Chiudi feedback',
+      markRead: 'Segna letto',
+      markUnread: 'Segna non letto',
     },
     labels: {
       totalCount: '{count} totali',
@@ -428,6 +444,7 @@ export const translations = {
       id: 'ID',
       status: 'Stato',
       createdAt: 'Creato il',
+      readAt: 'Letto il',
       slug: 'Slug',
       difficulty: 'Difficoltà',
       sortOrder: 'Ordine',
@@ -485,6 +502,15 @@ export const translations = {
       burndownRemaining: '{remaining} di {total} esercizi rimanenti',
       burndownXAxis: '30 giorni',
       burndownYAxis: 'Esercizi rimanenti',
+    },
+    feedback: {
+      title: 'Gestione feedback',
+      subtitle: 'Rivedi tutte le note degli allievi, anche quelle già viste.',
+      loading: 'Caricamento feedback…',
+      empty: 'Nessun feedback disponibile.',
+      filterAll: 'Tutti',
+      filterUnread: 'Non letti',
+      filterRead: 'Letti',
     },
     crud: {
       title: 'Terminologia CRUD',

@@ -43,6 +43,10 @@ import {
         updateDocumentLanguage();
         if (session.value) {
           await loadTerminology();
+          await loadDashboardNotes();
+          if (feedbackEntries.value.length) {
+            await loadFeedbackEntries();
+          }
         }
       });
       const session = ref(null);
@@ -130,6 +134,11 @@ import {
       const dashboardNotesLoading = ref(false);
       const dashboardNotesError = ref('');
       const dashboardNoteClosing = ref({});
+      const feedbackEntries = ref([]);
+      const feedbackLoading = ref(false);
+      const feedbackError = ref('');
+      const feedbackFilter = ref('all');
+      const feedbackUpdateSaving = ref({});
       const dashboardBurndown = ref({
         chartWidth: 760,
         chartHeight: 240,
@@ -204,9 +213,14 @@ import {
         await loadTemplatePlan(nextId);
       });
       watch(activeSection, async (nextSection) => {
-        if (nextSection !== 'exercises') return;
-        if (exercisesContext.value === 'all' || loadingExercises.value) return;
-        await loadExercises(null);
+        if (nextSection === 'exercises') {
+          if (exercisesContext.value === 'all' || loadingExercises.value) return;
+          await loadExercises(null);
+        }
+        if (nextSection === 'feedback') {
+          if (feedbackLoading.value || feedbackEntries.value.length) return;
+          await loadFeedbackEntries();
+        }
       });
 
       function buildTemplateDays(count, slots, existing) {
@@ -803,6 +817,31 @@ import {
           minute: '2-digit',
         });
       };
+
+      const formatDateTime = (value) => {
+        if (!value) return '';
+        const date = formatDate(value);
+        const time = formatTime(value);
+        return time ? `${date} ${time}` : date;
+      };
+
+      const feedbackFilterOptions = computed(() => [
+        { value: 'all', label: t('feedback.filterAll') },
+        { value: 'unread', label: t('feedback.filterUnread') },
+        { value: 'read', label: t('feedback.filterRead') },
+      ]);
+
+      const filteredFeedbackEntries = computed(() => {
+        const entries = feedbackEntries.value || [];
+        const filter = feedbackFilter.value;
+        if (filter === 'read') {
+          return entries.filter((entry) => entry.readAt);
+        }
+        if (filter === 'unread') {
+          return entries.filter((entry) => !entry.readAt);
+        }
+        return entries;
+      });
 
       const parseCompletedAt = (value) => {
         if (!value) return null;
@@ -2636,6 +2675,112 @@ import {
         }
       }
 
+      async function loadFeedbackEntries() {
+        feedbackLoading.value = true;
+        feedbackError.value = '';
+        const fetchNotes = (orderColumn) =>
+          supabase
+            .from('trainee_feedbacks')
+            .select('id, message, created_at, read_at, trainee_id, trainees ( name )')
+            .order(orderColumn, { ascending: false })
+            .limit(200);
+        try {
+          const trainerOnly = Boolean(currentTrainer.value && !currentAdmin.value);
+          const visibleIds = trainerOnly
+            ? (users.value || []).map((u) => u.id).filter(Boolean)
+            : [];
+          if (trainerOnly && !visibleIds.length) {
+            feedbackEntries.value = [];
+            return;
+          }
+          const applyFilter = (query) =>
+            trainerOnly ? query.in('trainee_id', visibleIds) : query;
+          let { data, error } = await applyFilter(fetchNotes('created_at'));
+          if (error) {
+            const fallback = await applyFilter(fetchNotes('id'));
+            data = fallback.data;
+            error = fallback.error;
+          }
+          if (error) {
+            throw new Error(t('errors.loadDays', { message: error.message }));
+          }
+          feedbackEntries.value = (data || []).map((row) => ({
+            id: row.id,
+            message: row.message || '',
+            traineeName: row.trainees?.name || shortId(row.trainee_id),
+            statusLabel: row.read_at
+              ? t('dashboard.feedbackRead')
+              : t('dashboard.feedbackUnread'),
+            createdAt: row.created_at || null,
+            readAt: row.read_at || null,
+            createdLabel: row.created_at ? formatDateTime(row.created_at) : '',
+            readLabel: row.read_at ? formatDateTime(row.read_at) : '',
+          }));
+        } catch (err) {
+          console.error(err);
+          feedbackEntries.value = [];
+          feedbackError.value = err.message || t('errors.loadDays');
+        } finally {
+          feedbackLoading.value = false;
+        }
+      }
+
+      async function setFeedbackRead(note, shouldRead) {
+        if (!note?.id) return;
+        if (feedbackUpdateSaving.value[note.id]) return;
+        feedbackUpdateSaving.value = {
+          ...feedbackUpdateSaving.value,
+          [note.id]: true,
+        };
+        try {
+          const nextReadAt = shouldRead ? new Date().toISOString() : null;
+          const { error } = await supabase
+            .from('trainee_feedbacks')
+            .update({ read_at: nextReadAt })
+            .eq('id', note.id);
+          if (error) {
+            throw new Error(error.message);
+          }
+          feedbackEntries.value = (feedbackEntries.value || []).map((entry) => {
+            if (entry.id !== note.id) return entry;
+            return {
+              ...entry,
+              readAt: nextReadAt,
+              readLabel: nextReadAt ? formatDateTime(nextReadAt) : '',
+              statusLabel: nextReadAt
+                ? t('dashboard.feedbackRead')
+                : t('dashboard.feedbackUnread'),
+            };
+          });
+          if (shouldRead) {
+            dashboardNotes.value = (dashboardNotes.value || []).filter(
+              (item) => item.id !== note.id,
+            );
+          } else if (
+            !dashboardNotes.value.find((item) => item.id === note.id)
+          ) {
+            dashboardNotes.value = [
+              {
+                id: note.id,
+                message: note.message,
+                traineeName: note.traineeName,
+                statusLabel: t('dashboard.feedbackUnread'),
+                dateLabel: note.createdAt ? formatDate(note.createdAt) : '',
+              },
+              ...(dashboardNotes.value || []),
+            ];
+          }
+        } catch (err) {
+          console.error(err);
+          alert(err.message || t('errors.updateFeedback'));
+        } finally {
+          feedbackUpdateSaving.value = {
+            ...feedbackUpdateSaving.value,
+            [note.id]: false,
+          };
+        }
+      }
+
       function toggleBurndownTraineeSelection(traineeId) {
         if (!traineeId) return;
         const next = new Set(selectedBurndownTrainees.value);
@@ -3246,6 +3391,13 @@ import {
         dashboardNotesLoading,
         dashboardNotesError,
         dashboardNoteClosing,
+        feedbackEntries,
+        feedbackLoading,
+        feedbackError,
+        feedbackFilter,
+        feedbackFilterOptions,
+        filteredFeedbackEntries,
+        feedbackUpdateSaving,
         dashboardBurndown,
         visibleBurndownLines,
         dashboardBurndownLoading,
@@ -3276,6 +3428,7 @@ import {
         formatWeight,
         formatDate,
         formatTime,
+        formatDateTime,
         formatAmount,
         formatCount,
         dayCodeLabel,
@@ -3299,6 +3452,8 @@ import {
         loadCompletedExercises,
         loadDashboardNotes,
         closeDashboardNote,
+        loadFeedbackEntries,
+        setFeedbackRead,
         toggleBurndownTraineeSelection,
         isBurndownTraineeSelected,
         addPlan,
