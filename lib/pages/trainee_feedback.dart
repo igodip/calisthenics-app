@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
-import 'training.dart' show FeedbackFeelingCard, FeelingOption;
 
 class TraineeFeedbackPage extends StatefulWidget {
   const TraineeFeedbackPage({super.key});
@@ -62,17 +61,6 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
               hintText: l10n.traineeFeedbackQuestionHint,
               controller: _feedbackController,
               minLines: 4,
-            ),
-            const SizedBox(height: 12),
-            FeedbackFeelingCard(
-              label: l10n.traineeFeedbackFeelingLabel,
-              helperText: l10n.traineeFeedbackFeelingHint,
-              selectedFeeling: _selectedFeeling,
-              onSelected: (value) {
-                setState(() {
-                  _selectedFeeling = value;
-                });
-              },
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
@@ -376,7 +364,6 @@ class _FeedbackCard extends StatelessWidget {
     final theme = Theme.of(context);
     final dateText = DateFormat.yMMMd(l10n.localeName).format(feedback.createdAt);
     final isRead = feedback.readAt != null;
-    final feelingOption = FeelingOption.fromValue(feedback.feeling);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -389,13 +376,6 @@ class _FeedbackCard extends StatelessWidget {
               feedback.message,
               style: theme.textTheme.bodyLarge,
             ),
-            if (feelingOption != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                '${l10n.traineeFeedbackFeelingLabel}: ${feelingOption.emoji} ${feelingOption.localizedLabel(l10n)}',
-                style: theme.textTheme.bodyMedium,
-              ),
-            ],
             const SizedBox(height: 12),
             Row(
               children: [

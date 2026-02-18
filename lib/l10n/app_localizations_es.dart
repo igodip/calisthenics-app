@@ -402,10 +402,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get traineeFeedbackFeelingLabel => '¿Cómo te sentiste hoy?';
 
   @override
-  String get traineeFeedbackFeelingHint => 'Elige una opción antes de enviar tus comentarios.';
+  String get traineeFeedbackFeelingHint =>
+      'Elige una opción antes de enviar tus comentarios.';
 
   @override
-  String get traineeFeedbackFeelingRequired => 'Por favor, elige cómo te sentiste durante el entrenamiento.';
+  String get traineeFeedbackFeelingRequired =>
+      'Por favor, elige cómo te sentiste durante el entrenamiento.';
 
   @override
   String get traineeFeedbackFeelingVeryBad => 'Muy mal';

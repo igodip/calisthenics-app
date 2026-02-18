@@ -793,13 +793,13 @@ abstract class AppLocalizations {
   /// No description provided for @traineeFeedbackFeelingHint.
   ///
   /// In it, this message translates to:
-  /// **'Scegli un'opzione prima di inviare il feedback.'**
+  /// **'Scegli un\'opzione prima di inviare il feedback.'**
   String get traineeFeedbackFeelingHint;
 
   /// No description provided for @traineeFeedbackFeelingRequired.
   ///
   /// In it, this message translates to:
-  /// **'Seleziona come ti sei sentito durante l'allenamento.'**
+  /// **'Seleziona come ti sei sentito durante l\'allenamento.'**
   String get traineeFeedbackFeelingRequired;
 
   /// No description provided for @traineeFeedbackFeelingVeryBad.
