@@ -898,60 +898,6 @@ abstract class AppLocalizations {
   /// **'Impossibile caricare il feedback in questo momento.'**
   String get traineeFeedbackLoadFailed;
 
-  /// No description provided for @traineeFeedbackAnsweredTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Feedback con risposta'**
-  String get traineeFeedbackAnsweredTitle;
-
-  /// No description provided for @traineeFeedbackAnsweredEmpty.
-  ///
-  /// In it, this message translates to:
-  /// **'Non hai ancora feedback con risposta.'**
-  String get traineeFeedbackAnsweredEmpty;
-
-  /// No description provided for @traineeFeedbackAnsweredChip.
-  ///
-  /// In it, this message translates to:
-  /// **'Risposto'**
-  String get traineeFeedbackAnsweredChip;
-
-  /// No description provided for @traineeFeedbackSentAt.
-  ///
-  /// In it, this message translates to:
-  /// **'Inviato:'**
-  String get traineeFeedbackSentAt;
-
-  /// No description provided for @traineeFeedbackAnsweredAt.
-  ///
-  /// In it, this message translates to:
-  /// **'Risposto:'**
-  String get traineeFeedbackAnsweredAt;
-
-  /// No description provided for @traineeFeedbackTrainerAnswer.
-  ///
-  /// In it, this message translates to:
-  /// **'Risposta del trainer'**
-  String get traineeFeedbackTrainerAnswer;
-
-  /// No description provided for @traineeFeedbackLastAnsweredTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Ultima risposta del trainer'**
-  String get traineeFeedbackLastAnsweredTitle;
-
-  /// No description provided for @traineeFeedbackYourMessage.
-  ///
-  /// In it, this message translates to:
-  /// **'Il tuo messaggio'**
-  String get traineeFeedbackYourMessage;
-
-  /// No description provided for @traineeFeedbackAnsweredAtHome.
-  ///
-  /// In it, this message translates to:
-  /// **'Risposto il'**
-  String get traineeFeedbackAnsweredAtHome;
-
   /// No description provided for @refresh.
   ///
   /// In it, this message translates to:
@@ -2193,6 +2139,60 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Ultima settimana della scheda per prepararsi ai massimali.'**
   String get termScaricoDescription;
+
+  /// No description provided for @traineeFeedbackAnsweredTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback con risposta'**
+  String get traineeFeedbackAnsweredTitle;
+
+  /// No description provided for @traineeFeedbackAnsweredEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Non hai ancora feedback con risposta.'**
+  String get traineeFeedbackAnsweredEmpty;
+
+  /// No description provided for @traineeFeedbackAnsweredChip.
+  ///
+  /// In it, this message translates to:
+  /// **'Risposto'**
+  String get traineeFeedbackAnsweredChip;
+
+  /// No description provided for @traineeFeedbackSentAt.
+  ///
+  /// In it, this message translates to:
+  /// **'Inviato:'**
+  String get traineeFeedbackSentAt;
+
+  /// No description provided for @traineeFeedbackAnsweredAt.
+  ///
+  /// In it, this message translates to:
+  /// **'Risposto:'**
+  String get traineeFeedbackAnsweredAt;
+
+  /// No description provided for @traineeFeedbackTrainerAnswer.
+  ///
+  /// In it, this message translates to:
+  /// **'Risposta del trainer'**
+  String get traineeFeedbackTrainerAnswer;
+
+  /// No description provided for @traineeFeedbackLastAnsweredTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultima risposta del trainer'**
+  String get traineeFeedbackLastAnsweredTitle;
+
+  /// No description provided for @traineeFeedbackYourMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Il tuo messaggio'**
+  String get traineeFeedbackYourMessage;
+
+  /// No description provided for @traineeFeedbackAnsweredAtHome.
+  ///
+  /// In it, this message translates to:
+  /// **'Risposto il'**
+  String get traineeFeedbackAnsweredAtHome;
 }
 
 class _AppLocalizationsDelegate

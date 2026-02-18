@@ -461,34 +461,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo cargar el feedback en este momento.';
 
   @override
-  String get traineeFeedbackAnsweredTitle => 'Feedback respondido';
-
-  @override
-  String get traineeFeedbackAnsweredEmpty => 'Todavía no tienes feedback respondido.';
-
-  @override
-  String get traineeFeedbackAnsweredChip => 'Respondido';
-
-  @override
-  String get traineeFeedbackSentAt => 'Enviado:';
-
-  @override
-  String get traineeFeedbackAnsweredAt => 'Respondido:';
-
-  @override
-  String get traineeFeedbackTrainerAnswer => 'Respuesta del entrenador';
-
-  @override
-  String get traineeFeedbackLastAnsweredTitle => 'Última respuesta del entrenador';
-
-  @override
-  String get traineeFeedbackYourMessage => 'Tu mensaje';
-
-  @override
-  String get traineeFeedbackAnsweredAtHome => 'Respondido el';
-
-
-  @override
   String get refresh => 'Actualizar';
 
   @override
@@ -1188,4 +1160,33 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get termScaricoDescription =>
       'Última semana del programa para prepararte para intentos máximos.';
+
+  @override
+  String get traineeFeedbackAnsweredTitle => 'Feedback respondido';
+
+  @override
+  String get traineeFeedbackAnsweredEmpty =>
+      'Todavía no tienes feedback respondido.';
+
+  @override
+  String get traineeFeedbackAnsweredChip => 'Respondido';
+
+  @override
+  String get traineeFeedbackSentAt => 'Enviado:';
+
+  @override
+  String get traineeFeedbackAnsweredAt => 'Respondido:';
+
+  @override
+  String get traineeFeedbackTrainerAnswer => 'Respuesta del entrenador';
+
+  @override
+  String get traineeFeedbackLastAnsweredTitle =>
+      'Última respuesta del entrenador';
+
+  @override
+  String get traineeFeedbackYourMessage => 'Tu mensaje';
+
+  @override
+  String get traineeFeedbackAnsweredAtHome => 'Respondido el';
 }
