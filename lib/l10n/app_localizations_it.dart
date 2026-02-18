@@ -460,6 +460,34 @@ class AppLocalizationsIt extends AppLocalizations {
       'Impossibile caricare il feedback in questo momento.';
 
   @override
+  String get traineeFeedbackAnsweredTitle => 'Feedback con risposta';
+
+  @override
+  String get traineeFeedbackAnsweredEmpty => 'Non hai ancora feedback con risposta.';
+
+  @override
+  String get traineeFeedbackAnsweredChip => 'Risposto';
+
+  @override
+  String get traineeFeedbackSentAt => 'Inviato:';
+
+  @override
+  String get traineeFeedbackAnsweredAt => 'Risposto:';
+
+  @override
+  String get traineeFeedbackTrainerAnswer => 'Risposta del trainer';
+
+  @override
+  String get traineeFeedbackLastAnsweredTitle => 'Ultima risposta del trainer';
+
+  @override
+  String get traineeFeedbackYourMessage => 'Il tuo messaggio';
+
+  @override
+  String get traineeFeedbackAnsweredAtHome => 'Risposto il';
+
+
+  @override
   String get refresh => 'Aggiorna';
 
   @override

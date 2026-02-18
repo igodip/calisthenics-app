@@ -73,7 +73,7 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
               children: [
                 Expanded(
                   child: Text(
-                    l10n.traineeFeedbackSharedTitle,
+                    l10n.traineeFeedbackAnsweredTitle,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -98,17 +98,14 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
               )
             else if (_feedbacks.isEmpty)
               Text(
-                l10n.traineeFeedbackEmpty,
+                l10n.traineeFeedbackAnsweredEmpty,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               )
             else
               ..._feedbacks.map(
-                (feedback) => _FeedbackCard(
-                  feedback: feedback,
-                  onDelete: () => _confirmDeleteFeedback(feedback),
-                ),
+                (feedback) => _FeedbackCard(feedback: feedback),
               ),
           ],
         ),
@@ -195,7 +192,7 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
     try {
       final response = await client
           .from('trainee_feedbacks')
-          .select('id, message, feeling, created_at, read_at')
+          .select('id, message, feeling, created_at, read_at, answer_message, answered_at')
           .eq('trainee_id', userId)
           .order('created_at', ascending: false);
       final entries = (response as List<dynamic>).map((row) {
@@ -207,8 +204,12 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
           readAt: row['read_at'] == null
               ? null
               : DateTime.parse(row['read_at'] as String),
+          answerMessage: (row['answer_message'] as String?)?.trim(),
+          answeredAt: row['answered_at'] == null
+              ? null
+              : DateTime.parse(row['answered_at'] as String),
         );
-      }).toList();
+      }).where((entry) => entry.answeredAt != null).toList();
       if (!mounted) return;
       setState(() {
         _feedbacks = entries;
@@ -227,62 +228,7 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
     }
   }
 
-  Future<void> _confirmDeleteFeedback(_FeedbackEntry feedback) async {
-    final l10n = AppLocalizations.of(context)!;
-    final shouldDelete = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(l10n.traineeFeedbackDeleteConfirmTitle),
-            content: Text(l10n.traineeFeedbackDeleteConfirmBody),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(l10n.traineeFeedbackDelete),
-              ),
-            ],
-          ),
-        ) ??
-        false;
 
-    if (!shouldDelete) return;
-    await _deleteFeedback(feedback);
-  }
-
-  Future<void> _deleteFeedback(_FeedbackEntry feedback) async {
-    final l10n = AppLocalizations.of(context)!;
-    final client = Supabase.instance.client;
-    final userId = client.auth.currentUser?.id;
-    if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.unauthenticated)),
-      );
-      return;
-    }
-
-    try {
-      await client
-          .from('trainee_feedbacks')
-          .delete()
-          .eq('id', feedback.id)
-          .eq('trainee_id', userId);
-      if (!mounted) return;
-      setState(() {
-        _feedbacks = _feedbacks.where((item) => item.id != feedback.id).toList();
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.traineeFeedbackDeleteSuccess)),
-      );
-    } catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.unexpectedError('$error'))),
-      );
-    }
-  }
 }
 
 class _FeedbackFieldCard extends StatelessWidget {
@@ -339,6 +285,8 @@ class _FeedbackEntry {
   final int? feeling;
   final DateTime createdAt;
   final DateTime? readAt;
+  final String? answerMessage;
+  final DateTime? answeredAt;
 
   const _FeedbackEntry({
     required this.id,
@@ -346,24 +294,26 @@ class _FeedbackEntry {
     required this.feeling,
     required this.createdAt,
     required this.readAt,
+    required this.answerMessage,
+    required this.answeredAt,
   });
 }
 
 class _FeedbackCard extends StatelessWidget {
   final _FeedbackEntry feedback;
-  final VoidCallback onDelete;
 
   const _FeedbackCard({
     required this.feedback,
-    required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final dateText = DateFormat.yMMMd(l10n.localeName).format(feedback.createdAt);
-    final isRead = feedback.readAt != null;
+    final sentText = DateFormat.yMMMd(l10n.localeName).format(feedback.createdAt);
+    final answeredText = feedback.answeredAt == null
+        ? null
+        : DateFormat.yMMMd(l10n.localeName).add_Hm().format(feedback.answeredAt!);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -380,29 +330,40 @@ class _FeedbackCard extends StatelessWidget {
             Row(
               children: [
                 Chip(
-                  label: Text(
-                    isRead ? l10n.traineeFeedbackRead : l10n.traineeFeedbackUnread,
-                  ),
-                  backgroundColor: isRead
-                      ? theme.colorScheme.primaryContainer
-                      : theme.colorScheme.secondaryContainer,
+                  label: Text(l10n.traineeFeedbackAnsweredChip),
+                  backgroundColor: theme.colorScheme.primaryContainer,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    dateText,
+                    '${l10n.traineeFeedbackSentAt} $sentText',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: onDelete,
-                  icon: const Icon(Icons.delete_outline),
-                  tooltip: l10n.traineeFeedbackDelete,
-                ),
               ],
             ),
+            if (answeredText != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                '${l10n.traineeFeedbackAnsweredAt} $answeredText',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+            if ((feedback.answerMessage ?? '').isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                l10n.traineeFeedbackTrainerAnswer,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(feedback.answerMessage!, style: theme.textTheme.bodyMedium),
+            ],
           ],
         ),
       ),

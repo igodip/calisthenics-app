@@ -525,5 +525,14 @@
   "termSomTitle": "SOM",
   "termSomDescription": "Indicates the duration of each phase of the repetition.",
   "termScaricoTitle": "Deload",
-  "termScaricoDescription": "Last week of the program to prepare for max attempts."
+  "termScaricoDescription": "Last week of the program to prepare for max attempts.",
+  "traineeFeedbackAnsweredTitle": "Answered feedback",
+  "traineeFeedbackAnsweredEmpty": "No answered feedback yet.",
+  "traineeFeedbackAnsweredChip": "Answered",
+  "traineeFeedbackSentAt": "Sent:",
+  "traineeFeedbackAnsweredAt": "Answered:",
+  "traineeFeedbackTrainerAnswer": "Trainer answer",
+  "traineeFeedbackLastAnsweredTitle": "Latest trainer answer",
+  "traineeFeedbackYourMessage": "Your message",
+  "traineeFeedbackAnsweredAtHome": "Answered on"
 }

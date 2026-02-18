@@ -336,6 +336,32 @@
                                 <span v-if="note.readLabel"> • {{ t('labels.readAt') }} {{ note.readLabel }}</span>
                             </div>
                             <div class="chat-message">{{ note.message }}</div>
+                            <div class="muted small" v-if="note.answeredLabel" style="margin-top:8px">
+                                {{ t('feedback.answeredAt') }} {{ note.answeredLabel }}
+                            </div>
+                            <div class="chat-message" v-if="note.answerMessage" style="margin-top:8px">
+                                <strong>{{ t('feedback.answerLabel') }}</strong>
+                                <div>{{ note.answerMessage }}</div>
+                            </div>
+                            <div v-if="!note.answeredAt" style="margin-top:10px;display:grid;gap:8px">
+                                <textarea
+                                    class="input"
+                                    rows="3"
+                                    :placeholder="t('feedback.answerPlaceholder')"
+                                    v-model="feedbackReplyDrafts[note.id]"
+                                    :disabled="feedbackReplySaving[note.id]"
+                                ></textarea>
+                                <div style="display:flex;justify-content:flex-end">
+                                    <button
+                                        class="small"
+                                        type="button"
+                                        @click="saveFeedbackReply(note)"
+                                        :disabled="feedbackReplySaving[note.id]"
+                                    >
+                                        {{ t('feedback.sendAnswer') }}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

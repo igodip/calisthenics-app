@@ -525,5 +525,14 @@
   "termSomTitle": "SOM",
   "termSomDescription": "Indica la duración de cada fase de la repetición.",
   "termScaricoTitle": "Descarga",
-  "termScaricoDescription": "Última semana del programa para prepararte para intentos máximos."
+  "termScaricoDescription": "Última semana del programa para prepararte para intentos máximos.",
+  "traineeFeedbackAnsweredTitle": "Feedback respondido",
+  "traineeFeedbackAnsweredEmpty": "Todavía no tienes feedback respondido.",
+  "traineeFeedbackAnsweredChip": "Respondido",
+  "traineeFeedbackSentAt": "Enviado:",
+  "traineeFeedbackAnsweredAt": "Respondido:",
+  "traineeFeedbackTrainerAnswer": "Respuesta del entrenador",
+  "traineeFeedbackLastAnsweredTitle": "Última respuesta del entrenador",
+  "traineeFeedbackYourMessage": "Tu mensaje",
+  "traineeFeedbackAnsweredAtHome": "Respondido el"
 }
