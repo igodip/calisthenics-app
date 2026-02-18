@@ -28,6 +28,7 @@ class _HomeContentState extends State<HomeContent> {
   late Future<UserProfileData> _profileFuture;
   late Future<String?> _coachTip;
   late Future<bool> _latePaymentFuture;
+  late Future<_AnsweredFeedback?> _lastAnsweredFeedbackFuture;
   Future<_ExerciseUnlockSummary>? _unlockSummaryFuture;
   String? _localeName;
 
@@ -38,6 +39,7 @@ class _HomeContentState extends State<HomeContent> {
     _profileFuture = getUserData();
     _coachTip = _loadCoachTipForUser(Supabase.instance.client, client.auth.currentUser!.id);
     _latePaymentFuture = _fetchIsPaymentLate();
+    _lastAnsweredFeedbackFuture = _loadLastAnsweredFeedback();
   }
 
   @override
@@ -78,6 +80,37 @@ class _HomeContentState extends State<HomeContent> {
     return _ExerciseUnlockSummary(
       unlockedSkills: unlockedCount,
       totalSkills: guides.length,
+    );
+  }
+
+
+  Future<_AnsweredFeedback?> _loadLastAnsweredFeedback() async {
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      return null;
+    }
+
+    final response = await client
+        .from('trainee_feedbacks')
+        .select('message, answer_message, answered_at')
+        .eq('trainee_id', userId)
+        .not('answered_at', 'is', null)
+        .order('answered_at', ascending: false)
+        .limit(1)
+        .maybeSingle();
+    if (response == null) {
+      return null;
+    }
+    final answerMessage = (response['answer_message'] as String?)?.trim();
+    final answeredAtRaw = response['answered_at'] as String?;
+    if (answerMessage == null || answerMessage.isEmpty || answeredAtRaw == null) {
+      return null;
+    }
+    return _AnsweredFeedback(
+      traineeMessage: (response['message'] as String? ?? '').trim(),
+      trainerAnswer: answerMessage,
+      answeredAt: DateTime.tryParse(answeredAtRaw),
     );
   }
 
@@ -183,6 +216,24 @@ class _HomeContentState extends State<HomeContent> {
               },
             ),
             const SizedBox(height: 16),
+            FutureBuilder<_AnsweredFeedback?>(
+              future: _lastAnsweredFeedbackFuture,
+              builder: (context, answeredSnap) {
+                if (answeredSnap.connectionState != ConnectionState.done) {
+                  return const SizedBox.shrink();
+                }
+                final feedback = answeredSnap.data;
+                if (answeredSnap.hasError || feedback == null) {
+                  return const SizedBox.shrink();
+                }
+                return Column(
+                  children: [
+                    _LastAnsweredFeedbackCard(feedback: feedback),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              },
+            ),
             FutureBuilder<String?>(
               future: _coachTip,
               builder: (context, tipSnap) {
@@ -270,6 +321,76 @@ class _AvatarChip extends StatelessWidget {
                     ),
                   ))
             : null,
+      ),
+    );
+  }
+}
+
+
+class _AnsweredFeedback {
+  const _AnsweredFeedback({
+    required this.traineeMessage,
+    required this.trainerAnswer,
+    required this.answeredAt,
+  });
+
+  final String traineeMessage;
+  final String trainerAnswer;
+  final DateTime? answeredAt;
+}
+
+class _LastAnsweredFeedbackCard extends StatelessWidget {
+  const _LastAnsweredFeedbackCard({required this.feedback});
+
+  final _AnsweredFeedback feedback;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final answeredLabel = feedback.answeredAt == null
+        ? null
+        : '${l10n.traineeFeedbackAnsweredAtHome} ${MaterialLocalizations.of(context).formatShortDate(feedback.answeredAt!)}';
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.traineeFeedbackLastAnsweredTitle,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (feedback.traineeMessage.isNotEmpty) ...[
+              Text(
+                l10n.traineeFeedbackYourMessage,
+                style: theme.textTheme.labelLarge,
+              ),
+              const SizedBox(height: 4),
+              Text(feedback.traineeMessage),
+              const SizedBox(height: 10),
+            ],
+            Text(
+              l10n.traineeFeedbackTrainerAnswer,
+              style: theme.textTheme.labelLarge,
+            ),
+            const SizedBox(height: 4),
+            Text(feedback.trainerAnswer),
+            if (answeredLabel != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                answeredLabel,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

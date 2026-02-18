@@ -525,5 +525,14 @@
   "termSomTitle": "SOM",
   "termSomDescription": "Indica la durata di ogni fase della ripetizione.",
   "termScaricoTitle": "Scarico",
-  "termScaricoDescription": "Ultima settimana della scheda per prepararsi ai massimali."
+  "termScaricoDescription": "Ultima settimana della scheda per prepararsi ai massimali.",
+  "traineeFeedbackAnsweredTitle": "Feedback con risposta",
+  "traineeFeedbackAnsweredEmpty": "Non hai ancora feedback con risposta.",
+  "traineeFeedbackAnsweredChip": "Risposto",
+  "traineeFeedbackSentAt": "Inviato:",
+  "traineeFeedbackAnsweredAt": "Risposto:",
+  "traineeFeedbackTrainerAnswer": "Risposta del trainer",
+  "traineeFeedbackLastAnsweredTitle": "Ultima risposta del trainer",
+  "traineeFeedbackYourMessage": "Il tuo messaggio",
+  "traineeFeedbackAnsweredAtHome": "Risposto il"
 }

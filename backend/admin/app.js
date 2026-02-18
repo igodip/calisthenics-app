@@ -146,6 +146,8 @@ import {
       const feedbackError = ref('');
       const feedbackFilter = ref('all');
       const feedbackUpdateSaving = ref({});
+      const feedbackReplyDrafts = ref({});
+      const feedbackReplySaving = ref({});
       const dashboardBurndown = ref({
         chartWidth: 760,
         chartHeight: 240,
@@ -836,6 +838,8 @@ import {
         { value: 'all', label: t('feedback.filterAll') },
         { value: 'unread', label: t('feedback.filterUnread') },
         { value: 'read', label: t('feedback.filterRead') },
+        { value: 'answered', label: t('feedback.filterAnswered') },
+        { value: 'unanswered', label: t('feedback.filterUnanswered') },
       ]);
 
       const filteredFeedbackEntries = computed(() => {
@@ -846,6 +850,12 @@ import {
         }
         if (filter === 'unread') {
           return entries.filter((entry) => !entry.readAt);
+        }
+        if (filter === 'answered') {
+          return entries.filter((entry) => entry.answeredAt);
+        }
+        if (filter === 'unanswered') {
+          return entries.filter((entry) => !entry.answeredAt);
         }
         return entries;
       });
@@ -2662,7 +2672,7 @@ import {
         const fetchNotes = (orderColumn) =>
           supabase
             .from('trainee_feedbacks')
-            .select('id, message, created_at, read_at, trainee_id, trainees ( name )')
+            .select('id, message, created_at, read_at, answer_message, answered_at, trainee_id, trainees ( name )')
             .order(orderColumn, { ascending: false })
             .is('read_at',null)
             .limit(8);
@@ -2743,7 +2753,7 @@ import {
         const fetchNotes = (orderColumn) =>
           supabase
             .from('trainee_feedbacks')
-            .select('id, message, created_at, read_at, trainee_id, trainees ( name )')
+            .select('id, message, created_at, read_at, answer_message, answered_at, trainee_id, trainees ( name )')
             .order(orderColumn, { ascending: false })
             .limit(200);
         try {
@@ -2775,9 +2785,17 @@ import {
               : t('dashboard.feedbackUnread'),
             createdAt: row.created_at || null,
             readAt: row.read_at || null,
+            answerMessage: (row.answer_message || '').trim(),
+            answeredAt: row.answered_at || null,
             createdLabel: row.created_at ? formatDateTime(row.created_at) : '',
             readLabel: row.read_at ? formatDateTime(row.read_at) : '',
+            answeredLabel: row.answered_at ? formatDateTime(row.answered_at) : '',
           }));
+          feedbackReplyDrafts.value = (data || []).reduce((acc, row) => {
+            if (!row.id) return acc;
+            acc[row.id] = (row.answer_message || '').trim();
+            return acc;
+          }, {});
         } catch (err) {
           console.error(err);
           feedbackEntries.value = [];
@@ -2838,6 +2856,53 @@ import {
         } finally {
           feedbackUpdateSaving.value = {
             ...feedbackUpdateSaving.value,
+            [note.id]: false,
+          };
+        }
+      }
+
+      async function saveFeedbackReply(note) {
+        if (!note?.id || note.answeredAt || feedbackReplySaving.value[note.id]) {
+          return;
+        }
+        const draft = (feedbackReplyDrafts.value[note.id] || '').trim();
+        if (!draft) {
+          alert(t('feedback.answerRequired'));
+          return;
+        }
+        feedbackReplySaving.value = {
+          ...feedbackReplySaving.value,
+          [note.id]: true,
+        };
+        try {
+          const answeredAt = new Date().toISOString();
+          const { error } = await supabase
+            .from('trainee_feedbacks')
+            .update({ answer_message: draft, answered_at: answeredAt })
+            .eq('id', note.id)
+            .is('answered_at', null);
+          if (error) {
+            throw new Error(error.message);
+          }
+          feedbackEntries.value = (feedbackEntries.value || []).map((entry) => {
+            if (entry.id !== note.id) return entry;
+            return {
+              ...entry,
+              answerMessage: draft,
+              answeredAt,
+              answeredLabel: formatDateTime(answeredAt),
+            };
+          });
+          feedbackReplyDrafts.value = {
+            ...feedbackReplyDrafts.value,
+            [note.id]: draft,
+          };
+        } catch (err) {
+          console.error(err);
+          alert(err.message || t('errors.updateFeedback'));
+        } finally {
+          feedbackReplySaving.value = {
+            ...feedbackReplySaving.value,
             [note.id]: false,
           };
         }
@@ -3461,6 +3526,9 @@ import {
         feedbackFilterOptions,
         filteredFeedbackEntries,
         feedbackUpdateSaving,
+        feedbackReplyDrafts,
+        feedbackReplySaving,
+        saveFeedbackReply,
         dashboardBurndown,
         visibleBurndownLines,
         dashboardBurndownLoading,
