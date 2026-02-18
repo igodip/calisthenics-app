@@ -399,6 +399,30 @@ class AppLocalizationsEs extends AppLocalizations {
       'Comparte lo que va bien o lo que necesita atención.';
 
   @override
+  String get traineeFeedbackFeelingLabel => '¿Cómo te sentiste hoy?';
+
+  @override
+  String get traineeFeedbackFeelingHint => 'Elige una opción antes de enviar tus comentarios.';
+
+  @override
+  String get traineeFeedbackFeelingRequired => 'Por favor, elige cómo te sentiste durante el entrenamiento.';
+
+  @override
+  String get traineeFeedbackFeelingVeryBad => 'Muy mal';
+
+  @override
+  String get traineeFeedbackFeelingBad => 'Mal';
+
+  @override
+  String get traineeFeedbackFeelingOk => 'Regular';
+
+  @override
+  String get traineeFeedbackFeelingGood => 'Bien';
+
+  @override
+  String get traineeFeedbackFeelingVeryGood => 'Muy bien';
+
+  @override
   String get traineeFeedbackSubmit => 'Enviar feedback';
 
   @override
