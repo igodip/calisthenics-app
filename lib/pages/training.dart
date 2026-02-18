@@ -175,17 +175,6 @@ class _TrainingState extends State<Training> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    FeedbackFeelingCard(
-                      label: l10n.traineeFeedbackFeelingLabel,
-                      helperText: l10n.traineeFeedbackFeelingHint,
-                      selectedFeeling: _selectedFeeling,
-                      onSelected: (value) {
-                        setState(() {
-                          _selectedFeeling = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 8),
                     for (int index = 0; index < _exercises.length; index++)
                       _ExerciseCard(
                         exercise: _exercises[index],
@@ -212,6 +201,18 @@ class _TrainingState extends State<Training> {
                         onSaveNotes: () => _saveExerciseNotes(index),
                         onTermTap: _openTerminologyTerm,
                       ),
+                    const SizedBox(height: 8),
+                    FeedbackFeelingCard(
+                      label: l10n.traineeFeedbackFeelingLabel,
+                      helperText: l10n.traineeFeedbackFeelingHint,
+                      selectedFeeling: _selectedFeeling,
+                      onSelected: (value) {
+                        setState(() {
+                          _selectedFeeling = value;
+                        });
+                      },
+                    ),
+
                   ],
                 ),
               ),
