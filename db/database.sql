@@ -86,6 +86,7 @@ CREATE TABLE public.trainee_feedbacks (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   trainee_id uuid NOT NULL,
   message text NOT NULL,
+  feeling integer NOT NULL CHECK (feeling BETWEEN 1 AND 5),
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   read_at timestamp with time zone,
   CONSTRAINT trainee_feedbacks_pkey PRIMARY KEY (id),

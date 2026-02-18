@@ -13,6 +13,7 @@ class TraineeFeedbackPage extends StatefulWidget {
 
 class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
   final _feedbackController = TextEditingController();
+  int? _selectedFeeling;
   bool _isSubmitting = false;
   bool _isLoadingFeedbacks = false;
   String? _feedbacksError;
@@ -60,6 +61,17 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
               hintText: l10n.traineeFeedbackQuestionHint,
               controller: _feedbackController,
               minLines: 4,
+            ),
+            const SizedBox(height: 12),
+            _FeedbackFeelingCard(
+              label: l10n.traineeFeedbackFeelingLabel,
+              helperText: l10n.traineeFeedbackFeelingHint,
+              selectedFeeling: _selectedFeeling,
+              onSelected: (value) {
+                setState(() {
+                  _selectedFeeling = value;
+                });
+              },
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
@@ -133,6 +145,12 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
       );
       return;
     }
+    if (_selectedFeeling == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.traineeFeedbackFeelingRequired)),
+      );
+      return;
+    }
 
     setState(() {
       _isSubmitting = true;
@@ -142,9 +160,13 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
       await client.from('trainee_feedbacks').insert({
         'trainee_id': userId,
         'message': feedback,
+        'feeling': _selectedFeeling,
       });
       if (!mounted) return;
       _feedbackController.clear();
+      setState(() {
+        _selectedFeeling = null;
+      });
       await _loadFeedbacks();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -184,13 +206,14 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
     try {
       final response = await client
           .from('trainee_feedbacks')
-          .select('id, message, created_at, read_at')
+          .select('id, message, feeling, created_at, read_at')
           .eq('trainee_id', userId)
           .order('created_at', ascending: false);
       final entries = (response as List<dynamic>).map((row) {
         return _FeedbackEntry(
           id: row['id'] as String,
           message: row['message'] as String? ?? '',
+          feeling: row['feeling'] as int?,
           createdAt: DateTime.parse(row['created_at'] as String),
           readAt: row['read_at'] == null
               ? null
@@ -324,12 +347,14 @@ class _FeedbackFieldCard extends StatelessWidget {
 class _FeedbackEntry {
   final String id;
   final String message;
+  final int? feeling;
   final DateTime createdAt;
   final DateTime? readAt;
 
   const _FeedbackEntry({
     required this.id,
     required this.message,
+    required this.feeling,
     required this.createdAt,
     required this.readAt,
   });
@@ -350,6 +375,7 @@ class _FeedbackCard extends StatelessWidget {
     final theme = Theme.of(context);
     final dateText = DateFormat.yMMMd(l10n.localeName).format(feedback.createdAt);
     final isRead = feedback.readAt != null;
+    final feelingOption = _FeelingOption.fromValue(feedback.feeling);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -362,6 +388,13 @@ class _FeedbackCard extends StatelessWidget {
               feedback.message,
               style: theme.textTheme.bodyLarge,
             ),
+            if (feelingOption != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                '${l10n.traineeFeedbackFeelingLabel}: ${feelingOption.emoji} ${feelingOption.localizedLabel(l10n)}',
+                style: theme.textTheme.bodyMedium,
+              ),
+            ],
             const SizedBox(height: 12),
             Row(
               children: [
@@ -393,5 +426,104 @@ class _FeedbackCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _FeedbackFeelingCard extends StatelessWidget {
+  final String label;
+  final String helperText;
+  final int? selectedFeeling;
+  final ValueChanged<int> onSelected;
+
+  const _FeedbackFeelingCard({
+    required this.label,
+    required this.helperText,
+    required this.selectedFeeling,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              helperText,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _FeelingOption.values
+                  .map(
+                    (option) => ChoiceChip(
+                      selected: selectedFeeling == option.value,
+                      onSelected: (_) => onSelected(option.value),
+                      label: Text(
+                        '${option.emoji} ${option.localizedLabel(l10n)}',
+                      ),
+                    ),
+                  )
+                  .toList(growable: false),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FeelingOption {
+  final int value;
+  final String emoji;
+
+  const _FeelingOption({required this.value, required this.emoji});
+
+  static const veryBad = _FeelingOption(value: 1, emoji: '😣');
+  static const bad = _FeelingOption(value: 2, emoji: '😕');
+  static const ok = _FeelingOption(value: 3, emoji: '😐');
+  static const good = _FeelingOption(value: 4, emoji: '🙂');
+  static const veryGood = _FeelingOption(value: 5, emoji: '🤩');
+
+  static const values = [veryBad, bad, ok, good, veryGood];
+
+  static _FeelingOption? fromValue(int? value) {
+    for (final option in values) {
+      if (option.value == value) return option;
+    }
+    return null;
+  }
+
+  String localizedLabel(AppLocalizations l10n) {
+    switch (value) {
+      case 1:
+        return l10n.traineeFeedbackFeelingVeryBad;
+      case 2:
+        return l10n.traineeFeedbackFeelingBad;
+      case 3:
+        return l10n.traineeFeedbackFeelingOk;
+      case 4:
+        return l10n.traineeFeedbackFeelingGood;
+      case 5:
+        return l10n.traineeFeedbackFeelingVeryGood;
+      default:
+        return '';
+    }
   }
 }

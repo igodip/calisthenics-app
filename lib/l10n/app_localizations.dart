@@ -784,6 +784,54 @@ abstract class AppLocalizations {
   /// **'Condividi cosa sta andando bene o cosa richiede attenzione.'**
   String get traineeFeedbackQuestionHint;
 
+  /// No description provided for @traineeFeedbackFeelingLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Come ti senti oggi?'**
+  String get traineeFeedbackFeelingLabel;
+
+  /// No description provided for @traineeFeedbackFeelingHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli un'opzione prima di inviare il feedback.'**
+  String get traineeFeedbackFeelingHint;
+
+  /// No description provided for @traineeFeedbackFeelingRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona come ti sei sentito durante l'allenamento.'**
+  String get traineeFeedbackFeelingRequired;
+
+  /// No description provided for @traineeFeedbackFeelingVeryBad.
+  ///
+  /// In it, this message translates to:
+  /// **'Molto male'**
+  String get traineeFeedbackFeelingVeryBad;
+
+  /// No description provided for @traineeFeedbackFeelingBad.
+  ///
+  /// In it, this message translates to:
+  /// **'Male'**
+  String get traineeFeedbackFeelingBad;
+
+  /// No description provided for @traineeFeedbackFeelingOk.
+  ///
+  /// In it, this message translates to:
+  /// **'Così così'**
+  String get traineeFeedbackFeelingOk;
+
+  /// No description provided for @traineeFeedbackFeelingGood.
+  ///
+  /// In it, this message translates to:
+  /// **'Bene'**
+  String get traineeFeedbackFeelingGood;
+
+  /// No description provided for @traineeFeedbackFeelingVeryGood.
+  ///
+  /// In it, this message translates to:
+  /// **'Molto bene'**
+  String get traineeFeedbackFeelingVeryGood;
+
   /// No description provided for @traineeFeedbackSubmit.
   ///
   /// In it, this message translates to:
