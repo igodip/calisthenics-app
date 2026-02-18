@@ -107,6 +107,13 @@ import {
       const maxTests = ref([]);
       const loadingMaxTests = ref(false);
       const maxTestsError = ref('');
+      const maxTestForm = ref({
+        exercise: '',
+        value: '',
+        unit: 'reps',
+        recorded_at: '',
+      });
+      const maxTestSaving = ref(false);
       const coachTipDraft = ref('');
       const coachTipSaving = ref(false);
       const trainerNotesDraft = ref('');
@@ -2179,6 +2186,12 @@ import {
         expandedDays.value = {};
         maxTests.value = [];
         maxTestsError.value = '';
+        maxTestForm.value = {
+          exercise: '',
+          value: '',
+          unit: 'reps',
+          recorded_at: '',
+        };
         completedExercises.value = [];
         completedExercisesError.value = '';
         paymentHistory.value = [];
@@ -2556,6 +2569,55 @@ import {
           alert(err.message || t('errors.updateCoachTip'));
         } finally {
           coachTipSaving.value = false;
+        }
+      }
+
+      async function addMaxTest() {
+        if (!current.value?.id) {
+          alert(t('errors.selectTrainee'));
+          return;
+        }
+        const exercise = maxTestForm.value.exercise.trim();
+        const value = Number(maxTestForm.value.value);
+        const unit = maxTestForm.value.unit.trim();
+        if (!exercise) {
+          alert(t('errors.maxTestExerciseRequired'));
+          return;
+        }
+        if (!Number.isFinite(value) || value <= 0) {
+          alert(t('errors.maxTestValueInvalid'));
+          return;
+        }
+        if (!unit) {
+          alert(t('errors.maxTestUnitRequired'));
+          return;
+        }
+
+        maxTestSaving.value = true;
+        try {
+          const { error } = await supabase.from('max_tests').insert({
+            trainee_id: current.value.id,
+            exercise,
+            value,
+            unit,
+            recorded_at:
+              maxTestForm.value.recorded_at || new Date().toISOString().slice(0, 10),
+          });
+          if (error) {
+            throw new Error(error.message);
+          }
+          maxTestForm.value = {
+            exercise: '',
+            value: '',
+            unit,
+            recorded_at: '',
+          };
+          await loadMaxTests(current.value);
+        } catch (err) {
+          console.error(err);
+          alert(err.message || t('errors.addMaxTest'));
+        } finally {
+          maxTestSaving.value = false;
         }
       }
 
@@ -3345,6 +3407,7 @@ import {
         terminologySaving,
         maxTests,
         maxTestHistory,
+        maxTestForm,
         completedExerciseLog,
         exerciseSelection,
         dayEdits,
@@ -3407,6 +3470,7 @@ import {
         weekStatusError,
         loadingMaxTests,
         maxTestsError,
+        maxTestSaving,
         coachTipDraft,
         coachTipSaving,
         trainerNotesDraft,
@@ -3462,6 +3526,7 @@ import {
         resetPlanForm,
         addExerciseToDay,
         saveCoachTip,
+        addMaxTest,
         saveTrainerNotes,
         assignTrainerToTrainee,
         removeTrainerAssignment,
