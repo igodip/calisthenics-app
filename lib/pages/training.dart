@@ -29,6 +29,7 @@ class _TrainingState extends State<Training> {
   late bool _isCompleted;
   bool _updatingCompletion = false;
   bool _completionChanged = false;
+  int? _selectedFeeling;
   Future<_TrainingTranslations>? _translationsFuture;
   String? _localeName;
 
@@ -174,6 +175,17 @@ class _TrainingState extends State<Training> {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    FeedbackFeelingCard(
+                      label: l10n.traineeFeedbackFeelingLabel,
+                      helperText: l10n.traineeFeedbackFeelingHint,
+                      selectedFeeling: _selectedFeeling,
+                      onSelected: (value) {
+                        setState(() {
+                          _selectedFeeling = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 8),
                     for (int index = 0; index < _exercises.length; index++)
                       _ExerciseCard(
                         exercise: _exercises[index],
@@ -400,6 +412,13 @@ class _TrainingState extends State<Training> {
 
     final newValue = !_isCompleted;
 
+    if (newValue && _selectedFeeling == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.traineeFeedbackFeelingRequired)),
+      );
+      return;
+    }
+
     setState(() {
       _updatingCompletion = true;
     });
@@ -413,6 +432,17 @@ class _TrainingState extends State<Training> {
             'completed_at': completedAt?.toIso8601String(),
           })
           .eq('id', dayId);
+
+      if (newValue) {
+        final userId = Supabase.instance.client.auth.currentUser?.id;
+        if (userId != null && _selectedFeeling != null) {
+          await Supabase.instance.client.from('trainee_feedbacks').insert({
+            'trainee_id': userId,
+            'message': 'Completed ${widget.day.formattedTitle(l10n)}',
+            'feeling': _selectedFeeling,
+          });
+        }
+      }
 
       if (!mounted) return;
 
@@ -530,6 +560,106 @@ class _TrainingState extends State<Training> {
         ),
       ),
     );
+  }
+}
+
+class FeedbackFeelingCard extends StatelessWidget {
+  final String label;
+  final String helperText;
+  final int? selectedFeeling;
+  final ValueChanged<int> onSelected;
+
+  const FeedbackFeelingCard({
+    super.key,
+    required this.label,
+    required this.helperText,
+    required this.selectedFeeling,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              helperText,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: FeelingOption.values
+                  .map(
+                    (option) => ChoiceChip(
+                      selected: selectedFeeling == option.value,
+                      onSelected: (_) => onSelected(option.value),
+                      label: Text(
+                        '${option.emoji} ${option.localizedLabel(l10n)}',
+                      ),
+                    ),
+                  )
+                  .toList(growable: false),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FeelingOption {
+  final int value;
+  final String emoji;
+
+  const FeelingOption({required this.value, required this.emoji});
+
+  static const veryBad = FeelingOption(value: 1, emoji: '😣');
+  static const bad = FeelingOption(value: 2, emoji: '😕');
+  static const ok = FeelingOption(value: 3, emoji: '😐');
+  static const good = FeelingOption(value: 4, emoji: '🙂');
+  static const veryGood = FeelingOption(value: 5, emoji: '🤩');
+
+  static const values = [veryBad, bad, ok, good, veryGood];
+
+  static FeelingOption? fromValue(int? value) {
+    for (final option in values) {
+      if (option.value == value) return option;
+    }
+    return null;
+  }
+
+  String localizedLabel(AppLocalizations l10n) {
+    switch (value) {
+      case 1:
+        return l10n.traineeFeedbackFeelingVeryBad;
+      case 2:
+        return l10n.traineeFeedbackFeelingBad;
+      case 3:
+        return l10n.traineeFeedbackFeelingOk;
+      case 4:
+        return l10n.traineeFeedbackFeelingGood;
+      case 5:
+        return l10n.traineeFeedbackFeelingVeryGood;
+      default:
+        return '';
+    }
   }
 }
 
