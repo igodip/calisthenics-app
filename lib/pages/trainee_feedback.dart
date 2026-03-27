@@ -13,7 +13,6 @@ class TraineeFeedbackPage extends StatefulWidget {
 
 class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
   final _feedbackController = TextEditingController();
-  int? _selectedFeeling;
   bool _isSubmitting = false;
   bool _isLoadingFeedbacks = false;
   String? _feedbacksError;
@@ -118,23 +117,17 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
     final client = Supabase.instance.client;
     final userId = client.auth.currentUser?.id;
     if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.unauthenticated)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.unauthenticated)));
       return;
     }
 
     final feedback = _feedbackController.text.trim();
     if (feedback.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.missingFieldsError)),
-      );
-      return;
-    }
-    if (_selectedFeeling == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.traineeFeedbackFeelingRequired)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.missingFieldsError)));
       return;
     }
 
@@ -146,23 +139,19 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
       await client.from('trainee_feedbacks').insert({
         'trainee_id': userId,
         'message': feedback,
-        'feeling': _selectedFeeling,
       });
       if (!mounted) return;
       _feedbackController.clear();
-      setState(() {
-        _selectedFeeling = null;
-      });
       await _loadFeedbacks();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.traineeFeedbackSubmitted)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.traineeFeedbackSubmitted)));
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.unexpectedError('$error'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.unexpectedError('$error'))));
     } finally {
       if (mounted) {
         setState(() {
@@ -192,24 +181,33 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
     try {
       final response = await client
           .from('trainee_feedbacks')
-          .select('id, message, feeling, created_at, read_at, answer_message, answered_at')
+          .select('id, message, created_at, answer_message, answered_at')
           .eq('trainee_id', userId)
+          .not('answered_at', 'is', null)
           .order('created_at', ascending: false);
-      final entries = (response as List<dynamic>).map((row) {
-        return _FeedbackEntry(
-          id: row['id'] as String,
-          message: row['message'] as String? ?? '',
-          feeling: row['feeling'] as int?,
-          createdAt: DateTime.parse(row['created_at'] as String),
-          readAt: row['read_at'] == null
-              ? null
-              : DateTime.parse(row['read_at'] as String),
-          answerMessage: (row['answer_message'] as String?)?.trim(),
-          answeredAt: row['answered_at'] == null
-              ? null
-              : DateTime.parse(row['answered_at'] as String),
-        );
-      }).where((entry) => entry.answeredAt != null).toList();
+      final entries = (response as List<dynamic>)
+          .map((row) {
+            final data = row as Map<String, dynamic>;
+            final createdAt = DateTime.tryParse(
+              data['created_at'] as String? ?? '',
+            );
+            final answeredAt = DateTime.tryParse(
+              data['answered_at'] as String? ?? '',
+            );
+            if (createdAt == null) {
+              return null;
+            }
+
+            return _FeedbackEntry(
+              id: data['id']?.toString() ?? '',
+              message: (data['message'] as String? ?? '').trim(),
+              createdAt: createdAt,
+              answerMessage: (data['answer_message'] as String?)?.trim(),
+              answeredAt: answeredAt,
+            );
+          })
+          .whereType<_FeedbackEntry>()
+          .toList();
       if (!mounted) return;
       setState(() {
         _feedbacks = entries;
@@ -227,8 +225,6 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
       }
     }
   }
-
-
 }
 
 class _FeedbackFieldCard extends StatelessWidget {
@@ -282,18 +278,14 @@ class _FeedbackFieldCard extends StatelessWidget {
 class _FeedbackEntry {
   final String id;
   final String message;
-  final int? feeling;
   final DateTime createdAt;
-  final DateTime? readAt;
   final String? answerMessage;
   final DateTime? answeredAt;
 
   const _FeedbackEntry({
     required this.id,
     required this.message,
-    required this.feeling,
     required this.createdAt,
-    required this.readAt,
     required this.answerMessage,
     required this.answeredAt,
   });
@@ -302,18 +294,20 @@ class _FeedbackEntry {
 class _FeedbackCard extends StatelessWidget {
   final _FeedbackEntry feedback;
 
-  const _FeedbackCard({
-    required this.feedback,
-  });
+  const _FeedbackCard({required this.feedback});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final sentText = DateFormat.yMMMd(l10n.localeName).format(feedback.createdAt);
+    final sentText = DateFormat.yMMMd(
+      l10n.localeName,
+    ).format(feedback.createdAt);
     final answeredText = feedback.answeredAt == null
         ? null
-        : DateFormat.yMMMd(l10n.localeName).add_Hm().format(feedback.answeredAt!);
+        : DateFormat.yMMMd(
+            l10n.localeName,
+          ).add_Hm().format(feedback.answeredAt!);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -322,10 +316,7 @@ class _FeedbackCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              feedback.message,
-              style: theme.textTheme.bodyLarge,
-            ),
+            Text(feedback.message, style: theme.textTheme.bodyLarge),
             const SizedBox(height: 12),
             Row(
               children: [

@@ -426,10 +426,6 @@ class _WorkoutPlanBody extends StatelessWidget {
           );
         }
 
-        final planOverview = _WorkoutPlanOverview(
-          plans: plans,
-          onRefresh: onRefresh,
-        );
         if (days.isEmpty) {
           return _wrapContent(
             RefreshIndicator(
@@ -455,8 +451,7 @@ class _WorkoutPlanBody extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 24),
-                  planOverview
+                  const SizedBox(height: 24)
                 ],
               ),
             ),
@@ -471,7 +466,6 @@ class _WorkoutPlanBody extends StatelessWidget {
               padding: listPadding,
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                planOverview,
                 const SizedBox(height: 16),
                 ...planGroups
                     .asMap()
@@ -551,181 +545,6 @@ class _WorkoutPlanData {
   const _WorkoutPlanData.empty()
       : plans = const [],
         days = const [];
-}
-
-class _WorkoutPlanOverview extends StatelessWidget {
-  final List<WorkoutPlan> plans;
-  final Future<void> Function() onRefresh;
-
-  const _WorkoutPlanOverview({
-    required this.plans,
-    required this.onRefresh,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final dateFormat = DateFormat.yMMMd(l10n.localeName);
-
-    final planCards = plans.map(
-      (plan) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: _WorkoutPlanCard(
-          plan: plan,
-          dateFormat: dateFormat,
-        ),
-      ),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.homePlansSectionTitle,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.homePlansSectionSubtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              onPressed: onRefresh,
-              tooltip: l10n.retry,
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (plans.isEmpty)
-          Card(
-            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.assignment,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.homePlansEmptyTitle,
-                          style: theme.textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.homePlansEmptyDescription,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        else
-          ...planCards,
-      ],
-    );
-  }
-}
-
-class _WorkoutPlanCard extends StatelessWidget {
-  final WorkoutPlan plan;
-  final DateFormat dateFormat;
-
-  const _WorkoutPlanCard({
-    required this.plan,
-    required this.dateFormat,
-  });
-
-  String _statusLabel(AppLocalizations l10n) {
-    final normalized = plan.status?.trim().toLowerCase();
-    switch (normalized) {
-      case 'active':
-        return l10n.profilePlanActive;
-      case 'expired':
-        return l10n.profilePlanExpired;
-      case 'archived':
-        return l10n.homePlanStatusArchived;
-      case 'draft':
-        return l10n.homePlanStatusDraft;
-      case 'upcoming':
-        return l10n.homePlanStatusUpcoming;
-      default:
-        return normalized != null && normalized.isNotEmpty
-            ? normalized[0].toUpperCase() + normalized.substring(1)
-            : l10n.homePlanStatusUnknown;
-    }
-  }
-
-  Color _statusColor(ThemeData theme) {
-    final normalized = plan.status?.trim().toLowerCase();
-    switch (normalized) {
-      case 'active':
-        return theme.colorScheme.primary;
-      case 'expired':
-      case 'archived':
-        return theme.colorScheme.error;
-      case 'upcoming':
-        return theme.colorScheme.tertiary;
-      default:
-        return theme.colorScheme.secondary;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final title = plan.name.isNotEmpty
-        ? plan.name
-        : l10n.homePlanDefaultTitle;
-    final dateRange = plan.dateRangeLabel(dateFormat);
-    final subtitleParts = <String>[];
-    if (dateRange != null) {
-      subtitleParts.add(dateRange);
-    }
-    if ((plan.notes ?? '').trim().isNotEmpty) {
-      subtitleParts.add((plan.notes ?? '').trim());
-    }
-    return SelectionCard(
-      title: title,
-      subtitle: subtitleParts.isEmpty ? null : subtitleParts.join(' • '),
-      icon: Icons.assignment,
-      trailing: Chip(
-        label: Text(_statusLabel(l10n)),
-        backgroundColor: _statusColor(theme).withValues(alpha: 0.15),
-        labelStyle: TextStyle(
-          color: _statusColor(theme),
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
 }
 
 class _WorkoutPlanGroup {

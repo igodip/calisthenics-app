@@ -1846,6 +1846,42 @@ abstract class AppLocalizations {
   /// **'Durata recupero'**
   String get timerRestDurationLabel;
 
+  /// No description provided for @timerRoundsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Round'**
+  String get timerRoundsLabel;
+
+  /// No description provided for @timerExercisesLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Esercizi'**
+  String get timerExercisesLabel;
+
+  /// No description provided for @timerAddExercise.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi esercizio'**
+  String get timerAddExercise;
+
+  /// No description provided for @timerExerciseNameLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome esercizio'**
+  String get timerExerciseNameLabel;
+
+  /// No description provided for @timerExerciseNameHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Es. Muscle up, Dips, L-sit'**
+  String get timerExerciseNameHint;
+
+  /// No description provided for @timerNoExercisesConfigured.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi almeno un esercizio per avviare il timer.'**
+  String get timerNoExercisesConfigured;
+
   /// No description provided for @timerControlSkip.
   ///
   /// In it, this message translates to:

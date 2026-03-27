@@ -996,6 +996,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get timerRestDurationLabel => 'Duración del descanso';
 
   @override
+  String get timerRoundsLabel => 'Rondas';
+
+  @override
+  String get timerExercisesLabel => 'Ejercicios';
+
+  @override
+  String get timerAddExercise => 'Añadir ejercicio';
+
+  @override
+  String get timerExerciseNameLabel => 'Nombre del ejercicio';
+
+  @override
+  String get timerExerciseNameHint => 'Ej. Muscle up, Dips, L-sit';
+
+  @override
+  String get timerNoExercisesConfigured =>
+      'Añade al menos un ejercicio para iniciar el temporizador.';
+
+  @override
   String get timerControlSkip => 'SALTAR';
 
   @override

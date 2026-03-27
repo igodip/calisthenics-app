@@ -37,7 +37,10 @@ class _HomeContentState extends State<HomeContent> {
     super.initState();
     final client = Supabase.instance.client;
     _profileFuture = getUserData();
-    _coachTip = _loadCoachTipForUser(Supabase.instance.client, client.auth.currentUser!.id);
+    _coachTip = _loadCoachTipForUser(
+      Supabase.instance.client,
+      client.auth.currentUser!.id,
+    );
     _latePaymentFuture = _fetchIsPaymentLate();
     _lastAnsweredFeedbackFuture = _loadLastAnsweredFeedback();
   }
@@ -53,9 +56,9 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Future<String?> _loadCoachTipForUser(
-      SupabaseClient client,
-      String userId,
-      ) async {
+    SupabaseClient client,
+    String userId,
+  ) async {
     final response = await client
         .from('trainee_trainers')
         .select('coach_tip')
@@ -83,7 +86,6 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
-
   Future<_AnsweredFeedback?> _loadLastAnsweredFeedback() async {
     final client = Supabase.instance.client;
     final userId = client.auth.currentUser?.id;
@@ -91,27 +93,37 @@ class _HomeContentState extends State<HomeContent> {
       return null;
     }
 
-    final response = await client
-        .from('trainee_feedbacks')
-        .select('message, answer_message, answered_at')
-        .eq('trainee_id', userId)
-        .not('answered_at', 'is', null)
-        .order('answered_at', ascending: false)
-        .limit(1)
-        .maybeSingle();
-    if (response == null) {
+    try {
+      final response = await client
+          .from('trainee_feedbacks')
+          .select('message, answer_message, answered_at')
+          .eq('trainee_id', userId)
+          .not('answered_at', 'is', null)
+          .order('answered_at', ascending: false)
+          .limit(1)
+          .maybeSingle();
+      if (response == null) {
+        return null;
+      }
+
+      final answerMessage = (response['answer_message'] as String?)?.trim();
+      final answeredAt = DateTime.tryParse(
+        response['answered_at'] as String? ?? '',
+      );
+      if (answerMessage == null ||
+          answerMessage.isEmpty ||
+          answeredAt == null) {
+        return null;
+      }
+
+      return _AnsweredFeedback(
+        traineeMessage: (response['message'] as String? ?? '').trim(),
+        trainerAnswer: answerMessage,
+        answeredAt: answeredAt,
+      );
+    } catch (_) {
       return null;
     }
-    final answerMessage = (response['answer_message'] as String?)?.trim();
-    final answeredAtRaw = response['answered_at'] as String?;
-    if (answerMessage == null || answerMessage.isEmpty || answeredAtRaw == null) {
-      return null;
-    }
-    return _AnsweredFeedback(
-      traineeMessage: (response['message'] as String? ?? '').trim(),
-      trainerAnswer: answerMessage,
-      answeredAt: DateTime.tryParse(answeredAtRaw),
-    );
   }
 
   Future<bool> _fetchIsPaymentLate() async {
@@ -162,7 +174,9 @@ class _HomeContentState extends State<HomeContent> {
             _HomeHeader(
               displayName: displayName,
               initials: initials,
-              imageUrl: (avatarUrl == null || avatarUrl.isEmpty) ? null : avatarUrl,
+              imageUrl: (avatarUrl == null || avatarUrl.isEmpty)
+                  ? null
+                  : avatarUrl,
             ),
             const SizedBox(height: 16),
             FutureBuilder<bool>(
@@ -195,7 +209,8 @@ class _HomeContentState extends State<HomeContent> {
             FutureBuilder<_ExerciseUnlockSummary>(
               future: _unlockSummaryFuture,
               builder: (context, summarySnap) {
-                final summary = summarySnap.data ??
+                final summary =
+                    summarySnap.data ??
                     const _ExerciseUnlockSummary(
                       unlockedSkills: 0,
                       totalSkills: 0,
@@ -308,24 +323,23 @@ class _AvatarChip extends StatelessWidget {
             : NetworkImage(avatarUrl),
         child: avatarUrl == null || avatarUrl.isEmpty
             ? (avatarText == null
-                ? Icon(
-                    Icons.person,
-                    color: theme.colorScheme.onSurfaceVariant,
-                    size: 18,
-                  )
-                : Text(
-                    avatarText,
-                    style: theme.textTheme.labelMedium?.copyWith(
+                  ? Icon(
+                      Icons.person,
                       color: theme.colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ))
+                      size: 18,
+                    )
+                  : Text(
+                      avatarText,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ))
             : null,
       ),
     );
   }
 }
-
 
 class _AnsweredFeedback {
   const _AnsweredFeedback({
@@ -379,7 +393,10 @@ class _LastAnsweredFeedbackCard extends StatelessWidget {
               style: theme.textTheme.labelLarge,
             ),
             const SizedBox(height: 4),
-            Text(feedback.trainerAnswer),
+            SizedBox(
+              width: double.infinity,
+              child: Text(feedback.trainerAnswer),
+            ),
             if (answeredLabel != null) ...[
               const SizedBox(height: 10),
               Text(
@@ -399,10 +416,7 @@ class _LastAnsweredFeedbackCard extends StatelessWidget {
 class _ActionButtons extends StatelessWidget {
   final VoidCallback onOpenPlan;
   final VoidCallback onViewStats;
-  const _ActionButtons({
-      required this.onOpenPlan,
-      required this.onViewStats,
-  });
+  const _ActionButtons({required this.onOpenPlan, required this.onViewStats});
 
   @override
   Widget build(BuildContext context) {
@@ -438,10 +452,7 @@ class _ExerciseUnlockSummary {
 }
 
 class _LatePaymentCard extends StatelessWidget {
-  const _LatePaymentCard({
-    required this.title,
-    required this.description,
-  });
+  const _LatePaymentCard({required this.title, required this.description});
 
   final String title;
   final String description;

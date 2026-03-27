@@ -413,13 +413,6 @@ class _TrainingState extends State<Training> {
 
     final newValue = !_isCompleted;
 
-    if (newValue && _selectedFeeling == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.traineeFeedbackFeelingRequired)),
-      );
-      return;
-    }
-
     setState(() {
       _updatingCompletion = true;
     });
@@ -436,11 +429,14 @@ class _TrainingState extends State<Training> {
 
       if (newValue) {
         final userId = Supabase.instance.client.auth.currentUser?.id;
-        if (userId != null && _selectedFeeling != null) {
+        if (userId != null) {
+          final feelingText = _selectedFeelingLabel(l10n);
+          final feedbackMessage = feelingText == null
+              ? 'Completed ${widget.day.formattedTitle(l10n)}'
+              : 'Completed ${widget.day.formattedTitle(l10n)} · Feeling: $feelingText';
           await Supabase.instance.client.from('trainee_feedbacks').insert({
             'trainee_id': userId,
-            'message': 'Completed ${widget.day.formattedTitle(l10n)}',
-            'feeling': _selectedFeeling,
+            'message': feedbackMessage,
           });
         }
       }
@@ -466,6 +462,23 @@ class _TrainingState extends State<Training> {
           _updatingCompletion = false;
         });
       }
+    }
+  }
+
+  String? _selectedFeelingLabel(AppLocalizations l10n) {
+    switch (_selectedFeeling) {
+      case 1:
+        return l10n.traineeFeedbackFeelingVeryBad;
+      case 2:
+        return l10n.traineeFeedbackFeelingBad;
+      case 3:
+        return l10n.traineeFeedbackFeelingOk;
+      case 4:
+        return l10n.traineeFeedbackFeelingGood;
+      case 5:
+        return l10n.traineeFeedbackFeelingVeryGood;
+      default:
+        return null;
     }
   }
 
