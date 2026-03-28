@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../l10n/app_localizations.dart';
 
@@ -19,10 +20,12 @@ class _TimerPageState extends State<TimerPage> {
   static const int _defaultRounds = 4;
 
   Timer? _intervalTimer;
+  final FlutterTts _flutterTts = FlutterTts();
 
   bool _didSeedExercises = false;
   bool _isRunning = false;
   bool _isRestPhase = false;
+  int? _lastCountdownAnnouncement;
   int _remainingSeconds = _defaultWorkSeconds;
   int _workSeconds = _defaultWorkSeconds;
   int _restSeconds = _defaultRestSeconds;
@@ -34,6 +37,7 @@ class _TimerPageState extends State<TimerPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    unawaited(_configureSpeech());
     if (_didSeedExercises) {
       return;
     }
@@ -62,6 +66,7 @@ class _TimerPageState extends State<TimerPage> {
   @override
   void dispose() {
     _intervalTimer?.cancel();
+    unawaited(_flutterTts.stop());
     super.dispose();
   }
 
@@ -75,11 +80,16 @@ class _TimerPageState extends State<TimerPage> {
 
   void _restartTicker() {
     _intervalTimer?.cancel();
+    if (_remainingSeconds <= 0) {
+      _advancePhase(autoContinue: true);
+      return;
+    }
     _intervalTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (_remainingSeconds > 1) {
         setState(() {
           _remainingSeconds -= 1;
         });
+        _announceCountdownIfNeeded(_remainingSeconds);
         return;
       }
       _advancePhase(autoContinue: true);
@@ -88,6 +98,8 @@ class _TimerPageState extends State<TimerPage> {
 
   void _resetWorkoutState() {
     _intervalTimer?.cancel();
+    _lastCountdownAnnouncement = null;
+    unawaited(_flutterTts.stop());
     setState(() {
       _isRunning = false;
       _isRestPhase = false;
@@ -112,6 +124,7 @@ class _TimerPageState extends State<TimerPage> {
 
   void _pauseTimer() {
     _intervalTimer?.cancel();
+    unawaited(_flutterTts.stop());
     setState(() {
       _isRunning = false;
     });
@@ -133,7 +146,11 @@ class _TimerPageState extends State<TimerPage> {
     if (_exerciseCount == 0) {
       return;
     }
-    final updatedValue = (_remainingSeconds + deltaSeconds).clamp(5, 36000);
+    final minimumValue = _isRestPhase ? 0 : 5;
+    final updatedValue = (_remainingSeconds + deltaSeconds).clamp(
+      minimumValue,
+      36000,
+    );
     setState(() {
       _remainingSeconds = updatedValue;
     });
@@ -152,19 +169,26 @@ class _TimerPageState extends State<TimerPage> {
   }
 
   void _setRestDuration(int valueSeconds) {
-    final updatedValue = valueSeconds.clamp(5, 36000);
+    final updatedValue = valueSeconds.clamp(0, 36000);
     setState(() {
       _restSeconds = updatedValue;
       if (_isRestPhase && !_isRunning) {
         _remainingSeconds = updatedValue;
       } else if (_isRestPhase) {
-        _remainingSeconds = math.min(_remainingSeconds, updatedValue);
+        _remainingSeconds = updatedValue == 0
+            ? 0
+            : math.min(_remainingSeconds, updatedValue);
       }
     });
+    if (_isRestPhase && _isRunning && updatedValue == 0) {
+      _intervalTimer?.cancel();
+      _advancePhase(autoContinue: true);
+    }
   }
 
   void _setRounds(int value) {
     final updatedValue = value.clamp(1, 99);
+    _lastCountdownAnnouncement = null;
     setState(() {
       _rounds = updatedValue;
       _isRunning = false;
@@ -290,8 +314,10 @@ class _TimerPageState extends State<TimerPage> {
   }
 
   void _advancePhase({required bool autoContinue}) {
+    final l10n = AppLocalizations.of(context)!;
     if (_exerciseCount == 0) {
       _intervalTimer?.cancel();
+      _lastCountdownAnnouncement = null;
       setState(() {
         _isRunning = false;
         _remainingSeconds = _workSeconds;
@@ -306,6 +332,8 @@ class _TimerPageState extends State<TimerPage> {
 
     if (!_isRestPhase && isLastExercise && isLastRound) {
       _intervalTimer?.cancel();
+      _lastCountdownAnnouncement = null;
+      unawaited(_speakCue(l10n.timerCountdownStop));
       setState(() {
         _isRunning = false;
         _remainingSeconds = 0;
@@ -324,15 +352,72 @@ class _TimerPageState extends State<TimerPage> {
         _isRestPhase = false;
         _remainingSeconds = _workSeconds;
       } else {
-        _isRestPhase = true;
-        _remainingSeconds = _restSeconds;
+        if (_restSeconds == 0) {
+          if (isLastExercise) {
+            _exerciseIndex = 0;
+            _roundIndex += 1;
+          } else {
+            _exerciseIndex += 1;
+          }
+          _isRestPhase = false;
+          _remainingSeconds = _workSeconds;
+        } else {
+          _isRestPhase = true;
+          _remainingSeconds = _restSeconds;
+        }
       }
       _isRunning = autoContinue;
     });
+    _lastCountdownAnnouncement = null;
+    unawaited(
+      _speakCue(_isRestPhase ? l10n.timerCountdownStop : l10n.timerCountdownGo),
+    );
 
     _intervalTimer?.cancel();
     if (autoContinue) {
       _restartTicker();
+    }
+  }
+
+  Future<void> _configureSpeech() async {
+    final locale = Localizations.localeOf(context);
+    try {
+      await _flutterTts.setLanguage(_speechLocaleTag(locale));
+      await _flutterTts.setSpeechRate(0.5);
+      await _flutterTts.setPitch(1.0);
+    } catch (_) {
+      // Ignore unsupported TTS locales on the current device.
+    }
+  }
+
+  String _speechLocaleTag(Locale locale) {
+    switch (locale.languageCode) {
+      case 'it':
+        return 'it-IT';
+      case 'es':
+        return 'es-ES';
+      default:
+        return 'en-US';
+    }
+  }
+
+  void _announceCountdownIfNeeded(int remainingSeconds) {
+    if (remainingSeconds < 1 || remainingSeconds > 3) {
+      return;
+    }
+    if (_lastCountdownAnnouncement == remainingSeconds) {
+      return;
+    }
+    _lastCountdownAnnouncement = remainingSeconds;
+    unawaited(_speakCue('$remainingSeconds'));
+  }
+
+  Future<void> _speakCue(String cue) async {
+    try {
+      await _flutterTts.stop();
+      await _flutterTts.speak(cue);
+    } catch (_) {
+      // Ignore TTS failures and keep the timer running.
     }
   }
 
@@ -529,6 +614,18 @@ class _TimerPageState extends State<TimerPage> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.center,
+                        child: _ControlButton(
+                          label: _isRunning
+                              ? l10n.timerControlPause
+                              : l10n.timerControlPlay,
+                          icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                          onPressed: _exerciseCount == 0 ? null : _toggleRunning,
+                          isPrimary: true,
+                        ),
+                      ),
                       const SizedBox(height: 18),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -615,16 +712,6 @@ class _TimerPageState extends State<TimerPage> {
                         spacing: 12,
                         runSpacing: 12,
                         children: [
-                          _ControlButton(
-                            label: _isRunning
-                                ? l10n.timerControlPause
-                                : l10n.timerControlPlay,
-                            icon: _isRunning ? Icons.pause : Icons.play_arrow,
-                            onPressed: _exerciseCount == 0
-                                ? null
-                                : _toggleRunning,
-                            isPrimary: true,
-                          ),
                           _ControlButton(
                             label: l10n.timerControlSkip,
                             icon: Icons.skip_next_rounded,

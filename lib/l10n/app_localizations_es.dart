@@ -567,7 +567,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se puede actualizar este ejercicio.';
 
   @override
-  String get trainingExerciseCoachNotesTitle => 'Notas del entrenador';
+  String get trainingExerciseNotesTitle => 'Notas';
 
   @override
   String get trainingExerciseNoCoachNotes =>
@@ -1031,6 +1031,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get timerAdjustIncrease => '+10s';
+
+  @override
+  String get timerCountdownGo => 'Vamos';
+
+  @override
+  String get timerCountdownStop => 'Alto';
 
   @override
   String get timerNextPlaceholder => 'Siguiente: --';

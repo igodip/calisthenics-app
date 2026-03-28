@@ -1084,11 +1084,11 @@ abstract class AppLocalizations {
   /// **'Impossibile aggiornare questo esercizio.'**
   String get trainingExerciseCompletionUnavailable;
 
-  /// No description provided for @trainingExerciseCoachNotesTitle.
+  /// No description provided for @trainingExerciseNotesTitle.
   ///
   /// In it, this message translates to:
-  /// **'Note del coach'**
-  String get trainingExerciseCoachNotesTitle;
+  /// **'Note'**
+  String get trainingExerciseNotesTitle;
 
   /// No description provided for @trainingExerciseNoCoachNotes.
   ///
@@ -1917,6 +1917,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'+10s'**
   String get timerAdjustIncrease;
+
+  /// No description provided for @timerCountdownGo.
+  ///
+  /// In it, this message translates to:
+  /// **'Via'**
+  String get timerCountdownGo;
+
+  /// No description provided for @timerCountdownStop.
+  ///
+  /// In it, this message translates to:
+  /// **'Stop'**
+  String get timerCountdownStop;
 
   /// No description provided for @timerNextPlaceholder.
   ///

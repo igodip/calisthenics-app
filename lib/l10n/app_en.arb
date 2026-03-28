@@ -218,7 +218,7 @@
     }
   },
   "trainingExerciseCompletionUnavailable": "Cannot update this exercise.",
-  "trainingExerciseCoachNotesTitle": "Coach notes",
+  "trainingExerciseNotesTitle": "Notes",
   "trainingExerciseNoCoachNotes": "No coach notes for this exercise yet.",
   "trainingExerciseYourNotesLabel": "Your notes",
   "trainingExerciseSaveNotes": "Save notes",
@@ -469,6 +469,8 @@
   "timerControlReset": "RESET",
   "timerAdjustDecrease": "-10s",
   "timerAdjustIncrease": "+10s",
+  "timerCountdownGo": "Go",
+  "timerCountdownStop": "Stop",
   "timerNextPlaceholder": "Next: --",
   "timerNextLabel": "Next: {name} · Set {current}/{total}",
   "@timerNextLabel": {

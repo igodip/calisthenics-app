@@ -881,7 +881,7 @@ class _ExerciseCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l10n.trainingExerciseCoachNotesTitle,
+                      l10n.trainingExerciseNotesTitle,
                       style: textTheme.labelLarge?.copyWith(
                         color: colorScheme.onSurface,
                         fontWeight: FontWeight.w600,

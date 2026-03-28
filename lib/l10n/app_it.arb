@@ -218,7 +218,7 @@
     }
   },
   "trainingExerciseCompletionUnavailable": "Impossibile aggiornare questo esercizio.",
-  "trainingExerciseCoachNotesTitle": "Note del coach",
+  "trainingExerciseNotesTitle": "Note",
   "trainingExerciseNoCoachNotes": "Non ci sono ancora note del coach per questo esercizio.",
   "trainingExerciseYourNotesLabel": "Le tue note",
   "trainingExerciseSaveNotes": "Salva note",
@@ -469,6 +469,8 @@
   "timerControlReset": "RESET",
   "timerAdjustDecrease": "-10s",
   "timerAdjustIncrease": "+10s",
+  "timerCountdownGo": "Via",
+  "timerCountdownStop": "Stop",
   "timerNextPlaceholder": "Prossimo: --",
   "timerNextLabel": "Prossimo: {name} · Serie {current}/{total}",
   "@timerNextLabel": {
