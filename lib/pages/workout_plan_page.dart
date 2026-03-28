@@ -303,7 +303,11 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       return bDate.compareTo(aDate);
     });
 
-    return plans;
+    if (plans.isEmpty) {
+      return const [];
+    }
+
+    return [plans.first];
   }
 
   Future<void> _openDay(WorkoutDay day) async {

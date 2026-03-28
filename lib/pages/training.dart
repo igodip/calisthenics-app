@@ -888,25 +888,6 @@ class _ExerciseCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    detailNotes.isNotEmpty
-                        ? _buildTerminologyNoteText(
-                            text: detailNotes,
-                            translations: terminologyTranslations,
-                            onTap: onTermTap,
-                            textStyle: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                            chipBackground:
-                                colorScheme.primary.withValues(alpha: 0.12),
-                            chipForeground: colorScheme.primary,
-                          )
-                        : Text(
-                            l10n.trainingExerciseNoCoachNotes,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                    const SizedBox(height: 12),
                     TextField(
                       controller: notesController,
                       maxLines: 3,
