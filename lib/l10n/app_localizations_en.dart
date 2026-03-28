@@ -48,6 +48,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeBlueLabel => 'Blue';
 
   @override
+  String get themeYellowLabel => 'Yellow';
+
+  @override
   String get onboardingTitleOne => 'Train smarter';
 
   @override
@@ -798,6 +801,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileLanguageSettingsSubtitle => 'Choose the app language';
+
+  @override
+  String get profileFitbitTitle => 'Fitbit';
+
+  @override
+  String get profileFitbitSubtitleDisconnected =>
+      'Connect Fitbit to import activity and heart-rate data.';
+
+  @override
+  String get profileFitbitSubtitleConnecting =>
+      'Waiting for Fitbit authorization to complete.';
+
+  @override
+  String get profileFitbitSubtitleConnected =>
+      'Fitbit account linked. You can sync the latest activity summary.';
+
+  @override
+  String get profileFitbitLastSyncLabel => 'Last sync';
+
+  @override
+  String get profileFitbitNeverSynced => 'Never synced';
+
+  @override
+  String get profileFitbitAccountLabel => 'Fitbit account';
+
+  @override
+  String get profileFitbitNotConfigured =>
+      'Backend configuration is still required. Set FITBIT_CONNECT_URL and FITBIT_SYNC_URL to enable the full flow.';
+
+  @override
+  String get profileFitbitConnect => 'Connect Fitbit';
+
+  @override
+  String get profileFitbitSync => 'Sync data';
+
+  @override
+  String get profileFitbitDisconnect => 'Disconnect';
+
+  @override
+  String get profileFitbitConnectedSuccess => 'Fitbit connected successfully.';
+
+  @override
+  String get profileFitbitDisconnectedSuccess => 'Fitbit disconnected.';
+
+  @override
+  String get profileFitbitSyncSuccess => 'Fitbit data synced successfully.';
+
+  @override
+  String profileFitbitConnectError(Object error) {
+    return 'Unable to start Fitbit connection: $error';
+  }
+
+  @override
+  String profileFitbitCallbackError(Object error) {
+    return 'Fitbit callback error: $error';
+  }
+
+  @override
+  String profileFitbitSyncError(Object error) {
+    return 'Unable to sync Fitbit data: $error';
+  }
+
+  @override
+  String profileFitbitSteps(int count) {
+    return '$count steps';
+  }
+
+  @override
+  String profileFitbitCalories(int count) {
+    return '$count kcal';
+  }
+
+  @override
+  String profileFitbitRestingHeartRate(int count) {
+    return 'RHR $count bpm';
+  }
+
+  @override
+  String profileFitbitActiveZoneMinutes(int count) {
+    return '$count zone min';
+  }
+
+  @override
+  String profileFitbitVo2Max(String value) {
+    return 'VO2 max $value';
+  }
 
   @override
   String get profileEditTitle => 'Edit profile';

@@ -4,8 +4,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/fitbit_service.dart';
+import '../theme/app_theme.dart';
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
@@ -18,6 +22,11 @@ class _TimerPageState extends State<TimerPage> {
   static const int _defaultWorkSeconds = 40;
   static const int _defaultRestSeconds = 90;
   static const int _defaultRounds = 4;
+  static const Duration _fitbitFetchDelay = Duration(seconds: 60);
+  static const String _workSecondsKey = 'timer_work_seconds';
+  static const String _restSecondsKey = 'timer_rest_seconds';
+  static const String _roundsKey = 'timer_rounds';
+  static const String _exerciseNamesKey = 'timer_exercise_names';
 
   Timer? _intervalTimer;
   final FlutterTts _flutterTts = FlutterTts();
@@ -25,6 +34,7 @@ class _TimerPageState extends State<TimerPage> {
   bool _didSeedExercises = false;
   bool _isRunning = false;
   bool _isRestPhase = false;
+  DateTime? _sessionStartedAtUtc;
   int? _lastCountdownAnnouncement;
   int _remainingSeconds = _defaultWorkSeconds;
   int _workSeconds = _defaultWorkSeconds;
@@ -61,6 +71,7 @@ class _TimerPageState extends State<TimerPage> {
       ),
     ];
     _didSeedExercises = true;
+    unawaited(_restoreTimerPreferences());
   }
 
   @override
@@ -100,6 +111,7 @@ class _TimerPageState extends State<TimerPage> {
     _intervalTimer?.cancel();
     _lastCountdownAnnouncement = null;
     unawaited(_flutterTts.stop());
+    _finishTimerSessionIfNeeded();
     setState(() {
       _isRunning = false;
       _isRestPhase = false;
@@ -113,6 +125,7 @@ class _TimerPageState extends State<TimerPage> {
     if (_isRunning || _exerciseCount == 0) {
       return;
     }
+    _sessionStartedAtUtc ??= DateTime.now().toUtc();
     setState(() {
       _isRunning = true;
       if (_remainingSeconds == 0) {
@@ -125,6 +138,7 @@ class _TimerPageState extends State<TimerPage> {
   void _pauseTimer() {
     _intervalTimer?.cancel();
     unawaited(_flutterTts.stop());
+    _finishTimerSessionIfNeeded();
     setState(() {
       _isRunning = false;
     });
@@ -166,6 +180,7 @@ class _TimerPageState extends State<TimerPage> {
         _remainingSeconds = math.min(_remainingSeconds, updatedValue);
       }
     });
+    unawaited(_saveTimerPreferences());
   }
 
   void _setRestDuration(int valueSeconds) {
@@ -180,6 +195,7 @@ class _TimerPageState extends State<TimerPage> {
             : math.min(_remainingSeconds, updatedValue);
       }
     });
+    unawaited(_saveTimerPreferences());
     if (_isRestPhase && _isRunning && updatedValue == 0) {
       _intervalTimer?.cancel();
       _advancePhase(autoContinue: true);
@@ -198,6 +214,7 @@ class _TimerPageState extends State<TimerPage> {
       _roundIndex = 0;
     });
     _intervalTimer?.cancel();
+    unawaited(_saveTimerPreferences());
   }
 
   Future<void> _editNumber({
@@ -295,6 +312,7 @@ class _TimerPageState extends State<TimerPage> {
       _roundIndex = 0;
     });
     _intervalTimer?.cancel();
+    unawaited(_saveTimerPreferences());
   }
 
   void _removeExerciseAt(int index) {
@@ -311,6 +329,51 @@ class _TimerPageState extends State<TimerPage> {
       _exerciseIndex = 0;
       _roundIndex = 0;
     });
+    unawaited(_saveTimerPreferences());
+  }
+
+  Future<void> _restoreTimerPreferences() async {
+    final preferences = await SharedPreferences.getInstance();
+    final workSeconds = preferences.getInt(_workSecondsKey);
+    final restSeconds = preferences.getInt(_restSecondsKey);
+    final rounds = preferences.getInt(_roundsKey);
+    final exerciseNames = preferences.getStringList(_exerciseNamesKey);
+
+    if (!mounted) {
+      return;
+    }
+
+    final restoredExercises = (exerciseNames ?? const <String>[])
+        .map((name) => name.trim())
+        .where((name) => name.isNotEmpty)
+        .toList();
+
+    setState(() {
+      _workSeconds = (workSeconds ?? _defaultWorkSeconds).clamp(5, 36000);
+      _restSeconds = (restSeconds ?? _defaultRestSeconds).clamp(0, 36000);
+      _rounds = (rounds ?? _defaultRounds).clamp(1, 99);
+      if (restoredExercises.isNotEmpty) {
+        _exercises = List<_WorkoutExercise>.generate(
+          restoredExercises.length,
+          (index) => _WorkoutExercise(
+            name: restoredExercises[index],
+            icon: _iconForIndex(index),
+          ),
+        );
+      }
+      _remainingSeconds = _isRestPhase ? _restSeconds : _workSeconds;
+    });
+  }
+
+  Future<void> _saveTimerPreferences() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setInt(_workSecondsKey, _workSeconds);
+    await preferences.setInt(_restSecondsKey, _restSeconds);
+    await preferences.setInt(_roundsKey, _rounds);
+    await preferences.setStringList(
+      _exerciseNamesKey,
+      _exercises.map((exercise) => exercise.name).toList(),
+    );
   }
 
   void _advancePhase({required bool autoContinue}) {
@@ -334,6 +397,7 @@ class _TimerPageState extends State<TimerPage> {
       _intervalTimer?.cancel();
       _lastCountdownAnnouncement = null;
       unawaited(_speakCue(l10n.timerCountdownStop));
+      _finishTimerSessionIfNeeded();
       setState(() {
         _isRunning = false;
         _remainingSeconds = 0;
@@ -421,6 +485,76 @@ class _TimerPageState extends State<TimerPage> {
     }
   }
 
+  void _finishTimerSessionIfNeeded() {
+    final sessionStartedAtUtc = _sessionStartedAtUtc;
+    if (sessionStartedAtUtc == null) {
+      return;
+    }
+    _sessionStartedAtUtc = null;
+    unawaited(_persistHeartRateWindow(sessionStartedAtUtc));
+  }
+
+  Future<void> _persistHeartRateWindow(DateTime sessionStartedAtUtc) async {
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) {
+      return;
+    }
+
+    final sessionEndedAtUtc = DateTime.now().toUtc();
+    if (!sessionEndedAtUtc.isAfter(sessionStartedAtUtc)) {
+      return;
+    }
+
+    try {
+      final fitbitState = await FitbitService.instance.loadState();
+      if (!fitbitState.isConnected) {
+        return;
+      }
+
+      await Future<void>.delayed(_fitbitFetchDelay);
+
+      final heartRateWindow = await FitbitService.instance.fetchHeartRateWindow(
+        startAt: sessionStartedAtUtc,
+        endAt: sessionEndedAtUtc,
+      );
+      if (heartRateWindow.samples.isEmpty) {
+        debugPrint(
+          'Fitbit heart-rate capture skipped: no samples for '
+          '${sessionStartedAtUtc.toIso8601String()} -> '
+          '${sessionEndedAtUtc.toIso8601String()}',
+        );
+        return;
+      }
+
+      await Supabase.instance.client.from('timer_fitbit_sessions').insert({
+        'user_id': userId,
+        'started_at': sessionStartedAtUtc.toIso8601String(),
+        'ended_at': sessionEndedAtUtc.toIso8601String(),
+        'detail_level_used': heartRateWindow.detailLevelUsed,
+        'sample_count': heartRateWindow.samples.length,
+        'heart_rate_samples': heartRateWindow.samples
+            .map((sample) => sample.toJson())
+            .toList(),
+        'timer_config': {
+          'work_seconds': _workSeconds,
+          'rest_seconds': _restSeconds,
+          'rounds': _rounds,
+          'exercise_names': _exercises.map((exercise) => exercise.name).toList(),
+        },
+        'summary': {
+          'captured_at': DateTime.now().toUtc().toIso8601String(),
+          'start_at': heartRateWindow.startAt.toUtc().toIso8601String(),
+          'end_at': heartRateWindow.endAt.toUtc().toIso8601String(),
+          'detail_level_used': heartRateWindow.detailLevelUsed,
+        },
+      });
+    } catch (error, stackTrace) {
+      debugPrint(
+        'Fitbit heart-rate capture failed: $error\n$stackTrace',
+      );
+    }
+  }
+
   String _formatSeconds(int seconds) {
     final minutes = seconds ~/ 60;
     final remainingSeconds = seconds % 60;
@@ -457,6 +591,27 @@ class _TimerPageState extends State<TimerPage> {
       return _roundIndex + 2;
     }
     return _roundIndex + 1;
+  }
+
+  bool _isWorkoutComplete() {
+    if (_exerciseCount == 0) {
+      return false;
+    }
+    return !_isRunning &&
+        !_isRestPhase &&
+        _remainingSeconds == 0 &&
+        _exerciseIndex == _exerciseCount - 1 &&
+        _roundIndex == _rounds - 1;
+  }
+
+  bool _isExerciseCompletedInCurrentRound(int index) {
+    if (_isWorkoutComplete()) {
+      return true;
+    }
+    if (_isRestPhase) {
+      return index <= _exerciseIndex;
+    }
+    return index < _exerciseIndex;
   }
 
   IconData _iconForIndex(int index) {
@@ -646,6 +801,11 @@ class _TimerPageState extends State<TimerPage> {
                         exercises: _exercises,
                         activeIndex: _exerciseIndex,
                         activeColor: phaseColor,
+                        isRestPhase: _isRestPhase,
+                        completedIndexes: {
+                          for (var i = 0; i < _exerciseCount; i += 1)
+                            if (_isExerciseCompletedInCurrentRound(i)) i,
+                        },
                       ),
                       const SizedBox(height: 24),
                       Wrap(
@@ -787,11 +947,15 @@ class _ExerciseRail extends StatelessWidget {
   final List<_WorkoutExercise> exercises;
   final int activeIndex;
   final Color activeColor;
+  final bool isRestPhase;
+  final Set<int> completedIndexes;
 
   const _ExerciseRail({
     required this.exercises,
     required this.activeIndex,
     required this.activeColor,
+    required this.isRestPhase,
+    required this.completedIndexes,
   });
 
   @override
@@ -801,48 +965,67 @@ class _ExerciseRail extends StatelessWidget {
     }
 
     final theme = Theme.of(context);
+    final appColors = theme.extension<AppColors>();
     return Wrap(
       spacing: 10,
       runSpacing: 10,
       alignment: WrapAlignment.center,
       children: [
         for (var i = 0; i < exercises.length; i += 1)
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              color: i == activeIndex
-                  ? activeColor.withValues(alpha: 0.16)
-                  : theme.colorScheme.surfaceContainerHighest.withValues(
-                      alpha: 0.3,
-                    ),
-              border: Border.all(
-                color: i == activeIndex
-                    ? activeColor
-                    : theme.colorScheme.outlineVariant,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  exercises[i].icon,
-                  size: 18,
-                  color: i == activeIndex
-                      ? activeColor
-                      : theme.colorScheme.onSurfaceVariant,
+          Builder(
+            builder: (context) {
+              final isCompleted = completedIndexes.contains(i);
+              final isActive = i == activeIndex && !isRestPhase;
+              final icon = isCompleted ? Icons.check_circle : exercises[i].icon;
+              final iconColor = isCompleted
+                  ? (appColors?.success ?? theme.colorScheme.secondary)
+                  : (isActive
+                        ? activeColor
+                        : theme.colorScheme.onSurfaceVariant);
+              final textColor = isCompleted
+                  ? (appColors?.success ?? theme.colorScheme.secondary)
+                  : (isActive ? activeColor : null);
+
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  exercises[i].name,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: i == activeIndex ? activeColor : null,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  color: isCompleted
+                      ? (appColors?.successContainer ??
+                          theme.colorScheme.secondaryContainer)
+                      : isActive
+                          ? activeColor.withValues(alpha: 0.16)
+                          : theme.colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.3,
+                        ),
+                  border: Border.all(
+                    color: isCompleted
+                        ? (appColors?.success ?? theme.colorScheme.secondary)
+                        : isActive
+                            ? activeColor
+                            : theme.colorScheme.outlineVariant,
                   ),
                 ),
-              ],
-            ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: 18, color: iconColor),
+                    const SizedBox(width: 8),
+                    Text(
+                      exercises[i].name,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: textColor,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
       ],
     );

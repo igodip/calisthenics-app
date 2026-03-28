@@ -12,6 +12,7 @@
   "themePinkLabel": "Rosa",
   "themeRedLabel": "Rosso",
   "themeBlueLabel": "Blu",
+  "themeYellowLabel": "Giallo",
   "onboardingTitleOne": "Allenati meglio",
   "onboardingDescriptionOne": "Segui allenamenti guidati creati per il tuo piano di calisthenics.",
   "onboardingTitleTwo": "Monitora i progressi",
@@ -365,6 +366,84 @@
   "profileThemeSettingsSubtitle": "Scegli il colore del tema dell'app",
   "profileLanguageSettingsTitle": "Lingua",
   "profileLanguageSettingsSubtitle": "Scegli la lingua dell'app",
+  "profileFitbitTitle": "Fitbit",
+  "profileFitbitSubtitleDisconnected": "Collega Fitbit per importare dati di attivita e frequenza cardiaca.",
+  "profileFitbitSubtitleConnecting": "In attesa del completamento dell'autorizzazione Fitbit.",
+  "profileFitbitSubtitleConnected": "Account Fitbit collegato. Puoi sincronizzare l'ultimo riepilogo attivita.",
+  "profileFitbitLastSyncLabel": "Ultima sincronizzazione",
+  "profileFitbitNeverSynced": "Mai sincronizzato",
+  "profileFitbitAccountLabel": "Account Fitbit",
+  "profileFitbitNotConfigured": "Serve ancora la configurazione backend. Imposta FITBIT_CONNECT_URL e FITBIT_SYNC_URL per abilitare il flusso completo.",
+  "profileFitbitConnect": "Collega Fitbit",
+  "profileFitbitSync": "Sincronizza dati",
+  "profileFitbitDisconnect": "Scollega",
+  "profileFitbitConnectedSuccess": "Fitbit collegato correttamente.",
+  "profileFitbitDisconnectedSuccess": "Fitbit scollegato.",
+  "profileFitbitSyncSuccess": "Dati Fitbit sincronizzati correttamente.",
+  "profileFitbitConnectError": "Impossibile avviare il collegamento Fitbit: {error}",
+  "@profileFitbitConnectError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileFitbitCallbackError": "Errore callback Fitbit: {error}",
+  "@profileFitbitCallbackError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileFitbitSyncError": "Impossibile sincronizzare i dati Fitbit: {error}",
+  "@profileFitbitSyncError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileFitbitSteps": "{count} passi",
+  "@profileFitbitSteps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFitbitCalories": "{count} kcal",
+  "@profileFitbitCalories": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFitbitRestingHeartRate": "FC riposo {count} bpm",
+  "@profileFitbitRestingHeartRate": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFitbitActiveZoneMinutes": "{count} min zona",
+  "@profileFitbitActiveZoneMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFitbitVo2Max": "VO2 max {value}",
+  "@profileFitbitVo2Max": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "profileEditTitle": "Modifica profilo",
   "profileEditFullNameLabel": "Nome completo",
   "profileEditFullNameHint": "Come vuoi essere chiamato?",

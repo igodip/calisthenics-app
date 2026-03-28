@@ -6,6 +6,7 @@ class WorkoutExercise {
   final String? exerciseId;
   final String? exerciseSlug;
   final String? name;
+  final Map<String, dynamic>? fitbitData;
   final String? notes;
   final String? traineeNotes;
   final List<String> terminology;
@@ -19,6 +20,7 @@ class WorkoutExercise {
     this.id,
     this.exerciseId,
     this.exerciseSlug,
+    this.fitbitData,
     this.notes,
     this.traineeNotes,
     this.terminology = const [],

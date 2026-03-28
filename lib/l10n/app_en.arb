@@ -12,6 +12,7 @@
   "themePinkLabel": "Pink",
   "themeRedLabel": "Red",
   "themeBlueLabel": "Blue",
+  "themeYellowLabel": "Yellow",
   "onboardingTitleOne": "Train smarter",
   "onboardingDescriptionOne": "Follow guided workouts built for your calisthenics plan.",
   "onboardingTitleTwo": "Track progress",
@@ -365,6 +366,84 @@
   "profileThemeSettingsSubtitle": "Choose the app color theme",
   "profileLanguageSettingsTitle": "Language",
   "profileLanguageSettingsSubtitle": "Choose the app language",
+  "profileFitbitTitle": "Fitbit",
+  "profileFitbitSubtitleDisconnected": "Connect Fitbit to import activity and heart-rate data.",
+  "profileFitbitSubtitleConnecting": "Waiting for Fitbit authorization to complete.",
+  "profileFitbitSubtitleConnected": "Fitbit account linked. You can sync the latest activity summary.",
+  "profileFitbitLastSyncLabel": "Last sync",
+  "profileFitbitNeverSynced": "Never synced",
+  "profileFitbitAccountLabel": "Fitbit account",
+  "profileFitbitNotConfigured": "Backend configuration is still required. Set FITBIT_CONNECT_URL and FITBIT_SYNC_URL to enable the full flow.",
+  "profileFitbitConnect": "Connect Fitbit",
+  "profileFitbitSync": "Sync data",
+  "profileFitbitDisconnect": "Disconnect",
+  "profileFitbitConnectedSuccess": "Fitbit connected successfully.",
+  "profileFitbitDisconnectedSuccess": "Fitbit disconnected.",
+  "profileFitbitSyncSuccess": "Fitbit data synced successfully.",
+  "profileFitbitConnectError": "Unable to start Fitbit connection: {error}",
+  "@profileFitbitConnectError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileFitbitCallbackError": "Fitbit callback error: {error}",
+  "@profileFitbitCallbackError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileFitbitSyncError": "Unable to sync Fitbit data: {error}",
+  "@profileFitbitSyncError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileFitbitSteps": "{count} steps",
+  "@profileFitbitSteps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFitbitCalories": "{count} kcal",
+  "@profileFitbitCalories": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFitbitRestingHeartRate": "RHR {count} bpm",
+  "@profileFitbitRestingHeartRate": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFitbitActiveZoneMinutes": "{count} zone min",
+  "@profileFitbitActiveZoneMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFitbitVo2Max": "VO2 max {value}",
+  "@profileFitbitVo2Max": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "profileEditTitle": "Edit profile",
   "profileEditFullNameLabel": "Full name",
   "profileEditFullNameHint": "How should we call you?",

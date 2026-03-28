@@ -6,7 +6,7 @@ import '../data/exercise_guides.dart';
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 import '../model/max_test.dart';
-import 'max_tests_history.dart';
+import 'max_tests_history_page.dart';
 
 final supabase = Supabase.instance.client;
 

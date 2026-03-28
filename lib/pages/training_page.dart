@@ -1,4 +1,5 @@
 import 'package:calisync/model/workout_day.dart';
+import 'package:calisync/services/fitbit_service.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -9,7 +10,7 @@ import '../data/terminology_repository.dart';
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 import '../model/terminology_entry.dart';
-import 'main.dart';
+import 'home_page.dart';
 
 class Training extends StatefulWidget {
   final WorkoutDay day;
@@ -296,9 +297,15 @@ class _TrainingState extends State<Training> {
     });
 
     try {
+      final fitbitData = newValue
+          ? await _captureFitbitDataForExercise()
+          : null;
       await Supabase.instance.client
           .from('day_exercises')
-          .update({'completed': newValue})
+          .update({
+            'completed': newValue,
+            'fitbit_data': fitbitData,
+          })
           .eq('id', exercise.id!);
 
       if (!mounted) return;
@@ -309,6 +316,7 @@ class _TrainingState extends State<Training> {
           exerciseId: exercise.exerciseId,
           exerciseSlug: exercise.exerciseSlug,
           name: exercise.name,
+          fitbitData: fitbitData,
           notes: exercise.notes,
           traineeNotes: exercise.traineeNotes,
           position: exercise.position,
@@ -373,6 +381,7 @@ class _TrainingState extends State<Training> {
           exerciseId: exercise.exerciseId,
           exerciseSlug: exercise.exerciseSlug,
           name: exercise.name,
+          fitbitData: exercise.fitbitData,
           notes: exercise.notes,
           traineeNotes: newNotes,
           position: exercise.position,
@@ -483,12 +492,35 @@ class _TrainingState extends State<Training> {
   }
 
   void _sortExercises() {
-    _exercises.sort((a, b) {
-      if (a.isCompleted != b.isCompleted) {
-        return a.isCompleted ? 1 : -1;
-      }
-      return _exerciseOrderValue(a).compareTo(_exerciseOrderValue(b));
-    });
+    _exercises.sort(
+      (a, b) => _exerciseOrderValue(a).compareTo(_exerciseOrderValue(b)),
+    );
+  }
+
+  Future<Map<String, dynamic>?> _captureFitbitDataForExercise() async {
+    var fitbitState = await FitbitService.instance.loadState();
+    if (!fitbitState.isConnected) {
+      return null;
+    }
+
+    try {
+      fitbitState = await FitbitService.instance.syncLatestData();
+    } catch (_) {
+      fitbitState = await FitbitService.instance.loadState();
+    }
+
+    final summary = fitbitState.summary;
+    if (summary == null) {
+      return null;
+    }
+
+    return {
+      'source': 'fitbit',
+      'captured_at': DateTime.now().toUtc().toIso8601String(),
+      'last_sync_at': fitbitState.lastSyncAt?.toUtc().toIso8601String(),
+      'fitbit_user_id': fitbitState.fitbitUserId,
+      'summary': summary.toJson(),
+    };
   }
 
   void _openExerciseGuide(WorkoutExercise exercise) {
@@ -733,10 +765,13 @@ class _ExerciseCard extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
+    final appColors = theme.extension<AppColors>();
+    final successColor = appColors?.success ?? colorScheme.secondary;
+    final successContainer =
+        appColors?.successContainer ?? colorScheme.secondaryContainer;
     final titleStyle = textTheme.titleSmall?.copyWith(
       fontWeight: FontWeight.w600,
-      color: colorScheme.onSurface,
-      decoration: isCompleted ? TextDecoration.lineThrough : null,
+      color: isCompleted ? successColor : colorScheme.onSurface,
     );
     final detailNotes = (exercise.notes ?? '').trim();
     final traineeNotes = (exercise.traineeNotes ?? '').trim();
@@ -761,9 +796,13 @@ class _ExerciseCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
+        color: isCompleted
+            ? successContainer
+            : colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outlineVariant),
+        border: Border.all(
+          color: isCompleted ? successColor : colorScheme.outlineVariant,
+        ),
       ),
       child: Material(
         color: Colors.transparent,
@@ -785,7 +824,9 @@ class _ExerciseCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            colorScheme.primaryContainer,
+                            isCompleted
+                                ? successColor.withValues(alpha: 0.9)
+                                : colorScheme.primaryContainer,
                             colorScheme.surfaceContainerHighest,
                           ],
                           begin: Alignment.topLeft,
@@ -793,9 +834,11 @@ class _ExerciseCard extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
-                        Icons.fitness_center,
-                        color: Colors.white,
+                      child: Icon(
+                        isCompleted ? Icons.check_circle : Icons.fitness_center,
+                        color: isCompleted
+                            ? successColor
+                            : Colors.white,
                         size: 22,
                       ),
                     ),

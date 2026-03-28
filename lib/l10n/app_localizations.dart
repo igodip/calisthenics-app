@@ -178,6 +178,12 @@ abstract class AppLocalizations {
   /// **'Blu'**
   String get themeBlueLabel;
 
+  /// No description provided for @themeYellowLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Giallo'**
+  String get themeYellowLabel;
+
   /// No description provided for @onboardingTitleOne.
   ///
   /// In it, this message translates to:
@@ -1503,6 +1509,138 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Scegli la lingua dell\'app'**
   String get profileLanguageSettingsSubtitle;
+
+  /// No description provided for @profileFitbitTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Fitbit'**
+  String get profileFitbitTitle;
+
+  /// No description provided for @profileFitbitSubtitleDisconnected.
+  ///
+  /// In it, this message translates to:
+  /// **'Collega Fitbit per importare dati di attivita e frequenza cardiaca.'**
+  String get profileFitbitSubtitleDisconnected;
+
+  /// No description provided for @profileFitbitSubtitleConnecting.
+  ///
+  /// In it, this message translates to:
+  /// **'In attesa del completamento dell\'autorizzazione Fitbit.'**
+  String get profileFitbitSubtitleConnecting;
+
+  /// No description provided for @profileFitbitSubtitleConnected.
+  ///
+  /// In it, this message translates to:
+  /// **'Account Fitbit collegato. Puoi sincronizzare l\'ultimo riepilogo attivita.'**
+  String get profileFitbitSubtitleConnected;
+
+  /// No description provided for @profileFitbitLastSyncLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultima sincronizzazione'**
+  String get profileFitbitLastSyncLabel;
+
+  /// No description provided for @profileFitbitNeverSynced.
+  ///
+  /// In it, this message translates to:
+  /// **'Mai sincronizzato'**
+  String get profileFitbitNeverSynced;
+
+  /// No description provided for @profileFitbitAccountLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Account Fitbit'**
+  String get profileFitbitAccountLabel;
+
+  /// No description provided for @profileFitbitNotConfigured.
+  ///
+  /// In it, this message translates to:
+  /// **'Serve ancora la configurazione backend. Imposta FITBIT_CONNECT_URL e FITBIT_SYNC_URL per abilitare il flusso completo.'**
+  String get profileFitbitNotConfigured;
+
+  /// No description provided for @profileFitbitConnect.
+  ///
+  /// In it, this message translates to:
+  /// **'Collega Fitbit'**
+  String get profileFitbitConnect;
+
+  /// No description provided for @profileFitbitSync.
+  ///
+  /// In it, this message translates to:
+  /// **'Sincronizza dati'**
+  String get profileFitbitSync;
+
+  /// No description provided for @profileFitbitDisconnect.
+  ///
+  /// In it, this message translates to:
+  /// **'Scollega'**
+  String get profileFitbitDisconnect;
+
+  /// No description provided for @profileFitbitConnectedSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Fitbit collegato correttamente.'**
+  String get profileFitbitConnectedSuccess;
+
+  /// No description provided for @profileFitbitDisconnectedSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Fitbit scollegato.'**
+  String get profileFitbitDisconnectedSuccess;
+
+  /// No description provided for @profileFitbitSyncSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Dati Fitbit sincronizzati correttamente.'**
+  String get profileFitbitSyncSuccess;
+
+  /// No description provided for @profileFitbitConnectError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile avviare il collegamento Fitbit: {error}'**
+  String profileFitbitConnectError(Object error);
+
+  /// No description provided for @profileFitbitCallbackError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore callback Fitbit: {error}'**
+  String profileFitbitCallbackError(Object error);
+
+  /// No description provided for @profileFitbitSyncError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile sincronizzare i dati Fitbit: {error}'**
+  String profileFitbitSyncError(Object error);
+
+  /// No description provided for @profileFitbitSteps.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} passi'**
+  String profileFitbitSteps(int count);
+
+  /// No description provided for @profileFitbitCalories.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} kcal'**
+  String profileFitbitCalories(int count);
+
+  /// No description provided for @profileFitbitRestingHeartRate.
+  ///
+  /// In it, this message translates to:
+  /// **'FC riposo {count} bpm'**
+  String profileFitbitRestingHeartRate(int count);
+
+  /// No description provided for @profileFitbitActiveZoneMinutes.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} min zona'**
+  String profileFitbitActiveZoneMinutes(int count);
+
+  /// No description provided for @profileFitbitVo2Max.
+  ///
+  /// In it, this message translates to:
+  /// **'VO2 max {value}'**
+  String profileFitbitVo2Max(String value);
 
   /// No description provided for @profileEditTitle.
   ///

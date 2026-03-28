@@ -48,6 +48,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get themeBlueLabel => 'Azul';
 
   @override
+  String get themeYellowLabel => 'Amarillo';
+
+  @override
   String get onboardingTitleOne => 'Entrena de forma inteligente';
 
   @override
@@ -805,6 +808,93 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileLanguageSettingsSubtitle => 'Elige el idioma de la app';
+
+  @override
+  String get profileFitbitTitle => 'Fitbit';
+
+  @override
+  String get profileFitbitSubtitleDisconnected =>
+      'Conecta Fitbit para importar datos de actividad y frecuencia cardiaca.';
+
+  @override
+  String get profileFitbitSubtitleConnecting =>
+      'Esperando a que finalice la autorizacion de Fitbit.';
+
+  @override
+  String get profileFitbitSubtitleConnected =>
+      'Cuenta de Fitbit vinculada. Puedes sincronizar el ultimo resumen de actividad.';
+
+  @override
+  String get profileFitbitLastSyncLabel => 'Ultima sincronizacion';
+
+  @override
+  String get profileFitbitNeverSynced => 'Nunca sincronizado';
+
+  @override
+  String get profileFitbitAccountLabel => 'Cuenta de Fitbit';
+
+  @override
+  String get profileFitbitNotConfigured =>
+      'Todavia falta la configuracion del backend. Define FITBIT_CONNECT_URL y FITBIT_SYNC_URL para habilitar el flujo completo.';
+
+  @override
+  String get profileFitbitConnect => 'Conectar Fitbit';
+
+  @override
+  String get profileFitbitSync => 'Sincronizar datos';
+
+  @override
+  String get profileFitbitDisconnect => 'Desconectar';
+
+  @override
+  String get profileFitbitConnectedSuccess => 'Fitbit conectado correctamente.';
+
+  @override
+  String get profileFitbitDisconnectedSuccess => 'Fitbit desconectado.';
+
+  @override
+  String get profileFitbitSyncSuccess =>
+      'Datos de Fitbit sincronizados correctamente.';
+
+  @override
+  String profileFitbitConnectError(Object error) {
+    return 'No se pudo iniciar la conexion con Fitbit: $error';
+  }
+
+  @override
+  String profileFitbitCallbackError(Object error) {
+    return 'Error de callback de Fitbit: $error';
+  }
+
+  @override
+  String profileFitbitSyncError(Object error) {
+    return 'No se pudieron sincronizar los datos de Fitbit: $error';
+  }
+
+  @override
+  String profileFitbitSteps(int count) {
+    return '$count pasos';
+  }
+
+  @override
+  String profileFitbitCalories(int count) {
+    return '$count kcal';
+  }
+
+  @override
+  String profileFitbitRestingHeartRate(int count) {
+    return 'FC reposo $count bpm';
+  }
+
+  @override
+  String profileFitbitActiveZoneMinutes(int count) {
+    return '$count min zona';
+  }
+
+  @override
+  String profileFitbitVo2Max(String value) {
+    return 'VO2 max $value';
+  }
 
   @override
   String get profileEditTitle => 'Editar perfil';

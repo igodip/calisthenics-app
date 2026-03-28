@@ -1,6 +1,6 @@
 
 import 'package:calisync/l10n/locale_controller.dart';
-import 'package:calisync/pages/onboarding.dart';
+import 'package:calisync/pages/onboarding_page.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:calisync/theme/theme_controller.dart';
 import 'package:flutter/material.dart';

@@ -6,6 +6,7 @@ enum AppThemeType {
   pink,
   red,
   blue,
+  yellow,
 }
 
 @immutable
@@ -113,6 +114,13 @@ class AppTheme {
   static const Color _blueSurfaceVariant = Color(0xFF293949);
   static const Color _blueTertiary = Color(0xFFE3F2FD);
 
+  static const Color _yellowPrimary = Color(0xFFF4C542);
+  static const Color _yellowSecondary = Color(0xFFE0A81E);
+  static const Color _yellowBackground = Color(0xFF2A2415);
+  static const Color _yellowSurface = Color(0xFF352D1B);
+  static const Color _yellowSurfaceVariant = Color(0xFF433823);
+  static const Color _yellowTertiary = Color(0xFFFFF4CC);
+
   static const Color _success = Color(0xFF6C9C48);
   static const Color _warning = Color(0xFFFFA726);
 
@@ -126,6 +134,8 @@ class AppTheme {
         return AppThemeType.red;
       case 'blue':
         return AppThemeType.blue;
+      case 'yellow':
+        return AppThemeType.yellow;
       case 'default':
       default:
         return AppThemeType.defaultTheme;
@@ -138,6 +148,7 @@ class AppTheme {
       AppThemeType.pink => 'pink',
       AppThemeType.red => 'red',
       AppThemeType.blue => 'blue',
+      AppThemeType.yellow => 'yellow',
       AppThemeType.defaultTheme => 'default',
     };
   }
@@ -148,6 +159,7 @@ class AppTheme {
       AppThemeType.pink => _pinkPrimary,
       AppThemeType.red => _redPrimary,
       AppThemeType.blue => _bluePrimary,
+      AppThemeType.yellow => _yellowPrimary,
       AppThemeType.defaultTheme => _defaultPrimary,
     };
   }
@@ -189,6 +201,15 @@ class AppTheme {
           surfaceVariant: _blueSurfaceVariant,
           tertiary: _blueTertiary,
           surfaceTint: _blueTertiary.withValues(alpha: 0.2),
+        ),
+      AppThemeType.yellow => _buildTheme(
+          primary: _yellowPrimary,
+          secondary: _yellowSecondary,
+          background: _yellowBackground,
+          surface: _yellowSurface,
+          surfaceVariant: _yellowSurfaceVariant,
+          tertiary: _yellowTertiary,
+          surfaceTint: _yellowTertiary.withValues(alpha: 0.2),
         ),
       AppThemeType.defaultTheme => _buildTheme(
           primary: _defaultPrimary,

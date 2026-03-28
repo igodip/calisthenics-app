@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
-import 'max_tests.dart';
+import 'max_tests_page.dart';
 
 final supabase = Supabase.instance.client;
 

@@ -1,12 +1,13 @@
 import 'package:calisync/components/selection_card.dart';
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/model/workout_plan.dart';
-import 'package:calisync/pages/training.dart';
+import 'package:calisync/pages/training_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../theme/app_theme.dart';
 
 class WorkoutPlanPage extends StatefulWidget {
   const WorkoutPlanPage({super.key});
@@ -120,7 +121,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         .select(
           'id, week, day_code, title, notes, completed, completed_at, '
           'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) ), '
-          'day_exercises ( id, position, notes, completed, trainee_notes, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes)',
+          'day_exercises ( id, position, notes, completed, trainee_notes, fitbit_data, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes)',
         )
         .eq('workout_plan_days.workout_plans.trainee_id', userId)
         .order('week', ascending: true)
@@ -180,6 +181,8 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
             exerciseValue is Map ? exerciseValue.cast<String, dynamic>() : null;
         final linkedExercise =
             (exercise['exercises'] as Map?)?.cast<String, dynamic>();
+        final fitbitData =
+            (exercise['fitbit_data'] as Map?)?.cast<String, dynamic>();
         final name = linkedExercise?['name'] as String? ??
             exerciseMap?['name'] as String? ??
             exerciseValue as String?;
@@ -198,6 +201,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
           exerciseSlug: linkedExercise?['slug'] as String? ??
               exerciseMap?['slug'] as String?,
           name: name,
+          fitbitData: fitbitData,
           position: (exercise['position'] as num?)?.toInt(),
           durationMinutes: (exercise['duration_minutes'] as num?)?.toInt(),
           notes: exercise['notes'] as String?,
@@ -653,21 +657,25 @@ class _WorkoutDayTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final appColors = theme.extension<AppColors>();
     final isCompleted = day.isCompleted;
 
     return SelectionCard(
       title: day.formattedTitle(l10n),
       icon: Icons.calendar_today,
       iconColor: isCompleted
-          ? theme.colorScheme.secondary
+          ? (appColors?.success ?? theme.colorScheme.secondary)
           : theme.colorScheme.primary,
-      tileColor: isCompleted ? theme.colorScheme.surfaceContainerHighest : null,
+      tileColor: isCompleted
+          ? (appColors?.successContainer ??
+              theme.colorScheme.secondaryContainer)
+          : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (isCompleted)
             Icon(Icons.check_circle,
-                color: theme.colorScheme.secondary),
+                color: appColors?.success ?? theme.colorScheme.secondary),
           if (isCompleted)
             const SizedBox(width: 6),
           const Icon(Icons.arrow_forward_ios),

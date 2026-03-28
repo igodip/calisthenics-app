@@ -18,6 +18,7 @@ class SettingsPage extends StatelessWidget {
       (AppThemeType.pink, l10n.themePinkLabel),
       (AppThemeType.red, l10n.themeRedLabel),
       (AppThemeType.blue, l10n.themeBlueLabel),
+      (AppThemeType.yellow, l10n.themeYellowLabel),
     ];
 
     return Scaffold(

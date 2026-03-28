@@ -1,0 +1,13 @@
+project_id = "jrqjysycoqhlnyufhliy"
+
+[functions.fitbit-connect]
+verify_jwt = false
+
+[functions.fitbit-connect-init]
+verify_jwt = true
+
+[functions.fitbit-sync]
+verify_jwt = true
+
+[functions.fitbit-heart-rate-window]
+verify_jwt = true

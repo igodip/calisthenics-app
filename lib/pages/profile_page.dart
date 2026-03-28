@@ -1,7 +1,10 @@
-// lib/profile.dart
+// lib/pages/profile_page.dart
+import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:app_links/app_links.dart';
 import 'package:calisync/model/trainee.dart';
+import 'package:calisync/services/fitbit_service.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,8 +13,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
-import 'login.dart';
-import 'settings.dart';
+import 'login_page.dart';
+import 'settings_page.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -154,17 +157,151 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late Future<UserProfileData> _profileFuture;
+  late Future<FitbitConnectionState> _fitbitFuture;
+  StreamSubscription<Uri>? _fitbitLinkSubscription;
+  bool _fitbitActionInFlight = false;
 
   @override
   void initState() {
     super.initState();
     _profileFuture = getUserData();
+    _fitbitFuture = FitbitService.instance.loadState();
+    _initializeFitbitLinks();
+  }
+
+  @override
+  void dispose() {
+    _fitbitLinkSubscription?.cancel();
+    super.dispose();
   }
 
   void _refreshProfile() {
     setState(() {
       _profileFuture = getUserData();
     });
+  }
+
+  void _refreshFitbit() {
+    setState(() {
+      _fitbitFuture = FitbitService.instance.loadState();
+    });
+  }
+
+  Future<void> _initializeFitbitLinks() async {
+    final appLinks = AppLinks();
+    final initialUri = await appLinks.getInitialLink();
+    await _handleFitbitCallback(initialUri);
+
+    _fitbitLinkSubscription = appLinks.uriLinkStream.listen(
+      _handleFitbitCallback,
+      onError: (Object error) {
+        if (!mounted) {
+          return;
+        }
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.profileFitbitCallbackError('$error'))),
+        );
+      },
+    );
+  }
+
+  Future<void> _handleFitbitCallback(Uri? uri) async {
+    if (uri == null) {
+      return;
+    }
+    final handled = await FitbitService.instance.handleCallback(uri);
+    if (!handled || !mounted) {
+      return;
+    }
+
+    _refreshFitbit();
+    final l10n = AppLocalizations.of(context)!;
+    final state = await FitbitService.instance.loadState();
+    if (!mounted) {
+      return;
+    }
+    final message = state.lastError != null
+        ? l10n.profileFitbitCallbackError(state.lastError!)
+        : l10n.profileFitbitConnectedSuccess;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  Future<void> _connectFitbit(UserProfileData data) async {
+    if (_fitbitActionInFlight) {
+      return;
+    }
+    setState(() {
+      _fitbitActionInFlight = true;
+    });
+
+    try {
+      await FitbitService.instance.startConnection(userId: data.userId);
+      _refreshFitbit();
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profileFitbitConnectError('$error'))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _fitbitActionInFlight = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _syncFitbit() async {
+    if (_fitbitActionInFlight) {
+      return;
+    }
+    setState(() {
+      _fitbitActionInFlight = true;
+    });
+
+    try {
+      await FitbitService.instance.syncLatestData();
+      _refreshFitbit();
+      if (!mounted) {
+        return;
+      }
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profileFitbitSyncSuccess)),
+      );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profileFitbitSyncError('$error'))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _fitbitActionInFlight = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _disconnectFitbit() async {
+    await FitbitService.instance.disconnect();
+    _refreshFitbit();
+    if (!mounted) {
+      return;
+    }
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.profileFitbitDisconnectedSuccess)),
+    );
   }
 
   void _showLanguagePicker() {
@@ -411,6 +548,183 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  FutureBuilder<FitbitConnectionState>(
+                    future: _fitbitFuture,
+                    builder: (context, fitbitSnapshot) {
+                      final fitbitState = fitbitSnapshot.data ??
+                          const FitbitConnectionState(
+                            isConnected: false,
+                            isConnecting: false,
+                          );
+                      final materialL10n = MaterialLocalizations.of(context);
+                      final lastSyncText = fitbitState.lastSyncAt == null
+                          ? l10n.profileFitbitNeverSynced
+                          : '${materialL10n.formatFullDate(fitbitState.lastSyncAt!)} '
+                              '${materialL10n.formatTimeOfDay(
+                                TimeOfDay.fromDateTime(fitbitState.lastSyncAt!),
+                                alwaysUse24HourFormat: true,
+                              )}';
+
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.watch_outlined,
+                                    color: colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          l10n.profileFitbitTitle,
+                                          style: theme.textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          fitbitState.isConnecting
+                                              ? l10n.profileFitbitSubtitleConnecting
+                                              : fitbitState.isConnected
+                                                  ? l10n.profileFitbitSubtitleConnected
+                                                  : l10n.profileFitbitSubtitleDisconnected,
+                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                '${l10n.profileFitbitLastSyncLabel}: $lastSyncText',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              if (fitbitState.fitbitUserId != null &&
+                                  fitbitState.fitbitUserId!.isNotEmpty) ...[
+                                const SizedBox(height: 6),
+                                Text(
+                                  '${l10n.profileFitbitAccountLabel}: ${fitbitState.fitbitUserId!}',
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ],
+                              if (fitbitState.lastError != null &&
+                                  fitbitState.lastError!.isNotEmpty) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  fitbitState.lastError!,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.error,
+                                  ),
+                                ),
+                              ],
+                              if (!FitbitService.instance.hasConnectConfiguration) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  l10n.profileFitbitNotConfigured,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                              if (fitbitState.summary != null) ...[
+                                const SizedBox(height: 12),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: [
+                                    if (fitbitState.summary!.steps != null)
+                                      Chip(
+                                        label: Text(
+                                          l10n.profileFitbitSteps(
+                                            fitbitState.summary!.steps!,
+                                          ),
+                                        ),
+                                      ),
+                                    if (fitbitState.summary!.calories != null)
+                                      Chip(
+                                        label: Text(
+                                          l10n.profileFitbitCalories(
+                                            fitbitState.summary!.calories!,
+                                          ),
+                                        ),
+                                      ),
+                                    if (fitbitState.summary!.restingHeartRate != null)
+                                      Chip(
+                                        label: Text(
+                                          l10n.profileFitbitRestingHeartRate(
+                                            fitbitState.summary!.restingHeartRate!,
+                                          ),
+                                        ),
+                                      ),
+                                    if (fitbitState.summary!.activeZoneMinutes != null)
+                                      Chip(
+                                        label: Text(
+                                          l10n.profileFitbitActiveZoneMinutes(
+                                            fitbitState.summary!.activeZoneMinutes!,
+                                          ),
+                                        ),
+                                      ),
+                                    if (fitbitState.summary!.vo2Max != null)
+                                      Chip(
+                                        label: Text(
+                                          l10n.profileFitbitVo2Max(
+                                            fitbitState.summary!.vo2Max!,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ],
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 12,
+                                runSpacing: 12,
+                                children: [
+                                  FilledButton.icon(
+                                    onPressed: _fitbitActionInFlight
+                                        ? null
+                                        : () => _connectFitbit(data),
+                                    icon: const Icon(Icons.link),
+                                    label: Text(l10n.profileFitbitConnect),
+                                  ),
+                                  OutlinedButton.icon(
+                                    onPressed: _fitbitActionInFlight ||
+                                            !fitbitState.isConnected
+                                        ? null
+                                        : _syncFitbit,
+                                    icon: const Icon(Icons.sync),
+                                    label: Text(l10n.profileFitbitSync),
+                                  ),
+                                  TextButton.icon(
+                                    onPressed: _fitbitActionInFlight ||
+                                            !fitbitState.isConnected
+                                        ? null
+                                        : _disconnectFitbit,
+                                    icon: const Icon(Icons.link_off),
+                                    label: Text(l10n.profileFitbitDisconnect),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
                   Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: ListTile(

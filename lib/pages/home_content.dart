@@ -8,7 +8,7 @@ import '../components/strength_level_card.dart';
 import '../data/exercise_guides.dart';
 import '../data/exercise_unlocks.dart';
 import '../l10n/app_localizations.dart';
-import 'profile.dart';
+import 'profile_page.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({

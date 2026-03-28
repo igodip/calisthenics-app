@@ -1,18 +1,18 @@
-// lib/main.dart
-import 'package:calisync/pages/terminology.dart';
-import 'package:calisync/pages/trainee_feedback.dart';
+// lib/pages/home_page.dart
+import 'package:calisync/pages/profile_page.dart';
+import 'package:calisync/pages/terminology_page.dart';
+import 'package:calisync/pages/trainee_feedback_page.dart';
 import 'package:flutter/material.dart';
-import 'package:calisync/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
 import '../data/exercise_guides.dart' as guide_data;
 import '../data/terminology_repository.dart';
 import '../l10n/app_localizations.dart';
-import 'exercise_guides.dart';
+import 'exercise_guides_page.dart';
 import 'home_content.dart';
-import 'max_tests_menu.dart';
-import 'timer.dart';
+import 'max_tests_menu_page.dart';
+import 'timer_page.dart';
 import 'workout_plan_page.dart';
 
 class _NavigationItem {
