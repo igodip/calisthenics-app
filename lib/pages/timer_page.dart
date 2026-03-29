@@ -770,17 +770,33 @@ class _TimerPageState extends State<TimerPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Align(
-                        alignment: Alignment.center,
-                        child: _ControlButton(
-                          label: _isRunning
-                              ? l10n.timerControlPause
-                              : l10n.timerControlPlay,
-                          icon: _isRunning ? Icons.pause : Icons.play_arrow,
-                          onPressed: _exerciseCount == 0 ? null : _toggleRunning,
-                          isPrimary: true,
+                      Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: [
+                            _ControlButton(
+                              label: _isRunning
+                                  ? l10n.timerControlPause
+                                  : l10n.timerControlPlay,
+                              icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                              onPressed: _exerciseCount == 0 ? null : _toggleRunning,
+                              isPrimary: true,
+                            ),
+                            _ControlButton(
+                              label: l10n.timerControlSkip,
+                              icon: Icons.skip_next_rounded,
+                              onPressed: _exerciseCount == 0
+                                  ? null
+                                  : () => _advancePhase(autoContinue: _isRunning),
+                            ),
+                            _ControlButton(
+                              label: l10n.timerControlReset,
+                              icon: Icons.restart_alt,
+                              onPressed: _resetWorkout,
+                            ),
+                          ],
                         ),
-                      ),
                       const SizedBox(height: 18),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -865,26 +881,6 @@ class _TimerPageState extends State<TimerPage> {
                         onAdd: () => _editExerciseName(),
                         onEdit: _editExerciseName,
                         onRemove: _removeExerciseAt,
-                      ),
-                      const SizedBox(height: 20),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: [
-                          _ControlButton(
-                            label: l10n.timerControlSkip,
-                            icon: Icons.skip_next_rounded,
-                            onPressed: _exerciseCount == 0
-                                ? null
-                                : () => _advancePhase(autoContinue: _isRunning),
-                          ),
-                          _ControlButton(
-                            label: l10n.timerControlReset,
-                            icon: Icons.restart_alt,
-                            onPressed: _resetWorkout,
-                          ),
-                        ],
                       ),
                     ],
                   ),
