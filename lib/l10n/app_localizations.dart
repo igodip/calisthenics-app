@@ -736,6 +736,36 @@ abstract class AppLocalizations {
   /// **'{hours}h {minutes}m'**
   String homeProgressTimeValue(int hours, int minutes);
 
+  /// No description provided for @homeProgressNoPlan.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun workout plan disponibile al momento.'**
+  String get homeProgressNoPlan;
+
+  /// No description provided for @homePlanStatsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Statistiche del piano'**
+  String get homePlanStatsTitle;
+
+  /// No description provided for @homePlanStatsDaysLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Giorni'**
+  String get homePlanStatsDaysLabel;
+
+  /// No description provided for @homePlanStatsExercisesLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Esercizi'**
+  String get homePlanStatsExercisesLabel;
+
+  /// No description provided for @homePlanStatsCompletionValue.
+  ///
+  /// In it, this message translates to:
+  /// **'{progress}% completato'**
+  String homePlanStatsCompletionValue(int progress);
+
   /// No description provided for @homeSkillProgressTitle.
   ///
   /// In it, this message translates to:

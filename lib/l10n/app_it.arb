@@ -122,6 +122,18 @@
       }
     }
   },
+  "homeProgressNoPlan": "Nessun workout plan disponibile al momento.",
+  "homePlanStatsTitle": "Statistiche del piano",
+  "homePlanStatsDaysLabel": "Giorni",
+  "homePlanStatsExercisesLabel": "Esercizi",
+  "homePlanStatsCompletionValue": "{progress}% completato",
+  "@homePlanStatsCompletionValue": {
+    "placeholders": {
+      "progress": {
+        "type": "int"
+      }
+    }
+  },
   "homeSkillProgressTitle": "Progressi skill",
   "homeSkillProgressValue": "{unlocked} / {total}",
   "@homeSkillProgressValue": {

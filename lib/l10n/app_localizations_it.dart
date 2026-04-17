@@ -370,6 +370,24 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get homeProgressNoPlan =>
+      'Nessun workout plan disponibile al momento.';
+
+  @override
+  String get homePlanStatsTitle => 'Statistiche del piano';
+
+  @override
+  String get homePlanStatsDaysLabel => 'Giorni';
+
+  @override
+  String get homePlanStatsExercisesLabel => 'Esercizi';
+
+  @override
+  String homePlanStatsCompletionValue(int progress) {
+    return '$progress% completato';
+  }
+
+  @override
   String get homeSkillProgressTitle => 'Progressi skill';
 
   @override

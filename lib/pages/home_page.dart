@@ -12,6 +12,7 @@ import '../l10n/app_localizations.dart';
 import 'exercise_guides_page.dart';
 import 'home_content.dart';
 import 'max_tests_menu_page.dart';
+import 'streak_history_page.dart';
 import 'timer_page.dart';
 import 'workout_plan_page.dart';
 
@@ -42,8 +43,8 @@ class HomePage extends StatefulWidget {
   final String? initialGuideSlug;
   final String? initialGuideId;
 
-  static const int terminologyIndex = 6;
-  static const int guidesIndex = 2;
+  static const int terminologyIndex = 7;
+  static const int guidesIndex = 3;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -57,7 +58,7 @@ class _HomePageState extends State<HomePage> {
 
   final supabase = Supabase.instance.client;
   static const int _workoutPlanIndex = 1;
-  static const int _maxTestsIndex = 4;
+  static const int _maxTestsIndex = 5;
 
   @override
   void initState() {
@@ -104,6 +105,11 @@ class _HomePageState extends State<HomePage> {
         page: const WorkoutPlanPage(),
       ),
       _NavigationItem(
+        title: 'Streak Tracker',
+        icon: Icons.local_fire_department,
+        page: const StreakHistoryPage(),
+      ),
+      _NavigationItem(
         title: l10n.navGuides,
         icon: Icons.fitness_center,
         page: ExerciseGuidesPage(
@@ -121,9 +127,10 @@ class _HomePageState extends State<HomePage> {
         icon: Icons.emoji_events_outlined,
         page: const MaxTestsMenuPage(),
       ),
-      _NavigationItem(title: l10n.traineeFeedbackTitle,
-          icon: Icons.feedback,
-          page: const TraineeFeedbackPage()
+      _NavigationItem(
+        title: l10n.traineeFeedbackTitle,
+        icon: Icons.feedback,
+        page: const TraineeFeedbackPage(),
       ),
       _NavigationItem(
         title: l10n.navTerminology,
@@ -257,9 +264,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    return PlanExpiredGate(
-      useOverlay: true,
-      child: scaffold,
-    );
+    return PlanExpiredGate(useOverlay: true, child: scaffold);
   }
 }

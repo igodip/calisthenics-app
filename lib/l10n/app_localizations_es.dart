@@ -370,6 +370,24 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get homeProgressNoPlan =>
+      'Todavía no hay ningún plan de entrenamiento disponible.';
+
+  @override
+  String get homePlanStatsTitle => 'Estadísticas del plan';
+
+  @override
+  String get homePlanStatsDaysLabel => 'Días';
+
+  @override
+  String get homePlanStatsExercisesLabel => 'Ejercicios';
+
+  @override
+  String homePlanStatsCompletionValue(int progress) {
+    return '$progress% completado';
+  }
+
+  @override
   String get homeSkillProgressTitle => 'Progreso de habilidades';
 
   @override
