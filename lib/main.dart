@@ -18,7 +18,7 @@ void main() async {
   ]);
   await Supabase.initialize(
     url: 'https://jrqjysycoqhlnyufhliy.supabase.co',
-    anonKey:
+    publishableKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpycWp5c3ljb3FobG55dWZobGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0MzM0NTIsImV4cCI6MjA2ODAwOTQ1Mn0.3BVA-Ar9YtLGGO12Gt6NQkMl2cn18E_b48PGtlFxxCw',
   );
   await StreakNotificationService.instance.initialize();
