@@ -612,6 +612,28 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get trainingExerciseFeedbackTitle => 'Feedback del ejercicio';
+
+  @override
+  String get trainingExerciseFeedbackHint =>
+      'Añade feedback para este ejercicio completado.';
+
+  @override
+  String get trainingExerciseFeedbackLabel => '¿Cómo se sintió este ejercicio?';
+
+  @override
+  String get trainingExerciseSaveFeedback => 'Guardar feedback';
+
+  @override
+  String get trainingExerciseFeedbackSaved =>
+      'Feedback del ejercicio actualizado';
+
+  @override
+  String trainingExerciseFeedbackError(Object error) {
+    return 'No se pudo actualizar el feedback del ejercicio: $error';
+  }
+
+  @override
   String logoutError(Object error) {
     return 'Error al cerrar sesión: $error';
   }

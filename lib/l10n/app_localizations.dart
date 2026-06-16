@@ -1162,6 +1162,42 @@ abstract class AppLocalizations {
   /// **'Impossibile aggiornare le note: {error}'**
   String trainingExerciseNotesError(Object error);
 
+  /// No description provided for @trainingExerciseFeedbackTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback esercizio'**
+  String get trainingExerciseFeedbackTitle;
+
+  /// No description provided for @trainingExerciseFeedbackHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi un feedback per questo esercizio completato.'**
+  String get trainingExerciseFeedbackHint;
+
+  /// No description provided for @trainingExerciseFeedbackLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Come è andato questo esercizio?'**
+  String get trainingExerciseFeedbackLabel;
+
+  /// No description provided for @trainingExerciseSaveFeedback.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva feedback'**
+  String get trainingExerciseSaveFeedback;
+
+  /// No description provided for @trainingExerciseFeedbackSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback esercizio aggiornato'**
+  String get trainingExerciseFeedbackSaved;
+
+  /// No description provided for @trainingExerciseFeedbackError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aggiornare il feedback esercizio: {error}'**
+  String trainingExerciseFeedbackError(Object error);
+
   /// No description provided for @logoutError.
   ///
   /// In it, this message translates to:

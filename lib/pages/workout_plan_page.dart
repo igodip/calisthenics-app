@@ -78,7 +78,8 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         .order('starts_on', ascending: false)
         .order('created_at', ascending: false);
 
-    final data = (response as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+    final data = (response as List<dynamic>? ?? [])
+        .cast<Map<String, dynamic>>();
     DateTime? parseDate(dynamic value) {
       if (value is DateTime) return value;
       if (value is String && value.isNotEmpty) {
@@ -121,12 +122,16 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         .select(
           'id, week, day_code, title, notes, completed, completed_at, '
           'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) ), '
-          'day_exercises ( id, position, notes, completed, trainee_notes, fitbit_data, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes)',
+          'day_exercises ( id, position, notes, completed, trainee_notes, exercise_feedback, fitbit_data, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes)',
         )
         .eq('workout_plan_days.workout_plans.trainee_id', userId)
         .order('week', ascending: true)
         .order('day_code', ascending: true)
-        .order('position', referencedTable: 'workout_plan_days', ascending: true)
+        .order(
+          'position',
+          referencedTable: 'workout_plan_days',
+          ascending: true,
+        )
         .order('position', referencedTable: 'day_exercises', ascending: true);
 
     final data = (response as List<dynamic>? ?? [])
@@ -159,14 +164,15 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     }
 
     return data.map((row) {
-      final dayExercises =
-      (row['day_exercises'] as List<dynamic>? ?? []).cast<Map<String, dynamic>>();
+      final dayExercises = (row['day_exercises'] as List<dynamic>? ?? [])
+          .cast<Map<String, dynamic>>();
 
       final Map<String, dynamic>? wpd =
-      row['workout_plan_days'] as Map<String, dynamic>?;
+          row['workout_plan_days'] as Map<String, dynamic>?;
 
       final Map<String, dynamic> planDetails =
-          (wpd?['workout_plans'] as Map<String, dynamic>?) ?? <String, dynamic>{};
+          (wpd?['workout_plans'] as Map<String, dynamic>?) ??
+          <String, dynamic>{};
 
       final planPosition = (wpd?['position'] as num?)?.toInt();
 
@@ -177,13 +183,15 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
 
       final exercises = dayExercises.map((exercise) {
         final exerciseValue = exercise['exercise'];
-        final exerciseMap =
-            exerciseValue is Map ? exerciseValue.cast<String, dynamic>() : null;
-        final linkedExercise =
-            (exercise['exercises'] as Map?)?.cast<String, dynamic>();
-        final fitbitData =
-            (exercise['fitbit_data'] as Map?)?.cast<String, dynamic>();
-        final name = linkedExercise?['name'] as String? ??
+        final exerciseMap = exerciseValue is Map
+            ? exerciseValue.cast<String, dynamic>()
+            : null;
+        final linkedExercise = (exercise['exercises'] as Map?)
+            ?.cast<String, dynamic>();
+        final fitbitData = (exercise['fitbit_data'] as Map?)
+            ?.cast<String, dynamic>();
+        final name =
+            linkedExercise?['name'] as String? ??
             exerciseMap?['name'] as String? ??
             exerciseValue as String?;
         final terminology = parseStringList(
@@ -195,10 +203,12 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
 
         return WorkoutExercise(
           id: exercise['id'] as String?,
-          exerciseId: exercise['exercise_id'] as String? ??
+          exerciseId:
+              exercise['exercise_id'] as String? ??
               linkedExercise?['id'] as String? ??
               exerciseMap?['id'] as String?,
-          exerciseSlug: linkedExercise?['slug'] as String? ??
+          exerciseSlug:
+              linkedExercise?['slug'] as String? ??
               exerciseMap?['slug'] as String?,
           name: name,
           fitbitData: fitbitData,
@@ -206,6 +216,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
           durationMinutes: (exercise['duration_minutes'] as num?)?.toInt(),
           notes: exercise['notes'] as String?,
           traineeNotes: exercise['trainee_notes'] as String?,
+          exerciseFeedback: exercise['exercise_feedback'] as String?,
           terminology: terminology,
           skills: skills,
           isCompleted: exercise['completed'] as bool? ?? false,
@@ -236,9 +247,15 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   ) {
     String planKey(WorkoutDay day) {
       if (day.planId != null && day.planId!.isNotEmpty) return day.planId!;
-      if (day.planName != null && day.planName!.isNotEmpty) return day.planName!;
-      if (day.planStartedAt != null) return 'start-${day.planStartedAt!.toIso8601String()}';
-      if (day.createdAt != null) return 'created-${day.createdAt!.toIso8601String()}';
+      if (day.planName != null && day.planName!.isNotEmpty) {
+        return day.planName!;
+      }
+      if (day.planStartedAt != null) {
+        return 'start-${day.planStartedAt!.toIso8601String()}';
+      }
+      if (day.createdAt != null) {
+        return 'created-${day.createdAt!.toIso8601String()}';
+      }
       return 'plan';
     }
 
@@ -252,9 +269,9 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
           .map((day) => day.planStartedAt ?? day.createdAt)
           .whereType<DateTime>()
           .fold<DateTime?>(null, (previous, element) {
-        if (previous == null) return element;
-        return element.isBefore(previous) ? element : previous;
-      });
+            if (previous == null) return element;
+            return element.isBefore(previous) ? element : previous;
+          });
     }
 
     DateTime? latestDate(Iterable<WorkoutDay> entries) {
@@ -262,9 +279,9 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
           .map((day) => day.planStartedAt ?? day.createdAt)
           .whereType<DateTime>()
           .fold<DateTime?>(null, (previous, element) {
-        if (previous == null) return element;
-        return element.isAfter(previous) ? element : previous;
-      });
+            if (previous == null) return element;
+            return element.isAfter(previous) ? element : previous;
+          });
     }
 
     final plans = grouped.entries.map((entry) {
@@ -317,9 +334,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   Future<void> _openDay(WorkoutDay day) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => Training(day: day),
-      ),
+      MaterialPageRoute(builder: (context) => Training(day: day)),
     ).then((updated) {
       if (updated == true) {
         _refresh();
@@ -333,10 +348,8 @@ class _WorkoutPlanBody extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final Future<_WorkoutPlanData> planDataFuture;
   final VoidCallback onRetry;
-  final List<_WorkoutPlanGroup> Function(
-    List<WorkoutDay>,
-    AppLocalizations,
-  ) buildPlanGroups;
+  final List<_WorkoutPlanGroup> Function(List<WorkoutDay>, AppLocalizations)
+  buildPlanGroups;
   final ValueChanged<WorkoutDay> onOpenDay;
 
   const _WorkoutPlanBody({
@@ -371,11 +384,7 @@ class _WorkoutPlanBody extends StatelessWidget {
             ListView(
               padding: listPadding,
               physics: const AlwaysScrollableScrollPhysics(),
-              children: const [
-                Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ],
+              children: const [Center(child: CircularProgressIndicator())],
             ),
           );
         }
@@ -442,11 +451,7 @@ class _WorkoutPlanBody extends StatelessWidget {
                 padding: listPadding,
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
-                  Image.asset(
-                    'assets/logo.png',
-                    height: 56,
-                    width: 56,
-                  ),
+                  Image.asset('assets/logo.png', height: 56, width: 56),
                   const SizedBox(height: 16),
                   Text(
                     l10n.homeEmptyTitle,
@@ -459,7 +464,7 @@ class _WorkoutPlanBody extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 24)
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -475,19 +480,16 @@ class _WorkoutPlanBody extends StatelessWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 const SizedBox(height: 16),
-                ...planGroups
-                    .asMap()
-                    .entries
-                    .map(
-                      (entry) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: _WorkoutPlanSection(
-                          plan: entry.value,
-                          isLatest: entry.key == 0,
-                          onOpenDay: onOpenDay,
-                        ),
-                      ),
+                ...planGroups.asMap().entries.map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _WorkoutPlanSection(
+                      plan: entry.value,
+                      isLatest: entry.key == 0,
+                      onOpenDay: onOpenDay,
                     ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -507,10 +509,7 @@ class _ExpiredPlanStub extends StatelessWidget {
   final String title;
   final String description;
 
-  const _ExpiredPlanStub({
-    required this.title,
-    required this.description,
-  });
+  const _ExpiredPlanStub({required this.title, required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -545,14 +544,9 @@ class _WorkoutPlanData {
   final List<WorkoutPlan> plans;
   final List<WorkoutDay> days;
 
-  const _WorkoutPlanData({
-    required this.plans,
-    required this.days,
-  });
+  const _WorkoutPlanData({required this.plans, required this.days});
 
-  const _WorkoutPlanData.empty()
-      : plans = const [],
-        days = const [];
+  const _WorkoutPlanData.empty() : plans = const [], days = const [];
 }
 
 class _WorkoutPlanGroup {
@@ -593,7 +587,9 @@ class _WorkoutPlanSection extends StatelessWidget {
         : null;
 
     return Card(
-      color: isLatest ? theme.colorScheme.primaryContainer.withValues(alpha: 0.25) : null,
+      color: isLatest
+          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.25)
+          : null,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
@@ -632,10 +628,7 @@ class _WorkoutPlanSection extends StatelessWidget {
           ...plan.days.map(
             (day) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: _WorkoutDayTile(
-                day: day,
-                onTap: () => onOpenDay(day),
-              ),
+              child: _WorkoutDayTile(day: day, onTap: () => onOpenDay(day)),
             ),
           ),
         ],
@@ -648,10 +641,7 @@ class _WorkoutDayTile extends StatelessWidget {
   final WorkoutDay day;
   final VoidCallback onTap;
 
-  const _WorkoutDayTile({
-    required this.day,
-    required this.onTap,
-  });
+  const _WorkoutDayTile({required this.day, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -668,16 +658,17 @@ class _WorkoutDayTile extends StatelessWidget {
           : theme.colorScheme.primary,
       tileColor: isCompleted
           ? (appColors?.successContainer ??
-              theme.colorScheme.secondaryContainer)
+                theme.colorScheme.secondaryContainer)
           : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (isCompleted)
-            Icon(Icons.check_circle,
-                color: appColors?.success ?? theme.colorScheme.secondary),
-          if (isCompleted)
-            const SizedBox(width: 6),
+            Icon(
+              Icons.check_circle,
+              color: appColors?.success ?? theme.colorScheme.secondary,
+            ),
+          if (isCompleted) const SizedBox(width: 6),
           const Icon(Icons.arrow_forward_ios),
         ],
       ),

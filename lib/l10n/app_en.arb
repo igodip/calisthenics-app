@@ -245,6 +245,19 @@
       }
     }
   },
+  "trainingExerciseFeedbackTitle": "Exercise feedback",
+  "trainingExerciseFeedbackHint": "Add feedback for this completed exercise.",
+  "trainingExerciseFeedbackLabel": "How did this exercise feel?",
+  "trainingExerciseSaveFeedback": "Save feedback",
+  "trainingExerciseFeedbackSaved": "Exercise feedback updated",
+  "trainingExerciseFeedbackError": "Unable to update exercise feedback: {error}",
+  "@trainingExerciseFeedbackError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "logoutError": "Error while logging out: {error}",
   "@logoutError": {
     "placeholders": {

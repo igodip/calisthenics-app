@@ -26,7 +26,9 @@ class _TrainingState extends State<Training> {
   final Set<String> _togglingExerciseCompletion = {};
   final Set<String> _expandedExercises = {};
   final Map<String, TextEditingController> _noteControllers = {};
+  final Map<String, TextEditingController> _feedbackControllers = {};
   final Set<String> _savingNotes = {};
+  final Set<String> _savingFeedback = {};
   late bool _isCompleted;
   bool _updatingCompletion = false;
   bool _completionChanged = false;
@@ -55,6 +57,9 @@ class _TrainingState extends State<Training> {
   @override
   void dispose() {
     for (final controller in _noteControllers.values) {
+      controller.dispose();
+    }
+    for (final controller in _feedbackControllers.values) {
       controller.dispose();
     }
     super.dispose();
@@ -128,9 +133,7 @@ class _TrainingState extends State<Training> {
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: colorScheme.outlineVariant,
-                        ),
+                        border: Border.all(color: colorScheme.outlineVariant),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,27 +182,41 @@ class _TrainingState extends State<Training> {
                     for (int index = 0; index < _exercises.length; index++)
                       _ExerciseCard(
                         exercise: _exercises[index],
-                        detailText:
-                            _exerciseDetailText(_exercises[index], l10n),
-                        isExpanded:
-                            _expandedExercises.contains(_exerciseKey(index)),
+                        detailText: _exerciseDetailText(
+                          _exercises[index],
+                          l10n,
+                        ),
+                        isExpanded: _expandedExercises.contains(
+                          _exerciseKey(index),
+                        ),
                         updatingCompletion: _togglingExerciseCompletion
                             .contains(_exercises[index].id),
-                        isSavingNotes:
-                            _savingNotes.contains(_exerciseKey(index)),
-                        notesController:
-                            _notesControllerFor(_exercises[index], index),
+                        isSavingNotes: _savingNotes.contains(
+                          _exerciseKey(index),
+                        ),
+                        isSavingFeedback: _savingFeedback.contains(
+                          _exerciseKey(index),
+                        ),
+                        notesController: _notesControllerFor(
+                          _exercises[index],
+                          index,
+                        ),
+                        feedbackController: _feedbackControllerFor(
+                          _exercises[index],
+                          index,
+                        ),
                         terminologyTranslations: terminologyLookup,
                         guideLookup: guideLookup,
                         onOpenGuide:
                             _exercises[index].exerciseSlug != null ||
-                                    _exercises[index].exerciseId != null
-                                ? () => _openExerciseGuide(_exercises[index])
-                                : null,
+                                _exercises[index].exerciseId != null
+                            ? () => _openExerciseGuide(_exercises[index])
+                            : null,
                         onToggleCompletion: () =>
                             _toggleExerciseCompletion(index),
                         onToggleExpanded: () => _toggleExpanded(index),
                         onSaveNotes: () => _saveExerciseNotes(index),
+                        onSaveFeedback: () => _saveExerciseFeedback(index),
                         onTermTap: _openTerminologyTerm,
                       ),
                     const SizedBox(height: 8),
@@ -213,7 +230,6 @@ class _TrainingState extends State<Training> {
                         });
                       },
                     ),
-
                   ],
                 ),
               ),
@@ -221,12 +237,10 @@ class _TrainingState extends State<Training> {
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: appColors?.primaryGradient ??
+                    gradient:
+                        appColors?.primaryGradient ??
                         LinearGradient(
-                          colors: [
-                            colorScheme.primary,
-                            colorScheme.secondary,
-                          ],
+                          colors: [colorScheme.primary, colorScheme.secondary],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
@@ -302,10 +316,7 @@ class _TrainingState extends State<Training> {
           : null;
       await Supabase.instance.client
           .from('day_exercises')
-          .update({
-            'completed': newValue,
-            'fitbit_data': fitbitData,
-          })
+          .update({'completed': newValue, 'fitbit_data': fitbitData})
           .eq('id', exercise.id!);
 
       if (!mounted) return;
@@ -319,6 +330,7 @@ class _TrainingState extends State<Training> {
           fitbitData: fitbitData,
           notes: exercise.notes,
           traineeNotes: exercise.traineeNotes,
+          exerciseFeedback: exercise.exerciseFeedback,
           position: exercise.position,
           durationMinutes: exercise.durationMinutes,
           terminology: exercise.terminology,
@@ -384,6 +396,7 @@ class _TrainingState extends State<Training> {
           fitbitData: exercise.fitbitData,
           notes: exercise.notes,
           traineeNotes: newNotes,
+          exerciseFeedback: exercise.exerciseFeedback,
           position: exercise.position,
           durationMinutes: exercise.durationMinutes,
           terminology: exercise.terminology,
@@ -392,9 +405,9 @@ class _TrainingState extends State<Training> {
         );
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.trainingExerciseNotesSaved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.trainingExerciseNotesSaved)));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -404,6 +417,70 @@ class _TrainingState extends State<Training> {
       if (mounted) {
         setState(() {
           _savingNotes.remove(key);
+        });
+      }
+    }
+  }
+
+  Future<void> _saveExerciseFeedback(int index) async {
+    final exercise = _exercises[index];
+    final l10n = AppLocalizations.of(context)!;
+    final exerciseId = exercise.id;
+
+    if (exerciseId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseCompletionUnavailable)),
+      );
+      return;
+    }
+
+    final key = _exerciseKey(index);
+    final controller = _feedbackControllers[key];
+    if (controller == null) return;
+
+    setState(() {
+      _savingFeedback.add(key);
+    });
+
+    try {
+      final newFeedback = controller.text.trim();
+      await Supabase.instance.client
+          .from('day_exercises')
+          .update({'exercise_feedback': newFeedback})
+          .eq('id', exerciseId);
+
+      if (!mounted) return;
+
+      setState(() {
+        _exercises[index] = WorkoutExercise(
+          id: exercise.id,
+          exerciseId: exercise.exerciseId,
+          exerciseSlug: exercise.exerciseSlug,
+          name: exercise.name,
+          fitbitData: exercise.fitbitData,
+          notes: exercise.notes,
+          traineeNotes: exercise.traineeNotes,
+          exerciseFeedback: newFeedback,
+          position: exercise.position,
+          durationMinutes: exercise.durationMinutes,
+          terminology: exercise.terminology,
+          skills: exercise.skills,
+          isCompleted: exercise.isCompleted,
+        );
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseFeedbackSaved)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseFeedbackError('$error'))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _savingFeedback.remove(key);
         });
       }
     }
@@ -457,9 +534,9 @@ class _TrainingState extends State<Training> {
         _completionChanged = true;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.trainingCompletionSaved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.trainingCompletionSaved)));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -579,6 +656,20 @@ class _TrainingState extends State<Training> {
       text: (exercise.traineeNotes ?? '').trim(),
     );
     _noteControllers[key] = controller;
+    return controller;
+  }
+
+  TextEditingController _feedbackControllerFor(
+    WorkoutExercise exercise,
+    int index,
+  ) {
+    final key = _exerciseKey(index);
+    final existing = _feedbackControllers[key];
+    if (existing != null) return existing;
+    final controller = TextEditingController(
+      text: (exercise.exerciseFeedback ?? '').trim(),
+    );
+    _feedbackControllers[key] = controller;
     return controller;
   }
 
@@ -730,13 +821,16 @@ class _ExerciseCard extends StatelessWidget {
   final bool isExpanded;
   final bool updatingCompletion;
   final bool isSavingNotes;
+  final bool isSavingFeedback;
   final TextEditingController notesController;
+  final TextEditingController feedbackController;
   final Map<String, TerminologyEntry> terminologyTranslations;
   final Map<String, ExerciseGuide> guideLookup;
   final VoidCallback? onOpenGuide;
   final VoidCallback onToggleCompletion;
   final VoidCallback onToggleExpanded;
   final VoidCallback onSaveNotes;
+  final VoidCallback onSaveFeedback;
   final ValueChanged<String> onTermTap;
 
   const _ExerciseCard({
@@ -745,13 +839,16 @@ class _ExerciseCard extends StatelessWidget {
     required this.isExpanded,
     required this.updatingCompletion,
     required this.isSavingNotes,
+    required this.isSavingFeedback,
     required this.notesController,
+    required this.feedbackController,
     required this.terminologyTranslations,
     required this.guideLookup,
     this.onOpenGuide,
     required this.onToggleCompletion,
     required this.onToggleExpanded,
     required this.onSaveNotes,
+    required this.onSaveFeedback,
     required this.onTermTap,
   });
 
@@ -784,10 +881,7 @@ class _ExerciseCard extends StatelessWidget {
         )
         .toList();
     final localizedSkills = exercise.skills
-        .map(
-          (skill) =>
-              guideLookup[skill.trim().toLowerCase()]?.name ?? skill,
-        )
+        .map((skill) => guideLookup[skill.trim().toLowerCase()]?.name ?? skill)
         .toList();
 
     final hasTerminology = localizedTerminology.isNotEmpty;
@@ -814,8 +908,10 @@ class _ExerciseCard extends StatelessWidget {
               ),
               onTap: onToggleExpanded,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
                 child: Row(
                   children: [
                     Container(
@@ -836,9 +932,7 @@ class _ExerciseCard extends StatelessWidget {
                       ),
                       child: Icon(
                         isCompleted ? Icons.check_circle : Icons.fitness_center,
-                        color: isCompleted
-                            ? successColor
-                            : Colors.white,
+                        color: isCompleted ? successColor : Colors.white,
                         size: 22,
                       ),
                     ),
@@ -857,10 +951,8 @@ class _ExerciseCard extends StatelessWidget {
                                   textStyle: textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
-                                  chipBackground:
-                                      colorScheme.primary.withValues(
-                                    alpha: 0.12,
-                                  ),
+                                  chipBackground: colorScheme.primary
+                                      .withValues(alpha: 0.12),
                                   chipForeground: colorScheme.primary,
                                 )
                               : Text(
@@ -905,11 +997,10 @@ class _ExerciseCard extends StatelessWidget {
                               onPressed: onOpenGuide,
                             ),
                           Icon(
-                            isExpanded
-                                ? Icons.expand_less
-                                : Icons.expand_more,
-                            color: colorScheme.onSurfaceVariant
-                                .withValues(alpha: 0.6),
+                            isExpanded ? Icons.expand_less : Icons.expand_more,
+                            color: colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.6,
+                            ),
                           ),
                         ],
                       ),
@@ -948,31 +1039,29 @@ class _ExerciseCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: FilledButton.icon(
-                            onPressed:
-                                isSavingNotes ? null : onSaveNotes,
+                            onPressed: isSavingNotes ? null : onSaveNotes,
                             icon: isSavingNotes
                                 ? const SizedBox(
                                     width: 16,
                                     height: 16,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color>(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
                                         Colors.white,
                                       ),
                                     ),
                                   )
                                 : const Icon(Icons.save),
-                            label:
-                                Text(l10n.trainingExerciseSaveNotes),
+                            label: Text(l10n.trainingExerciseSaveNotes),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              color:
-                                  colorScheme.onSurface.withValues(alpha: 0.04),
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.04,
+                              ),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: CheckboxListTile(
@@ -1000,6 +1089,57 @@ class _ExerciseCard extends StatelessWidget {
                         ),
                       ],
                     ),
+                    if (isCompleted) ...[
+                      const SizedBox(height: 18),
+                      Text(
+                        l10n.trainingExerciseFeedbackTitle,
+                        style: textTheme.labelLarge?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.trainingExerciseFeedbackHint,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: feedbackController,
+                        minLines: 2,
+                        maxLines: 4,
+                        decoration: InputDecoration(
+                          labelText: l10n.trainingExerciseFeedbackLabel,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          fillColor: colorScheme.surface,
+                          filled: true,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: FilledButton.icon(
+                          onPressed: isSavingFeedback ? null : onSaveFeedback,
+                          icon: isSavingFeedback
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(Icons.feedback_outlined),
+                          label: Text(l10n.trainingExerciseSaveFeedback),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -1014,10 +1154,7 @@ class _InfoChips extends StatelessWidget {
   final String title;
   final List<String> items;
 
-  const _InfoChips({
-    required this.title,
-    required this.items,
-  });
+  const _InfoChips({required this.title, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -1067,10 +1204,7 @@ class _InfoChips extends StatelessWidget {
   }
 }
 
-String _exerciseDetailText(
-  WorkoutExercise exercise,
-  AppLocalizations l10n,
-) {
+String _exerciseDetailText(WorkoutExercise exercise, AppLocalizations l10n) {
   final duration = exercise.durationMinutes;
   final durationLabel = duration != null && duration > 0
       ? l10n.trainingDurationMinutes(duration)
@@ -1100,10 +1234,7 @@ List<String> _scanTerminologyKeys(
     ..sort((a, b) => b.length.compareTo(a.length));
   final pattern = terms.map(RegExp.escape).join('|');
   if (pattern.isEmpty) return [];
-  final regex = RegExp(
-    r'\b(' + pattern + r')\b',
-    caseSensitive: false,
-  );
+  final regex = RegExp(r'\b(' + pattern + r')\b', caseSensitive: false);
   final matches = regex.allMatches(notes);
   final found = <String>{};
   for (final match in matches) {
@@ -1158,10 +1289,7 @@ List<InlineSpan> _buildTerminologySpans({
   if (pattern.isEmpty) {
     return [TextSpan(text: text, style: textStyle)];
   }
-  final regex = RegExp(
-    r'\b(' + pattern + r')\b',
-    caseSensitive: false,
-  );
+  final regex = RegExp(r'\b(' + pattern + r')\b', caseSensitive: false);
   final spans = <InlineSpan>[];
   var currentIndex = 0;
   for (final match in regex.allMatches(text)) {
@@ -1202,12 +1330,7 @@ List<InlineSpan> _buildTerminologySpans({
     currentIndex = match.end;
   }
   if (currentIndex < text.length) {
-    spans.add(
-      TextSpan(
-        text: text.substring(currentIndex),
-        style: textStyle,
-      ),
-    );
+    spans.add(TextSpan(text: text.substring(currentIndex), style: textStyle));
   }
   return spans;
 }

@@ -245,6 +245,19 @@
       }
     }
   },
+  "trainingExerciseFeedbackTitle": "Feedback esercizio",
+  "trainingExerciseFeedbackHint": "Aggiungi un feedback per questo esercizio completato.",
+  "trainingExerciseFeedbackLabel": "Come è andato questo esercizio?",
+  "trainingExerciseSaveFeedback": "Salva feedback",
+  "trainingExerciseFeedbackSaved": "Feedback esercizio aggiornato",
+  "trainingExerciseFeedbackError": "Impossibile aggiornare il feedback esercizio: {error}",
+  "@trainingExerciseFeedbackError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
   "logoutError": "Errore durante il logout: {error}",
   "@logoutError": {
     "placeholders": {

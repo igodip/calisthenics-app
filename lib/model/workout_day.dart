@@ -1,4 +1,3 @@
-
 import '../l10n/app_localizations.dart';
 
 class WorkoutExercise {
@@ -9,6 +8,7 @@ class WorkoutExercise {
   final Map<String, dynamic>? fitbitData;
   final String? notes;
   final String? traineeNotes;
+  final String? exerciseFeedback;
   final List<String> terminology;
   final List<String> skills;
   final int? position;
@@ -23,6 +23,7 @@ class WorkoutExercise {
     this.fitbitData,
     this.notes,
     this.traineeNotes,
+    this.exerciseFeedback,
     this.terminology = const [],
     this.skills = const [],
     this.position,
