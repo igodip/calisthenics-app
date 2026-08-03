@@ -12,7 +12,6 @@ import '../l10n/app_localizations.dart';
 import 'exercise_guides_page.dart';
 import 'home_content.dart';
 import 'max_tests_menu_page.dart';
-import 'streak_history_page.dart';
 import 'timer_page.dart';
 import 'workout_plan_page.dart';
 
@@ -103,11 +102,6 @@ class _HomePageState extends State<HomePage> {
         title: l10n.workoutPlanTitle,
         icon: Icons.event_note,
         page: const WorkoutPlanPage(),
-      ),
-      _NavigationItem(
-        title: 'Streak Tracker',
-        icon: Icons.local_fire_department,
-        page: const StreakHistoryPage(),
       ),
       _NavigationItem(
         title: l10n.navGuides,

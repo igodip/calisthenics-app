@@ -1,6 +1,5 @@
 import 'package:calisync/l10n/locale_controller.dart';
 import 'package:calisync/pages/onboarding_page.dart';
-import 'package:calisync/services/streak_notification_service.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:calisync/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,6 @@ void main() async {
     publishableKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpycWp5c3ljb3FobG55dWZobGl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0MzM0NTIsImV4cCI6MjA2ODAwOTQ1Mn0.3BVA-Ar9YtLGGO12Gt6NQkMl2cn18E_b48PGtlFxxCw',
   );
-  await StreakNotificationService.instance.initialize();
   final preferences = await SharedPreferences.getInstance();
   final storedTheme = AppTheme.themeTypeFromStorage(
     preferences.getString(ThemeController.storageKey),
