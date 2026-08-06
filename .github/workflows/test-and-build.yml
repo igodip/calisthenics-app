@@ -99,7 +99,7 @@ jobs:
           PROFILE_CERT_SUBJECT=$(openssl x509 -inform der -in embedded_cert.der -noout -subject)
 
           # Extract the certificate subject from the .p12
-          P12_CERT_SUBJECT=$(openssl pkcs12 -in "$P12" -clcerts -nokeys \
+          P12_CERT_SUBJECT=$(openssl pkcs12 -legacy -in "$P12" -clcerts -nokeys \
             -passin pass:"$PASS" | openssl x509 -noout -subject)
           
           # Get bundle ID from Info.plist
