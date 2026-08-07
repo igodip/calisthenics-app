@@ -33,6 +33,22 @@ jobs:
         run: |
           echo "${{ secrets.IOS_P12 }}" | base64 --decode > cert.p12
           echo "${{ secrets.IOS_MOBILE_PROVISION }}" | base64 --decode > profile.mobileprovision
+      - name: Inspect P12 format
+        shell: bash
+        env:
+          IOS_P12_PASSWORD: ${{ secrets.IOS_P12_PASSWORD }}
+        run: |
+          set -euo pipefail
+          
+          echo "SHA256:"
+          shasum -a 256 cert.p12
+          
+          echo "PKCS12 structure:"
+          openssl pkcs12 \
+            -in cert.p12 \
+            -info \
+            -noout \
+            -passin env:IOS_P12_PASSWORD
 
       - name: Create and Unlock Keychain
         shell: bash
