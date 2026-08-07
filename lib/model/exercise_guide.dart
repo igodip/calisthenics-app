@@ -50,7 +50,6 @@ class ExerciseGuide {
     required this.exerciseId,
     required this.name,
     required this.difficulty,
-    required this.isUnlocked,
     required this.focus,
     required this.tip,
     required this.description,
@@ -60,23 +59,9 @@ class ExerciseGuide {
   final String exerciseId;
   final String name;
   final Difficulty difficulty;
-  final bool isUnlocked;
   final String focus;
   final String tip;
   final String description;
-
-  ExerciseGuide copyWith({bool? isUnlocked}) {
-    return ExerciseGuide(
-      id: id,
-      exerciseId: exerciseId,
-      name: name,
-      difficulty: difficulty,
-      isUnlocked: isUnlocked ?? this.isUnlocked,
-      focus: focus,
-      tip: tip,
-      description: description,
-    );
-  }
 
   static ExerciseGuide fromDatabase(
     Map<String, dynamic> row, {
@@ -92,20 +77,14 @@ class ExerciseGuide {
       if (primary != null && primary.isNotEmpty) return primary;
       return fallback ?? '';
     }
+
     return ExerciseGuide(
       id: slug,
       exerciseId: row['id']?.toString() ?? '',
       name: resolvedName,
       difficulty: _difficultyFromString(row['difficulty'] as String?),
-      isUnlocked: row['default_unlocked'] as bool? ?? false,
-      focus: resolveField(
-        translation?.focus,
-        fallbackTranslation?.focus,
-      ),
-      tip: resolveField(
-        translation?.tip,
-        fallbackTranslation?.tip,
-      ),
+      focus: resolveField(translation?.focus, fallbackTranslation?.focus),
+      tip: resolveField(translation?.tip, fallbackTranslation?.tip),
       description: resolveField(
         translation?.description,
         fallbackTranslation?.description,

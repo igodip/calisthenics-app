@@ -24,14 +24,10 @@
   "onboardingNext": "Next",
   "onboardingGetStarted": "Get started",
   "guidesTitle": "Skills",
-  "guidesSubtitle": "Unlock new skills as you master the basics.",
+  "guidesSubtitle": "Explore techniques, focus areas, and coaching tips for every skill.",
   "guidesLoadError": "Unable to load skill guides right now.",
   "guidesPrimaryFocus": "Primary focus",
   "guidesCoachTip": "Coach tip",
-  "skillsLockedLabel": "Locked",
-  "skillsUnlockedLabel": "Unlocked",
-  "skillsLockedHint": "Complete earlier skills to unlock the full breakdown.",
-  "skillsUnlockAction": "Unlock skill",
   "difficultyBeginner": "Beginner",
   "difficultyIntermediate": "Intermediate",
   "difficultyAdvanced": "Advanced",
@@ -134,20 +130,6 @@
       }
     }
   },
-  "homeSkillProgressTitle": "Skill Progress",
-  "homeSkillProgressValue": "{unlocked} / {total}",
-  "@homeSkillProgressValue": {
-    "placeholders": {
-      "unlocked": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "homeSkillProgressLabel": "Skills Unlocked",
-  "homeStrengthLevelTitle": "Strength Level",
   "workoutPlanTitle": "Workout plan",
   "traineeFeedbackTitle": "Trainee feedback",
   "traineeFeedbackSubtitle": "Tell your coach how you're feeling and how the plan is going.",
@@ -252,6 +234,28 @@
   "trainingExerciseFeedbackSaved": "Exercise feedback updated",
   "trainingExerciseFeedbackError": "Unable to update exercise feedback: {error}",
   "@trainingExerciseFeedbackError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trainingExerciseRepsTitle": "Completed repetitions",
+  "trainingExerciseRepsHint": "Count the repetitions you completed, then save the result.",
+  "trainingExerciseRepsDecrease": "Decrease repetitions",
+  "trainingExerciseRepsIncrease": "Increase repetitions",
+  "trainingExerciseRepsCount": "{count} completed repetitions",
+  "@trainingExerciseRepsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingExerciseSaveReps": "Save reps",
+  "trainingExerciseRepsSaved": "Repetitions updated",
+  "trainingExerciseRepsError": "Unable to update repetitions: {error}",
+  "@trainingExerciseRepsError": {
     "placeholders": {
       "error": {
         "type": "Object"

@@ -48,6 +48,7 @@
 - Render each exercise with its notes, completion state, and personal trainee notes.
 - Save trainee notes to `day_exercises.trainee_notes` and show success or error feedback.
 - Toggle exercise completion in `day_exercises.completed`.
+- Count completed repetitions for every completed exercise and persist the value to `day_exercises.completed_reps`.
 - Toggle day completion state using the day completion action and persist updates.
 
 ### Exercise Guides

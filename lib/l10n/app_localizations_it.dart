@@ -88,7 +88,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get guidesSubtitle =>
-      'Sblocca nuove skill man mano che impari le basi.';
+      'Esplora tecnica, focus e consigli del coach per ogni skill.';
 
   @override
   String get guidesLoadError =>
@@ -99,19 +99,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get guidesCoachTip => 'Consiglio del coach';
-
-  @override
-  String get skillsLockedLabel => 'Bloccato';
-
-  @override
-  String get skillsUnlockedLabel => 'Sbloccato';
-
-  @override
-  String get skillsLockedHint =>
-      'Completa le skill precedenti per sbloccare la spiegazione completa.';
-
-  @override
-  String get skillsUnlockAction => 'Sblocca skill';
 
   @override
   String get difficultyBeginner => 'Principiante';
@@ -388,20 +375,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get homeSkillProgressTitle => 'Progressi skill';
-
-  @override
-  String homeSkillProgressValue(int unlocked, int total) {
-    return '$unlocked / $total';
-  }
-
-  @override
-  String get homeSkillProgressLabel => 'Skill sbloccate';
-
-  @override
-  String get homeStrengthLevelTitle => 'Livello di forza';
-
-  @override
   String get workoutPlanTitle => 'Piano di allenamento';
 
   @override
@@ -630,6 +603,35 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String trainingExerciseFeedbackError(Object error) {
     return 'Impossibile aggiornare il feedback esercizio: $error';
+  }
+
+  @override
+  String get trainingExerciseRepsTitle => 'Ripetizioni completate';
+
+  @override
+  String get trainingExerciseRepsHint =>
+      'Conta le ripetizioni completate, quindi salva il risultato.';
+
+  @override
+  String get trainingExerciseRepsDecrease => 'Diminuisci ripetizioni';
+
+  @override
+  String get trainingExerciseRepsIncrease => 'Aumenta ripetizioni';
+
+  @override
+  String trainingExerciseRepsCount(int count) {
+    return '$count ripetizioni completate';
+  }
+
+  @override
+  String get trainingExerciseSaveReps => 'Salva reps';
+
+  @override
+  String get trainingExerciseRepsSaved => 'Ripetizioni aggiornate';
+
+  @override
+  String trainingExerciseRepsError(Object error) {
+    return 'Impossibile aggiornare le ripetizioni: $error';
   }
 
   @override

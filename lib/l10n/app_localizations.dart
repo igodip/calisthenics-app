@@ -253,7 +253,7 @@ abstract class AppLocalizations {
   /// No description provided for @guidesSubtitle.
   ///
   /// In it, this message translates to:
-  /// **'Sblocca nuove skill man mano che impari le basi.'**
+  /// **'Esplora tecnica, focus e consigli del coach per ogni skill.'**
   String get guidesSubtitle;
 
   /// No description provided for @guidesLoadError.
@@ -273,30 +273,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Consiglio del coach'**
   String get guidesCoachTip;
-
-  /// No description provided for @skillsLockedLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Bloccato'**
-  String get skillsLockedLabel;
-
-  /// No description provided for @skillsUnlockedLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Sbloccato'**
-  String get skillsUnlockedLabel;
-
-  /// No description provided for @skillsLockedHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Completa le skill precedenti per sbloccare la spiegazione completa.'**
-  String get skillsLockedHint;
-
-  /// No description provided for @skillsUnlockAction.
-  ///
-  /// In it, this message translates to:
-  /// **'Sblocca skill'**
-  String get skillsUnlockAction;
 
   /// No description provided for @difficultyBeginner.
   ///
@@ -766,30 +742,6 @@ abstract class AppLocalizations {
   /// **'{progress}% completato'**
   String homePlanStatsCompletionValue(int progress);
 
-  /// No description provided for @homeSkillProgressTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Progressi skill'**
-  String get homeSkillProgressTitle;
-
-  /// No description provided for @homeSkillProgressValue.
-  ///
-  /// In it, this message translates to:
-  /// **'{unlocked} / {total}'**
-  String homeSkillProgressValue(int unlocked, int total);
-
-  /// No description provided for @homeSkillProgressLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Skill sbloccate'**
-  String get homeSkillProgressLabel;
-
-  /// No description provided for @homeStrengthLevelTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Livello di forza'**
-  String get homeStrengthLevelTitle;
-
   /// No description provided for @workoutPlanTitle.
   ///
   /// In it, this message translates to:
@@ -1197,6 +1149,54 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Impossibile aggiornare il feedback esercizio: {error}'**
   String trainingExerciseFeedbackError(Object error);
+
+  /// No description provided for @trainingExerciseRepsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripetizioni completate'**
+  String get trainingExerciseRepsTitle;
+
+  /// No description provided for @trainingExerciseRepsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Conta le ripetizioni completate, quindi salva il risultato.'**
+  String get trainingExerciseRepsHint;
+
+  /// No description provided for @trainingExerciseRepsDecrease.
+  ///
+  /// In it, this message translates to:
+  /// **'Diminuisci ripetizioni'**
+  String get trainingExerciseRepsDecrease;
+
+  /// No description provided for @trainingExerciseRepsIncrease.
+  ///
+  /// In it, this message translates to:
+  /// **'Aumenta ripetizioni'**
+  String get trainingExerciseRepsIncrease;
+
+  /// No description provided for @trainingExerciseRepsCount.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} ripetizioni completate'**
+  String trainingExerciseRepsCount(int count);
+
+  /// No description provided for @trainingExerciseSaveReps.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva reps'**
+  String get trainingExerciseSaveReps;
+
+  /// No description provided for @trainingExerciseRepsSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripetizioni aggiornate'**
+  String get trainingExerciseRepsSaved;
+
+  /// No description provided for @trainingExerciseRepsError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aggiornare le ripetizioni: {error}'**
+  String trainingExerciseRepsError(Object error);
 
   /// No description provided for @logoutError.
   ///

@@ -9,6 +9,7 @@ class WorkoutExercise {
   final String? notes;
   final String? traineeNotes;
   final String? exerciseFeedback;
+  final int completedReps;
   final List<String> terminology;
   final List<String> skills;
   final int? position;
@@ -24,6 +25,7 @@ class WorkoutExercise {
     this.notes,
     this.traineeNotes,
     this.exerciseFeedback,
+    this.completedReps = 0,
     this.terminology = const [],
     this.skills = const [],
     this.position,

@@ -13,7 +13,7 @@ class ExerciseGuides {
       final client = Supabase.instance.client;
       final response = await client
           .from('exercises')
-          .select('id, slug, name, difficulty, sort_order, default_unlocked')
+          .select('id, slug, name, difficulty, sort_order')
           .order('sort_order', ascending: true);
       final rows = (response as List<dynamic>).cast<Map<String, dynamic>>();
 
@@ -22,8 +22,8 @@ class ExerciseGuides {
           .from('exercise_translations')
           .select('exercise_id, locale, name, focus, tip, description')
           .inFilter('locale', locales);
-      final translations =
-          (translationResponse as List<dynamic>).cast<Map<String, dynamic>>();
+      final translations = (translationResponse as List<dynamic>)
+          .cast<Map<String, dynamic>>();
 
       final localized = <String, ExerciseGuideTranslation>{};
       final fallback = <String, ExerciseGuideTranslation>{};

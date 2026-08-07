@@ -24,14 +24,10 @@
   "onboardingNext": "Siguiente",
   "onboardingGetStarted": "Empezar",
   "guidesTitle": "Habilidades",
-  "guidesSubtitle": "Desbloquea nuevas habilidades mientras dominas lo básico.",
+  "guidesSubtitle": "Explora técnicas, áreas de enfoque y consejos para cada habilidad.",
   "guidesLoadError": "No se pueden cargar las guías de habilidades en este momento.",
   "guidesPrimaryFocus": "Enfoque principal",
   "guidesCoachTip": "Consejo del entrenador",
-  "skillsLockedLabel": "Bloqueado",
-  "skillsUnlockedLabel": "Desbloqueado",
-  "skillsLockedHint": "Completa habilidades anteriores para desbloquear el desglose completo.",
-  "skillsUnlockAction": "Desbloquear habilidad",
   "difficultyBeginner": "Principiante",
   "difficultyIntermediate": "Intermedio",
   "difficultyAdvanced": "Avanzado",
@@ -134,20 +130,6 @@
       }
     }
   },
-  "homeSkillProgressTitle": "Progreso de habilidades",
-  "homeSkillProgressValue": "{unlocked} / {total}",
-  "@homeSkillProgressValue": {
-    "placeholders": {
-      "unlocked": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "homeSkillProgressLabel": "Habilidades desbloqueadas",
-  "homeStrengthLevelTitle": "Nivel de fuerza",
   "workoutPlanTitle": "Plan de entrenamiento",
   "traineeFeedbackTitle": "Comentarios del alumno",
   "traineeFeedbackSubtitle": "Cuéntale a tu entrenador cómo te sientes y cómo va el plan.",
@@ -252,6 +234,28 @@
   "trainingExerciseFeedbackSaved": "Feedback del ejercicio actualizado",
   "trainingExerciseFeedbackError": "No se pudo actualizar el feedback del ejercicio: {error}",
   "@trainingExerciseFeedbackError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trainingExerciseRepsTitle": "Repeticiones completadas",
+  "trainingExerciseRepsHint": "Cuenta las repeticiones completadas y guarda el resultado.",
+  "trainingExerciseRepsDecrease": "Disminuir repeticiones",
+  "trainingExerciseRepsIncrease": "Aumentar repeticiones",
+  "trainingExerciseRepsCount": "{count} repeticiones completadas",
+  "@trainingExerciseRepsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingExerciseSaveReps": "Guardar reps",
+  "trainingExerciseRepsSaved": "Repeticiones actualizadas",
+  "trainingExerciseRepsError": "No se pudieron actualizar las repeticiones: {error}",
+  "@trainingExerciseRepsError": {
     "placeholders": {
       "error": {
         "type": "Object"

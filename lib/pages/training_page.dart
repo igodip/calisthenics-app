@@ -29,6 +29,7 @@ class _TrainingState extends State<Training> {
   final Map<String, TextEditingController> _feedbackControllers = {};
   final Set<String> _savingNotes = {};
   final Set<String> _savingFeedback = {};
+  final Set<String> _savingReps = {};
   late bool _isCompleted;
   bool _updatingCompletion = false;
   bool _completionChanged = false;
@@ -197,6 +198,7 @@ class _TrainingState extends State<Training> {
                         isSavingFeedback: _savingFeedback.contains(
                           _exerciseKey(index),
                         ),
+                        isSavingReps: _savingReps.contains(_exerciseKey(index)),
                         notesController: _notesControllerFor(
                           _exercises[index],
                           index,
@@ -217,6 +219,9 @@ class _TrainingState extends State<Training> {
                         onToggleExpanded: () => _toggleExpanded(index),
                         onSaveNotes: () => _saveExerciseNotes(index),
                         onSaveFeedback: () => _saveExerciseFeedback(index),
+                        onDecreaseReps: () => _changeCompletedReps(index, -1),
+                        onIncreaseReps: () => _changeCompletedReps(index, 1),
+                        onSaveReps: () => _saveCompletedReps(index),
                         onTermTap: _openTerminologyTerm,
                       ),
                     const SizedBox(height: 8),
@@ -331,6 +336,7 @@ class _TrainingState extends State<Training> {
           notes: exercise.notes,
           traineeNotes: exercise.traineeNotes,
           exerciseFeedback: exercise.exerciseFeedback,
+          completedReps: exercise.completedReps,
           position: exercise.position,
           durationMinutes: exercise.durationMinutes,
           terminology: exercise.terminology,
@@ -397,6 +403,7 @@ class _TrainingState extends State<Training> {
           notes: exercise.notes,
           traineeNotes: newNotes,
           exerciseFeedback: exercise.exerciseFeedback,
+          completedReps: exercise.completedReps,
           position: exercise.position,
           durationMinutes: exercise.durationMinutes,
           terminology: exercise.terminology,
@@ -461,6 +468,7 @@ class _TrainingState extends State<Training> {
           notes: exercise.notes,
           traineeNotes: exercise.traineeNotes,
           exerciseFeedback: newFeedback,
+          completedReps: exercise.completedReps,
           position: exercise.position,
           durationMinutes: exercise.durationMinutes,
           terminology: exercise.terminology,
@@ -549,6 +557,79 @@ class _TrainingState extends State<Training> {
         });
       }
     }
+  }
+
+  void _changeCompletedReps(int index, int delta) {
+    final exercise = _exercises[index];
+    final newValue = (exercise.completedReps + delta).clamp(0, 9999);
+    if (newValue == exercise.completedReps) return;
+
+    setState(() {
+      _exercises[index] = _copyExercise(exercise, completedReps: newValue);
+    });
+  }
+
+  Future<void> _saveCompletedReps(int index) async {
+    final exercise = _exercises[index];
+    final exerciseId = exercise.id;
+    final l10n = AppLocalizations.of(context)!;
+
+    if (exerciseId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseCompletionUnavailable)),
+      );
+      return;
+    }
+
+    final key = _exerciseKey(index);
+    setState(() {
+      _savingReps.add(key);
+    });
+
+    try {
+      await Supabase.instance.client
+          .from('day_exercises')
+          .update({'completed_reps': exercise.completedReps})
+          .eq('id', exerciseId);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.trainingExerciseRepsSaved)));
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingExerciseRepsError('$error'))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _savingReps.remove(key);
+        });
+      }
+    }
+  }
+
+  WorkoutExercise _copyExercise(
+    WorkoutExercise exercise, {
+    required int completedReps,
+  }) {
+    return WorkoutExercise(
+      id: exercise.id,
+      exerciseId: exercise.exerciseId,
+      exerciseSlug: exercise.exerciseSlug,
+      name: exercise.name,
+      fitbitData: exercise.fitbitData,
+      notes: exercise.notes,
+      traineeNotes: exercise.traineeNotes,
+      exerciseFeedback: exercise.exerciseFeedback,
+      completedReps: completedReps,
+      position: exercise.position,
+      durationMinutes: exercise.durationMinutes,
+      terminology: exercise.terminology,
+      skills: exercise.skills,
+      isCompleted: exercise.isCompleted,
+    );
   }
 
   String? _selectedFeelingLabel(AppLocalizations l10n) {
@@ -822,6 +903,7 @@ class _ExerciseCard extends StatelessWidget {
   final bool updatingCompletion;
   final bool isSavingNotes;
   final bool isSavingFeedback;
+  final bool isSavingReps;
   final TextEditingController notesController;
   final TextEditingController feedbackController;
   final Map<String, TerminologyEntry> terminologyTranslations;
@@ -831,6 +913,9 @@ class _ExerciseCard extends StatelessWidget {
   final VoidCallback onToggleExpanded;
   final VoidCallback onSaveNotes;
   final VoidCallback onSaveFeedback;
+  final VoidCallback onDecreaseReps;
+  final VoidCallback onIncreaseReps;
+  final VoidCallback onSaveReps;
   final ValueChanged<String> onTermTap;
 
   const _ExerciseCard({
@@ -840,6 +925,7 @@ class _ExerciseCard extends StatelessWidget {
     required this.updatingCompletion,
     required this.isSavingNotes,
     required this.isSavingFeedback,
+    required this.isSavingReps,
     required this.notesController,
     required this.feedbackController,
     required this.terminologyTranslations,
@@ -849,6 +935,9 @@ class _ExerciseCard extends StatelessWidget {
     required this.onToggleExpanded,
     required this.onSaveNotes,
     required this.onSaveFeedback,
+    required this.onDecreaseReps,
+    required this.onIncreaseReps,
+    required this.onSaveReps,
     required this.onTermTap,
   });
 
@@ -1138,6 +1227,72 @@ class _ExerciseCard extends StatelessWidget {
                               : const Icon(Icons.feedback_outlined),
                           label: Text(l10n.trainingExerciseSaveFeedback),
                         ),
+                      ),
+                      const SizedBox(height: 18),
+                      Text(
+                        l10n.trainingExerciseRepsTitle,
+                        style: textTheme.labelLarge?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.trainingExerciseRepsHint,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          IconButton.filledTonal(
+                            tooltip: l10n.trainingExerciseRepsDecrease,
+                            onPressed:
+                                isSavingReps || exercise.completedReps == 0
+                                ? null
+                                : onDecreaseReps,
+                            icon: const Icon(Icons.remove),
+                          ),
+                          Expanded(
+                            child: Semantics(
+                              liveRegion: true,
+                              label: l10n.trainingExerciseRepsCount(
+                                exercise.completedReps,
+                              ),
+                              child: Text(
+                                '${exercise.completedReps}',
+                                textAlign: TextAlign.center,
+                                style: textTheme.headlineSmall?.copyWith(
+                                  color: colorScheme.onSurface,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                          IconButton.filledTonal(
+                            tooltip: l10n.trainingExerciseRepsIncrease,
+                            onPressed: isSavingReps ? null : onIncreaseReps,
+                            icon: const Icon(Icons.add),
+                          ),
+                          const SizedBox(width: 12),
+                          FilledButton.icon(
+                            onPressed: isSavingReps ? null : onSaveReps,
+                            icon: isSavingReps
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : const Icon(Icons.save),
+                            label: Text(l10n.trainingExerciseSaveReps),
+                          ),
+                        ],
                       ),
                     ],
                   ],
