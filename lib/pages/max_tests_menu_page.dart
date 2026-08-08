@@ -101,10 +101,7 @@ class _MaxTestsMenuPageState extends State<MaxTestsMenuPage> {
 }
 
 class _MaxTestsUserData {
-  const _MaxTestsUserData({
-    required this.userId,
-    required this.displayName,
-  });
+  const _MaxTestsUserData({required this.userId, required this.displayName});
 
   final String userId;
   final String displayName;

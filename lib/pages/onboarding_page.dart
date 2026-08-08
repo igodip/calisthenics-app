@@ -124,7 +124,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -160,7 +163,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               borderRadius: BorderRadius.circular(32),
                               boxShadow: [
                                 BoxShadow(
-                                  color: colorScheme.primary.withValues(alpha: 0.35),
+                                  color: colorScheme.primary.withValues(
+                                    alpha: 0.35,
+                                  ),
                                   blurRadius: 30,
                                   offset: const Offset(0, 16),
                                 ),
@@ -214,7 +219,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           decoration: BoxDecoration(
                             color: index == _currentIndex
                                 ? colorScheme.primary
-                                : colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                                : colorScheme.onSurfaceVariant.withValues(
+                                    alpha: 0.4,
+                                  ),
                             borderRadius: BorderRadius.circular(24),
                           ),
                         ),

@@ -27,18 +27,14 @@ class SelectionCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        leading: Icon(
-          icon,
-          color: iconColor ?? theme.colorScheme.primary,
-        ),
+        leading: Icon(icon, color: iconColor ?? theme.colorScheme.primary),
         title: Text(title),
         subtitle: subtitle != null ? Text(subtitle!) : null,
         trailing:
-            trailing ?? (onTap != null ? const Icon(Icons.arrow_forward_ios) : null),
+            trailing ??
+            (onTap != null ? const Icon(Icons.arrow_forward_ios) : null),
         onTap: onTap,
         tileColor: tileColor,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),

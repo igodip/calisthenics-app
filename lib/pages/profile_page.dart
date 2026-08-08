@@ -1,10 +1,7 @@
 // lib/pages/profile_page.dart
-import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:app_links/app_links.dart';
 import 'package:calisync/model/trainee.dart';
-import 'package:calisync/services/fitbit_service.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -76,7 +73,11 @@ class UserProfileData {
     if (nameParts.length == 1) {
       return nameParts.first.characters.take(2).toString().toUpperCase();
     }
-    return nameParts.take(2).map((part) => part.characters.first).join().toUpperCase();
+    return nameParts
+        .take(2)
+        .map((part) => part.characters.first)
+        .join()
+        .toUpperCase();
   }
 }
 
@@ -107,8 +108,8 @@ Future<UserProfileData> getUserData() async {
       profile = profile.copyWith(profileImageUrl: cachedImageUrl);
     }
   }
-  final name = profile.name ??
-      (user.email != null ? user.email!.split('@').first : '');
+  final name =
+      profile.name ?? (user.email != null ? user.email!.split('@').first : '');
 
   final paymentResponse = await supabase
       .from('trainee_monthly_payments')
@@ -157,151 +158,17 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late Future<UserProfileData> _profileFuture;
-  late Future<FitbitConnectionState> _fitbitFuture;
-  StreamSubscription<Uri>? _fitbitLinkSubscription;
-  bool _fitbitActionInFlight = false;
 
   @override
   void initState() {
     super.initState();
     _profileFuture = getUserData();
-    _fitbitFuture = FitbitService.instance.loadState();
-    _initializeFitbitLinks();
-  }
-
-  @override
-  void dispose() {
-    _fitbitLinkSubscription?.cancel();
-    super.dispose();
   }
 
   void _refreshProfile() {
     setState(() {
       _profileFuture = getUserData();
     });
-  }
-
-  void _refreshFitbit() {
-    setState(() {
-      _fitbitFuture = FitbitService.instance.loadState();
-    });
-  }
-
-  Future<void> _initializeFitbitLinks() async {
-    final appLinks = AppLinks();
-    final initialUri = await appLinks.getInitialLink();
-    await _handleFitbitCallback(initialUri);
-
-    _fitbitLinkSubscription = appLinks.uriLinkStream.listen(
-      _handleFitbitCallback,
-      onError: (Object error) {
-        if (!mounted) {
-          return;
-        }
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.profileFitbitCallbackError('$error'))),
-        );
-      },
-    );
-  }
-
-  Future<void> _handleFitbitCallback(Uri? uri) async {
-    if (uri == null) {
-      return;
-    }
-    final handled = await FitbitService.instance.handleCallback(uri);
-    if (!handled || !mounted) {
-      return;
-    }
-
-    _refreshFitbit();
-    final l10n = AppLocalizations.of(context)!;
-    final state = await FitbitService.instance.loadState();
-    if (!mounted) {
-      return;
-    }
-    final message = state.lastError != null
-        ? l10n.profileFitbitCallbackError(state.lastError!)
-        : l10n.profileFitbitConnectedSuccess;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-
-  Future<void> _connectFitbit(UserProfileData data) async {
-    if (_fitbitActionInFlight) {
-      return;
-    }
-    setState(() {
-      _fitbitActionInFlight = true;
-    });
-
-    try {
-      await FitbitService.instance.startConnection(userId: data.userId);
-      _refreshFitbit();
-    } catch (error) {
-      if (!mounted) {
-        return;
-      }
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.profileFitbitConnectError('$error'))),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _fitbitActionInFlight = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _syncFitbit() async {
-    if (_fitbitActionInFlight) {
-      return;
-    }
-    setState(() {
-      _fitbitActionInFlight = true;
-    });
-
-    try {
-      await FitbitService.instance.syncLatestData();
-      _refreshFitbit();
-      if (!mounted) {
-        return;
-      }
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.profileFitbitSyncSuccess)),
-      );
-    } catch (error) {
-      if (!mounted) {
-        return;
-      }
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.profileFitbitSyncError('$error'))),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _fitbitActionInFlight = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _disconnectFitbit() async {
-    await FitbitService.instance.disconnect();
-    _refreshFitbit();
-    if (!mounted) {
-      return;
-    }
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.profileFitbitDisconnectedSuccess)),
-    );
   }
 
   void _showLanguagePicker() {
@@ -328,14 +195,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     l10n.profileLanguageSettingsTitle,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: RadioGroup<String?>(
                       groupValue: currentCode,
                       onChanged: (value) {
@@ -385,8 +253,9 @@ class _ProfilePageState extends State<ProfilePage> {
     );
     if (updated == true && mounted) {
       _refreshProfile();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.profileEditSuccess)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.profileEditSuccess)));
     }
   }
 
@@ -407,8 +276,8 @@ class _ProfilePageState extends State<ProfilePage> {
               final errorText = rawError.contains('user-not-authenticated')
                   ? l10n.unauthenticated
                   : rawError.contains('user-not-found')
-                      ? l10n.userNotFound
-                      : rawError;
+                  ? l10n.userNotFound
+                  : rawError;
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -442,10 +311,13 @@ class _ProfilePageState extends State<ProfilePage> {
             final theme = Theme.of(context);
             final colorScheme = theme.colorScheme;
             final appColors = theme.extension<AppColors>()!;
-            final statusChipTextStyle =
-                theme.textTheme.labelMedium?.copyWith(color: colorScheme.onPrimary);
+            final statusChipTextStyle = theme.textTheme.labelMedium?.copyWith(
+              color: colorScheme.onPrimary,
+            );
             final displayName = data.displayName(l10n);
-            final emailText = data.email.isEmpty ? l10n.profileEmailUnavailable : data.email;
+            final emailText = data.email.isEmpty
+                ? l10n.profileEmailUnavailable
+                : data.email;
             final weight = data.profile?.weight;
             final weightText = weight != null
                 ? l10n.profileWeightValue(weight.toStringAsFixed(1))
@@ -456,8 +328,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 : l10n.profileNotSet;
             final profileImageUrl = data.profile?.profileImageUrl;
             final localeController = LocaleControllerScope.of(context);
-            final currentLanguageLabel =
-                _currentLanguageLabel(l10n, localeController.locale);
+            final currentLanguageLabel = _currentLanguageLabel(
+              l10n,
+              localeController.locale,
+            );
 
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -468,26 +342,32 @@ class _ProfilePageState extends State<ProfilePage> {
                   CircleAvatar(
                     radius: 40,
                     backgroundColor: colorScheme.surfaceContainerHighest,
-                    backgroundImage:
-                        profileImageUrl == null ? null : NetworkImage(profileImageUrl),
+                    backgroundImage: profileImageUrl == null
+                        ? null
+                        : NetworkImage(profileImageUrl),
                     child: profileImageUrl == null
                         ? Text(
                             data.initials(l10n),
-                            style: theme.textTheme.titleLarge
-                                ?.copyWith(color: colorScheme.onSurface),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: colorScheme.onSurface,
+                            ),
                           )
                         : null,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     displayName,
-                    style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     emailText,
-                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -498,39 +378,53 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Chip(
                         avatar: Icon(
-                          data.isActive ? Icons.check_circle : Icons.pause_circle_filled,
+                          data.isActive
+                              ? Icons.check_circle
+                              : Icons.pause_circle_filled,
                           color: colorScheme.onPrimary,
                         ),
                         label: Text(
-                          data.isActive ? l10n.profileStatusActive : l10n.profileStatusInactive,
+                          data.isActive
+                              ? l10n.profileStatusActive
+                              : l10n.profileStatusInactive,
                           style: statusChipTextStyle,
                         ),
-                        backgroundColor:
-                            data.isActive ? appColors.success : colorScheme.outlineVariant,
+                        backgroundColor: data.isActive
+                            ? appColors.success
+                            : colorScheme.outlineVariant,
                       ),
                       Chip(
                         avatar: Icon(
-                          data.isPayed ? Icons.workspace_premium : Icons.lock_clock,
+                          data.isPayed
+                              ? Icons.workspace_premium
+                              : Icons.lock_clock,
                           color: colorScheme.onPrimary,
                         ),
                         label: Text(
-                          data.isPayed ? l10n.profilePlanActive : l10n.profilePlanExpired,
+                          data.isPayed
+                              ? l10n.profilePlanActive
+                              : l10n.profilePlanExpired,
                           style: statusChipTextStyle,
                         ),
-                        backgroundColor:
-                            data.isPayed ? colorScheme.secondary : appColors.warning,
+                        backgroundColor: data.isPayed
+                            ? colorScheme.secondary
+                            : appColors.warning,
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
                   Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Column(
                       children: [
                         ListTile(
                           leading: const Icon(Icons.badge_outlined),
                           title: Text(l10n.profileUsername),
-                          subtitle: Text(data.username.isEmpty ? '-' : data.username),
+                          subtitle: Text(
+                            data.username.isEmpty ? '-' : data.username,
+                          ),
                         ),
                         const Divider(height: 0),
                         ListTile(
@@ -547,186 +441,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  FutureBuilder<FitbitConnectionState>(
-                    future: _fitbitFuture,
-                    builder: (context, fitbitSnapshot) {
-                      final fitbitState = fitbitSnapshot.data ??
-                          const FitbitConnectionState(
-                            isConnected: false,
-                            isConnecting: false,
-                          );
-                      final materialL10n = MaterialLocalizations.of(context);
-                      final lastSyncText = fitbitState.lastSyncAt == null
-                          ? l10n.profileFitbitNeverSynced
-                          : '${materialL10n.formatFullDate(fitbitState.lastSyncAt!)} '
-                              '${materialL10n.formatTimeOfDay(
-                                TimeOfDay.fromDateTime(fitbitState.lastSyncAt!),
-                                alwaysUse24HourFormat: true,
-                              )}';
-
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.watch_outlined,
-                                    color: colorScheme.primary,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          l10n.profileFitbitTitle,
-                                          style: theme.textTheme.titleMedium?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          fitbitState.isConnecting
-                                              ? l10n.profileFitbitSubtitleConnecting
-                                              : fitbitState.isConnected
-                                                  ? l10n.profileFitbitSubtitleConnected
-                                                  : l10n.profileFitbitSubtitleDisconnected,
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            color: colorScheme.onSurfaceVariant,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                '${l10n.profileFitbitLastSyncLabel}: $lastSyncText',
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                              if (fitbitState.fitbitUserId != null &&
-                                  fitbitState.fitbitUserId!.isNotEmpty) ...[
-                                const SizedBox(height: 6),
-                                Text(
-                                  '${l10n.profileFitbitAccountLabel}: ${fitbitState.fitbitUserId!}',
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                              ],
-                              if (fitbitState.lastError != null &&
-                                  fitbitState.lastError!.isNotEmpty) ...[
-                                const SizedBox(height: 8),
-                                Text(
-                                  fitbitState.lastError!,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.error,
-                                  ),
-                                ),
-                              ],
-                              if (!FitbitService.instance.hasConnectConfiguration) ...[
-                                const SizedBox(height: 8),
-                                Text(
-                                  l10n.profileFitbitNotConfigured,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                              if (fitbitState.summary != null) ...[
-                                const SizedBox(height: 12),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    if (fitbitState.summary!.steps != null)
-                                      Chip(
-                                        label: Text(
-                                          l10n.profileFitbitSteps(
-                                            fitbitState.summary!.steps!,
-                                          ),
-                                        ),
-                                      ),
-                                    if (fitbitState.summary!.calories != null)
-                                      Chip(
-                                        label: Text(
-                                          l10n.profileFitbitCalories(
-                                            fitbitState.summary!.calories!,
-                                          ),
-                                        ),
-                                      ),
-                                    if (fitbitState.summary!.restingHeartRate != null)
-                                      Chip(
-                                        label: Text(
-                                          l10n.profileFitbitRestingHeartRate(
-                                            fitbitState.summary!.restingHeartRate!,
-                                          ),
-                                        ),
-                                      ),
-                                    if (fitbitState.summary!.activeZoneMinutes != null)
-                                      Chip(
-                                        label: Text(
-                                          l10n.profileFitbitActiveZoneMinutes(
-                                            fitbitState.summary!.activeZoneMinutes!,
-                                          ),
-                                        ),
-                                      ),
-                                    if (fitbitState.summary!.vo2Max != null)
-                                      Chip(
-                                        label: Text(
-                                          l10n.profileFitbitVo2Max(
-                                            fitbitState.summary!.vo2Max!,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ],
-                              const SizedBox(height: 12),
-                              Wrap(
-                                spacing: 12,
-                                runSpacing: 12,
-                                children: [
-                                  FilledButton.icon(
-                                    onPressed: _fitbitActionInFlight
-                                        ? null
-                                        : () => _connectFitbit(data),
-                                    icon: const Icon(Icons.link),
-                                    label: Text(l10n.profileFitbitConnect),
-                                  ),
-                                  OutlinedButton.icon(
-                                    onPressed: _fitbitActionInFlight ||
-                                            !fitbitState.isConnected
-                                        ? null
-                                        : _syncFitbit,
-                                    icon: const Icon(Icons.sync),
-                                    label: Text(l10n.profileFitbitSync),
-                                  ),
-                                  TextButton.icon(
-                                    onPressed: _fitbitActionInFlight ||
-                                            !fitbitState.isConnected
-                                        ? null
-                                        : _disconnectFitbit,
-                                    icon: const Icon(Icons.link_off),
-                                    label: Text(l10n.profileFitbitDisconnect),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
                   const SizedBox(height: 12),
                   Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: ListTile(
                       leading: const Icon(Icons.edit_outlined),
                       title: Text(l10n.profileEdit),
@@ -736,21 +455,27 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 12),
                   Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: ListTile(
                       leading: const Icon(Icons.palette_outlined),
                       title: Text(l10n.profileThemeSettingsTitle),
                       subtitle: Text(l10n.profileThemeSettingsSubtitle),
                       onTap: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => const SettingsPage()),
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsPage(),
+                          ),
                         );
                       },
                     ),
                   ),
                   const SizedBox(height: 12),
                   Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: ListTile(
                       leading: const Icon(Icons.language_outlined),
                       title: Text(l10n.profileLanguageSettingsTitle),
@@ -784,7 +509,8 @@ class _EditProfileBottomSheet extends StatefulWidget {
   final UserProfileData data;
 
   @override
-  State<_EditProfileBottomSheet> createState() => _EditProfileBottomSheetState();
+  State<_EditProfileBottomSheet> createState() =>
+      _EditProfileBottomSheetState();
 }
 
 class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
@@ -801,11 +527,17 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _fullNameController = TextEditingController(text: widget.data.profile?.name ?? '');
+    _fullNameController = TextEditingController(
+      text: widget.data.profile?.name ?? '',
+    );
     final weight = widget.data.profile?.weight;
-    _weightController = TextEditingController(text: weight != null ? '$weight' : '');
+    _weightController = TextEditingController(
+      text: weight != null ? '$weight' : '',
+    );
     final height = widget.data.profile?.height;
-    _heightController = TextEditingController(text: height != null ? '$height' : '');
+    _heightController = TextEditingController(
+      text: height != null ? '$height' : '',
+    );
     _selectedImageUrl = widget.data.profile?.profileImageUrl;
   }
 
@@ -819,7 +551,10 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
 
   Future<void> _pickProfileImage() async {
     if (_isSubmitting) return;
-    final image = await _imagePicker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final image = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (image == null) return;
     final bytes = await image.readAsBytes();
     if (!mounted) return;
@@ -837,7 +572,9 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     final safeName = (_selectedImageName ?? 'profile.jpg').replaceAll(' ', '_');
     final path = '${widget.data.userId}/$safeName';
 
-    await supabase.storage.from('avatars').uploadBinary(
+    await supabase.storage
+        .from('avatars')
+        .uploadBinary(
           path,
           _selectedImageBytes!,
           fileOptions: const FileOptions(upsert: true),
@@ -883,7 +620,10 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     };
 
     try {
-      await supabase.from('trainees').update(updates).eq('id', widget.data.userId);
+      await supabase
+          .from('trainees')
+          .update(updates)
+          .eq('id', widget.data.userId);
       await ProfileImageCache.saveForUser(widget.data.userId, imageUrl);
       if (!mounted) return;
       Navigator.of(context).pop(true);
@@ -921,10 +661,9 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
               children: [
                 Text(
                   l10n.profileEditTitle,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 Center(
@@ -933,19 +672,24 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
                       CircleAvatar(
                         minRadius: 40,
                         maxRadius: 60,
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                         backgroundImage: _selectedImageBytes == null
                             ? (_selectedImageUrl == null
-                                ? null
-                                : NetworkImage(_selectedImageUrl!))
+                                  ? null
+                                  : NetworkImage(_selectedImageUrl!))
                             : MemoryImage(_selectedImageBytes!),
-                        child: (_selectedImageBytes == null && _selectedImageUrl == null)
+                        child:
+                            (_selectedImageBytes == null &&
+                                _selectedImageUrl == null)
                             ? Text(
                                 widget.data.initials(l10n),
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurface,
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                     ),
                               )
                             : null,
@@ -981,8 +725,10 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
                     labelText: l10n.profileEditWeightLabel,
                     hintText: l10n.profileEditWeightHint,
                   ),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true, signed: false),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: false,
+                  ),
                   validator: (value) {
                     final text = value?.trim();
                     if (text == null || text.isEmpty) {
@@ -1002,8 +748,10 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
                     labelText: l10n.profileEditHeightLabel,
                     hintText: l10n.profileEditHeightHint,
                   ),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true, signed: false),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: false,
+                  ),
                   validator: (value) {
                     final text = value?.trim();
                     if (text == null || text.isEmpty) {

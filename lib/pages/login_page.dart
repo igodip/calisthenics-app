@@ -72,9 +72,12 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
 
-    _linkSubscription = appLinks.uriLinkStream.listen(handleUri, onError: (error) {
-      _setFeedback(l10n.linkError('$error'), true);
-    });
+    _linkSubscription = appLinks.uriLinkStream.listen(
+      handleUri,
+      onError: (error) {
+        _setFeedback(l10n.linkError('$error'), true);
+      },
+    );
   }
 
   Future<void> _submit() async {
@@ -84,7 +87,9 @@ class _LoginPageState extends State<LoginPage> {
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
 
-    if (email.isEmpty || password.isEmpty || (!isLoginMode && confirmPassword.isEmpty)) {
+    if (email.isEmpty ||
+        password.isEmpty ||
+        (!isLoginMode && confirmPassword.isEmpty)) {
       _setFeedback(l10n.missingFieldsError, true);
       return;
     }
@@ -126,7 +131,8 @@ class _LoginPageState extends State<LoginPage> {
 
         final user = response.user ?? Supabase.instance.client.auth.currentUser;
 
-        if (user != null && Supabase.instance.client.auth.currentSession != null) {
+        if (user != null &&
+            Supabase.instance.client.auth.currentSession != null) {
           await _ensureUserEntry(user);
         }
 
@@ -289,10 +295,10 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 12),
                     Text(
                       dialogError!,
-                      style: Theme.of(dialogContext)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: Theme.of(dialogContext).colorScheme.error),
+                      style: Theme.of(dialogContext).textTheme.bodySmall
+                          ?.copyWith(
+                            color: Theme.of(dialogContext).colorScheme.error,
+                          ),
                     ),
                   ],
                 ],
@@ -364,9 +370,7 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: appColors.primaryGradient,
-        ),
+        decoration: BoxDecoration(gradient: appColors.primaryGradient),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -384,19 +388,19 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
                     Text(
                       l10n.appTitle,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       isLoginMode ? l10n.loginGreeting : l10n.signupGreeting,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.72)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface.withValues(alpha: 0.72),
+                      ),
                     ),
                     const SizedBox(height: 32),
                     AnimatedContainer(
@@ -451,22 +455,30 @@ class _LoginPageState extends State<LoginPage> {
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   )
-                                : Text(isLoginMode ? l10n.loginButton : l10n.signupButton),
+                                : Text(
+                                    isLoginMode
+                                        ? l10n.loginButton
+                                        : l10n.signupButton,
+                                  ),
                           ),
                           const SizedBox(height: 12),
                           if (isLoginMode)
                             Center(
                               child: TextButton(
-                                onPressed:
-                                    passwordResetLoading ? null : _sendPasswordResetEmail,
+                                onPressed: passwordResetLoading
+                                    ? null
+                                    : _sendPasswordResetEmail,
                                 child: passwordResetLoading
                                     ? const SizedBox(
                                         width: 18,
                                         height: 18,
-                                        child:
-                                            CircularProgressIndicator(strokeWidth: 2),
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
                                       )
                                     : Text(l10n.forgotPasswordLink),
                               ),
@@ -487,7 +499,9 @@ class _LoginPageState extends State<LoginPage> {
                                     ? l10n.noAccountPrompt
                                     : l10n.existingAccountPrompt,
                                 style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onSurface.withValues(alpha: 0.7),
+                                  color: colorScheme.onSurface.withValues(
+                                    alpha: 0.7,
+                                  ),
                                 ),
                               ),
                             ),
@@ -502,13 +516,17 @@ class _LoginPageState extends State<LoginPage> {
                                     : appColors.successContainer,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: isError ? colorScheme.error : appColors.success,
+                                  color: isError
+                                      ? colorScheme.error
+                                      : appColors.success,
                                 ),
                               ),
                               child: Text(
                                 feedbackMessage!,
                                 style: TextStyle(
-                                  color: isError ? colorScheme.error : appColors.success,
+                                  color: isError
+                                      ? colorScheme.error
+                                      : appColors.success,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 textAlign: TextAlign.center,

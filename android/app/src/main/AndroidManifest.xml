@@ -33,9 +33,6 @@
                 <data
                     android:scheme="com.idipaolo.calisync"
                     android:host="login-callback" />
-                <data
-                    android:scheme="com.idipaolo.calisync"
-                    android:host="fitbit-callback" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

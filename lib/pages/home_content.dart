@@ -380,7 +380,9 @@ class _ActionButtons extends StatelessWidget {
             onPressed: onViewStats,
             style: OutlinedButton.styleFrom(
               foregroundColor: colorScheme.primary,
-              side: BorderSide(color: colorScheme.primary.withValues(alpha: 0.45)),
+              side: BorderSide(
+                color: colorScheme.primary.withValues(alpha: 0.45),
+              ),
               backgroundColor: colorScheme.primary.withValues(alpha: 0.08),
             ),
             child: Text(l10n.homeViewStats),

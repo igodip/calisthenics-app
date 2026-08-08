@@ -99,9 +99,9 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
     return FutureBuilder<List<ExerciseGuide>>(
       future: _guidesFuture,
       builder: (context, snapshot) {
-        final exerciseGuides =
-            List<ExerciseGuide>.from(snapshot.data ?? const <ExerciseGuide>[])
-              ..sort((a, b) => a.name.compareTo(b.name));
+        final exerciseGuides = List<ExerciseGuide>.from(
+          snapshot.data ?? const <ExerciseGuide>[],
+        )..sort((a, b) => a.name.compareTo(b.name));
         final exerciseGuideById = {
           for (final guide in exerciseGuides) guide.id: guide,
         };
@@ -129,16 +129,15 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
                   Text(
                     widget.displayName,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     l10n.profileMaxTestsHistoryDescription,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Expanded(
@@ -147,15 +146,18 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         if (snapshot.hasError) {
                           final errorText = snapshot.error.toString();
                           return Center(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               child: Text(
                                 l10n.profileMaxTestsHistoryError(errorText),
                                 style: Theme.of(context).textTheme.bodyMedium,
@@ -169,8 +171,9 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
                         if (tests.isEmpty) {
                           return Center(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               child: Text(
                                 l10n.profileMaxTestsHistoryEmpty,
                                 style: Theme.of(context).textTheme.bodyMedium,
@@ -308,27 +311,30 @@ class _MaxTestHistoryTile extends StatelessWidget {
     final theme = Theme.of(context);
     final appColors = theme.extension<AppColors>();
     final dateText = DateFormat.yMMMd().format(test.recordedAt);
-    final delta = previousTest == null ? null : test.value - previousTest!.value;
+    final delta = previousTest == null
+        ? null
+        : test.value - previousTest!.value;
     final deltaText = delta == null
         ? l10n.profileMaxTestsHistoryFirstEntry
         : l10n.profileMaxTestsHistoryDeltaLabel(
-            '${delta >= 0 ? '+' : ''}${delta.toStringAsFixed(delta.truncateToDouble() == delta ? 0 : 1)} ${test.unit}'.trim(),
+            '${delta >= 0 ? '+' : ''}${delta.toStringAsFixed(delta.truncateToDouble() == delta ? 0 : 1)} ${test.unit}'
+                .trim(),
           );
 
     final iconData = delta == null
         ? Icons.flag_outlined
         : delta > 0
-            ? Icons.trending_up
-            : delta < 0
-                ? Icons.trending_down
-                : Icons.trending_flat;
+        ? Icons.trending_up
+        : delta < 0
+        ? Icons.trending_down
+        : Icons.trending_flat;
     final highlightColor = delta == null
         ? theme.colorScheme.primary
         : delta > 0
-            ? appColors?.success ?? theme.colorScheme.secondary
-            : delta < 0
-                ? appColors?.warning ?? theme.colorScheme.error
-                : theme.colorScheme.outline;
+        ? appColors?.success ?? theme.colorScheme.secondary
+        : delta < 0
+        ? appColors?.warning ?? theme.colorScheme.error
+        : theme.colorScheme.outline;
 
     return ListTile(
       dense: true,

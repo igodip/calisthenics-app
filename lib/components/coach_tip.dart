@@ -1,14 +1,10 @@
-
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 
 class CoachTipSection extends StatelessWidget {
   final String? tip;
 
-  const CoachTipSection({
-    super.key,
-    this.tip,
-  });
+  const CoachTipSection({super.key, this.tip});
 
   @override
   Widget build(BuildContext context) {

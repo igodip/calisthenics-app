@@ -1,5 +1,4 @@
 import 'package:calisync/model/workout_day.dart';
-import 'package:calisync/services/fitbit_service.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -316,12 +315,9 @@ class _TrainingState extends State<Training> {
     });
 
     try {
-      final fitbitData = newValue
-          ? await _captureFitbitDataForExercise()
-          : null;
       await Supabase.instance.client
           .from('day_exercises')
-          .update({'completed': newValue, 'fitbit_data': fitbitData})
+          .update({'completed': newValue})
           .eq('id', exercise.id!);
 
       if (!mounted) return;
@@ -332,7 +328,6 @@ class _TrainingState extends State<Training> {
           exerciseId: exercise.exerciseId,
           exerciseSlug: exercise.exerciseSlug,
           name: exercise.name,
-          fitbitData: fitbitData,
           notes: exercise.notes,
           traineeNotes: exercise.traineeNotes,
           exerciseFeedback: exercise.exerciseFeedback,
@@ -399,7 +394,6 @@ class _TrainingState extends State<Training> {
           exerciseId: exercise.exerciseId,
           exerciseSlug: exercise.exerciseSlug,
           name: exercise.name,
-          fitbitData: exercise.fitbitData,
           notes: exercise.notes,
           traineeNotes: newNotes,
           exerciseFeedback: exercise.exerciseFeedback,
@@ -464,7 +458,6 @@ class _TrainingState extends State<Training> {
           exerciseId: exercise.exerciseId,
           exerciseSlug: exercise.exerciseSlug,
           name: exercise.name,
-          fitbitData: exercise.fitbitData,
           notes: exercise.notes,
           traineeNotes: exercise.traineeNotes,
           exerciseFeedback: newFeedback,
@@ -619,7 +612,6 @@ class _TrainingState extends State<Training> {
       exerciseId: exercise.exerciseId,
       exerciseSlug: exercise.exerciseSlug,
       name: exercise.name,
-      fitbitData: exercise.fitbitData,
       notes: exercise.notes,
       traineeNotes: exercise.traineeNotes,
       exerciseFeedback: exercise.exerciseFeedback,
@@ -653,32 +645,6 @@ class _TrainingState extends State<Training> {
     _exercises.sort(
       (a, b) => _exerciseOrderValue(a).compareTo(_exerciseOrderValue(b)),
     );
-  }
-
-  Future<Map<String, dynamic>?> _captureFitbitDataForExercise() async {
-    var fitbitState = await FitbitService.instance.loadState();
-    if (!fitbitState.isConnected) {
-      return null;
-    }
-
-    try {
-      fitbitState = await FitbitService.instance.syncLatestData();
-    } catch (_) {
-      fitbitState = await FitbitService.instance.loadState();
-    }
-
-    final summary = fitbitState.summary;
-    if (summary == null) {
-      return null;
-    }
-
-    return {
-      'source': 'fitbit',
-      'captured_at': DateTime.now().toUtc().toIso8601String(),
-      'last_sync_at': fitbitState.lastSyncAt?.toUtc().toIso8601String(),
-      'fitbit_user_id': fitbitState.fitbitUserId,
-      'summary': summary.toJson(),
-    };
   }
 
   void _openExerciseGuide(WorkoutExercise exercise) {

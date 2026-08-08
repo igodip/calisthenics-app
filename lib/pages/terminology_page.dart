@@ -59,8 +59,9 @@ class _TerminologyPageState extends State<TerminologyPage> {
       return;
     }
     final targetKey = _highlightedTermKey!;
-    final exists =
-        terms.any((entry) => entry.termKey.toLowerCase() == targetKey);
+    final exists = terms.any(
+      (entry) => entry.termKey.toLowerCase() == targetKey,
+    );
     if (!exists) {
       _didScrollToTarget = true;
       return;
@@ -161,11 +162,10 @@ class _TerminologyPageState extends State<TerminologyPage> {
                     key: entryKey,
                     decoration: BoxDecoration(
                       color: isHighlighted
-                          ? colorScheme.primaryContainer.withValues(
-                              alpha: 0.6,
-                            )
-                          : colorScheme.surfaceContainerHighest
-                              .withValues(alpha: 0.5),
+                          ? colorScheme.primaryContainer.withValues(alpha: 0.6)
+                          : colorScheme.surfaceContainerHighest.withValues(
+                              alpha: 0.5,
+                            ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isHighlighted
@@ -205,15 +205,17 @@ class _TerminologyPageState extends State<TerminologyPage> {
                           const SizedBox(height: 12),
                           Text(
                             entry.description,
-                            style: theme.textTheme.bodyMedium
-                                ?.copyWith(height: 1.4),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              height: 1.4,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   );
                 },
-                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
               ),
             ),
           ],

@@ -22,46 +22,50 @@ class SettingsPage extends StatelessWidget {
     ];
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.settingsThemeTitle),
-        ),
-        body: SafeArea(
+      appBar: AppBar(title: Text(l10n.settingsThemeTitle)),
+      body: SafeArea(
         child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.settingsThemeTitle,
-            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: RadioGroup<AppThemeType>(
-              groupValue: controller.themeType,
-              onChanged: (value) {
-                if (value != null) controller.setTheme(value);
-              },
-              child: Column(
-                children: [
-                  for (final option in themeOptions)
-                    RadioListTile<AppThemeType>(
-                      value: option.$1,
-                      title: Text(option.$2),
-                      secondary: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: AppTheme.previewColorFor(option.$1),
-                      ),
-                    ),
-                ],
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.settingsThemeTitle,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
+              const SizedBox(height: 12),
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: RadioGroup<AppThemeType>(
+                  groupValue: controller.themeType,
+                  onChanged: (value) {
+                    if (value != null) controller.setTheme(value);
+                  },
+                  child: Column(
+                    children: [
+                      for (final option in themeOptions)
+                        RadioListTile<AppThemeType>(
+                          value: option.$1,
+                          title: Text(option.$2),
+                          secondary: CircleAvatar(
+                            radius: 12,
+                            backgroundColor: AppTheme.previewColorFor(
+                              option.$1,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-    )
-    )
     );
   }
 }

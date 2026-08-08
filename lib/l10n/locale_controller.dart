@@ -5,8 +5,8 @@ class LocaleController extends ChangeNotifier {
   LocaleController({
     required SharedPreferences preferences,
     Locale? initialLocale,
-  })  : _preferences = preferences,
-        _locale = initialLocale;
+  }) : _preferences = preferences,
+       _locale = initialLocale;
 
   static const String storageKey = 'selected_locale';
 
@@ -35,7 +35,8 @@ class LocaleControllerScope extends InheritedNotifier<LocaleController> {
   }) : super(notifier: controller);
 
   static LocaleController of(BuildContext context) {
-    final scope = context.dependOnInheritedWidgetOfExactType<LocaleControllerScope>();
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<LocaleControllerScope>();
     assert(scope != null, 'LocaleControllerScope not found in widget tree.');
     return scope!.notifier!;
   }

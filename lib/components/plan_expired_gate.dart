@@ -53,7 +53,9 @@ class _PlanExpiredGateState extends State<PlanExpiredGate> {
                 Positioned.fill(
                   child: _ExpiredPlanCover(
                     title: AppLocalizations.of(context)!.profilePlanExpired,
-                    description: AppLocalizations.of(context)!.homeEmptyDescription,
+                    description: AppLocalizations.of(
+                      context,
+                    )!.homeEmptyDescription,
                   ),
                 ),
             ],
@@ -99,19 +101,13 @@ class _ExpiredPlanScreen extends StatelessWidget {
   final String title;
   final String description;
 
-  const _ExpiredPlanScreen({
-    required this.title,
-    required this.description,
-  });
+  const _ExpiredPlanScreen({required this.title, required this.description});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: _ExpiredPlanContent(
-        title: title,
-        description: description,
-      ),
+      body: _ExpiredPlanContent(title: title, description: description),
     );
   }
 }
@@ -120,10 +116,7 @@ class _ExpiredPlanCover extends StatelessWidget {
   final String title;
   final String description;
 
-  const _ExpiredPlanCover({
-    required this.title,
-    required this.description,
-  });
+  const _ExpiredPlanCover({required this.title, required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -158,10 +151,7 @@ class _ExpiredPlanContent extends StatelessWidget {
   final String title;
   final String description;
 
-  const _ExpiredPlanContent({
-    required this.title,
-    required this.description,
-  });
+  const _ExpiredPlanContent({required this.title, required this.description});
 
   @override
   Widget build(BuildContext context) {

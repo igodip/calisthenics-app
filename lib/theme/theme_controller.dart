@@ -7,8 +7,8 @@ class ThemeController extends ChangeNotifier {
   ThemeController({
     required SharedPreferences preferences,
     required AppThemeType initialTheme,
-  })  : _preferences = preferences,
-        _themeType = initialTheme;
+  }) : _preferences = preferences,
+       _themeType = initialTheme;
 
   static const String storageKey = 'selected_theme';
 
@@ -35,7 +35,8 @@ class ThemeControllerScope extends InheritedNotifier<ThemeController> {
   }) : super(notifier: controller);
 
   static ThemeController of(BuildContext context) {
-    final scope = context.dependOnInheritedWidgetOfExactType<ThemeControllerScope>();
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<ThemeControllerScope>();
     assert(scope != null, 'ThemeControllerScope not found in widget tree.');
     return scope!.notifier!;
   }

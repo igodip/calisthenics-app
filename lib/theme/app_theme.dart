@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum AppThemeType {
-  defaultTheme,
-  black,
-  pink,
-  red,
-  blue,
-  yellow,
-}
+enum AppThemeType { defaultTheme, black, pink, red, blue, yellow }
 
 @immutable
 class AppColors extends ThemeExtension<AppColors> {
@@ -66,10 +59,22 @@ class AppColors extends ThemeExtension<AppColors> {
     }
     return AppColors(
       success: Color.lerp(success, other.success, t)!,
-      successContainer: Color.lerp(successContainer, other.successContainer, t)!,
+      successContainer: Color.lerp(
+        successContainer,
+        other.successContainer,
+        t,
+      )!,
       warning: Color.lerp(warning, other.warning, t)!,
-      warningContainer: Color.lerp(warningContainer, other.warningContainer, t)!,
-      primaryGradient: LinearGradient.lerp(primaryGradient, other.primaryGradient, t)!,
+      warningContainer: Color.lerp(
+        warningContainer,
+        other.warningContainer,
+        t,
+      )!,
+      primaryGradient: LinearGradient.lerp(
+        primaryGradient,
+        other.primaryGradient,
+        t,
+      )!,
       surfaceTint: Color.lerp(surfaceTint, other.surfaceTint, t)!,
     );
   }
@@ -167,59 +172,59 @@ class AppTheme {
   static ThemeData themeFor(AppThemeType type) {
     return switch (type) {
       AppThemeType.black => _buildTheme(
-          primary: _blackPrimary,
-          secondary: _blackSecondary,
-          background: _blackBackground,
-          surface: _blackSurface,
-          surfaceVariant: _blackSurfaceVariant,
-          tertiary: _blackTertiary,
-          surfaceTint: _blackTertiary.withValues(alpha: 0.2),
-        ),
+        primary: _blackPrimary,
+        secondary: _blackSecondary,
+        background: _blackBackground,
+        surface: _blackSurface,
+        surfaceVariant: _blackSurfaceVariant,
+        tertiary: _blackTertiary,
+        surfaceTint: _blackTertiary.withValues(alpha: 0.2),
+      ),
       AppThemeType.pink => _buildTheme(
-          primary: _pinkPrimary,
-          secondary: _pinkSecondary,
-          background: _pinkBackground,
-          surface: _pinkSurface,
-          surfaceVariant: _pinkSurfaceVariant,
-          tertiary: _pinkTertiary,
-          surfaceTint: _pinkTertiary.withValues(alpha: 0.2),
-        ),
+        primary: _pinkPrimary,
+        secondary: _pinkSecondary,
+        background: _pinkBackground,
+        surface: _pinkSurface,
+        surfaceVariant: _pinkSurfaceVariant,
+        tertiary: _pinkTertiary,
+        surfaceTint: _pinkTertiary.withValues(alpha: 0.2),
+      ),
       AppThemeType.red => _buildTheme(
-          primary: _redPrimary,
-          secondary: _redSecondary,
-          background: _redBackground,
-          surface: _redSurface,
-          surfaceVariant: _redSurfaceVariant,
-          tertiary: _redTertiary,
-          surfaceTint: _redTertiary.withValues(alpha: 0.2),
-        ),
+        primary: _redPrimary,
+        secondary: _redSecondary,
+        background: _redBackground,
+        surface: _redSurface,
+        surfaceVariant: _redSurfaceVariant,
+        tertiary: _redTertiary,
+        surfaceTint: _redTertiary.withValues(alpha: 0.2),
+      ),
       AppThemeType.blue => _buildTheme(
-          primary: _bluePrimary,
-          secondary: _blueSecondary,
-          background: _blueBackground,
-          surface: _blueSurface,
-          surfaceVariant: _blueSurfaceVariant,
-          tertiary: _blueTertiary,
-          surfaceTint: _blueTertiary.withValues(alpha: 0.2),
-        ),
+        primary: _bluePrimary,
+        secondary: _blueSecondary,
+        background: _blueBackground,
+        surface: _blueSurface,
+        surfaceVariant: _blueSurfaceVariant,
+        tertiary: _blueTertiary,
+        surfaceTint: _blueTertiary.withValues(alpha: 0.2),
+      ),
       AppThemeType.yellow => _buildTheme(
-          primary: _yellowPrimary,
-          secondary: _yellowSecondary,
-          background: _yellowBackground,
-          surface: _yellowSurface,
-          surfaceVariant: _yellowSurfaceVariant,
-          tertiary: _yellowTertiary,
-          surfaceTint: _yellowTertiary.withValues(alpha: 0.2),
-        ),
+        primary: _yellowPrimary,
+        secondary: _yellowSecondary,
+        background: _yellowBackground,
+        surface: _yellowSurface,
+        surfaceVariant: _yellowSurfaceVariant,
+        tertiary: _yellowTertiary,
+        surfaceTint: _yellowTertiary.withValues(alpha: 0.2),
+      ),
       AppThemeType.defaultTheme => _buildTheme(
-          primary: _defaultPrimary,
-          secondary: _defaultSecondary,
-          background: _defaultBackground,
-          surface: _defaultSurface,
-          surfaceVariant: _defaultSurfaceVariant,
-          tertiary: _defaultTertiary,
-          surfaceTint: const Color(0x26EDE8DF),
-        ),
+        primary: _defaultPrimary,
+        secondary: _defaultSecondary,
+        background: _defaultBackground,
+        surface: _defaultSurface,
+        surfaceVariant: _defaultSurfaceVariant,
+        tertiary: _defaultTertiary,
+        surfaceTint: const Color(0x26EDE8DF),
+      ),
     };
   }
 
@@ -234,27 +239,28 @@ class AppTheme {
     required Color tertiary,
     required Color surfaceTint,
   }) {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: primary,
-      brightness: Brightness.dark,
-      surface: surface,
-    ).copyWith(
-      secondary: secondary,
-      tertiary: tertiary,
-      primaryContainer: surfaceVariant,
-      secondaryContainer: secondary.withValues(alpha: 0.2),
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
-      onTertiary: Colors.black,
-      onError: Colors.white,
-      onSurface: Colors.white,
-      onSurfaceVariant: Colors.white70,
-      error: _error,
-      surfaceTint: surfaceTint,
-      outline: Colors.white24,
-      outlineVariant: Colors.white12,
-      shadow: Colors.black,
-    );
+    final colorScheme =
+        ColorScheme.fromSeed(
+          seedColor: primary,
+          brightness: Brightness.dark,
+          surface: surface,
+        ).copyWith(
+          secondary: secondary,
+          tertiary: tertiary,
+          primaryContainer: surfaceVariant,
+          secondaryContainer: secondary.withValues(alpha: 0.2),
+          onPrimary: Colors.white,
+          onSecondary: Colors.white,
+          onTertiary: Colors.black,
+          onError: Colors.white,
+          onSurface: Colors.white,
+          onSurfaceVariant: Colors.white70,
+          error: _error,
+          surfaceTint: surfaceTint,
+          outline: Colors.white24,
+          outlineVariant: Colors.white12,
+          shadow: Colors.black,
+        );
 
     final appColors = AppColors(
       success: _success,
@@ -304,7 +310,9 @@ class AppTheme {
           backgroundColor: primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
@@ -312,7 +320,9 @@ class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: secondary,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
@@ -322,7 +332,9 @@ class AppTheme {
           side: const BorderSide(color: Colors.white30),
           backgroundColor: Colors.white10,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -359,9 +371,7 @@ class AppTheme {
       dividerTheme: const DividerThemeData(color: Colors.white12, thickness: 1),
       progressIndicatorTheme: ProgressIndicatorThemeData(color: primary),
       iconTheme: const IconThemeData(color: Colors.white70),
-      extensions: <ThemeExtension<dynamic>>[
-        appColors,
-      ],
+      extensions: <ThemeExtension<dynamic>>[appColors],
     );
   }
 }

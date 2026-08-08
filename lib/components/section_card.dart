@@ -1,11 +1,7 @@
-
 import 'package:flutter/material.dart';
 
 class SectionCard extends StatelessWidget {
-  const SectionCard({
-    super.key,
-    required this.child
-  });
+  const SectionCard({super.key, required this.child});
 
   final Widget child;
 

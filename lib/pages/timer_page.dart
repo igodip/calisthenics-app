@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
-import '../services/fitbit_service.dart';
 import '../theme/app_theme.dart';
 
 class TimerPage extends StatefulWidget {
@@ -22,7 +20,6 @@ class _TimerPageState extends State<TimerPage> {
   static const int _defaultWorkSeconds = 40;
   static const int _defaultRestSeconds = 90;
   static const int _defaultRounds = 4;
-  static const Duration _fitbitFetchDelay = Duration(seconds: 60);
   static const String _workSecondsKey = 'timer_work_seconds';
   static const String _restSecondsKey = 'timer_rest_seconds';
   static const String _roundsKey = 'timer_rounds';
@@ -34,7 +31,6 @@ class _TimerPageState extends State<TimerPage> {
   bool _didSeedExercises = false;
   bool _isRunning = false;
   bool _isRestPhase = false;
-  DateTime? _sessionStartedAtUtc;
   int? _lastCountdownAnnouncement;
   int _remainingSeconds = _defaultWorkSeconds;
   int _workSeconds = _defaultWorkSeconds;
@@ -111,7 +107,6 @@ class _TimerPageState extends State<TimerPage> {
     _intervalTimer?.cancel();
     _lastCountdownAnnouncement = null;
     unawaited(_flutterTts.stop());
-    _finishTimerSessionIfNeeded();
     setState(() {
       _isRunning = false;
       _isRestPhase = false;
@@ -125,7 +120,6 @@ class _TimerPageState extends State<TimerPage> {
     if (_isRunning || _exerciseCount == 0) {
       return;
     }
-    _sessionStartedAtUtc ??= DateTime.now().toUtc();
     setState(() {
       _isRunning = true;
       if (_remainingSeconds == 0) {
@@ -138,7 +132,6 @@ class _TimerPageState extends State<TimerPage> {
   void _pauseTimer() {
     _intervalTimer?.cancel();
     unawaited(_flutterTts.stop());
-    _finishTimerSessionIfNeeded();
     setState(() {
       _isRunning = false;
     });
@@ -397,7 +390,6 @@ class _TimerPageState extends State<TimerPage> {
       _intervalTimer?.cancel();
       _lastCountdownAnnouncement = null;
       unawaited(_speakCue(l10n.timerCountdownStop));
-      _finishTimerSessionIfNeeded();
       setState(() {
         _isRunning = false;
         _remainingSeconds = 0;
@@ -482,76 +474,6 @@ class _TimerPageState extends State<TimerPage> {
       await _flutterTts.speak(cue);
     } catch (_) {
       // Ignore TTS failures and keep the timer running.
-    }
-  }
-
-  void _finishTimerSessionIfNeeded() {
-    final sessionStartedAtUtc = _sessionStartedAtUtc;
-    if (sessionStartedAtUtc == null) {
-      return;
-    }
-    _sessionStartedAtUtc = null;
-    unawaited(_persistHeartRateWindow(sessionStartedAtUtc));
-  }
-
-  Future<void> _persistHeartRateWindow(DateTime sessionStartedAtUtc) async {
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) {
-      return;
-    }
-
-    final sessionEndedAtUtc = DateTime.now().toUtc();
-    if (!sessionEndedAtUtc.isAfter(sessionStartedAtUtc)) {
-      return;
-    }
-
-    try {
-      final fitbitState = await FitbitService.instance.loadState();
-      if (!fitbitState.isConnected) {
-        return;
-      }
-
-      await Future<void>.delayed(_fitbitFetchDelay);
-
-      final heartRateWindow = await FitbitService.instance.fetchHeartRateWindow(
-        startAt: sessionStartedAtUtc,
-        endAt: sessionEndedAtUtc,
-      );
-      if (heartRateWindow.samples.isEmpty) {
-        debugPrint(
-          'Fitbit heart-rate capture skipped: no samples for '
-          '${sessionStartedAtUtc.toIso8601String()} -> '
-          '${sessionEndedAtUtc.toIso8601String()}',
-        );
-        return;
-      }
-
-      await Supabase.instance.client.from('timer_fitbit_sessions').insert({
-        'user_id': userId,
-        'started_at': sessionStartedAtUtc.toIso8601String(),
-        'ended_at': sessionEndedAtUtc.toIso8601String(),
-        'detail_level_used': heartRateWindow.detailLevelUsed,
-        'sample_count': heartRateWindow.samples.length,
-        'heart_rate_samples': heartRateWindow.samples
-            .map((sample) => sample.toJson())
-            .toList(),
-        'timer_config': {
-          'work_seconds': _workSeconds,
-          'rest_seconds': _restSeconds,
-          'rounds': _rounds,
-          'exercise_names': _exercises.map((exercise) => exercise.name).toList(),
-        },
-        'summary': {
-          'captured_at': DateTime.now().toUtc().toIso8601String(),
-          'start_at': heartRateWindow.startAt.toUtc().toIso8601String(),
-          'end_at': heartRateWindow.endAt.toUtc().toIso8601String(),
-          'detail_level_used': heartRateWindow.detailLevelUsed,
-        },
-      });
-    } catch (error, stackTrace) {
-      debugPrint(
-        'Fitbit heart-rate capture failed: $error\n$stackTrace',
-      );
     }
   }
 
@@ -771,32 +693,34 @@ class _TimerPageState extends State<TimerPage> {
                       ),
                       const SizedBox(height: 16),
                       Wrap(
-                          alignment: WrapAlignment.center,
-                          spacing: 12,
-                          runSpacing: 12,
-                          children: [
-                            _ControlButton(
-                              label: _isRunning
-                                  ? l10n.timerControlPause
-                                  : l10n.timerControlPlay,
-                              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-                              onPressed: _exerciseCount == 0 ? null : _toggleRunning,
-                              isPrimary: true,
-                            ),
-                            _ControlButton(
-                              label: l10n.timerControlSkip,
-                              icon: Icons.skip_next_rounded,
-                              onPressed: _exerciseCount == 0
-                                  ? null
-                                  : () => _advancePhase(autoContinue: _isRunning),
-                            ),
-                            _ControlButton(
-                              label: l10n.timerControlReset,
-                              icon: Icons.restart_alt,
-                              onPressed: _resetWorkout,
-                            ),
-                          ],
-                        ),
+                        alignment: WrapAlignment.center,
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: [
+                          _ControlButton(
+                            label: _isRunning
+                                ? l10n.timerControlPause
+                                : l10n.timerControlPlay,
+                            icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                            onPressed: _exerciseCount == 0
+                                ? null
+                                : _toggleRunning,
+                            isPrimary: true,
+                          ),
+                          _ControlButton(
+                            label: l10n.timerControlSkip,
+                            icon: Icons.skip_next_rounded,
+                            onPressed: _exerciseCount == 0
+                                ? null
+                                : () => _advancePhase(autoContinue: _isRunning),
+                          ),
+                          _ControlButton(
+                            label: l10n.timerControlReset,
+                            icon: Icons.restart_alt,
+                            onPressed: _resetWorkout,
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 18),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -992,18 +916,18 @@ class _ExerciseRail extends StatelessWidget {
                   borderRadius: BorderRadius.circular(18),
                   color: isCompleted
                       ? (appColors?.successContainer ??
-                          theme.colorScheme.secondaryContainer)
+                            theme.colorScheme.secondaryContainer)
                       : isActive
-                          ? activeColor.withValues(alpha: 0.16)
-                          : theme.colorScheme.surfaceContainerHighest.withValues(
+                      ? activeColor.withValues(alpha: 0.16)
+                      : theme.colorScheme.surfaceContainerHighest.withValues(
                           alpha: 0.3,
                         ),
                   border: Border.all(
                     color: isCompleted
                         ? (appColors?.success ?? theme.colorScheme.secondary)
                         : isActive
-                            ? activeColor
-                            : theme.colorScheme.outlineVariant,
+                        ? activeColor
+                        : theme.colorScheme.outlineVariant,
                   ),
                 ),
                 child: Row(

@@ -24,13 +24,8 @@ class MaxTestsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.profileMaxTestsTitle),
-      ),
-      body: MaxTestsContent(
-        userId: userId,
-        displayName: displayName,
-      ),
+      appBar: AppBar(title: Text(l10n.profileMaxTestsTitle)),
+      body: MaxTestsContent(userId: userId, displayName: displayName),
     );
   }
 }
@@ -172,9 +167,9 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
         final colorScheme = theme.colorScheme;
         final now = DateTime.now();
         final periodStart = _periodStartDate(now);
-        final exerciseGuides =
-            List<ExerciseGuide>.from(snapshot.data ?? const <ExerciseGuide>[])
-              ..sort((a, b) => a.name.compareTo(b.name));
+        final exerciseGuides = List<ExerciseGuide>.from(
+          snapshot.data ?? const <ExerciseGuide>[],
+        )..sort((a, b) => a.name.compareTo(b.name));
         final exerciseGuideById = {
           for (final guide in exerciseGuides) guide.id: guide,
         };
@@ -223,8 +218,9 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                         const SizedBox(height: 8),
                         Text(
                           l10n.profileMaxTestsDescription,
-                          style: theme.textTheme.bodyMedium
-                              ?.copyWith(color: colorScheme.onSurfaceVariant),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Row(
@@ -246,9 +242,11 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                                   .map(
                                     (period) =>
                                         DropdownMenuItem<_MaxTestPeriod>(
-                                      value: period,
-                                      child: Text(_periodLabel(l10n, period)),
-                                    ),
+                                          value: period,
+                                          child: Text(
+                                            _periodLabel(l10n, period),
+                                          ),
+                                        ),
                                   )
                                   .toList(),
                             ),
@@ -310,12 +308,12 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                               final filteredTests = periodStart == null
                                   ? tests
                                   : tests
-                                      .where(
-                                        (test) => !test.recordedAt.isBefore(
-                                          periodStart,
-                                        ),
-                                      )
-                                      .toList();
+                                        .where(
+                                          (test) => !test.recordedAt.isBefore(
+                                            periodStart,
+                                          ),
+                                        )
+                                        .toList();
 
                               if (filteredTests.isEmpty) {
                                 return Center(
@@ -366,8 +364,9 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                                 separatorBuilder: (context, index) =>
                                     const SizedBox(height: 16),
                                 itemBuilder: (context, index) {
-                                  final entry =
-                                      groupedTests.entries.elementAt(index);
+                                  final entry = groupedTests.entries.elementAt(
+                                    index,
+                                  );
                                   final exerciseKey = entry.key;
                                   final groupTests = entry.value;
                                   final isAllPeriod =
@@ -383,8 +382,8 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
                                   final bestValue = displayTests.isEmpty
                                       ? 0
                                       : displayTests
-                                          .map((test) => test.value)
-                                          .reduce((a, b) => a > b ? a : b);
+                                            .map((test) => test.value)
+                                            .reduce((a, b) => a > b ? a : b);
                                   final exercise =
                                       displayNames[exerciseKey] ??
                                       groupTests.first.exercise.trim();
@@ -451,16 +450,19 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
     final l10n = AppLocalizations.of(context)!;
     final tests = widget.tests;
     final showToggle = widget.enableToggle && tests.length > _collapsedCount;
-    final visibleTests =
-        _isExpanded ? tests : tests.take(_collapsedCount).toList();
+    final visibleTests = _isExpanded
+        ? tests
+        : tests.take(_collapsedCount).toList();
     final recentTests = [...tests]
       ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
     final recentSlice = recentTests.take(4).toList().reversed.toList();
-    final bestValueLabel = widget.bestValue
-        .toStringAsFixed(widget.bestValue.truncateToDouble() == widget.bestValue ? 0 : 1);
+    final bestValueLabel = widget.bestValue.toStringAsFixed(
+      widget.bestValue.truncateToDouble() == widget.bestValue ? 0 : 1,
+    );
     final nextGoal = widget.bestValue == 0 ? 1 : widget.bestValue * 1.1;
-    final goalLabel = nextGoal
-        .toStringAsFixed(nextGoal.truncateToDouble() == nextGoal ? 0 : 1);
+    final goalLabel = nextGoal.toStringAsFixed(
+      nextGoal.truncateToDouble() == nextGoal ? 0 : 1,
+    );
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -508,12 +510,14 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
             const SizedBox(height: 16),
             _MetricRow(
               label: l10n.profileMaxTestsBestLabel,
-              value: '$bestValueLabel ${tests.isEmpty ? '' : tests.first.unit}'.trim(),
+              value: '$bestValueLabel ${tests.isEmpty ? '' : tests.first.unit}'
+                  .trim(),
             ),
             const SizedBox(height: 6),
             _MetricRow(
               label: l10n.profileMaxTestsGoalLabel,
-              value: '$goalLabel ${tests.isEmpty ? '' : tests.first.unit}'.trim(),
+              value: '$goalLabel ${tests.isEmpty ? '' : tests.first.unit}'
+                  .trim(),
             ),
             const SizedBox(height: 16),
             _TipsCard(
@@ -544,8 +548,9 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   '${widget.summaryLabel}: '
-                  '$bestValueLabel '
-                  '${tests.first.unit}'.trim(),
+                          '$bestValueLabel '
+                          '${tests.first.unit}'
+                      .trim(),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -559,10 +564,7 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
 }
 
 class _RecentPerformanceChart extends StatelessWidget {
-  const _RecentPerformanceChart({
-    required this.tests,
-    required this.unit,
-  });
+  const _RecentPerformanceChart({required this.tests, required this.unit});
 
   final List<MaxTest> tests;
   final String unit;
@@ -580,7 +582,9 @@ class _RecentPerformanceChart extends StatelessWidget {
       );
     }
 
-    final maxValue = tests.map((test) => test.value).fold<double>(
+    final maxValue = tests
+        .map((test) => test.value)
+        .fold<double>(
           0,
           (previous, value) => value > previous ? value : previous,
         );
@@ -592,9 +596,9 @@ class _RecentPerformanceChart extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: _PerformanceBar(
-                label: AppLocalizations.of(context)!.profileMaxTestsSessionLabel(
-                  index + 1,
-                ),
+                label: AppLocalizations.of(
+                  context,
+                )!.profileMaxTestsSessionLabel(index + 1),
                 value: tests[index].value,
                 maxValue: maxValue,
                 unit: unit,
@@ -623,8 +627,12 @@ class _PerformanceBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final heightFactor = maxValue == 0 ? 0.2 : (value / maxValue).clamp(0.2, 1.0);
-    final valueLabel = value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1);
+    final heightFactor = maxValue == 0
+        ? 0.2
+        : (value / maxValue).clamp(0.2, 1.0);
+    final valueLabel = value.toStringAsFixed(
+      value.truncateToDouble() == value ? 0 : 1,
+    );
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -679,10 +687,7 @@ class _PerformanceBar extends StatelessWidget {
 }
 
 class _MetricRow extends StatelessWidget {
-  const _MetricRow({
-    required this.label,
-    required this.value,
-  });
+  const _MetricRow({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -714,10 +719,7 @@ class _MetricRow extends StatelessWidget {
 }
 
 class _TipsCard extends StatelessWidget {
-  const _TipsCard({
-    required this.title,
-    required this.subtitle,
-  });
+  const _TipsCard({required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;
@@ -779,7 +781,8 @@ class _MaxTestTile extends StatelessWidget {
       ),
       title: Text(
         '${test.value.toStringAsFixed(test.value.truncateToDouble() == test.value ? 0 : 1)} '
-        '${test.unit}'.trim(),
+                '${test.unit}'
+            .trim(),
       ),
       subtitle: Text(l10n.profileMaxTestsDateLabel(dateText)),
       trailing: isBest

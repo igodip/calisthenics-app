@@ -51,32 +51,21 @@ class Trainee {
   }
 
   @override
-  String toString() => 'Profiles(${{
-        'id': id,
-        'name': name,
-        'weight': weight,
-        'height': height,
-        'profileImageUrl': profileImageUrl,
-      }})';
+  String toString() =>
+      'Profiles(${{'id': id, 'name': name, 'weight': weight, 'height': height, 'profileImageUrl': profileImageUrl}})';
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Trainee &&
-      runtimeType == other.runtimeType &&
-      id == other.id &&
-      name == other.name &&
-      weight == other.weight &&
-      height == other.height &&
-      profileImageUrl == other.profileImageUrl;
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          name == other.name &&
+          weight == other.weight &&
+          height == other.height &&
+          profileImageUrl == other.profileImageUrl;
 
   @override
   int get hashCode =>
-      Object.hashAll([
-        id,
-        name,
-        weight,
-        height,
-        profileImageUrl,
-      ]);
+      Object.hashAll([id, name, weight, height, profileImageUrl]);
 }
