@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Trainee {
   final String id;
   final String? name;
@@ -24,16 +23,6 @@ class Trainee {
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'weight': weight,
-      'height': height,
-      'profile_image_url': profileImageUrl,
-    };
-  }
-
   Trainee copyWith({
     String? id,
     String? name,
@@ -49,23 +38,4 @@ class Trainee {
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
     );
   }
-
-  @override
-  String toString() =>
-      'Profiles(${{'id': id, 'name': name, 'weight': weight, 'height': height, 'profileImageUrl': profileImageUrl}})';
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Trainee &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          name == other.name &&
-          weight == other.weight &&
-          height == other.height &&
-          profileImageUrl == other.profileImageUrl;
-
-  @override
-  int get hashCode =>
-      Object.hashAll([id, name, weight, height, profileImageUrl]);
 }

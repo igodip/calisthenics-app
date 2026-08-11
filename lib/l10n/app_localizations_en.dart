@@ -24,9 +24,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
-  String get navSettings => 'Settings';
-
-  @override
   String get navTerminology => 'Terminology';
 
   @override
@@ -109,216 +106,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get difficultyAdvanced => 'Advanced';
 
   @override
-  String get guidesPullupName => 'Pull-up';
-
-  @override
-  String get guidesPullupFocus => 'Lats, biceps, grip';
-
-  @override
-  String get guidesPullupTip =>
-      'Drive elbows toward your ribs and keep your ribs tucked to avoid swinging.';
-
-  @override
-  String get guidesPullupDescription =>
-      'Start from a hollow body hang, then pull until your chin clears the bar. Control the descent for stronger reps.';
-
-  @override
-  String get guidesChinUpName => 'Chin-up';
-
-  @override
-  String get guidesChinUpFocus => 'Lats, biceps, grip';
-
-  @override
-  String get guidesChinUpTip =>
-      'Keep your shoulders down and drive your elbows toward your ribs to stay strong at the top.';
-
-  @override
-  String get guidesChinUpDescription =>
-      'Start from a dead hang with palms facing you, pull until your chin clears the bar, then lower under control.';
-
-  @override
-  String get guidesPushupName => 'Push-up';
-
-  @override
-  String get guidesPushupFocus => 'Chest, triceps, core';
-
-  @override
-  String get guidesPushupTip =>
-      'Squeeze your glutes and keep a straight line from head to heels.';
-
-  @override
-  String get guidesPushupDescription =>
-      'Lower with elbows at roughly 45° to your torso, touch your chest lightly, then press back up without letting hips sag.';
-
-  @override
-  String get guidesBodyweightSquatName => 'Bodyweight squat';
-
-  @override
-  String get guidesBodyweightSquatFocus => 'Quads, glutes, core';
-
-  @override
-  String get guidesBodyweightSquatTip =>
-      'Push your knees out as you descend and keep your heels planted.';
-
-  @override
-  String get guidesBodyweightSquatDescription =>
-      'Sit the hips back and down until thighs are at least parallel. Drive evenly through the whole foot to stand tall.';
-
-  @override
-  String get guidesGluteBridgeName => 'Glute bridge';
-
-  @override
-  String get guidesGluteBridgeFocus => 'Glutes, hamstrings, core';
-
-  @override
-  String get guidesGluteBridgeTip =>
-      'Exhale as you lift and avoid arching your lower back at the top.';
-
-  @override
-  String get guidesGluteBridgeDescription =>
-      'Lie on your back with knees bent, drive through your heels to lift hips until thighs and torso align, then lower with control.';
-
-  @override
-  String get guidesHangingLegRaiseName => 'Hanging leg raise';
-
-  @override
-  String get guidesHangingLegRaiseFocus => 'Abdominals, hip flexors, grip';
-
-  @override
-  String get guidesHangingLegRaiseTip =>
-      'Initiate each rep by engaging your lats to steady the torso.';
-
-  @override
-  String get guidesHangingLegRaiseDescription =>
-      'From a dead hang, lift your legs together until they reach hip height or higher. Lower slowly to keep tension.';
-
-  @override
-  String get guidesMuscleUpName => 'Muscle-up';
-
-  @override
-  String get guidesMuscleUpFocus => 'Lats, chest, triceps, transition strength';
-
-  @override
-  String get guidesMuscleUpTip =>
-      'Pull high to your upper chest and keep the bar close to reduce the swing.';
-
-  @override
-  String get guidesMuscleUpDescription =>
-      'From a controlled hang, explode into a high pull, transition the wrists over the bar, and press to lockout.';
-
-  @override
-  String get guidesStraightBarDipName => 'Straight bar dip';
-
-  @override
-  String get guidesStraightBarDipFocus => 'Chest, triceps, shoulders';
-
-  @override
-  String get guidesStraightBarDipTip =>
-      'Keep elbows tucked and press down while leaning slightly forward.';
-
-  @override
-  String get guidesStraightBarDipDescription =>
-      'Start on top of the bar with locked elbows, lower under control until shoulders dip below elbows, then drive back up.';
-
-  @override
-  String get guidesDipsName => 'Dips';
-
-  @override
-  String get guidesDipsFocus => 'Chest, triceps, shoulders';
-
-  @override
-  String get guidesDipsTip =>
-      'Lean slightly forward and keep shoulders packed to protect the joints.';
-
-  @override
-  String get guidesDipsDescription =>
-      'Start locked out on parallel bars, lower until shoulders dip below elbows, then press back to a strong lockout.';
-
-  @override
-  String get guidesAustralianRowName => 'Australian row';
-
-  @override
-  String get guidesAustralianRowFocus => 'Upper back, biceps, core';
-
-  @override
-  String get guidesAustralianRowTip =>
-      'Brace your core and keep a straight line from shoulders to heels.';
-
-  @override
-  String get guidesAustralianRowDescription =>
-      'Set the bar at waist height, hang underneath, and row your chest to the bar with elbows tight.';
-
-  @override
-  String get guidesPikePushUpName => 'Pike push-up';
-
-  @override
-  String get guidesPikePushUpFocus => 'Shoulders, triceps, core';
-
-  @override
-  String get guidesPikePushUpTip =>
-      'Keep hips high and lower your head to a spot just in front of your hands.';
-
-  @override
-  String get guidesPikePushUpDescription =>
-      'From a pike position, bend elbows to bring the head down, then press back to a strong lockout.';
-
-  @override
-  String get guidesHollowHoldName => 'Hollow body hold';
-
-  @override
-  String get guidesHollowHoldFocus => 'Core, hip flexors, posture';
-
-  @override
-  String get guidesHollowHoldTip =>
-      'Press your lower back into the floor and keep your ribs tucked.';
-
-  @override
-  String get guidesHollowHoldDescription =>
-      'Lie on your back, lift shoulders and legs, and hold a banana shape with straight arms overhead.';
-
-  @override
-  String get guidesPlankName => 'Plank';
-
-  @override
-  String get guidesPlankFocus => 'Core, shoulders, glutes';
-
-  @override
-  String get guidesPlankTip =>
-      'Squeeze glutes and keep your ribs tucked so the hips don\'t sag.';
-
-  @override
-  String get guidesPlankDescription =>
-      'Set forearms under shoulders, extend legs long, and hold a straight line from head to heels while breathing steadily.';
-
-  @override
-  String get guidesLSitName => 'L-sit';
-
-  @override
-  String get guidesLSitFocus => 'Core, hip flexors, triceps';
-
-  @override
-  String get guidesLSitTip =>
-      'Push the floor away, lock elbows, and keep knees straight.';
-
-  @override
-  String get guidesLSitDescription =>
-      'From parallel bars or the floor, lift your legs to hip height and hold a tight L position.';
-
-  @override
-  String get guidesHandstandName => 'Handstand hold';
-
-  @override
-  String get guidesHandstandFocus => 'Shoulders, core, balance';
-
-  @override
-  String get guidesHandstandTip =>
-      'Stack wrists, shoulders, and hips while squeezing your glutes.';
-
-  @override
-  String get guidesHandstandDescription =>
-      'Kick or press up to a wall or free balance and hold a tall line with toes pointed.';
-
-  @override
   String get homeLoadErrorTitle => 'Unable to load workouts';
 
   @override
@@ -395,10 +182,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pick one option before sending your feedback.';
 
   @override
-  String get traineeFeedbackFeelingRequired =>
-      'Please choose how you felt during training.';
-
-  @override
   String get traineeFeedbackFeelingVeryBad => 'Very bad';
 
   @override
@@ -421,31 +204,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Feedback saved. We\'ll share it with your coach.';
 
   @override
-  String get traineeFeedbackSharedTitle => 'Shared feedback';
-
-  @override
-  String get traineeFeedbackEmpty => 'No feedback shared yet.';
-
-  @override
-  String get traineeFeedbackRead => 'Read';
-
-  @override
-  String get traineeFeedbackUnread => 'Unread';
-
-  @override
-  String get traineeFeedbackDelete => 'Delete';
-
-  @override
-  String get traineeFeedbackDeleteConfirmTitle => 'Delete feedback?';
-
-  @override
-  String get traineeFeedbackDeleteConfirmBody =>
-      'This will remove the feedback permanently.';
-
-  @override
-  String get traineeFeedbackDeleteSuccess => 'Feedback deleted.';
-
-  @override
   String get traineeFeedbackLoadFailed => 'Unable to load feedback right now.';
 
   @override
@@ -461,32 +219,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get homeLatePaymentDescription =>
       'Your payment is due. Please settle it to keep your plan active.';
-
-  @override
-  String get homePlansSectionTitle => 'Workout plans';
-
-  @override
-  String get homePlansSectionSubtitle =>
-      'Plans assigned to you and their current status.';
-
-  @override
-  String get homePlansEmptyTitle => 'No workout plans yet';
-
-  @override
-  String get homePlansEmptyDescription =>
-      'Ask your coach to assign a plan to see it here.';
-
-  @override
-  String get homePlanStatusDraft => 'Draft';
-
-  @override
-  String get homePlanStatusArchived => 'Archived';
-
-  @override
-  String get homePlanStatusUpcoming => 'Upcoming';
-
-  @override
-  String get homePlanStatusUnknown => 'Unknown status';
 
   @override
   String get homePlanDefaultTitle => 'Workout plan';
@@ -556,10 +288,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainingExerciseNotesTitle => 'Notes';
-
-  @override
-  String get trainingExerciseNoCoachNotes =>
-      'No coach notes for this exercise yet.';
 
   @override
   String get trainingExerciseYourNotesLabel => 'Your notes';
@@ -713,9 +441,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileMaxTestsBestPeriodLabel => 'Best in selected period';
 
   @override
-  String get profileMaxTestsAdd => 'Add max test';
-
-  @override
   String get profileMaxTestsRefresh => 'Refresh';
 
   @override
@@ -777,44 +502,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get profileMaxTestsExerciseLabel => 'Exercise';
-
-  @override
-  String get profileMaxTestsExerciseHint => 'e.g. Pull ups or Push ups';
-
-  @override
-  String get profileMaxTestsValueLabel => 'Result';
-
-  @override
-  String get profileMaxTestsValueHint => 'Enter a positive value';
-
-  @override
-  String get profileMaxTestsUnitLabel => 'Unit';
-
-  @override
-  String get profileMaxTestsUnitHint => 'e.g. reps, kg, sec';
-
-  @override
   String profileMaxTestsDateLabel(String date) {
     return 'Recorded on $date';
   }
-
-  @override
-  String get profileMaxTestsCancel => 'Cancel';
-
-  @override
-  String get profileMaxTestsSave => 'Save test';
-
-  @override
-  String get profileMaxTestsSaveSuccess => 'Max test saved';
-
-  @override
-  String profileMaxTestsSaveError(Object error) {
-    return 'Unable to save test: $error';
-  }
-
-  @override
-  String get profileMaxTestsDefaultUnit => 'reps';
 
   @override
   String get profileMaxTestsBestLabel => 'Personal best';
@@ -1081,50 +771,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get amrapTimerTitle => 'AMRAP timer';
-
-  @override
-  String get amrapTimerSubtitle => 'Push through as many rounds as possible.';
-
-  @override
-  String get amrapTimerDescription =>
-      'Set the total duration and track the remaining time.';
-
-  @override
-  String get amrapDurationLabel => 'Duration (minutes)';
-
-  @override
-  String get amrapStartButton => 'Start AMRAP';
-
-  @override
-  String get amrapResetButton => 'Reset AMRAP';
-
-  @override
-  String get amrapTimeRemainingLabel => 'Time remaining';
-
-  @override
-  String get countdownTitle => 'Simple timer';
-
-  @override
-  String get countdownSubtitle => 'A straightforward timer for any interval.';
-
-  @override
-  String get countdownDescription =>
-      'Set minutes and seconds, then start the timer.';
-
-  @override
-  String get countdownMinutesLabel => 'Minutes';
-
-  @override
-  String get countdownSecondsLabel => 'Seconds';
-
-  @override
-  String get countdownStartButton => 'Start timer';
-
-  @override
-  String get countdownResetButton => 'Stop timer';
-
-  @override
   String weekNumber(int week) {
     return 'Week $week';
   }
@@ -1134,90 +780,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get terminologyTitle => 'Terminology';
-
-  @override
-  String get termRepsTitle => 'Reps';
-
-  @override
-  String get termRepsDescription =>
-      'Number of times you perform an exercise consecutively.';
-
-  @override
-  String get termSetTitle => 'Set';
-
-  @override
-  String get termSetDescription =>
-      'A group of repetitions. For example: 3 sets of 10 reps means 30 repetitions total divided into 3 groups.';
-
-  @override
-  String get termRtTitle => 'RT';
-
-  @override
-  String get termRtDescription =>
-      'Total Repetitions: perform all the reps with your preferred sets, reps, and tempo (if not specified).';
-
-  @override
-  String get termAmrapTitle => 'AMRAP';
-
-  @override
-  String get termAmrapDescription =>
-      'As Many Reps As Possible: perform as many reps as you can in a given time.';
-
-  @override
-  String get termEmomTitle => 'EMOM';
-
-  @override
-  String get termEmomDescription =>
-      'Every Minute on the Minute: start a set every minute. Rest during the remaining time.';
-
-  @override
-  String get termRampingTitle => 'Ramping';
-
-  @override
-  String get termRampingDescription =>
-      'Method where the load increases with each set.';
-
-  @override
-  String get termMavTitle => 'MAV';
-
-  @override
-  String get termMavDescription =>
-      'Massima Alzata Veloce: perform as many reps as possible with a load while keeping control and good speed.';
-
-  @override
-  String get termIsocineticiTitle => 'Isokinetic';
-
-  @override
-  String get termIsocineticiDescription =>
-      'Exercises performed at a constant speed.';
-
-  @override
-  String get termTutTitle => 'TUT';
-
-  @override
-  String get termTutDescription =>
-      'Indicates how long a repetition should last. You can manage the duration of each phase.';
-
-  @override
-  String get termIsoTitle => 'ISO';
-
-  @override
-  String get termIsoDescription =>
-      'Indicates a pause at a specific point of the repetition.';
-
-  @override
-  String get termSomTitle => 'SOM';
-
-  @override
-  String get termSomDescription =>
-      'Indicates the duration of each phase of the repetition.';
-
-  @override
-  String get termScaricoTitle => 'Deload';
-
-  @override
-  String get termScaricoDescription =>
-      'Last week of the program to prepare for max attempts.';
 
   @override
   String get traineeFeedbackAnsweredTitle => 'Answered feedback';

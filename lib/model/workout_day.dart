@@ -43,7 +43,6 @@ class WorkoutDay {
   final String? planName;
   final DateTime? planStartedAt;
   final DateTime? createdAt;
-  final DateTime? completedAt;
   final int? planPosition;
   final List<WorkoutExercise> exercises;
 
@@ -59,13 +58,16 @@ class WorkoutDay {
     this.planName,
     this.planStartedAt,
     this.createdAt,
-    this.completedAt,
     this.planPosition,
   });
 
-  String formattedTitle(AppLocalizations l10n, {String? fallback}) {
+  String formattedTitle(
+    AppLocalizations l10n, {
+    String? fallback,
+    bool includeWeek = true,
+  }) {
     final parts = <String>[];
-    if (week > 0) {
+    if (includeWeek && week > 0) {
       parts.add(l10n.weekNumber(week));
     }
     if (dayCode.isNotEmpty) {

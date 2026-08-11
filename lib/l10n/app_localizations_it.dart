@@ -24,9 +24,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get navProfile => 'Profilo';
 
   @override
-  String get navSettings => 'Impostazioni';
-
-  @override
   String get navTerminology => 'Terminologia';
 
   @override
@@ -110,218 +107,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get difficultyAdvanced => 'Avanzato';
 
   @override
-  String get guidesPullupName => 'Trazioni';
-
-  @override
-  String get guidesPullupFocus => 'Dorsali, bicipiti, presa';
-
-  @override
-  String get guidesPullupTip =>
-      'Spingi i gomiti verso le costole e tieni le costole chiuse per evitare oscillazioni.';
-
-  @override
-  String get guidesPullupDescription =>
-      'Parti da una sospensione in hollow body, poi tira finché il mento supera la sbarra. Controlla la discesa per ripetizioni più forti.';
-
-  @override
-  String get guidesChinUpName => 'Chin-up';
-
-  @override
-  String get guidesChinUpFocus => 'Dorsali, bicipiti, presa';
-
-  @override
-  String get guidesChinUpTip =>
-      'Tieni le spalle depresse e spingi i gomiti verso le costole per restare forte in alto.';
-
-  @override
-  String get guidesChinUpDescription =>
-      'Parti da una sospensione con i palmi verso di te, tira finché il mento supera la sbarra, poi scendi con controllo.';
-
-  @override
-  String get guidesPushupName => 'Piegamenti';
-
-  @override
-  String get guidesPushupFocus => 'Petto, tricipiti, core';
-
-  @override
-  String get guidesPushupTip =>
-      'Contrai i glutei e mantieni una linea dritta dalla testa ai talloni.';
-
-  @override
-  String get guidesPushupDescription =>
-      'Scendi con i gomiti a circa 45° rispetto al busto, sfiora il petto e risali senza lasciare che i fianchi cedano.';
-
-  @override
-  String get guidesBodyweightSquatName => 'Squat a corpo libero';
-
-  @override
-  String get guidesBodyweightSquatFocus => 'Quadricipiti, glutei, core';
-
-  @override
-  String get guidesBodyweightSquatTip =>
-      'Spingi le ginocchia verso l\'esterno durante la discesa e mantieni i talloni a terra.';
-
-  @override
-  String get guidesBodyweightSquatDescription =>
-      'Porta indietro e in basso le anche finché le cosce sono almeno parallele. Spingi uniformemente su tutto il piede per tornare in piedi.';
-
-  @override
-  String get guidesGluteBridgeName => 'Ponte glutei';
-
-  @override
-  String get guidesGluteBridgeFocus => 'Glutei, femorali, core';
-
-  @override
-  String get guidesGluteBridgeTip =>
-      'Espira mentre sali ed evita di inarcare troppo la zona lombare in alto.';
-
-  @override
-  String get guidesGluteBridgeDescription =>
-      'Supino con ginocchia piegate, spingi sui talloni per sollevare il bacino finché cosce e busto sono allineati, poi scendi lentamente.';
-
-  @override
-  String get guidesHangingLegRaiseName => 'Sollevamento gambe alla sbarra';
-
-  @override
-  String get guidesHangingLegRaiseFocus =>
-      'Addominali, flessori dell\'anca, presa';
-
-  @override
-  String get guidesHangingLegRaiseTip =>
-      'Inizia ogni ripetizione attivando i dorsali per stabilizzare il busto.';
-
-  @override
-  String get guidesHangingLegRaiseDescription =>
-      'Da una sospensione completa, solleva le gambe unite fino all\'altezza delle anche o più in alto. Scendi lentamente per mantenere tensione.';
-
-  @override
-  String get guidesMuscleUpName => 'Muscle-up';
-
-  @override
-  String get guidesMuscleUpFocus =>
-      'Dorsali, petto, tricipiti, forza nella transizione';
-
-  @override
-  String get guidesMuscleUpTip =>
-      'Tira in alto verso la parte alta del petto e tieni la sbarra vicina per ridurre l\'oscillazione.';
-
-  @override
-  String get guidesMuscleUpDescription =>
-      'Da una sospensione controllata, esplodi in una trazione alta, porta i polsi sopra la sbarra e spingi fino al blocco.';
-
-  @override
-  String get guidesStraightBarDipName => 'Dip alla sbarra';
-
-  @override
-  String get guidesStraightBarDipFocus => 'Petto, tricipiti, spalle';
-
-  @override
-  String get guidesStraightBarDipTip =>
-      'Tieni i gomiti vicini al corpo e spingi verso il basso con una leggera inclinazione in avanti.';
-
-  @override
-  String get guidesStraightBarDipDescription =>
-      'Parti sopra la sbarra con gomiti bloccati, scendi controllando finché le spalle scendono sotto i gomiti, poi risali.';
-
-  @override
-  String get guidesDipsName => 'Dip alle parallele';
-
-  @override
-  String get guidesDipsFocus => 'Petto, tricipiti, spalle';
-
-  @override
-  String get guidesDipsTip =>
-      'Inclina leggermente il busto in avanti e mantieni le spalle compatte per proteggere le articolazioni.';
-
-  @override
-  String get guidesDipsDescription =>
-      'Parti in blocco sulle parallele, scendi finché le spalle vanno sotto i gomiti, poi risali fino a un blocco forte.';
-
-  @override
-  String get guidesAustralianRowName => 'Rematore australiano';
-
-  @override
-  String get guidesAustralianRowFocus => 'Dorsali alti, bicipiti, core';
-
-  @override
-  String get guidesAustralianRowTip =>
-      'Attiva il core e mantieni una linea dritta dalle spalle ai talloni.';
-
-  @override
-  String get guidesAustralianRowDescription =>
-      'Imposta la sbarra all\'altezza della vita, appenditi sotto e tira il petto verso la sbarra con gomiti stretti.';
-
-  @override
-  String get guidesPikePushUpName => 'Piegamenti in pike';
-
-  @override
-  String get guidesPikePushUpFocus => 'Spalle, tricipiti, core';
-
-  @override
-  String get guidesPikePushUpTip =>
-      'Tieni i fianchi alti e abbassa la testa verso un punto appena davanti alle mani.';
-
-  @override
-  String get guidesPikePushUpDescription =>
-      'Da una posizione a pike, piega i gomiti per portare la testa in basso, poi spingi fino a un blocco forte.';
-
-  @override
-  String get guidesHollowHoldName => 'Tenuta hollow body';
-
-  @override
-  String get guidesHollowHoldFocus => 'Core, flessori dell\'anca, postura';
-
-  @override
-  String get guidesHollowHoldTip =>
-      'Spingi la zona lombare a terra e tieni le costole chiuse.';
-
-  @override
-  String get guidesHollowHoldDescription =>
-      'Sdraiati supino, solleva spalle e gambe e mantieni una forma a banana con braccia tese sopra la testa.';
-
-  @override
-  String get guidesPlankName => 'Plank';
-
-  @override
-  String get guidesPlankFocus => 'Core, spalle, glutei';
-
-  @override
-  String get guidesPlankTip =>
-      'Contrai i glutei e tieni le costole chiuse per evitare che i fianchi cedano.';
-
-  @override
-  String get guidesPlankDescription =>
-      'Posiziona gli avambracci sotto le spalle, allunga le gambe e mantieni una linea dritta dalla testa ai talloni respirando con calma.';
-
-  @override
-  String get guidesLSitName => 'L-sit';
-
-  @override
-  String get guidesLSitFocus => 'Core, flessori dell\'anca, tricipiti';
-
-  @override
-  String get guidesLSitTip =>
-      'Spingi il pavimento, blocca i gomiti e tieni le ginocchia dritte.';
-
-  @override
-  String get guidesLSitDescription =>
-      'Da parallele o a terra, solleva le gambe all\'altezza delle anche e mantieni una L compatta.';
-
-  @override
-  String get guidesHandstandName => 'Tenuta in verticale';
-
-  @override
-  String get guidesHandstandFocus => 'Spalle, core, equilibrio';
-
-  @override
-  String get guidesHandstandTip =>
-      'Allinea polsi, spalle e anche e contrai i glutei.';
-
-  @override
-  String get guidesHandstandDescription =>
-      'Sali in verticale contro il muro o in equilibrio libero e mantieni una linea lunga con le punte tese.';
-
-  @override
   String get homeLoadErrorTitle => 'Impossibile caricare gli allenamenti';
 
   @override
@@ -399,10 +184,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Scegli un\'opzione prima di inviare il feedback.';
 
   @override
-  String get traineeFeedbackFeelingRequired =>
-      'Seleziona come ti sei sentito durante l\'allenamento.';
-
-  @override
   String get traineeFeedbackFeelingVeryBad => 'Molto male';
 
   @override
@@ -425,31 +206,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Feedback salvato. Lo condivideremo con il tuo coach.';
 
   @override
-  String get traineeFeedbackSharedTitle => 'Feedback condiviso';
-
-  @override
-  String get traineeFeedbackEmpty => 'Non hai ancora condiviso feedback.';
-
-  @override
-  String get traineeFeedbackRead => 'Letto';
-
-  @override
-  String get traineeFeedbackUnread => 'Non letto';
-
-  @override
-  String get traineeFeedbackDelete => 'Elimina';
-
-  @override
-  String get traineeFeedbackDeleteConfirmTitle => 'Eliminare il feedback?';
-
-  @override
-  String get traineeFeedbackDeleteConfirmBody =>
-      'Questo rimuoverà il feedback in modo permanente.';
-
-  @override
-  String get traineeFeedbackDeleteSuccess => 'Feedback eliminato.';
-
-  @override
   String get traineeFeedbackLoadFailed =>
       'Impossibile caricare il feedback in questo momento.';
 
@@ -466,32 +222,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get homeLatePaymentDescription =>
       'Il pagamento è in scadenza. Effettualo per mantenere attivo il tuo piano.';
-
-  @override
-  String get homePlansSectionTitle => 'Piani di allenamento';
-
-  @override
-  String get homePlansSectionSubtitle =>
-      'Piani assegnati e il loro stato attuale.';
-
-  @override
-  String get homePlansEmptyTitle => 'Nessun piano di allenamento';
-
-  @override
-  String get homePlansEmptyDescription =>
-      'Chiedi al tuo coach di assegnarti un piano per vederlo qui.';
-
-  @override
-  String get homePlanStatusDraft => 'Bozza';
-
-  @override
-  String get homePlanStatusArchived => 'Archiviato';
-
-  @override
-  String get homePlanStatusUpcoming => 'In arrivo';
-
-  @override
-  String get homePlanStatusUnknown => 'Stato sconosciuto';
 
   @override
   String get homePlanDefaultTitle => 'Piano di allenamento';
@@ -562,10 +292,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get trainingExerciseNotesTitle => 'Note';
-
-  @override
-  String get trainingExerciseNoCoachNotes =>
-      'Non ci sono ancora note del coach per questo esercizio.';
 
   @override
   String get trainingExerciseYourNotesLabel => 'Le tue note';
@@ -720,9 +446,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Migliore nel periodo selezionato';
 
   @override
-  String get profileMaxTestsAdd => 'Aggiungi test massimale';
-
-  @override
   String get profileMaxTestsRefresh => 'Aggiorna';
 
   @override
@@ -784,44 +507,9 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get profileMaxTestsExerciseLabel => 'Esercizio';
-
-  @override
-  String get profileMaxTestsExerciseHint => 'es. trazioni o piegamenti';
-
-  @override
-  String get profileMaxTestsValueLabel => 'Risultato';
-
-  @override
-  String get profileMaxTestsValueHint => 'Inserisci un valore positivo';
-
-  @override
-  String get profileMaxTestsUnitLabel => 'Unità';
-
-  @override
-  String get profileMaxTestsUnitHint => 'es. rip, kg, sec';
-
-  @override
   String profileMaxTestsDateLabel(String date) {
     return 'Registrato il $date';
   }
-
-  @override
-  String get profileMaxTestsCancel => 'Annulla';
-
-  @override
-  String get profileMaxTestsSave => 'Salva test';
-
-  @override
-  String get profileMaxTestsSaveSuccess => 'Test massimale salvato';
-
-  @override
-  String profileMaxTestsSaveError(Object error) {
-    return 'Impossibile salvare il test: $error';
-  }
-
-  @override
-  String get profileMaxTestsDefaultUnit => 'ripetizioni';
 
   @override
   String get profileMaxTestsBestLabel => 'Miglior risultato';
@@ -1092,51 +780,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get amrapTimerTitle => 'Timer AMRAP';
-
-  @override
-  String get amrapTimerSubtitle => 'Spingi per quante più serie possibile.';
-
-  @override
-  String get amrapTimerDescription =>
-      'Imposta la durata totale e tieni il tempo rimanente.';
-
-  @override
-  String get amrapDurationLabel => 'Durata (minuti)';
-
-  @override
-  String get amrapStartButton => 'Avvia AMRAP';
-
-  @override
-  String get amrapResetButton => 'Reimposta AMRAP';
-
-  @override
-  String get amrapTimeRemainingLabel => 'Tempo rimanente';
-
-  @override
-  String get countdownTitle => 'Timer semplice';
-
-  @override
-  String get countdownSubtitle =>
-      'Un timer essenziale per qualsiasi intervallo.';
-
-  @override
-  String get countdownDescription =>
-      'Imposta minuti e secondi, poi avvia il timer.';
-
-  @override
-  String get countdownMinutesLabel => 'Minuti';
-
-  @override
-  String get countdownSecondsLabel => 'Secondi';
-
-  @override
-  String get countdownStartButton => 'Avvia timer';
-
-  @override
-  String get countdownResetButton => 'Ferma timer';
-
-  @override
   String weekNumber(int week) {
     return 'Settimana $week';
   }
@@ -1146,90 +789,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get terminologyTitle => 'Terminologia';
-
-  @override
-  String get termRepsTitle => 'Reps (Ripetizioni)';
-
-  @override
-  String get termRepsDescription =>
-      'Numero di volte che esegui un esercizio consecutivamente.';
-
-  @override
-  String get termSetTitle => 'Set (Serie)';
-
-  @override
-  String get termSetDescription =>
-      'Un gruppo di ripetizioni. Es: 3 serie da 10 reps significa 30 ripetizioni totali, divise in 3 gruppi.';
-
-  @override
-  String get termRtTitle => 'RT';
-
-  @override
-  String get termRtDescription =>
-      'Ripetizioni Totali: indica che devi fare tutte quelle reps, con libera scelta di serie, ripetizioni e tempo (se non indicato).';
-
-  @override
-  String get termAmrapTitle => 'AMRAP';
-
-  @override
-  String get termAmrapDescription =>
-      'As Many Reps As Possible: esegui quante più ripetizioni possibili in un tempo determinato.';
-
-  @override
-  String get termEmomTitle => 'EMOM';
-
-  @override
-  String get termEmomDescription =>
-      'Every Minute On Minute: inizi un set ogni minuto. Il tempo restante serve per riposare.';
-
-  @override
-  String get termRampingTitle => 'Ramping';
-
-  @override
-  String get termRampingDescription =>
-      'Metodo che prevede un incremento del peso ad ogni serie';
-
-  @override
-  String get termMavTitle => 'MAV';
-
-  @override
-  String get termMavDescription =>
-      'Massima Alzata Veloce: si riferisce a una metodologia in cui si cerca di eseguire il maggior numero di ripetizioni possibili con un carico, mantenendo sempre il controllo del movimento e una buona velocità di esecuzione.';
-
-  @override
-  String get termIsocineticiTitle => 'Isocinetici';
-
-  @override
-  String get termIsocineticiDescription =>
-      'Esercizi svolti a velocità costante.';
-
-  @override
-  String get termTutTitle => 'TUT';
-
-  @override
-  String get termTutDescription =>
-      'Indica quanto deve durare una ripetizione. Puoi gestire tu la durata di ogni fase della rep.';
-
-  @override
-  String get termIsoTitle => 'ISO';
-
-  @override
-  String get termIsoDescription =>
-      'Indica il fermo a un punto specifico dell\'esecuzione della rep';
-
-  @override
-  String get termSomTitle => 'SOM';
-
-  @override
-  String get termSomDescription =>
-      'Indica la durata di ogni fase della ripetizione.';
-
-  @override
-  String get termScaricoTitle => 'Scarico';
-
-  @override
-  String get termScaricoDescription =>
-      'Ultima settimana della scheda per prepararsi ai massimali.';
 
   @override
   String get traineeFeedbackAnsweredTitle => 'Feedback con risposta';

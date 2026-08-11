@@ -54,7 +54,7 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
   Future<List<MaxTest>> _loadMaxTests(String userId) async {
     final response = await supabase
         .from('max_tests')
-        .select('id, exercise, value, unit, recorded_at')
+        .select('exercise, value, unit, recorded_at')
         .eq('trainee_id', userId)
         .order('recorded_at', ascending: true);
 

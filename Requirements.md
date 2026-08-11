@@ -12,7 +12,7 @@
 - Show a loading indicator while the auth state is resolving and show an error message when the auth stream fails.
 - Provide a login mode that requires an email and password and uses Supabase `signInWithPassword`.
 - Provide a signup mode that requires email, password, and password confirmation, validates matching passwords, and uses Supabase `signUp`.
-- After sign-in or sign-up, ensure a `users` table row exists for the user (insert `email` and a derived `name` when missing).
+- After sign-in or sign-up, ensure a `trainees` row exists for the authenticated user (insert the user ID and a derived name when missing).
 - Support password reset by sending a reset email to the entered address with the `com.idipaolo.calisync://login-callback` redirect.
 - Listen for recovery deep links, prompt for a new password plus confirmation, and update the Supabase user password.
 - Provide a logout action that signs the user out and returns to the login screen.

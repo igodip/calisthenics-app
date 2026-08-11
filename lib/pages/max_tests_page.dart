@@ -10,26 +10,6 @@ import 'max_tests_history_page.dart';
 
 final supabase = Supabase.instance.client;
 
-class MaxTestsPage extends StatelessWidget {
-  const MaxTestsPage({
-    super.key,
-    required this.userId,
-    required this.displayName,
-  });
-
-  final String userId;
-  final String displayName;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.profileMaxTestsTitle)),
-      body: MaxTestsContent(userId: userId, displayName: displayName),
-    );
-  }
-}
-
 class MaxTestsContent extends StatefulWidget {
   const MaxTestsContent({
     super.key,
@@ -149,7 +129,7 @@ class _MaxTestsContentState extends State<MaxTestsContent> {
   Future<List<MaxTest>> _loadMaxTests(String userId) async {
     final response = await supabase
         .from('max_tests')
-        .select('id, exercise, value, unit, recorded_at')
+        .select('exercise, value, unit, recorded_at')
         .eq('trainee_id', userId)
         .order('recorded_at', ascending: false);
 

@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
           return;
         }
 
-        await _ensureUserEntry(user);
+        await _ensureTraineeEntry(user);
 
         if (!mounted) return;
         Navigator.of(context).pushReplacementNamed('/');
@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
 
         if (user != null &&
             Supabase.instance.client.auth.currentSession != null) {
-          await _ensureUserEntry(user);
+          await _ensureTraineeEntry(user);
         }
 
         if (!mounted) return;
@@ -333,10 +333,10 @@ class _LoginPageState extends State<LoginPage> {
     confirmController.dispose();
   }
 
-  Future<void> _ensureUserEntry(User user) async {
+  Future<void> _ensureTraineeEntry(User user) async {
     try {
       final existing = await supabase
-          .from('users')
+          .from('trainees')
           .select('id')
           .eq('id', user.id)
           .limit(1)
@@ -352,12 +352,9 @@ class _LoginPageState extends State<LoginPage> {
           ? email.split('@').first
           : (metadata['username'] as String?) ?? '';
 
-      await supabase.from('users').insert({
-        if (email != null) 'email': email,
-        'name': username,
-      });
+      await supabase.from('trainees').insert({'id': user.id, 'name': username});
     } catch (error, stackTrace) {
-      debugPrint('Failed to ensure user entry: $error');
+      debugPrint('Failed to ensure trainee entry: $error');
       debugPrintStack(stackTrace: stackTrace);
     }
   }

@@ -39,11 +39,6 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-    <key>NSBluetoothPeripheralUsageDescription</key>
-    <string>This app requires Bluetooth access to connect and sync with compatible devices.</string>
-
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>This app requires Bluetooth access to connect and sync with compatible devices, even when the app is running in the background.</string>
     <key>NSCameraUsageDescription</key>
     <string>This app requires Camera to track correctly the movements</string>
 	<key>UIMainStoryboardFile</key>

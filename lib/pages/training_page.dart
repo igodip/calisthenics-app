@@ -100,22 +100,6 @@ class _TrainingState extends State<Training> {
                 foregroundColor:
                     theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
                 title: Text(l10n.trainingTodayTitle),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: colorScheme.onSurface.withValues(alpha: 0.08),
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.more_horiz),
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
               ),
               body: SafeArea(
                 child: ListView(
@@ -821,13 +805,6 @@ class FeelingOption {
   static const veryGood = FeelingOption(value: 5, emoji: '🤩');
 
   static const values = [veryBad, bad, ok, good, veryGood];
-
-  static FeelingOption? fromValue(int? value) {
-    for (final option in values) {
-      if (option.value == value) return option;
-    }
-    return null;
-  }
 
   String localizedLabel(AppLocalizations l10n) {
     switch (value) {

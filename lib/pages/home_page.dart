@@ -3,7 +3,6 @@ import 'package:calisync/pages/profile_page.dart';
 import 'package:calisync/pages/terminology_page.dart';
 import 'package:calisync/pages/trainee_feedback_page.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
 import '../data/exercise_guides.dart' as guide_data;
@@ -51,11 +50,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late int selectedIndex;
-  bool? payed;
   String? _cachedLocale;
-  String? _terminologyTermKey;
 
-  final supabase = Supabase.instance.client;
   static const int _workoutPlanIndex = 1;
   static const int _maxTestsIndex = 5;
 
@@ -63,7 +59,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     selectedIndex = widget.initialIndex;
-    _terminologyTermKey = widget.initialTerminologyTermKey;
   }
 
   @override
@@ -129,7 +124,7 @@ class _HomePageState extends State<HomePage> {
       _NavigationItem(
         title: l10n.navTerminology,
         icon: Icons.menu_book,
-        page: TerminologyPage(termKey: _terminologyTermKey),
+        page: TerminologyPage(termKey: widget.initialTerminologyTermKey),
       ),
       _NavigationItem(
         title: l10n.timerTitle,

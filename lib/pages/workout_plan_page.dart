@@ -73,7 +73,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   ) async {
     final response = await client
         .from('workout_plans')
-        .select('id, title, status, notes, starts_on, created_at')
+        .select('status, starts_on, created_at')
         .eq('trainee_id', userId)
         .order('starts_on', ascending: false)
         .order('created_at', ascending: false);
@@ -91,10 +91,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     final plans = data
         .map(
           (row) => WorkoutPlan(
-            id: row['id'] as String?,
-            name: (row['title'] as String? ?? '').trim(),
             status: (row['status'] as String? ?? '').trim(),
-            notes: row['notes'] as String?,
             startsOn: parseDate(row['starts_on']),
             createdAt: parseDate(row['created_at']),
           ),
@@ -120,7 +117,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     final response = await client
         .from('days')
         .select(
-          'id, week, day_code, title, notes, completed, completed_at, '
+          'id, week, day_code, title, notes, completed, '
           'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) ), '
           'day_exercises ( id, position, notes, completed, completed_reps, trainee_notes, exercise_feedback, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes)',
         )
@@ -228,7 +225,6 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         title: row['title'] as String?,
         notes: row['notes'] as String?,
         isCompleted: row['completed'] as bool? ?? false,
-        completedAt: parseDate(row['completed_at']),
         planId: planId,
         planName: planName,
         planStartedAt: planStartedAt,
@@ -285,9 +281,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     final plans = grouped.entries.map((entry) {
       final planDays = [...entry.value]
         ..sort((a, b) {
-          if (a.isCompleted != b.isCompleted) {
-            return a.isCompleted ? 1 : -1;
-          }
+          if (a.week != b.week) return a.week.compareTo(b.week);
           final aPosition = a.planPosition;
           final bPosition = b.planPosition;
           if (aPosition != null || bPosition != null) {
@@ -295,8 +289,12 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
             if (bPosition == null) return -1;
             if (aPosition != bPosition) return aPosition.compareTo(bPosition);
           }
-          if (a.week != b.week) return a.week.compareTo(b.week);
-          return a.dayCode.compareTo(b.dayCode);
+          final dayCodeComparison = a.dayCode.compareTo(b.dayCode);
+          if (dayCodeComparison != 0) return dayCodeComparison;
+          if (a.isCompleted != b.isCompleted) {
+            return a.isCompleted ? 1 : -1;
+          }
+          return 0;
         });
 
       final first = planDays.first;
@@ -305,7 +303,6 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
           : l10n.homePlanDefaultTitle;
 
       return _WorkoutPlanGroup(
-        id: entry.key,
         title: planTitle,
         startedAt: earliestDate(planDays),
         latestDate: latestDate(planDays),
@@ -478,12 +475,11 @@ class _WorkoutPlanBody extends StatelessWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 const SizedBox(height: 16),
-                ...planGroups.asMap().entries.map(
-                  (entry) => Padding(
+                ...planGroups.map(
+                  (plan) => Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: _WorkoutPlanSection(
-                      plan: entry.value,
-                      isLatest: entry.key == 0,
+                      plan: plan,
                       onOpenDay: onOpenDay,
                     ),
                   ),
@@ -548,14 +544,12 @@ class _WorkoutPlanData {
 }
 
 class _WorkoutPlanGroup {
-  final String id;
   final String title;
   final DateTime? startedAt;
   final DateTime? latestDate;
   final List<WorkoutDay> days;
 
   const _WorkoutPlanGroup({
-    required this.id,
     required this.title,
     required this.days,
     this.startedAt,
@@ -565,19 +559,20 @@ class _WorkoutPlanGroup {
 
 class _WorkoutPlanSection extends StatelessWidget {
   final _WorkoutPlanGroup plan;
-  final bool isLatest;
   final ValueChanged<WorkoutDay> onOpenDay;
 
-  const _WorkoutPlanSection({
-    required this.plan,
-    required this.isLatest,
-    required this.onOpenDay,
-  });
+  const _WorkoutPlanSection({required this.plan, required this.onOpenDay});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final daysByWeek = <int, List<WorkoutDay>>{};
+    for (final day in plan.days) {
+      daysByWeek.putIfAbsent(day.week, () => []).add(day);
+    }
+    final weekEntries = daysByWeek.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
 
     final dateFormat = DateFormat.yMMMMd(l10n.localeName);
     final startedLabel = plan.startedAt != null
@@ -585,28 +580,19 @@ class _WorkoutPlanSection extends StatelessWidget {
         : null;
 
     return Card(
-      color: isLatest
-          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.25)
-          : null,
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.25),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: isLatest
-              ? theme.colorScheme.primary
-              : theme.colorScheme.outlineVariant,
-          width: 1.25,
-        ),
+        side: BorderSide(color: theme.colorScheme.primary, width: 1.25),
       ),
       child: ExpansionTile(
-        initiallyExpanded: isLatest,
+        initiallyExpanded: true,
         tilePadding: const EdgeInsets.all(16),
-        trailing: isLatest
-            ? Chip(
-                label: Text(l10n.homePlanLatestLabel),
-                backgroundColor: theme.colorScheme.primary,
-                labelStyle: TextStyle(color: theme.colorScheme.onPrimary),
-              )
-            : null,
+        trailing: Chip(
+          label: Text(l10n.homePlanLatestLabel),
+          backgroundColor: theme.colorScheme.primary,
+          labelStyle: TextStyle(color: theme.colorScheme.onPrimary),
+        ),
         title: Text(
           plan.title,
           style: theme.textTheme.titleMedium?.copyWith(
@@ -623,7 +609,54 @@ class _WorkoutPlanSection extends StatelessWidget {
             : null,
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         children: [
-          ...plan.days.map(
+          ...weekEntries.map(
+            (weekEntry) => _WorkoutWeekSection(
+              week: weekEntry.key,
+              days: weekEntry.value,
+              onOpenDay: onOpenDay,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WorkoutWeekSection extends StatelessWidget {
+  final int week;
+  final List<WorkoutDay> days;
+  final ValueChanged<WorkoutDay> onOpenDay;
+
+  const _WorkoutWeekSection({
+    required this.week,
+    required this.days,
+    required this.onOpenDay,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final weekTitle = week > 0
+        ? l10n.weekNumber(week)
+        : l10n.defaultWorkoutTitle;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
+            child: Text(
+              weekTitle,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          ...days.map(
             (day) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: _WorkoutDayTile(day: day, onTap: () => onOpenDay(day)),
@@ -649,7 +682,7 @@ class _WorkoutDayTile extends StatelessWidget {
     final isCompleted = day.isCompleted;
 
     return SelectionCard(
-      title: day.formattedTitle(l10n),
+      title: day.formattedTitle(l10n, includeWeek: false),
       icon: Icons.calendar_today,
       iconColor: isCompleted
           ? (appColors?.success ?? theme.colorScheme.secondary)
