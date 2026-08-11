@@ -41,8 +41,8 @@ class HomePage extends StatefulWidget {
   final String? initialGuideSlug;
   final String? initialGuideId;
 
-  static const int terminologyIndex = 7;
-  static const int guidesIndex = 3;
+  static const int terminologyIndex = 6;
+  static const int guidesIndex = 2;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
   String? _cachedLocale;
 
   static const int _workoutPlanIndex = 1;
-  static const int _maxTestsIndex = 5;
+  static const int _maxTestsIndex = 4;
 
   @override
   void initState() {
