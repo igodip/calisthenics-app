@@ -989,6 +989,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainerNoScheduledDays => 'No scheduled days.';
 
   @override
+  String trainerShowMoreDays(int count) {
+    return 'Show $count more days';
+  }
+
+  @override
+  String get trainerShowLessDays => 'Show fewer days';
+
+  @override
   String get trainerFeedbackTitle => 'Feedback';
 
   @override
@@ -1099,6 +1107,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String trainerTraineeNote(String notes) {
     return 'Trainee: $notes';
+  }
+
+  @override
+  String trainerTraineeExerciseFeedback(String comment) {
+    return 'Exercise comment: $comment';
   }
 
   @override

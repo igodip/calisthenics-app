@@ -1882,6 +1882,18 @@ abstract class AppLocalizations {
   /// **'Nessun giorno programmato.'**
   String get trainerNoScheduledDays;
 
+  /// No description provided for @trainerShowMoreDays.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra altri {count} giorni'**
+  String trainerShowMoreDays(int count);
+
+  /// No description provided for @trainerShowLessDays.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra meno giorni'**
+  String get trainerShowLessDays;
+
   /// No description provided for @trainerFeedbackTitle.
   ///
   /// In it, this message translates to:
@@ -2079,6 +2091,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Allievo: {notes}'**
   String trainerTraineeNote(String notes);
+
+  /// No description provided for @trainerTraineeExerciseFeedback.
+  ///
+  /// In it, this message translates to:
+  /// **'Commento sull’esercizio: {comment}'**
+  String trainerTraineeExerciseFeedback(String comment);
 
   /// No description provided for @trainerDeletePlanTitle.
   ///

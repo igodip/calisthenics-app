@@ -620,6 +620,21 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
     };
 
     try {
+      final previousWeight = widget.data.profile?.weight;
+      final weightChanged = switch ((previousWeight, weightValue)) {
+        (null, null) => false,
+        (final double previous, final double current) =>
+          (previous - current).abs() > 0.0001,
+        _ => true,
+      };
+      if (weightChanged && weightValue != null) {
+        await supabase.from('trainee_weight_logs').insert({
+          'trainee_id': widget.data.userId,
+          'weight': weightValue,
+          'recorded_at': DateTime.now().toIso8601String().substring(0, 10),
+          'notes': null,
+        });
+      }
       await supabase
           .from('trainees')
           .update(updates)

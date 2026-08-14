@@ -36,6 +36,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   bool _loading = true;
   bool _saving = false;
   bool _importingPdf = false;
+  bool _showAllCalendarDays = false;
 
   @override
   void initState() {
@@ -138,96 +139,125 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     );
   }
 
-  Widget _overview() => TrainerResponsiveList(
-    onRefresh: _load,
-    children: [
-      Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppLocalizations.of(context)!.trainerAthleteData,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 12),
-              _row(
-                AppLocalizations.of(context)!.trainerNameLabel,
-                widget.trainee.name,
-              ),
-              _row(
-                AppLocalizations.of(context)!.trainerWeightLabel,
-                widget.trainee.weight == null
-                    ? '—'
-                    : '${widget.trainee.weight} kg',
-              ),
-              _row(
-                AppLocalizations.of(context)!.trainerPaymentLabel,
-                widget.trainee.paid
-                    ? AppLocalizations.of(context)!.trainerOnTime
-                    : AppLocalizations.of(context)!.trainerOverdue,
-              ),
-              _row(
-                AppLocalizations.of(context)!.trainerProgressLabel,
-                '${widget.trainee.progress}%',
-              ),
-              const Divider(height: 28),
-              TextField(
-                controller: _tip,
-                minLines: 2,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.trainerCoachTip,
-                  hintText: AppLocalizations.of(context)!.trainerCoachTipHint,
+  Widget _overview() {
+    final calendarDays = _showAllCalendarDays
+        ? _data!.days
+        : _data!.days.take(5);
+    final hiddenDays = _data!.days.length - 5;
+    return TrainerResponsiveList(
+      onRefresh: _load,
+      children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.trainerAthleteData,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _notes,
-                minLines: 2,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.trainerPrivateNotes,
+                const SizedBox(height: 12),
+                _row(
+                  AppLocalizations.of(context)!.trainerNameLabel,
+                  widget.trainee.name,
                 ),
-              ),
-              const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton.icon(
-                  onPressed: _saving ? null : _saveCoach,
-                  icon: const Icon(Icons.save),
-                  label: Text(AppLocalizations.of(context)!.trainerSave),
+                _row(
+                  AppLocalizations.of(context)!.trainerWeightLabel,
+                  widget.trainee.weight == null
+                      ? '—'
+                      : '${widget.trainee.weight} kg',
                 ),
-              ),
-            ],
+                _row(
+                  AppLocalizations.of(context)!.trainerPaymentLabel,
+                  widget.trainee.paid
+                      ? AppLocalizations.of(context)!.trainerOnTime
+                      : AppLocalizations.of(context)!.trainerOverdue,
+                ),
+                _row(
+                  AppLocalizations.of(context)!.trainerProgressLabel,
+                  '${widget.trainee.progress}%',
+                ),
+                const Divider(height: 28),
+                TextField(
+                  controller: _tip,
+                  minLines: 2,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.trainerCoachTip,
+                    hintText: AppLocalizations.of(context)!.trainerCoachTipHint,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _notes,
+                  minLines: 2,
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(
+                      context,
+                    )!.trainerPrivateNotes,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton.icon(
+                    onPressed: _saving ? null : _saveCoach,
+                    icon: const Icon(Icons.save),
+                    label: Text(AppLocalizations.of(context)!.trainerSave),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      _sectionTitle(AppLocalizations.of(context)!.trainerTrainingCalendar),
-      if (_data!.days.isEmpty)
-        Text(AppLocalizations.of(context)!.trainerNoScheduledDays)
-      else
-        for (final day in _data!.days) _dayCard(day),
-      _sectionTitle(AppLocalizations.of(context)!.trainerFeedbackTitle),
-      if (_data!.feedback.isEmpty)
-        Text(AppLocalizations.of(context)!.trainerNoFeedbackYet)
-      else
-        for (final item in _data!.feedback.take(3))
-          TrainerFeedbackCard(
-            feedback: item,
-            onToggleRead: (value) async {
-              await widget.repository.setFeedbackRead(item.id, value);
-              await _load();
-            },
-            onAnswer: (answer) async {
-              await widget.repository.answerFeedback(item.id, answer);
-              await _load();
-            },
-            onDelete: () => _deleteFeedback(item),
-          ),
-    ],
-  );
+        _sectionTitle(AppLocalizations.of(context)!.trainerTrainingCalendar),
+        if (_data!.days.isEmpty)
+          Text(AppLocalizations.of(context)!.trainerNoScheduledDays)
+        else ...[
+          for (final day in calendarDays) _dayCard(day),
+          if (_data!.days.length > 5)
+            Align(
+              alignment: Alignment.center,
+              child: TextButton.icon(
+                key: const ValueKey('trainer-calendar-show-more'),
+                onPressed: () => setState(
+                  () => _showAllCalendarDays = !_showAllCalendarDays,
+                ),
+                icon: Icon(
+                  _showAllCalendarDays ? Icons.expand_less : Icons.expand_more,
+                ),
+                label: Text(
+                  _showAllCalendarDays
+                      ? AppLocalizations.of(context)!.trainerShowLessDays
+                      : AppLocalizations.of(
+                          context,
+                        )!.trainerShowMoreDays(hiddenDays),
+                ),
+              ),
+            ),
+        ],
+        _sectionTitle(AppLocalizations.of(context)!.trainerFeedbackTitle),
+        if (_data!.feedback.isEmpty)
+          Text(AppLocalizations.of(context)!.trainerNoFeedbackYet)
+        else
+          for (final item in _data!.feedback.take(3))
+            TrainerFeedbackCard(
+              feedback: item,
+              onToggleRead: (value) async {
+                await widget.repository.setFeedbackRead(item.id, value);
+                await _load();
+              },
+              onAnswer: (answer) async {
+                await widget.repository.answerFeedback(item.id, answer);
+                await _load();
+              },
+              onDelete: () => _deleteFeedback(item),
+            ),
+      ],
+    );
+  }
 
   Widget _plan() => TrainerResponsiveList(
     onRefresh: _load,
@@ -427,10 +457,14 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     final result = completedReps == null
         ? l10n.trainerMinutesDuration(minutes)
         : l10n.trainerExerciseResult(minutes, '$completedReps');
-    final traineeNotes = exercise['trainee_notes'];
-    return traineeNotes == null
-        ? result
-        : '$result\n${l10n.trainerTraineeNote('$traineeNotes')}';
+    final traineeNotes = '${exercise['trainee_notes'] ?? ''}'.trim();
+    final exerciseFeedback = '${exercise['exercise_feedback'] ?? ''}'.trim();
+    return [
+      result,
+      if (traineeNotes.isNotEmpty) l10n.trainerTraineeNote(traineeNotes),
+      if (exerciseFeedback.isNotEmpty)
+        l10n.trainerTraineeExerciseFeedback(exerciseFeedback),
+    ].join('\n');
   }
 
   Future<void> _deleteFeedback(TrainerFeedback item) async {

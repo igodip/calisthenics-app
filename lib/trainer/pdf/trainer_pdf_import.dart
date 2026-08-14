@@ -184,8 +184,11 @@ class TrainerPdfImportService {
     return RegExp(r'\d').hasMatch(text) ||
         text.contains('amrap') ||
         text.contains('emom') ||
+        text.contains('rt') ||
+        text.contains('tot') ||
         text.contains('round') ||
         text.contains('kg') ||
+        text.contains('no ') ||
         text.contains('@') ||
         text.contains('incremento');
   }

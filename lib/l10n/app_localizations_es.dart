@@ -1001,6 +1001,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get trainerNoScheduledDays => 'No hay días programados.';
 
   @override
+  String trainerShowMoreDays(int count) {
+    return 'Mostrar $count días más';
+  }
+
+  @override
+  String get trainerShowLessDays => 'Mostrar menos días';
+
+  @override
   String get trainerFeedbackTitle => 'Feedback';
 
   @override
@@ -1112,6 +1120,11 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String trainerTraineeNote(String notes) {
     return 'Alumno: $notes';
+  }
+
+  @override
+  String trainerTraineeExerciseFeedback(String comment) {
+    return 'Comentario del ejercicio: $comment';
   }
 
   @override

@@ -39,4 +39,28 @@ Squat    Full depth    4x6    5x6    2 min
       throwsFormatException,
     );
   });
+
+  test('does not mistake text-only programming values for exercises', () {
+    const page = '''
+GIORNO A
+Esercizi    Note    Sett 1    Rec/Som
+Pull up
+RT
+TOT
+NO elastico
+Dips    Controllate    3x8    90 sec
+''';
+
+    final plan = const TrainerPdfImportService().parsePages(const [
+      page,
+    ], 'Programming labels');
+
+    final exerciseNames = plan.days
+        .expand((day) => day.exercises)
+        .map((exercise) => exercise.name)
+        .toSet();
+    expect(exerciseNames, containsAll(['Pull up', 'Dips']));
+    expect(exerciseNames, isNot(contains('TOT')));
+    expect(exerciseNames, isNot(contains('NO elastico')));
+  });
 }
