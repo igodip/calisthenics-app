@@ -2,6 +2,9 @@
 import 'package:calisync/pages/profile_page.dart';
 import 'package:calisync/pages/terminology_page.dart';
 import 'package:calisync/pages/trainee_feedback_page.dart';
+import 'package:calisync/trainer/pages/trainer_section_page.dart';
+import 'package:calisync/trainer/trainer_models.dart';
+import 'package:calisync/trainer/trainer_repository.dart';
 import 'package:flutter/material.dart';
 
 import '../components/plan_expired_gate.dart';
@@ -51,6 +54,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late int selectedIndex;
   String? _cachedLocale;
+  TrainerProfile? _trainerProfile;
 
   static const int _workoutPlanIndex = 1;
   static const int _maxTestsIndex = 4;
@@ -59,6 +63,16 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     selectedIndex = widget.initialIndex;
+    _loadTrainerRole();
+  }
+
+  Future<void> _loadTrainerRole() async {
+    try {
+      final trainer = await TrainerRepository().currentTrainer();
+      if (mounted) setState(() => _trainerProfile = trainer);
+    } catch (_) {
+      // The standard trainee experience remains available if role lookup fails.
+    }
   }
 
   @override
@@ -133,6 +147,31 @@ class _HomePageState extends State<HomePage> {
       ),
     ];
 
+    if (_trainerProfile != null) {
+      navigationItems.addAll([
+        _NavigationItem(
+          title: l10n.trainerNavDashboard,
+          icon: Icons.dashboard_customize,
+          page: const TrainerSectionPage(section: TrainerSection.dashboard),
+        ),
+        _NavigationItem(
+          title: l10n.trainerNavTrainees,
+          icon: Icons.groups,
+          page: const TrainerSectionPage(section: TrainerSection.trainees),
+        ),
+        _NavigationItem(
+          title: l10n.trainerNavFeedback,
+          icon: Icons.mark_chat_unread,
+          page: const TrainerSectionPage(section: TrainerSection.feedback),
+        ),
+        _NavigationItem(
+          title: l10n.trainerNavPayments,
+          icon: Icons.payments,
+          page: const TrainerSectionPage(section: TrainerSection.payments),
+        ),
+      ]);
+    }
+
     final currentTitle = navigationItems[selectedIndex].title;
 
     final scaffold = Scaffold(
@@ -183,7 +222,21 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              for (final entry in navigationItems.indexed)
+              for (final entry in navigationItems.indexed) ...[
+                if (entry.$1 == 8) ...[
+                  const Divider(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Text(
+                      l10n.trainerMenuGroup,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                ],
                 ListTile(
                   leading: Icon(entry.$2.icon),
                   title: Text(entry.$2.title),
@@ -195,6 +248,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.pop(context);
                   },
                 ),
+              ],
             ],
           ),
         ),

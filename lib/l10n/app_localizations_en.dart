@@ -207,6 +207,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get traineeFeedbackLoadFailed => 'Unable to load feedback right now.';
 
   @override
+  String get traineeFeedbackDelete => 'Delete feedback';
+
+  @override
+  String get traineeFeedbackDeleteTitle => 'Delete feedback?';
+
+  @override
+  String get traineeFeedbackDeleteMessage =>
+      'Delete this feedback? This cannot be undone.';
+
+  @override
   String get refresh => 'Refresh';
 
   @override
@@ -807,4 +817,324 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get traineeFeedbackAnsweredAtHome => 'Answered on';
+
+  @override
+  String get trainerMenuGroup => 'TRAINER';
+
+  @override
+  String get trainerNavDashboard => 'Trainer dashboard';
+
+  @override
+  String get trainerNavTrainees => 'My trainees';
+
+  @override
+  String get trainerNavFeedback => 'Trainer feedback';
+
+  @override
+  String get trainerNavPayments => 'Trainee payments';
+
+  @override
+  String get trainerWorkspaceTitle => 'Trainer workspace';
+
+  @override
+  String get trainerWorkspaceSubtitle =>
+      'Your assigned athletes and their latest activity.';
+
+  @override
+  String get trainerAssignedTrainees => 'Assigned trainees';
+
+  @override
+  String get trainerUnreadFeedback => 'Unread feedback';
+
+  @override
+  String get trainerActivePlans => 'Active plans';
+
+  @override
+  String get trainerOverdue => 'Overdue';
+
+  @override
+  String get trainerTraineesTitle => 'Trainees';
+
+  @override
+  String get trainerNoAssignedTrainees =>
+      'No trainees are assigned to you yet.';
+
+  @override
+  String get trainerStatusActive => 'Active';
+
+  @override
+  String get trainerPlanProgress => 'Plan progress';
+
+  @override
+  String get trainerOpenProgram => 'Open program';
+
+  @override
+  String get trainerSearchTrainees => 'Search trainees';
+
+  @override
+  String trainerAssignedCount(int count) {
+    return '$count assigned trainees';
+  }
+
+  @override
+  String get trainerNoMatchingTrainees => 'No matching trainees.';
+
+  @override
+  String get trainerFilterAll => 'All';
+
+  @override
+  String get trainerFilterUnread => 'Unread';
+
+  @override
+  String get trainerFilterAnswered => 'Answered';
+
+  @override
+  String get trainerNoFeedbackInView => 'No feedback in this view.';
+
+  @override
+  String get trainerStatusRead => 'Read';
+
+  @override
+  String get trainerStatusUnread => 'Unread';
+
+  @override
+  String get trainerYourAnswer => 'Your answer';
+
+  @override
+  String get trainerReplyHint => 'Reply to trainee';
+
+  @override
+  String get trainerSendAnswer => 'Send answer';
+
+  @override
+  String get trainerMarkUnread => 'Mark unread';
+
+  @override
+  String get trainerMarkRead => 'Mark read';
+
+  @override
+  String get trainerAnswerRequired => 'Write an answer first.';
+
+  @override
+  String get trainerPaid => 'Paid';
+
+  @override
+  String get trainerReceived => 'Received';
+
+  @override
+  String get trainerMonthlyAmount => 'Monthly amount';
+
+  @override
+  String get trainerAppAccessActive => 'App access active';
+
+  @override
+  String trainerLoadToolsError(String error) {
+    return 'Unable to load trainer tools\n$error';
+  }
+
+  @override
+  String get trainerRetry => 'Retry';
+
+  @override
+  String get trainerOverviewTab => 'Overview';
+
+  @override
+  String get trainerPlanTab => 'Plan';
+
+  @override
+  String get trainerHistoryTab => 'History';
+
+  @override
+  String trainerLoadProgramError(String error) {
+    return 'Unable to load program\n$error';
+  }
+
+  @override
+  String get trainerAthleteData => 'Athlete data';
+
+  @override
+  String get trainerNameLabel => 'Name';
+
+  @override
+  String get trainerWeightLabel => 'Weight';
+
+  @override
+  String get trainerPaymentLabel => 'Payment';
+
+  @override
+  String get trainerOnTime => 'On time';
+
+  @override
+  String get trainerProgressLabel => 'Progress';
+
+  @override
+  String get trainerCoachTip => 'Coach tip';
+
+  @override
+  String get trainerCoachTipHint => 'Visible to the trainee in the app';
+
+  @override
+  String get trainerPrivateNotes => 'Private trainer notes';
+
+  @override
+  String get trainerSave => 'Save';
+
+  @override
+  String get trainerCoachFieldsSaved => 'Coach tip and private notes saved.';
+
+  @override
+  String get trainerTrainingCalendar => 'Training calendar';
+
+  @override
+  String get trainerNoScheduledDays => 'No scheduled days.';
+
+  @override
+  String get trainerFeedbackTitle => 'Feedback';
+
+  @override
+  String get trainerNoFeedbackYet => 'No feedback yet.';
+
+  @override
+  String get trainerCreateWorkoutPlan => 'Create workout plan';
+
+  @override
+  String get trainerImportPdf => 'Import PDF';
+
+  @override
+  String get trainerImportingPdf => 'Reading PDF…';
+
+  @override
+  String get trainerPdfPreviewTitle => 'Review imported plan';
+
+  @override
+  String get trainerPdfPlanName => 'Plan name';
+
+  @override
+  String trainerPdfSummary(int days, int exercises) {
+    return '$days days and $exercises exercises detected';
+  }
+
+  @override
+  String trainerPdfDaySummary(int week, String day, int exercises) {
+    return 'Week $week · Day $day: $exercises exercises';
+  }
+
+  @override
+  String get trainerPdfConfirmImport => 'Import plan';
+
+  @override
+  String get trainerPdfImportSuccess => 'Workout plan imported successfully.';
+
+  @override
+  String get trainerPdfImportFailed =>
+      'The PDF could not be imported. Make sure it contains GIORNO A–G workout tables.';
+
+  @override
+  String get trainerPdfPathUnavailable =>
+      'The selected PDF is not available on this device.';
+
+  @override
+  String get trainerNoPlans => 'No plans created.';
+
+  @override
+  String get trainerWorkoutPlanFallback => 'Workout plan';
+
+  @override
+  String get trainerPlanStatusActive => 'Active';
+
+  @override
+  String get trainerPlanStatusInactive => 'Inactive';
+
+  @override
+  String get trainerPlanStatusUpcoming => 'Upcoming';
+
+  @override
+  String get trainerPlanStatusDraft => 'Draft';
+
+  @override
+  String get trainerPlanStatusArchived => 'Archived';
+
+  @override
+  String get trainerWorkoutDays => 'Workout days';
+
+  @override
+  String get trainerMaxTests => 'Max tests';
+
+  @override
+  String get trainerNoMaxTests => 'No max tests.';
+
+  @override
+  String get trainerWeightHistory => 'Weight history';
+
+  @override
+  String get trainerNoWeightEntries => 'No weight entries.';
+
+  @override
+  String get trainerPaymentHistory => 'Payment history';
+
+  @override
+  String get trainerNoPayments => 'No payments.';
+
+  @override
+  String get trainerTrainingDayFallback => 'Training day';
+
+  @override
+  String trainerExercisesCompleted(int completed, int total) {
+    return '$completed/$total exercises completed';
+  }
+
+  @override
+  String get trainerExerciseFallback => 'Exercise';
+
+  @override
+  String trainerMinutesDuration(String minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String trainerExerciseResult(String minutes, String reps) {
+    return '$minutes min · $reps reps';
+  }
+
+  @override
+  String trainerTraineeNote(String notes) {
+    return 'Trainee: $notes';
+  }
+
+  @override
+  String get trainerDeletePlanTitle => 'Delete plan?';
+
+  @override
+  String trainerDeletePlanMessage(String title) {
+    return 'Delete “$title”?';
+  }
+
+  @override
+  String get trainerCancel => 'Cancel';
+
+  @override
+  String get trainerDelete => 'Delete';
+
+  @override
+  String get trainerDeleteFeedback => 'Delete feedback';
+
+  @override
+  String get trainerDeleteFeedbackTitle => 'Delete feedback?';
+
+  @override
+  String trainerDeleteFeedbackMessage(String name) {
+    return 'Delete this feedback from $name? This cannot be undone.';
+  }
+
+  @override
+  String get trainerNewPlan => 'New workout plan';
+
+  @override
+  String get trainerPlanName => 'Plan name';
+
+  @override
+  String get trainerNotes => 'Notes';
+
+  @override
+  String get trainerCreate => 'Create';
 }

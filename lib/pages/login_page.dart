@@ -335,6 +335,13 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _ensureTraineeEntry(User user) async {
     try {
+      final trainer = await supabase
+          .from('trainers')
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
+      if (trainer != null) return;
+
       final existing = await supabase
           .from('trainees')
           .select('id')

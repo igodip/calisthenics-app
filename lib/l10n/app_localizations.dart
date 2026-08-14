@@ -466,6 +466,24 @@ abstract class AppLocalizations {
   /// **'Impossibile caricare il feedback in questo momento.'**
   String get traineeFeedbackLoadFailed;
 
+  /// No description provided for @traineeFeedbackDelete.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina feedback'**
+  String get traineeFeedbackDelete;
+
+  /// No description provided for @traineeFeedbackDeleteTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare il feedback?'**
+  String get traineeFeedbackDeleteTitle;
+
+  /// No description provided for @traineeFeedbackDeleteMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare questo feedback? L\'operazione non può essere annullata.'**
+  String get traineeFeedbackDeleteMessage;
+
   /// No description provided for @refresh.
   ///
   /// In it, this message translates to:
@@ -1539,6 +1557,594 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Risposto il'**
   String get traineeFeedbackAnsweredAtHome;
+
+  /// No description provided for @trainerMenuGroup.
+  ///
+  /// In it, this message translates to:
+  /// **'TRAINER'**
+  String get trainerMenuGroup;
+
+  /// No description provided for @trainerNavDashboard.
+  ///
+  /// In it, this message translates to:
+  /// **'Dashboard trainer'**
+  String get trainerNavDashboard;
+
+  /// No description provided for @trainerNavTrainees.
+  ///
+  /// In it, this message translates to:
+  /// **'I miei allievi'**
+  String get trainerNavTrainees;
+
+  /// No description provided for @trainerNavFeedback.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback trainer'**
+  String get trainerNavFeedback;
+
+  /// No description provided for @trainerNavPayments.
+  ///
+  /// In it, this message translates to:
+  /// **'Pagamenti allievi'**
+  String get trainerNavPayments;
+
+  /// No description provided for @trainerWorkspaceTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Area trainer'**
+  String get trainerWorkspaceTitle;
+
+  /// No description provided for @trainerWorkspaceSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'I tuoi atleti assegnati e le loro attività recenti.'**
+  String get trainerWorkspaceSubtitle;
+
+  /// No description provided for @trainerAssignedTrainees.
+  ///
+  /// In it, this message translates to:
+  /// **'Allievi assegnati'**
+  String get trainerAssignedTrainees;
+
+  /// No description provided for @trainerUnreadFeedback.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback non letti'**
+  String get trainerUnreadFeedback;
+
+  /// No description provided for @trainerActivePlans.
+  ///
+  /// In it, this message translates to:
+  /// **'Piani attivi'**
+  String get trainerActivePlans;
+
+  /// No description provided for @trainerOverdue.
+  ///
+  /// In it, this message translates to:
+  /// **'Scaduto'**
+  String get trainerOverdue;
+
+  /// No description provided for @trainerTraineesTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Allievi'**
+  String get trainerTraineesTitle;
+
+  /// No description provided for @trainerNoAssignedTrainees.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ti è ancora stato assegnato alcun allievo.'**
+  String get trainerNoAssignedTrainees;
+
+  /// No description provided for @trainerStatusActive.
+  ///
+  /// In it, this message translates to:
+  /// **'Attivo'**
+  String get trainerStatusActive;
+
+  /// No description provided for @trainerPlanProgress.
+  ///
+  /// In it, this message translates to:
+  /// **'Progresso del piano'**
+  String get trainerPlanProgress;
+
+  /// No description provided for @trainerOpenProgram.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri programma'**
+  String get trainerOpenProgram;
+
+  /// No description provided for @trainerSearchTrainees.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca allievi'**
+  String get trainerSearchTrainees;
+
+  /// No description provided for @trainerAssignedCount.
+  ///
+  /// In it, this message translates to:
+  /// **'{count} allievi assegnati'**
+  String trainerAssignedCount(int count);
+
+  /// No description provided for @trainerNoMatchingTrainees.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun allievo corrispondente.'**
+  String get trainerNoMatchingTrainees;
+
+  /// No description provided for @trainerFilterAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti'**
+  String get trainerFilterAll;
+
+  /// No description provided for @trainerFilterUnread.
+  ///
+  /// In it, this message translates to:
+  /// **'Non letti'**
+  String get trainerFilterUnread;
+
+  /// No description provided for @trainerFilterAnswered.
+  ///
+  /// In it, this message translates to:
+  /// **'Risposti'**
+  String get trainerFilterAnswered;
+
+  /// No description provided for @trainerNoFeedbackInView.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun feedback in questa vista.'**
+  String get trainerNoFeedbackInView;
+
+  /// No description provided for @trainerStatusRead.
+  ///
+  /// In it, this message translates to:
+  /// **'Letto'**
+  String get trainerStatusRead;
+
+  /// No description provided for @trainerStatusUnread.
+  ///
+  /// In it, this message translates to:
+  /// **'Non letto'**
+  String get trainerStatusUnread;
+
+  /// No description provided for @trainerYourAnswer.
+  ///
+  /// In it, this message translates to:
+  /// **'La tua risposta'**
+  String get trainerYourAnswer;
+
+  /// No description provided for @trainerReplyHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Rispondi all’allievo'**
+  String get trainerReplyHint;
+
+  /// No description provided for @trainerSendAnswer.
+  ///
+  /// In it, this message translates to:
+  /// **'Invia risposta'**
+  String get trainerSendAnswer;
+
+  /// No description provided for @trainerMarkUnread.
+  ///
+  /// In it, this message translates to:
+  /// **'Segna come non letto'**
+  String get trainerMarkUnread;
+
+  /// No description provided for @trainerMarkRead.
+  ///
+  /// In it, this message translates to:
+  /// **'Segna come letto'**
+  String get trainerMarkRead;
+
+  /// No description provided for @trainerAnswerRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi prima una risposta.'**
+  String get trainerAnswerRequired;
+
+  /// No description provided for @trainerPaid.
+  ///
+  /// In it, this message translates to:
+  /// **'Pagato'**
+  String get trainerPaid;
+
+  /// No description provided for @trainerReceived.
+  ///
+  /// In it, this message translates to:
+  /// **'Incassato'**
+  String get trainerReceived;
+
+  /// No description provided for @trainerMonthlyAmount.
+  ///
+  /// In it, this message translates to:
+  /// **'Importo mensile'**
+  String get trainerMonthlyAmount;
+
+  /// No description provided for @trainerAppAccessActive.
+  ///
+  /// In it, this message translates to:
+  /// **'Accesso all’app attivo'**
+  String get trainerAppAccessActive;
+
+  /// No description provided for @trainerLoadToolsError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare gli strumenti trainer\n{error}'**
+  String trainerLoadToolsError(String error);
+
+  /// No description provided for @trainerRetry.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprova'**
+  String get trainerRetry;
+
+  /// No description provided for @trainerOverviewTab.
+  ///
+  /// In it, this message translates to:
+  /// **'Panoramica'**
+  String get trainerOverviewTab;
+
+  /// No description provided for @trainerPlanTab.
+  ///
+  /// In it, this message translates to:
+  /// **'Piano'**
+  String get trainerPlanTab;
+
+  /// No description provided for @trainerHistoryTab.
+  ///
+  /// In it, this message translates to:
+  /// **'Cronologia'**
+  String get trainerHistoryTab;
+
+  /// No description provided for @trainerLoadProgramError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare il programma\n{error}'**
+  String trainerLoadProgramError(String error);
+
+  /// No description provided for @trainerAthleteData.
+  ///
+  /// In it, this message translates to:
+  /// **'Dati atleta'**
+  String get trainerAthleteData;
+
+  /// No description provided for @trainerNameLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome'**
+  String get trainerNameLabel;
+
+  /// No description provided for @trainerWeightLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Peso'**
+  String get trainerWeightLabel;
+
+  /// No description provided for @trainerPaymentLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Pagamento'**
+  String get trainerPaymentLabel;
+
+  /// No description provided for @trainerOnTime.
+  ///
+  /// In it, this message translates to:
+  /// **'In regola'**
+  String get trainerOnTime;
+
+  /// No description provided for @trainerProgressLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Progresso'**
+  String get trainerProgressLabel;
+
+  /// No description provided for @trainerCoachTip.
+  ///
+  /// In it, this message translates to:
+  /// **'Consiglio del coach'**
+  String get trainerCoachTip;
+
+  /// No description provided for @trainerCoachTipHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Visibile all’allievo nell’app'**
+  String get trainerCoachTipHint;
+
+  /// No description provided for @trainerPrivateNotes.
+  ///
+  /// In it, this message translates to:
+  /// **'Note private del trainer'**
+  String get trainerPrivateNotes;
+
+  /// No description provided for @trainerSave.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva'**
+  String get trainerSave;
+
+  /// No description provided for @trainerCoachFieldsSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Consiglio e note private salvati.'**
+  String get trainerCoachFieldsSaved;
+
+  /// No description provided for @trainerTrainingCalendar.
+  ///
+  /// In it, this message translates to:
+  /// **'Calendario allenamenti'**
+  String get trainerTrainingCalendar;
+
+  /// No description provided for @trainerNoScheduledDays.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun giorno programmato.'**
+  String get trainerNoScheduledDays;
+
+  /// No description provided for @trainerFeedbackTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Feedback'**
+  String get trainerFeedbackTitle;
+
+  /// No description provided for @trainerNoFeedbackYet.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun feedback.'**
+  String get trainerNoFeedbackYet;
+
+  /// No description provided for @trainerCreateWorkoutPlan.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea scheda di allenamento'**
+  String get trainerCreateWorkoutPlan;
+
+  /// No description provided for @trainerImportPdf.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa PDF'**
+  String get trainerImportPdf;
+
+  /// No description provided for @trainerImportingPdf.
+  ///
+  /// In it, this message translates to:
+  /// **'Lettura PDF…'**
+  String get trainerImportingPdf;
+
+  /// No description provided for @trainerPdfPreviewTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Controlla il piano importato'**
+  String get trainerPdfPreviewTitle;
+
+  /// No description provided for @trainerPdfPlanName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome del piano'**
+  String get trainerPdfPlanName;
+
+  /// No description provided for @trainerPdfSummary.
+  ///
+  /// In it, this message translates to:
+  /// **'Rilevati {days} giorni e {exercises} esercizi'**
+  String trainerPdfSummary(int days, int exercises);
+
+  /// No description provided for @trainerPdfDaySummary.
+  ///
+  /// In it, this message translates to:
+  /// **'Settimana {week} · Giorno {day}: {exercises} esercizi'**
+  String trainerPdfDaySummary(int week, String day, int exercises);
+
+  /// No description provided for @trainerPdfConfirmImport.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa piano'**
+  String get trainerPdfConfirmImport;
+
+  /// No description provided for @trainerPdfImportSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Scheda di allenamento importata correttamente.'**
+  String get trainerPdfImportSuccess;
+
+  /// No description provided for @trainerPdfImportFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile importare il PDF. Verifica che contenga tabelle di allenamento GIORNO A–G.'**
+  String get trainerPdfImportFailed;
+
+  /// No description provided for @trainerPdfPathUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Il PDF selezionato non è disponibile su questo dispositivo.'**
+  String get trainerPdfPathUnavailable;
+
+  /// No description provided for @trainerNoPlans.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun piano creato.'**
+  String get trainerNoPlans;
+
+  /// No description provided for @trainerWorkoutPlanFallback.
+  ///
+  /// In it, this message translates to:
+  /// **'Scheda di allenamento'**
+  String get trainerWorkoutPlanFallback;
+
+  /// No description provided for @trainerPlanStatusActive.
+  ///
+  /// In it, this message translates to:
+  /// **'Attivo'**
+  String get trainerPlanStatusActive;
+
+  /// No description provided for @trainerPlanStatusInactive.
+  ///
+  /// In it, this message translates to:
+  /// **'Inattivo'**
+  String get trainerPlanStatusInactive;
+
+  /// No description provided for @trainerPlanStatusUpcoming.
+  ///
+  /// In it, this message translates to:
+  /// **'In arrivo'**
+  String get trainerPlanStatusUpcoming;
+
+  /// No description provided for @trainerPlanStatusDraft.
+  ///
+  /// In it, this message translates to:
+  /// **'Bozza'**
+  String get trainerPlanStatusDraft;
+
+  /// No description provided for @trainerPlanStatusArchived.
+  ///
+  /// In it, this message translates to:
+  /// **'Archiviato'**
+  String get trainerPlanStatusArchived;
+
+  /// No description provided for @trainerWorkoutDays.
+  ///
+  /// In it, this message translates to:
+  /// **'Giorni di allenamento'**
+  String get trainerWorkoutDays;
+
+  /// No description provided for @trainerMaxTests.
+  ///
+  /// In it, this message translates to:
+  /// **'Test massimali'**
+  String get trainerMaxTests;
+
+  /// No description provided for @trainerNoMaxTests.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun test massimale.'**
+  String get trainerNoMaxTests;
+
+  /// No description provided for @trainerWeightHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Cronologia peso'**
+  String get trainerWeightHistory;
+
+  /// No description provided for @trainerNoWeightEntries.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna registrazione del peso.'**
+  String get trainerNoWeightEntries;
+
+  /// No description provided for @trainerPaymentHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Cronologia pagamenti'**
+  String get trainerPaymentHistory;
+
+  /// No description provided for @trainerNoPayments.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun pagamento.'**
+  String get trainerNoPayments;
+
+  /// No description provided for @trainerTrainingDayFallback.
+  ///
+  /// In it, this message translates to:
+  /// **'Giorno di allenamento'**
+  String get trainerTrainingDayFallback;
+
+  /// No description provided for @trainerExercisesCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'{completed}/{total} esercizi completati'**
+  String trainerExercisesCompleted(int completed, int total);
+
+  /// No description provided for @trainerExerciseFallback.
+  ///
+  /// In it, this message translates to:
+  /// **'Esercizio'**
+  String get trainerExerciseFallback;
+
+  /// No description provided for @trainerMinutesDuration.
+  ///
+  /// In it, this message translates to:
+  /// **'{minutes} min'**
+  String trainerMinutesDuration(String minutes);
+
+  /// No description provided for @trainerExerciseResult.
+  ///
+  /// In it, this message translates to:
+  /// **'{minutes} min · {reps} rip.'**
+  String trainerExerciseResult(String minutes, String reps);
+
+  /// No description provided for @trainerTraineeNote.
+  ///
+  /// In it, this message translates to:
+  /// **'Allievo: {notes}'**
+  String trainerTraineeNote(String notes);
+
+  /// No description provided for @trainerDeletePlanTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare il piano?'**
+  String get trainerDeletePlanTitle;
+
+  /// No description provided for @trainerDeletePlanMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare “{title}”?'**
+  String trainerDeletePlanMessage(String title);
+
+  /// No description provided for @trainerCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get trainerCancel;
+
+  /// No description provided for @trainerDelete.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get trainerDelete;
+
+  /// No description provided for @trainerDeleteFeedback.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina feedback'**
+  String get trainerDeleteFeedback;
+
+  /// No description provided for @trainerDeleteFeedbackTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare il feedback?'**
+  String get trainerDeleteFeedbackTitle;
+
+  /// No description provided for @trainerDeleteFeedbackMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare questo feedback di {name}? L\'operazione non può essere annullata.'**
+  String trainerDeleteFeedbackMessage(String name);
+
+  /// No description provided for @trainerNewPlan.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuova scheda di allenamento'**
+  String get trainerNewPlan;
+
+  /// No description provided for @trainerPlanName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome del piano'**
+  String get trainerPlanName;
+
+  /// No description provided for @trainerNotes.
+  ///
+  /// In it, this message translates to:
+  /// **'Note'**
+  String get trainerNotes;
+
+  /// No description provided for @trainerCreate.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea'**
+  String get trainerCreate;
 }
 
 class _AppLocalizationsDelegate

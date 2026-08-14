@@ -104,7 +104,10 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
               )
             else
               ..._feedbacks.map(
-                (feedback) => _FeedbackCard(feedback: feedback),
+                (feedback) => _FeedbackCard(
+                  feedback: feedback,
+                  onDelete: () => _deleteFeedback(feedback),
+                ),
               ),
           ],
         ),
@@ -225,6 +228,57 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
       }
     }
   }
+
+  Future<void> _deleteFeedback(_FeedbackEntry feedback) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed =
+        await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(l10n.traineeFeedbackDeleteTitle),
+            content: Text(l10n.traineeFeedbackDeleteMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.traineeFeedbackDelete),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    if (!confirmed || !mounted) return;
+
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.unauthenticated)));
+      return;
+    }
+
+    final previousFeedbacks = _feedbacks;
+    setState(() {
+      _feedbacks = _feedbacks.where((item) => item.id != feedback.id).toList();
+    });
+    try {
+      await client
+          .from('trainee_feedbacks')
+          .delete()
+          .eq('id', feedback.id)
+          .eq('trainee_id', userId);
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _feedbacks = previousFeedbacks);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.unexpectedError('$error'))));
+    }
+  }
 }
 
 class _FeedbackFieldCard extends StatelessWidget {
@@ -293,8 +347,9 @@ class _FeedbackEntry {
 
 class _FeedbackCard extends StatelessWidget {
   final _FeedbackEntry feedback;
+  final VoidCallback onDelete;
 
-  const _FeedbackCard({required this.feedback});
+  const _FeedbackCard({required this.feedback, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -332,6 +387,11 @@ class _FeedbackCard extends StatelessWidget {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
+                ),
+                IconButton(
+                  onPressed: onDelete,
+                  tooltip: l10n.traineeFeedbackDelete,
+                  icon: const Icon(Icons.delete_outline),
                 ),
               ],
             ),
