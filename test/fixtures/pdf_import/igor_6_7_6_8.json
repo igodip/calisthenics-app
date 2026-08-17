@@ -1,0 +1,80 @@
+{
+  "description": "Sanitized expected output and column-boundary regression data for Igor 6.7-6.8.pdf",
+  "source": {
+    "fileName": "Igor 6.7-6.8.pdf",
+    "sha256": "636dab6c947bb425a82002012b1fdf997b724c98754c6261690b64cfe4f58d36",
+    "pageCount": 3,
+    "pageSizePoints": [841.92, 595.32],
+    "columnHeaders": [
+      "ESERCIZI",
+      "NOTE",
+      "Sett 1",
+      "Sett 2",
+      "Sett 3",
+      "Sett 4",
+      "Scarico",
+      "Rec/Som"
+    ]
+  },
+  "expected": {
+    "dayCodes": ["A", "B", "C"],
+    "weekLabels": ["Sett 1", "Sett 2", "Sett 3", "Sett 4", "Scarico"],
+    "slotCounts": {
+      "A": 6,
+      "B": 7,
+      "C": 7
+    },
+    "scheduledExerciseCount": 100,
+    "exerciseNames": {
+      "A": [
+        "Chin up",
+        "Dip",
+        "Australian orizzontale",
+        "Push up",
+        "Australian 30° 3.2.3.2",
+        "Adduzioni e protrazioni in plank mani"
+      ],
+      "B": [
+        "Pull ½ rom basso loop",
+        "Pike piedi su step",
+        "Chin up ½ rom alto",
+        "Dip 3.2.3.1",
+        "Push up ISO buca",
+        "Pull up ISO gomiti a 90°",
+        "Flessioni a braccia tese"
+      ],
+      "C": [
+        "Pull up + 1/2 rom basso",
+        "Dip",
+        "Chin up",
+        "Push up",
+        "Body row ISO",
+        "Barchetta",
+        "Lavoro sottoscapolar"
+      ]
+    },
+    "samples": [
+      {
+        "day": "A",
+        "exercise": "Chin up",
+        "programming": ["2x (1-2-3-2-1)", "3x", "4x", "5x", "3-2-1-2-3"]
+      },
+      {
+        "day": "B",
+        "exercise": "Pull ½ rom basso loop",
+        "programming": ["4x2", "5x2", "6x2", "7x2", "1x3"]
+      },
+      {
+        "day": "C",
+        "exercise": "Body row ISO",
+        "programming": ["Incremento 1", "", "", "", ""],
+        "notes": "6 serie totali"
+      }
+    ],
+    "boundaryCases": {
+      "Pull up + 1/2 rom basso": "Se chiuso",
+      "Dip": "12', volta dopo",
+      "Body row ISO": "6 serie totali"
+    }
+  }
+}

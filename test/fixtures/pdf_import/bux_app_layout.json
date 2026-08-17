@@ -1,0 +1,56 @@
+{
+  "description": "Sanitized expected output for the five-week Bux workout PDF layout",
+  "source": {
+    "pageCount": 4,
+    "pageSizePoints": [841.92, 595.32],
+    "columnHeaders": [
+      "ESERCIZI",
+      "Sett 1",
+      "Sett 2",
+      "Sett 3",
+      "Sett 4",
+      "Sett 5",
+      "NOTE"
+    ],
+    "containsPartialHorizontalRules": true
+  },
+  "expected": {
+    "dayCodes": ["A", "B", "C", "D"],
+    "weekLabels": ["Sett 1", "Sett 2", "Sett 3", "Sett 4", "Sett 5"],
+    "slotCounts": {
+      "A": 6,
+      "B": 6,
+      "C": 5,
+      "D": 5
+    },
+    "scheduledExerciseCount": 110,
+    "samples": [
+      {
+        "day": "A",
+        "exercise": "HSPU liberi",
+        "programming": ["Amrap6'", "8'", "10'", "8'", "10'"]
+      },
+      {
+        "day": "A",
+        "exercise": "RDL",
+        "programming": ["Ramping8 Trova carico", "", "", "", ""]
+      },
+      {
+        "day": "B",
+        "exercise": "Pull up al petto",
+        "programming": ["6x3@PC", "5x4", "6x3@2", "5x4", "6x2@6"]
+      },
+      {
+        "day": "C",
+        "exercise": "HSPU tenute",
+        "programming": ["120'' tot", "", "", "", ""],
+        "notes": "Minor numero di serie"
+      },
+      {
+        "day": "D",
+        "exercise": "Military",
+        "programming": ["4x4@50", "5x4", "6x4", "4x5", "5x5"]
+      }
+    ]
+  }
+}

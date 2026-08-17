@@ -593,21 +593,23 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
       type: FileType.custom,
       allowedExtensions: const ['pdf'],
       allowMultiple: false,
+      withData: true,
     );
     if (selection == null) return;
     final file = selection.files.single;
     final path = file.path;
-    if (path == null) {
+    final bytes = file.bytes;
+    if (path == null && bytes == null) {
       _message(l10n.trainerPdfPathUnavailable);
       return;
     }
 
     setState(() => _importingPdf = true);
     try {
-      final imported = await const TrainerPdfImportService().read(
-        path,
-        file.name,
-      );
+      final importer = const TrainerPdfImportService();
+      final imported = bytes != null
+          ? await importer.readBytes(bytes, file.name)
+          : await importer.read(path!, file.name);
       if (!mounted) return;
       final confirmed = await _showPdfPreview(imported);
       if (confirmed == null || !mounted) return;
