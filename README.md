@@ -28,11 +28,12 @@ profile information stay in sync across devices.
 - Plan-expired gate that blocks app access when payment is overdue.
 - Modular component structure for cards, theming and reusable widgets.
 
-## Admin portal status
+## Trainer console
 
-The repo also ships a lightweight admin portal under `backend/admin` for
-trainers and admins to review trainees, payments, plans, and feedback in
-Supabase.
+The app includes a trainer console (`lib/trainer/`) for coaches to review
+their trainees, payments, programs, and feedback directly in the app.
+Trainers can also import workout plans from a PDF, which is parsed into
+the standard plan/day/exercise model and saved to Supabase.
 
 ## Getting Started
 
