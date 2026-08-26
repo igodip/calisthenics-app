@@ -54,8 +54,8 @@ app.*.map.json
 ios.key
 ios.csr
 
-# Android / Firebase (if present)
-android/app/google-services.json
+# Firebase service credentials remain excluded; the Android client config is
+# intentionally versioned because it contains public app identifiers only.
 ios/**/GoogleService-Info.plist
 
 # Supabase local CLI state

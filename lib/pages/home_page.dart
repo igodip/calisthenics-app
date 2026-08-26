@@ -1,5 +1,6 @@
 // lib/pages/home_page.dart
 import 'package:calisync/pages/profile_page.dart';
+import 'package:calisync/notifications/push_notification_service.dart';
 import 'package:calisync/pages/terminology_page.dart';
 import 'package:calisync/pages/trainee_feedback_page.dart';
 import 'package:calisync/trainer/pages/trainer_section_page.dart';
@@ -55,6 +56,7 @@ class _HomePageState extends State<HomePage> {
   late int selectedIndex;
   String? _cachedLocale;
   TrainerProfile? _trainerProfile;
+  bool _roleLookupComplete = false;
 
   static const int _workoutPlanIndex = 1;
   static const int _maxTestsIndex = 4;
@@ -63,7 +65,14 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     selectedIndex = widget.initialIndex;
+    PushNotificationService.instance.addListener(_handleNotificationRoute);
     _loadTrainerRole();
+  }
+
+  @override
+  void dispose() {
+    PushNotificationService.instance.removeListener(_handleNotificationRoute);
+    super.dispose();
   }
 
   Future<void> _loadTrainerRole() async {
@@ -72,7 +81,23 @@ class _HomePageState extends State<HomePage> {
       if (mounted) setState(() => _trainerProfile = trainer);
     } catch (_) {
       // The standard trainee experience remains available if role lookup fails.
+    } finally {
+      _roleLookupComplete = true;
+      _handleNotificationRoute();
     }
+  }
+
+  void _handleNotificationRoute() {
+    if (!mounted || !_roleLookupComplete) return;
+    final route = PushNotificationService.instance.takePendingRoute();
+    if (route == null) return;
+    final index = switch (route) {
+      'trainee_plan' => _workoutPlanIndex,
+      'trainee_feedback' => 5,
+      'trainer_feedback' when _trainerProfile != null => 10,
+      _ => 0,
+    };
+    setState(() => selectedIndex = index);
   }
 
   @override

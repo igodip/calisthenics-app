@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "86212302542",
+    "project_id": "calisync-59b75",
+    "storage_bucket": "calisync-59b75.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:86212302542:android:b031b08dde7639e471e29f",
+        "android_client_info": {
+          "package_name": "com.idipaolo.calisync"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvPHxFjUB__NYIbDt53TGppMjEINfkTnQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

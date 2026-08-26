@@ -1,4 +1,5 @@
 import 'package:calisync/model/workout_day.dart';
+import 'package:calisync/notifications/push_notification_service.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -505,10 +506,15 @@ class _TrainingState extends State<Training> {
           final feedbackMessage = feelingText == null
               ? 'Completed ${widget.day.formattedTitle(l10n)}'
               : 'Completed ${widget.day.formattedTitle(l10n)} · Feeling: $feelingText';
-          await Supabase.instance.client.from('trainee_feedbacks').insert({
-            'trainee_id': userId,
-            'message': feedbackMessage,
-          });
+          final inserted = await Supabase.instance.client
+              .from('trainee_feedbacks')
+              .insert({'trainee_id': userId, 'message': feedbackMessage})
+              .select('id')
+              .single();
+          await PushNotificationService.instance.notifyEvent(
+            'trainee_feedback_created',
+            inserted['id']!,
+          );
         }
       }
 

@@ -2,6 +2,7 @@
 import 'dart:typed_data';
 
 import 'package:calisync/model/trainee.dart';
+import 'package:calisync/notifications/push_notification_service.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -135,6 +136,7 @@ Future<void> logout(BuildContext context) async {
   final scaffoldMessenger = ScaffoldMessenger.of(context);
   final l10n = AppLocalizations.of(context)!;
   try {
+    await PushNotificationService.instance.unregisterCurrentDevice();
     await supabase.auth.signOut();
     if (context.mounted) {
       Navigator.of(context).pushAndRemoveUntil(

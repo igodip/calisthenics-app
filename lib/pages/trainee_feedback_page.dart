@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../notifications/push_notification_service.dart';
 
 class TraineeFeedbackPage extends StatefulWidget {
   const TraineeFeedbackPage({super.key});
@@ -139,10 +140,15 @@ class _TraineeFeedbackPageState extends State<TraineeFeedbackPage> {
     });
 
     try {
-      await client.from('trainee_feedbacks').insert({
-        'trainee_id': userId,
-        'message': feedback,
-      });
+      final inserted = await client
+          .from('trainee_feedbacks')
+          .insert({'trainee_id': userId, 'message': feedback})
+          .select('id')
+          .single();
+      await PushNotificationService.instance.notifyEvent(
+        'trainee_feedback_created',
+        inserted['id']!,
+      );
       if (!mounted) return;
       _feedbackController.clear();
       await _loadFeedbacks();

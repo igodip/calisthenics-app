@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../notifications/push_notification_service.dart';
 import 'trainer_models.dart';
 import 'pdf/trainer_pdf_import.dart';
 
@@ -149,6 +150,10 @@ class TrainerRepository {
     if ((result as List).isEmpty) {
       throw StateError('This feedback was already answered.');
     }
+    await PushNotificationService.instance.notifyEvent(
+      'trainer_feedback_answered',
+      id,
+    );
   }
 
   Future<void> deleteFeedback(Object id) =>
@@ -158,28 +163,51 @@ class TrainerRepository {
     String traineeId, {
     required String coachTip,
     required String trainerNotes,
-  }) => _client
-      .from('trainee_trainers')
-      .update({
-        'coach_tip': coachTip.trim().isEmpty ? null : coachTip.trim(),
-        'trainer_notes': trainerNotes.trim().isEmpty
-            ? null
-            : trainerNotes.trim(),
-      })
-      .eq('trainee_id', traineeId)
-      .eq('trainer_id', _userId);
+  }) async {
+    final current = await _client
+        .from('trainee_trainers')
+        .select('coach_tip')
+        .eq('trainee_id', traineeId)
+        .eq('trainer_id', _userId)
+        .maybeSingle();
+    final nextCoachTip = coachTip.trim();
+    final coachTipChanged =
+        ((current?['coach_tip'] as String?) ?? '').trim() != nextCoachTip;
+    await _client
+        .from('trainee_trainers')
+        .update({
+          'coach_tip': nextCoachTip.isEmpty ? null : nextCoachTip,
+          'trainer_notes': trainerNotes.trim().isEmpty
+              ? null
+              : trainerNotes.trim(),
+        })
+        .eq('trainee_id', traineeId)
+        .eq('trainer_id', _userId);
+    if (coachTipChanged) {
+      await PushNotificationService.instance.notifyEvent(
+        'trainer_coach_tip_updated',
+        traineeId,
+      );
+    }
+  }
 
   Future<void> savePayment(
     String traineeId, {
     required bool paid,
     double? amount,
-  }) => _client.from('trainee_monthly_payments').upsert({
-    'trainee_id': traineeId,
-    'month_start': currentMonthStart(),
-    'paid': paid,
-    'paid_at': paid ? DateTime.now().toUtc().toIso8601String() : null,
-    'amount': amount,
-  }, onConflict: 'trainee_id,month_start');
+  }) async {
+    await _client.from('trainee_monthly_payments').upsert({
+      'trainee_id': traineeId,
+      'month_start': currentMonthStart(),
+      'paid': paid,
+      'paid_at': paid ? DateTime.now().toUtc().toIso8601String() : null,
+      'amount': amount,
+    }, onConflict: 'trainee_id,month_start');
+    await PushNotificationService.instance.notifyEvent(
+      'trainer_payment_updated',
+      traineeId,
+    );
+  }
 
   Future<TrainerProgramData> loadProgram(
     TrainerTrainee trainee,
@@ -254,13 +282,23 @@ class TrainerRepository {
     required String status,
     String? startsOn,
     String? notes,
-  }) => _client.from('workout_plans').insert({
-    'trainee_id': traineeId,
-    'title': title,
-    'status': status,
-    'starts_on': startsOn,
-    'notes': notes,
-  });
+  }) async {
+    final inserted = await _client
+        .from('workout_plans')
+        .insert({
+          'trainee_id': traineeId,
+          'title': title,
+          'status': status,
+          'starts_on': startsOn,
+          'notes': notes,
+        })
+        .select('id')
+        .single();
+    await PushNotificationService.instance.notifyEvent(
+      'trainer_plan_updated',
+      inserted['id']!,
+    );
+  }
 
   Future<void> createImportedPlan(
     String traineeId,
@@ -339,6 +377,10 @@ class TrainerRepository {
       if (exerciseRows.isNotEmpty) {
         await _client.from('day_exercises').insert(exerciseRows);
       }
+      await PushNotificationService.instance.notifyEvent(
+        'trainer_plan_updated',
+        planId!,
+      );
     } catch (_) {
       if (dayIds.isNotEmpty) {
         await _client.from('day_exercises').delete().inFilter('day_id', dayIds);
