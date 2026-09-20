@@ -925,6 +925,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get trainerMarkRead => 'Marcar como leído';
 
   @override
+  String get trainerFeedbackMarkedRead =>
+      'Marcado como leído. Todavía puedes encontrarlo en Todos.';
+
+  @override
+  String get trainerFeedbackMarkedUnread => 'Marcado como no leído.';
+
+  @override
   String get trainerAnswerRequired => 'Escribe primero una respuesta.';
 
   @override

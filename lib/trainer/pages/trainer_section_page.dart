@@ -12,9 +12,14 @@ import '../../l10n/app_localizations.dart';
 enum TrainerSection { dashboard, trainees, feedback, payments }
 
 class TrainerSectionPage extends StatefulWidget {
-  const TrainerSectionPage({super.key, required this.section});
+  const TrainerSectionPage({
+    super.key,
+    required this.section,
+    this.onUnreadCountChanged,
+  });
 
   final TrainerSection section;
+  final ValueChanged<int>? onUnreadCountChanged;
 
   @override
   State<TrainerSectionPage> createState() => _TrainerSectionPageState();
@@ -46,6 +51,9 @@ class _TrainerSectionPageState extends State<TrainerSectionPage> {
           _trainees = trainees;
           _feedback = feedback;
         });
+        widget.onUnreadCountChanged?.call(
+          feedback.where((item) => !item.isRead).length,
+        );
       }
     } catch (error) {
       if (mounted) setState(() => _error = error);
@@ -93,6 +101,21 @@ class _TrainerSectionPageState extends State<TrainerSectionPage> {
               : entry;
         }).toList();
       });
+      widget.onUnreadCountChanged?.call(
+        _feedback.where((entry) => !entry.isRead).length,
+      );
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              value
+                  ? l10n.trainerFeedbackMarkedRead
+                  : l10n.trainerFeedbackMarkedUnread,
+            ),
+          ),
+        );
+      }
     } catch (error) {
       _showError(error);
       rethrow;
@@ -105,10 +128,17 @@ class _TrainerSectionPageState extends State<TrainerSectionPage> {
       setState(() {
         _feedback = _feedback.map((entry) {
           return entry.id == item.id
-              ? entry.copyWith(answer: answer, answeredAt: DateTime.now())
+              ? entry.copyWith(
+                  answer: answer,
+                  answeredAt: DateTime.now(),
+                  readAt: DateTime.now(),
+                )
               : entry;
         }).toList();
       });
+      widget.onUnreadCountChanged?.call(
+        _feedback.where((entry) => !entry.isRead).length,
+      );
     } catch (error) {
       _showError(error);
       rethrow;
@@ -120,10 +150,18 @@ class _TrainerSectionPageState extends State<TrainerSectionPage> {
     setState(() {
       _feedback = _feedback.where((entry) => entry.id != item.id).toList();
     });
+    widget.onUnreadCountChanged?.call(
+      _feedback.where((entry) => !entry.isRead).length,
+    );
     try {
       await _repository.deleteFeedback(item.id);
     } catch (error) {
-      if (mounted) setState(() => _feedback = previousFeedback);
+      if (mounted) {
+        setState(() => _feedback = previousFeedback);
+        widget.onUnreadCountChanged?.call(
+          _feedback.where((entry) => !entry.isRead).length,
+        );
+      }
       _showError(error);
       rethrow;
     }

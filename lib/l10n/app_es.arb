@@ -471,6 +471,8 @@
   "trainerSendAnswer": "Enviar respuesta",
   "trainerMarkUnread": "Marcar como no leído",
   "trainerMarkRead": "Marcar como leído",
+  "trainerFeedbackMarkedRead": "Marcado como leído. Todavía puedes encontrarlo en Todos.",
+  "trainerFeedbackMarkedUnread": "Marcado como no leído.",
   "trainerAnswerRequired": "Escribe primero una respuesta.",
   "trainerPaid": "Pagado",
   "trainerReceived": "Recibido",

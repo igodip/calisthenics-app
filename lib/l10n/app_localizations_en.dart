@@ -913,6 +913,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainerMarkRead => 'Mark read';
 
   @override
+  String get trainerFeedbackMarkedRead =>
+      'Marked as read. You can still find it under All.';
+
+  @override
+  String get trainerFeedbackMarkedUnread => 'Marked as unread.';
+
+  @override
   String get trainerAnswerRequired => 'Write an answer first.';
 
   @override

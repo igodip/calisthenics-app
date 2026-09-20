@@ -114,6 +114,23 @@ class TrainerRepository {
     ).map((row) => _feedbackFromMap(row, names)).toList();
   }
 
+  Future<int> unreadFeedbackCount() async {
+    final assignmentRows = await _client
+        .from('trainee_trainers')
+        .select('trainee_id')
+        .eq('trainer_id', _userId);
+    final traineeIds = List<Map<String, dynamic>>.from(
+      assignmentRows,
+    ).map((row) => row['trainee_id'] as String).toList();
+    if (traineeIds.isEmpty) return 0;
+
+    return _client
+        .from('trainee_feedbacks')
+        .count(CountOption.exact)
+        .inFilter('trainee_id', traineeIds)
+        .isFilter('read_at', null);
+  }
+
   TrainerFeedback _feedbackFromMap(
     Map<String, dynamic> row,
     Map<String, String> names,
@@ -130,12 +147,19 @@ class TrainerRepository {
     answeredAt: DateTime.tryParse((row['answered_at'] as String?) ?? ''),
   );
 
-  Future<void> setFeedbackRead(Object id, bool value) => _client
-      .from('trainee_feedbacks')
-      .update({
-        'read_at': value ? DateTime.now().toUtc().toIso8601String() : null,
-      })
-      .eq('id', id);
+  Future<void> setFeedbackRead(Object id, bool value) async {
+    final rows = await _client
+        .from('trainee_feedbacks')
+        .update({
+          'read_at': value ? DateTime.now().toUtc().toIso8601String() : null,
+        })
+        .eq('id', id)
+        .select('id, read_at');
+    final updated = List<Map<String, dynamic>>.from(rows);
+    if (updated.length != 1 || (updated.single['read_at'] != null) != value) {
+      throw StateError('The feedback read status was not saved.');
+    }
+  }
 
   Future<void> answerFeedback(Object id, String answer) async {
     final result = await _client
@@ -143,6 +167,7 @@ class TrainerRepository {
         .update({
           'answer_message': answer,
           'answered_at': DateTime.now().toUtc().toIso8601String(),
+          'read_at': DateTime.now().toUtc().toIso8601String(),
         })
         .eq('id', id)
         .isFilter('answered_at', null)

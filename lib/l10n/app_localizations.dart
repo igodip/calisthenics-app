@@ -1738,6 +1738,18 @@ abstract class AppLocalizations {
   /// **'Segna come letto'**
   String get trainerMarkRead;
 
+  /// No description provided for @trainerFeedbackMarkedRead.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnato come letto. Puoi ancora trovarlo in Tutti.'**
+  String get trainerFeedbackMarkedRead;
+
+  /// No description provided for @trainerFeedbackMarkedUnread.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnato come non letto.'**
+  String get trainerFeedbackMarkedUnread;
+
   /// No description provided for @trainerAnswerRequired.
   ///
   /// In it, this message translates to:

@@ -26,12 +26,14 @@ class _NavigationItem {
     required this.icon,
     required this.page,
     this.groupTitle,
+    this.badgeCount = 0,
   });
 
   final String title;
   final IconData icon;
   final Widget page;
   final String? groupTitle;
+  final int badgeCount;
 }
 
 class HomePage extends StatefulWidget {
@@ -61,6 +63,7 @@ class _HomePageState extends State<HomePage> {
   String? _cachedLocale;
   TrainerProfile? _trainerProfile;
   bool _isAdmin = false;
+  int _trainerUnreadFeedbackCount = 0;
   bool _roleLookupComplete = false;
 
   static const int _workoutPlanIndex = 1;
@@ -91,6 +94,14 @@ class _HomePageState extends State<HomePage> {
           _trainerProfile = roles[0] as TrainerProfile?;
           _isAdmin = roles[1] as bool;
         });
+      }
+      if (_trainerProfile != null) {
+        try {
+          final count = await TrainerRepository().unreadFeedbackCount();
+          if (mounted) setState(() => _trainerUnreadFeedbackCount = count);
+        } catch (_) {
+          // A badge failure must not hide the trainer workspace.
+        }
       }
     } catch (_) {
       // The standard trainee experience remains available if role lookup fails.
@@ -201,7 +212,15 @@ class _HomePageState extends State<HomePage> {
         _NavigationItem(
           title: l10n.trainerNavFeedback,
           icon: Icons.mark_chat_unread,
-          page: const TrainerSectionPage(section: TrainerSection.feedback),
+          page: TrainerSectionPage(
+            section: TrainerSection.feedback,
+            onUnreadCountChanged: (count) {
+              if (mounted && count != _trainerUnreadFeedbackCount) {
+                setState(() => _trainerUnreadFeedbackCount = count);
+              }
+            },
+          ),
+          badgeCount: _trainerUnreadFeedbackCount,
         ),
         _NavigationItem(
           title: l10n.trainerNavPayments,
@@ -288,7 +307,12 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
                 ListTile(
-                  leading: Icon(entry.$2.icon),
+                  leading: entry.$2.badgeCount > 0
+                      ? Badge.count(
+                          count: entry.$2.badgeCount,
+                          child: Icon(entry.$2.icon),
+                        )
+                      : Icon(entry.$2.icon),
                   title: Text(entry.$2.title),
                   selected: selectedIndex == entry.$1,
                   onTap: () {

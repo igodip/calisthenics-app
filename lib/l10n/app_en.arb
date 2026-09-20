@@ -471,6 +471,8 @@
   "trainerSendAnswer": "Send answer",
   "trainerMarkUnread": "Mark unread",
   "trainerMarkRead": "Mark read",
+  "trainerFeedbackMarkedRead": "Marked as read. You can still find it under All.",
+  "trainerFeedbackMarkedUnread": "Marked as unread.",
   "trainerAnswerRequired": "Write an answer first.",
   "trainerPaid": "Paid",
   "trainerReceived": "Received",

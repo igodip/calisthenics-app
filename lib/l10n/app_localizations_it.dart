@@ -923,6 +923,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainerMarkRead => 'Segna come letto';
 
   @override
+  String get trainerFeedbackMarkedRead =>
+      'Segnato come letto. Puoi ancora trovarlo in Tutti.';
+
+  @override
+  String get trainerFeedbackMarkedUnread => 'Segnato come non letto.';
+
+  @override
   String get trainerAnswerRequired => 'Scrivi prima una risposta.';
 
   @override
