@@ -1163,4 +1163,114 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get trainerCreate => 'Crear';
+
+  @override
+  String get adminMenuGroup => 'ADMINISTRACIÓN';
+
+  @override
+  String get adminNavConsole => 'Consola de administración';
+
+  @override
+  String get adminOverview => 'Resumen';
+
+  @override
+  String get adminUsers => 'Usuarios';
+
+  @override
+  String get adminAssignments => 'Asignaciones';
+
+  @override
+  String get adminTotalUsers => 'Usuarios totales';
+
+  @override
+  String get adminTrainees => 'Alumnos';
+
+  @override
+  String get adminTrainers => 'Entrenadores';
+
+  @override
+  String get adminSuspended => 'Suspendidos';
+
+  @override
+  String get adminNoUsers => 'No hay usuarios coincidentes.';
+
+  @override
+  String get adminNoAssignments => 'Todavía no hay asignaciones.';
+
+  @override
+  String get adminSearchUsers => 'Buscar usuarios';
+
+  @override
+  String get adminRoleAdmin => 'Administrador';
+
+  @override
+  String get adminRoleTrainer => 'Entrenador';
+
+  @override
+  String get adminRoleTrainee => 'Alumno';
+
+  @override
+  String get adminAccessActive => 'Acceso activo';
+
+  @override
+  String get adminAccessSuspended => 'Acceso suspendido';
+
+  @override
+  String get adminCurrentAccount => 'Tu cuenta';
+
+  @override
+  String get adminGrantTrainer => 'Conceder rol de entrenador';
+
+  @override
+  String get adminRevokeTrainer => 'Revocar rol de entrenador';
+
+  @override
+  String get adminSuspend => 'Suspender acceso';
+
+  @override
+  String get adminRestoreAccess => 'Restaurar acceso';
+
+  @override
+  String get adminConfirmSuspendTitle => '¿Suspender la cuenta?';
+
+  @override
+  String adminConfirmSuspendMessage(String name) {
+    return '¿Suspender el acceso a la app de $name?';
+  }
+
+  @override
+  String get adminConfirmRevokeTitle => '¿Revocar el rol de entrenador?';
+
+  @override
+  String adminConfirmRevokeMessage(String name) {
+    return '¿Revocar el acceso de entrenador de $name? Se eliminarán sus asignaciones.';
+  }
+
+  @override
+  String get adminCancel => 'Cancelar';
+
+  @override
+  String get adminConfirm => 'Confirmar';
+
+  @override
+  String get adminAssignmentTrainer => 'Entrenador';
+
+  @override
+  String get adminAssignmentTrainee => 'Alumno';
+
+  @override
+  String get adminAddAssignment => 'Añadir asignación';
+
+  @override
+  String get adminRemoveAssignment => 'Eliminar asignación';
+
+  @override
+  String adminLoadError(String error) {
+    return 'No se pudieron cargar las herramientas de administración\n$error';
+  }
+
+  @override
+  String adminActionFailed(String error) {
+    return 'Error en la acción de administración: $error';
+  }
 }

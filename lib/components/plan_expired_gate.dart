@@ -8,11 +8,13 @@ final supabase = Supabase.instance.client;
 class PlanExpiredGate extends StatefulWidget {
   final Widget child;
   final bool useOverlay;
+  final bool bypass;
 
   const PlanExpiredGate({
     super.key,
     required this.child,
     this.useOverlay = false,
+    this.bypass = false,
   });
 
   @override
@@ -30,6 +32,7 @@ class _PlanExpiredGateState extends State<PlanExpiredGate> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.bypass) return widget.child;
     return FutureBuilder<bool>(
       future: _expiredFuture,
       builder: (context, snapshot) {

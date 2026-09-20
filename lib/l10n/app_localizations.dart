@@ -2163,6 +2163,210 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Crea'**
   String get trainerCreate;
+
+  /// No description provided for @adminMenuGroup.
+  ///
+  /// In it, this message translates to:
+  /// **'AMMINISTRAZIONE'**
+  String get adminMenuGroup;
+
+  /// No description provided for @adminNavConsole.
+  ///
+  /// In it, this message translates to:
+  /// **'Console amministratore'**
+  String get adminNavConsole;
+
+  /// No description provided for @adminOverview.
+  ///
+  /// In it, this message translates to:
+  /// **'Panoramica'**
+  String get adminOverview;
+
+  /// No description provided for @adminUsers.
+  ///
+  /// In it, this message translates to:
+  /// **'Utenti'**
+  String get adminUsers;
+
+  /// No description provided for @adminAssignments.
+  ///
+  /// In it, this message translates to:
+  /// **'Assegnazioni'**
+  String get adminAssignments;
+
+  /// No description provided for @adminTotalUsers.
+  ///
+  /// In it, this message translates to:
+  /// **'Utenti totali'**
+  String get adminTotalUsers;
+
+  /// No description provided for @adminTrainees.
+  ///
+  /// In it, this message translates to:
+  /// **'Allievi'**
+  String get adminTrainees;
+
+  /// No description provided for @adminTrainers.
+  ///
+  /// In it, this message translates to:
+  /// **'Trainer'**
+  String get adminTrainers;
+
+  /// No description provided for @adminSuspended.
+  ///
+  /// In it, this message translates to:
+  /// **'Sospesi'**
+  String get adminSuspended;
+
+  /// No description provided for @adminNoUsers.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun utente corrispondente.'**
+  String get adminNoUsers;
+
+  /// No description provided for @adminNoAssignments.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna assegnazione trainer.'**
+  String get adminNoAssignments;
+
+  /// No description provided for @adminSearchUsers.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca utenti'**
+  String get adminSearchUsers;
+
+  /// No description provided for @adminRoleAdmin.
+  ///
+  /// In it, this message translates to:
+  /// **'Amministratore'**
+  String get adminRoleAdmin;
+
+  /// No description provided for @adminRoleTrainer.
+  ///
+  /// In it, this message translates to:
+  /// **'Trainer'**
+  String get adminRoleTrainer;
+
+  /// No description provided for @adminRoleTrainee.
+  ///
+  /// In it, this message translates to:
+  /// **'Allievo'**
+  String get adminRoleTrainee;
+
+  /// No description provided for @adminAccessActive.
+  ///
+  /// In it, this message translates to:
+  /// **'Accesso attivo'**
+  String get adminAccessActive;
+
+  /// No description provided for @adminAccessSuspended.
+  ///
+  /// In it, this message translates to:
+  /// **'Accesso sospeso'**
+  String get adminAccessSuspended;
+
+  /// No description provided for @adminCurrentAccount.
+  ///
+  /// In it, this message translates to:
+  /// **'Il tuo account'**
+  String get adminCurrentAccount;
+
+  /// No description provided for @adminGrantTrainer.
+  ///
+  /// In it, this message translates to:
+  /// **'Assegna ruolo trainer'**
+  String get adminGrantTrainer;
+
+  /// No description provided for @adminRevokeTrainer.
+  ///
+  /// In it, this message translates to:
+  /// **'Revoca ruolo trainer'**
+  String get adminRevokeTrainer;
+
+  /// No description provided for @adminSuspend.
+  ///
+  /// In it, this message translates to:
+  /// **'Sospendi accesso'**
+  String get adminSuspend;
+
+  /// No description provided for @adminRestoreAccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristina accesso'**
+  String get adminRestoreAccess;
+
+  /// No description provided for @adminConfirmSuspendTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Sospendere l’account?'**
+  String get adminConfirmSuspendTitle;
+
+  /// No description provided for @adminConfirmSuspendMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Sospendere l’accesso all’app per {name}?'**
+  String adminConfirmSuspendMessage(String name);
+
+  /// No description provided for @adminConfirmRevokeTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Revocare il ruolo trainer?'**
+  String get adminConfirmRevokeTitle;
+
+  /// No description provided for @adminConfirmRevokeMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Revocare l’accesso trainer a {name}? Le assegnazioni verranno rimosse.'**
+  String adminConfirmRevokeMessage(String name);
+
+  /// No description provided for @adminCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get adminCancel;
+
+  /// No description provided for @adminConfirm.
+  ///
+  /// In it, this message translates to:
+  /// **'Conferma'**
+  String get adminConfirm;
+
+  /// No description provided for @adminAssignmentTrainer.
+  ///
+  /// In it, this message translates to:
+  /// **'Trainer'**
+  String get adminAssignmentTrainer;
+
+  /// No description provided for @adminAssignmentTrainee.
+  ///
+  /// In it, this message translates to:
+  /// **'Allievo'**
+  String get adminAssignmentTrainee;
+
+  /// No description provided for @adminAddAssignment.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi assegnazione'**
+  String get adminAddAssignment;
+
+  /// No description provided for @adminRemoveAssignment.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi assegnazione'**
+  String get adminRemoveAssignment;
+
+  /// No description provided for @adminLoadError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare gli strumenti amministratore\n{error}'**
+  String adminLoadError(String error);
+
+  /// No description provided for @adminActionFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Operazione amministratore non riuscita: {error}'**
+  String adminActionFailed(String error);
 }
 
 class _AppLocalizationsDelegate

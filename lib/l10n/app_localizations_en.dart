@@ -1150,4 +1150,114 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainerCreate => 'Create';
+
+  @override
+  String get adminMenuGroup => 'ADMIN';
+
+  @override
+  String get adminNavConsole => 'Admin console';
+
+  @override
+  String get adminOverview => 'Overview';
+
+  @override
+  String get adminUsers => 'Users';
+
+  @override
+  String get adminAssignments => 'Assignments';
+
+  @override
+  String get adminTotalUsers => 'Total users';
+
+  @override
+  String get adminTrainees => 'Trainees';
+
+  @override
+  String get adminTrainers => 'Trainers';
+
+  @override
+  String get adminSuspended => 'Suspended';
+
+  @override
+  String get adminNoUsers => 'No matching users.';
+
+  @override
+  String get adminNoAssignments => 'No trainer assignments yet.';
+
+  @override
+  String get adminSearchUsers => 'Search users';
+
+  @override
+  String get adminRoleAdmin => 'Admin';
+
+  @override
+  String get adminRoleTrainer => 'Trainer';
+
+  @override
+  String get adminRoleTrainee => 'Trainee';
+
+  @override
+  String get adminAccessActive => 'Access active';
+
+  @override
+  String get adminAccessSuspended => 'Access suspended';
+
+  @override
+  String get adminCurrentAccount => 'Your account';
+
+  @override
+  String get adminGrantTrainer => 'Grant trainer role';
+
+  @override
+  String get adminRevokeTrainer => 'Revoke trainer role';
+
+  @override
+  String get adminSuspend => 'Suspend access';
+
+  @override
+  String get adminRestoreAccess => 'Restore access';
+
+  @override
+  String get adminConfirmSuspendTitle => 'Suspend account?';
+
+  @override
+  String adminConfirmSuspendMessage(String name) {
+    return 'Suspend app access for $name?';
+  }
+
+  @override
+  String get adminConfirmRevokeTitle => 'Revoke trainer role?';
+
+  @override
+  String adminConfirmRevokeMessage(String name) {
+    return 'Revoke trainer access for $name? Their assignments will be removed.';
+  }
+
+  @override
+  String get adminCancel => 'Cancel';
+
+  @override
+  String get adminConfirm => 'Confirm';
+
+  @override
+  String get adminAssignmentTrainer => 'Trainer';
+
+  @override
+  String get adminAssignmentTrainee => 'Trainee';
+
+  @override
+  String get adminAddAssignment => 'Add assignment';
+
+  @override
+  String get adminRemoveAssignment => 'Remove assignment';
+
+  @override
+  String adminLoadError(String error) {
+    return 'Unable to load admin tools\n$error';
+  }
+
+  @override
+  String adminActionFailed(String error) {
+    return 'Admin action failed: $error';
+  }
 }

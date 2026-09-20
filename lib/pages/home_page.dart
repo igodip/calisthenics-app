@@ -1,4 +1,6 @@
 // lib/pages/home_page.dart
+import 'package:calisync/admin/admin_repository.dart';
+import 'package:calisync/admin/pages/admin_console_page.dart';
 import 'package:calisync/pages/profile_page.dart';
 import 'package:calisync/notifications/push_notification_service.dart';
 import 'package:calisync/pages/terminology_page.dart';
@@ -23,11 +25,13 @@ class _NavigationItem {
     required this.title,
     required this.icon,
     required this.page,
+    this.groupTitle,
   });
 
   final String title;
   final IconData icon;
   final Widget page;
+  final String? groupTitle;
 }
 
 class HomePage extends StatefulWidget {
@@ -56,6 +60,7 @@ class _HomePageState extends State<HomePage> {
   late int selectedIndex;
   String? _cachedLocale;
   TrainerProfile? _trainerProfile;
+  bool _isAdmin = false;
   bool _roleLookupComplete = false;
 
   static const int _workoutPlanIndex = 1;
@@ -77,8 +82,16 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadTrainerRole() async {
     try {
-      final trainer = await TrainerRepository().currentTrainer();
-      if (mounted) setState(() => _trainerProfile = trainer);
+      final roles = await Future.wait<Object?>([
+        TrainerRepository().currentTrainer().catchError((_) => null),
+        AdminRepository().isCurrentUserAdmin().catchError((_) => false),
+      ]);
+      if (mounted) {
+        setState(() {
+          _trainerProfile = roles[0] as TrainerProfile?;
+          _isAdmin = roles[1] as bool;
+        });
+      }
     } catch (_) {
       // The standard trainee experience remains available if role lookup fails.
     } finally {
@@ -178,6 +191,7 @@ class _HomePageState extends State<HomePage> {
           title: l10n.trainerNavDashboard,
           icon: Icons.dashboard_customize,
           page: const TrainerSectionPage(section: TrainerSection.dashboard),
+          groupTitle: l10n.trainerMenuGroup,
         ),
         _NavigationItem(
           title: l10n.trainerNavTrainees,
@@ -195,6 +209,17 @@ class _HomePageState extends State<HomePage> {
           page: const TrainerSectionPage(section: TrainerSection.payments),
         ),
       ]);
+    }
+
+    if (_isAdmin) {
+      navigationItems.add(
+        _NavigationItem(
+          title: l10n.adminNavConsole,
+          icon: Icons.admin_panel_settings,
+          page: const AdminConsolePage(),
+          groupTitle: l10n.adminMenuGroup,
+        ),
+      );
     }
 
     final currentTitle = navigationItems[selectedIndex].title;
@@ -248,12 +273,12 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               for (final entry in navigationItems.indexed) ...[
-                if (entry.$1 == 8) ...[
+                if (entry.$2.groupTitle != null) ...[
                   const Divider(height: 24),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                     child: Text(
-                      l10n.trainerMenuGroup,
+                      entry.$2.groupTitle!,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: colorScheme.primary,
                         fontWeight: FontWeight.w700,
@@ -332,6 +357,10 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    return PlanExpiredGate(useOverlay: true, child: scaffold);
+    return PlanExpiredGate(
+      useOverlay: true,
+      bypass: _trainerProfile != null || _isAdmin,
+      child: scaffold,
+    );
   }
 }

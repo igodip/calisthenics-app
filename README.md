@@ -35,6 +35,14 @@ their trainees, payments, programs, and feedback directly in the app.
 Trainers can also import workout plans from a PDF, which is parsed into
 the standard plan/day/exercise model and saved to Supabase.
 
+## Admin console
+
+Accounts present in the Supabase `admins` table receive an admin-only console
+inside the app. It provides a user overview, trainer-role management, account
+suspension/restoration, and trainer-to-trainee assignments. Privileged actions
+run through database functions that verify the authenticated admin; no service
+role key is shipped in the application.
+
 ## Getting Started
 
 This project is a standard Flutter application. To run it locally:
@@ -65,4 +73,3 @@ For more Flutter resources, check out:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
-
