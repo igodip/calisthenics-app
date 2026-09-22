@@ -668,7 +668,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get existingAccountPrompt => 'Hai già un account? Accedi';
 
   @override
-  String get forgotPasswordLink => 'Forgot your password?';
+  String get forgotPasswordLink => 'Password dimenticata?';
 
   @override
   String passwordResetEmailSent(String email) {
