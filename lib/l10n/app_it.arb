@@ -363,7 +363,7 @@
   "signupButton": "Registrati",
   "noAccountPrompt": "Non hai un account? Registrati",
   "existingAccountPrompt": "Hai già un account? Accedi",
-  "forgotPasswordLink": "Forgot your password?",
+  "forgotPasswordLink": "Password dimenticata?",
   "passwordResetEmailSent": "Link per reimpostare la password inviato a {email}. Controlla la posta.",
   "@passwordResetEmailSent": {
     "placeholders": {

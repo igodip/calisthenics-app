@@ -1261,7 +1261,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgotPasswordLink.
   ///
   /// In it, this message translates to:
-  /// **'Forgot your password?'**
+  /// **'Password dimenticata?'**
   String get forgotPasswordLink;
 
   /// No description provided for @passwordResetEmailSent.
