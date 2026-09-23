@@ -144,8 +144,8 @@ class _LoginPageState extends State<LoginPage> {
           _setFeedback(l10n.signupEmailCheck, false);
         }
       }
-    } on AuthException catch (e) {
-      _setFeedback(e.message, true);
+    } on AuthException {
+      _setFeedback(l10n.invalidCredentials, true);
     } catch (e) {
       _setFeedback(l10n.unexpectedError('$e'), true);
     } finally {
