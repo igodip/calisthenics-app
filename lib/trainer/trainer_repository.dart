@@ -34,7 +34,7 @@ class TrainerRepository {
     final rows = await _client
         .from('trainees')
         .select(
-          'id, name, weight, height, trainee_trainers!inner(trainer_id, coach_tip, trainer_notes)',
+          'id, name, weight, height, profile_image_url, trainee_trainers!inner(trainer_id, coach_tip, trainer_notes)',
         )
         .eq('trainee_trainers.trainer_id', _userId)
         .order('name');
@@ -80,6 +80,7 @@ class TrainerRepository {
       );
       final payment = payments[id];
       final counts = progress[id] ?? const [0, 0];
+      final profileImageUrl = (row['profile_image_url'] as String?)?.trim();
       return TrainerTrainee(
         id: id,
         name: (row['name'] as String?)?.trim().isNotEmpty == true
@@ -93,6 +94,9 @@ class TrainerRepository {
         trainerNotes: (assignment['trainer_notes'] as String?) ?? '',
         completedExercises: counts[0],
         totalExercises: counts[1],
+        profileImageUrl: profileImageUrl == null || profileImageUrl.isEmpty
+            ? null
+            : profileImageUrl,
       );
     }).toList();
   }
