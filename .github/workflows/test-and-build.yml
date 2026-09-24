@@ -228,11 +228,11 @@ jobs:
           echo "keyAlias=${{ secrets.ANDROID_KEYSTORE_ALIAS }}" >> android/key.properties
           echo "storeFile=../app/my-release-key.jks" >> android/key.properties
 
-      - name: Build app bundle
-        run: |
-          flutter build appbundle --release \
-            --build-name=${{ steps.version.outputs.base_version }} \
-            --build-number=${{ github.run_number }}
+#      - name: Build app bundle
+#        run: |
+#          flutter build appbundle --release \
+#            --build-name=${{ steps.version.outputs.base_version }} \
+#            --build-number=${{ github.run_number }}
 
       - name: Upload to TestFlight
         if: success()
@@ -243,6 +243,6 @@ jobs:
             -u "${{ secrets.APPLE_ID }}" \
             -p "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
 
-      - name: Upload to Play Store
-        run: ./gradlew publishReleaseBundle
-        working-directory: android
+#      - name: Upload to Play Store
+#        run: ./gradlew publishReleaseBundle
+#        working-directory: android
