@@ -29,11 +29,23 @@ class TrainerTraineeCard extends StatelessWidget {
             children: [
               LayoutBuilder(
                 builder: (context, constraints) {
+                  final avatarUrl = trainee.profileImageUrl?.trim();
+                  final initials = trainee.name.trim().isEmpty
+                      ? '?'
+                      : trainee.name.trim()[0].toUpperCase();
+                  final avatar = CircleAvatar(
+                    radius: 22,
+                    backgroundColor: colors.primaryContainer,
+                    backgroundImage: avatarUrl == null || avatarUrl.isEmpty
+                        ? null
+                        : NetworkImage(avatarUrl),
+                    child: avatarUrl == null || avatarUrl.isEmpty
+                        ? Text(initials)
+                        : null,
+                  );
                   final identity = Row(
                     children: [
-                      CircleAvatar(
-                        child: Text(trainee.name.substring(0, 1).toUpperCase()),
-                      ),
+                      avatar,
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(

@@ -1,3 +1,4 @@
+import 'package:calisync/trainer/components/trainer_trainee_card.dart';
 import 'package:calisync/trainer/pages/trainer_dashboard_page.dart';
 import 'package:calisync/trainer/pages/trainer_feedback_page.dart';
 import 'package:calisync/trainer/pages/trainer_payments_page.dart';
@@ -96,5 +97,50 @@ void main() {
       );
       expect(content.width, lessThanOrEqualTo(960));
     }
+  });
+
+  testWidgets(
+    'trainee card shows initials when no profile image is available',
+    (tester) async {
+      await pumpAt(
+        tester,
+        TrainerTraineeCard(
+          trainee: TrainerTrainee(
+            id: 'trainee-1',
+            name: 'Alice',
+            weight: 60,
+            height: 170,
+            paid: true,
+            paymentAmount: 100,
+            coachTip: '',
+            trainerNotes: '',
+            completedExercises: 1,
+            totalExercises: 2,
+          ),
+          onOpen: () {},
+        ),
+        const Size(500, 700),
+      );
+
+      expect(find.text('A'), findsOneWidget);
+    },
+  );
+
+  test('trainer trainee keeps profile image URL when provided', () {
+    final trainee = TrainerTrainee(
+      id: 'trainee-1',
+      name: 'Alice',
+      weight: 60,
+      height: 170,
+      paid: true,
+      paymentAmount: 100,
+      coachTip: '',
+      trainerNotes: '',
+      completedExercises: 1,
+      totalExercises: 2,
+      profileImageUrl: 'https://example.com/avatar.png',
+    );
+
+    expect(trainee.profileImageUrl, 'https://example.com/avatar.png');
   });
 }

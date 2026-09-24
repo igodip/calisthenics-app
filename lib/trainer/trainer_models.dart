@@ -41,6 +41,7 @@ class TrainerTrainee {
     required this.trainerNotes,
     required this.completedExercises,
     required this.totalExercises,
+    this.profileImageUrl,
   });
 
   final String id;
@@ -53,6 +54,7 @@ class TrainerTrainee {
   final String trainerNotes;
   final int completedExercises;
   final int totalExercises;
+  final String? profileImageUrl;
 
   int get progress => totalExercises == 0
       ? 0
@@ -63,6 +65,7 @@ class TrainerTrainee {
     double? paymentAmount,
     String? coachTip,
     String? trainerNotes,
+    String? profileImageUrl,
   }) => TrainerTrainee(
     id: id,
     name: name,
@@ -74,6 +77,7 @@ class TrainerTrainee {
     trainerNotes: trainerNotes ?? this.trainerNotes,
     completedExercises: completedExercises,
     totalExercises: totalExercises,
+    profileImageUrl: profileImageUrl ?? this.profileImageUrl,
   );
 }
 
