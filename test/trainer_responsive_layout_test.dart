@@ -6,10 +6,11 @@ import 'package:calisync/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const trainee = TrainerTrainee(
+final trainee = TrainerTrainee(
   id: '12345678-1234-1234-1234-123456789012',
   name: 'Athlete With A Very Long Display Name',
   weight: 72.5,
+  height: 1.75,
   paid: false,
   paymentAmount: 125,
   coachTip: '',
@@ -50,7 +51,7 @@ void main() {
     await pumpAt(
       tester,
       TrainerDashboardPage(
-        trainees: const [trainee],
+        trainees: [trainee],
         feedback: const [],
         onOpenTrainee: (_) {},
         onRefresh: () async {},
@@ -84,7 +85,7 @@ void main() {
       await pumpAt(
         tester,
         TrainerPaymentsPage(
-          trainees: const [trainee],
+          trainees: [trainee],
           onSave: (_, _, _) async {},
           onRefresh: () async {},
         ),

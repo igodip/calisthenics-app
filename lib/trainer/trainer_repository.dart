@@ -34,7 +34,7 @@ class TrainerRepository {
     final rows = await _client
         .from('trainees')
         .select(
-          'id, name, weight, trainee_trainers!inner(trainer_id, coach_tip, trainer_notes)',
+          'id, name, weight, height, trainee_trainers!inner(trainer_id, coach_tip, trainer_notes)',
         )
         .eq('trainee_trainers.trainer_id', _userId)
         .order('name');
@@ -86,6 +86,7 @@ class TrainerRepository {
             ? row['name'] as String
             : id.substring(0, 8),
         weight: (row['weight'] as num?)?.toDouble(),
+        height: (row['height'] as num?)?.toDouble(),
         paid: payment?['paid'] == true,
         paymentAmount: (payment?['amount'] as num?)?.toDouble(),
         coachTip: (assignment['coach_tip'] as String?) ?? '',
