@@ -178,6 +178,12 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
                       : '${widget.trainee.weight} kg',
                 ),
                 _row(
+                  AppLocalizations.of(context)!.profileHeight,
+                  widget.trainee.height == null
+                      ? '—'
+                      : '${widget.trainee.height} cm',
+                ),
+                _row(
                   AppLocalizations.of(context)!.trainerPaymentLabel,
                   widget.trainee.paid
                       ? AppLocalizations.of(context)!.trainerOnTime

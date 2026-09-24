@@ -30,10 +30,11 @@ class TrainerProfile {
 }
 
 class TrainerTrainee {
-  const TrainerTrainee({
+  TrainerTrainee({
     required this.id,
     required this.name,
     required this.weight,
+    required this.height,
     required this.paid,
     required this.paymentAmount,
     required this.coachTip,
@@ -45,6 +46,7 @@ class TrainerTrainee {
   final String id;
   final String name;
   final double? weight;
+  final double? height;
   final bool paid;
   final double? paymentAmount;
   final String coachTip;
@@ -65,6 +67,7 @@ class TrainerTrainee {
     id: id,
     name: name,
     weight: weight,
+    height: height,
     paid: paid ?? this.paid,
     paymentAmount: paymentAmount ?? this.paymentAmount,
     coachTip: coachTip ?? this.coachTip,
