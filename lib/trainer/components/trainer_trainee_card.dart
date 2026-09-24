@@ -41,8 +41,11 @@ class TrainerTraineeCard extends StatelessWidget {
                           children: [
                             Text(
                               trainee.name,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colors.onSurface,
+                                  ),
                             ),
                             Text(
                               trainee.id,

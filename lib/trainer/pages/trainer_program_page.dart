@@ -102,9 +102,18 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.trainee.name),
+        title: Text(
+          widget.trainee.name,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color:
+                Theme.of(context).appBarTheme.foregroundColor ??
+                colorScheme.onSurface,
+          ),
+        ),
         bottom: TabBar(
           controller: _tabs,
           tabs: [
