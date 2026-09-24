@@ -170,11 +170,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       _NavigationItem(
-        title: l10n.navProfile,
-        icon: Icons.person,
-        page: const ProfilePage(),
-      ),
-      _NavigationItem(
         title: l10n.profileMaxTestsTitle,
         icon: Icons.emoji_events_outlined,
         page: const MaxTestsMenuPage(),
@@ -193,6 +188,11 @@ class _HomePageState extends State<HomePage> {
         title: l10n.timerTitle,
         icon: Icons.timer,
         page: const TimerPage(),
+      ),
+      _NavigationItem(
+        title: l10n.navProfile,
+        icon: Icons.person,
+        page: const ProfilePage(),
       ),
     ];
 
