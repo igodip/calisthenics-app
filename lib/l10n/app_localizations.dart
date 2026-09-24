@@ -385,7 +385,7 @@ abstract class AppLocalizations {
   /// No description provided for @traineeFeedbackTitle.
   ///
   /// In it, this message translates to:
-  /// **'Feedback atleta'**
+  /// **'I miei feedback'**
   String get traineeFeedbackTitle;
 
   /// No description provided for @traineeFeedbackSubtitle.
@@ -1579,7 +1579,7 @@ abstract class AppLocalizations {
   /// No description provided for @trainerNavFeedback.
   ///
   /// In it, this message translates to:
-  /// **'Feedback trainer'**
+  /// **'Feedback degli allievi'**
   String get trainerNavFeedback;
 
   /// No description provided for @trainerNavPayments.
