@@ -70,7 +70,7 @@
     }
   },
   "workoutPlanTitle": "Piano di allenamento",
-  "traineeFeedbackTitle": "Feedback atleta",
+  "traineeFeedbackTitle": "I miei feedback",
   "traineeFeedbackSubtitle": "Racconta al tuo coach come ti senti e come procede il piano.",
   "traineeFeedbackQuestionLabel": "Come è andato l'allenamento?",
   "traineeFeedbackQuestionHint": "Condividi cosa sta andando bene o cosa richiede attenzione.",
@@ -443,7 +443,7 @@
   "trainerMenuGroup": "TRAINER",
   "trainerNavDashboard": "Dashboard trainer",
   "trainerNavTrainees": "I miei allievi",
-  "trainerNavFeedback": "Feedback trainer",
+  "trainerNavFeedback": "Feedback degli allievi",
   "trainerNavPayments": "Pagamenti allievi",
   "trainerWorkspaceTitle": "Area trainer",
   "trainerWorkspaceSubtitle": "I tuoi atleti assegnati e le loro attività recenti.",

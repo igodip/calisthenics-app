@@ -161,7 +161,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workoutPlanTitle => 'Workout plan';
 
   @override
-  String get traineeFeedbackTitle => 'Trainee feedback';
+  String get traineeFeedbackTitle => 'My feedback';
 
   @override
   String get traineeFeedbackSubtitle =>

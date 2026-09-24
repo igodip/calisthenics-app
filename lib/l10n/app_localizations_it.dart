@@ -163,7 +163,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get workoutPlanTitle => 'Piano di allenamento';
 
   @override
-  String get traineeFeedbackTitle => 'Feedback atleta';
+  String get traineeFeedbackTitle => 'I miei feedback';
 
   @override
   String get traineeFeedbackSubtitle =>
@@ -838,7 +838,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainerNavTrainees => 'I miei allievi';
 
   @override
-  String get trainerNavFeedback => 'Feedback trainer';
+  String get trainerNavFeedback => 'Feedback degli allievi';
 
   @override
   String get trainerNavPayments => 'Pagamenti allievi';

@@ -162,14 +162,6 @@ class _HomePageState extends State<HomePage> {
         page: const WorkoutPlanPage(),
       ),
       _NavigationItem(
-        title: l10n.navGuides,
-        icon: Icons.fitness_center,
-        page: ExerciseGuidesPage(
-          initialGuideSlug: widget.initialGuideSlug,
-          initialGuideId: widget.initialGuideId,
-        ),
-      ),
-      _NavigationItem(
         title: l10n.profileMaxTestsTitle,
         icon: Icons.emoji_events_outlined,
         page: const MaxTestsMenuPage(),
@@ -180,14 +172,22 @@ class _HomePageState extends State<HomePage> {
         page: const TraineeFeedbackPage(),
       ),
       _NavigationItem(
-        title: l10n.navTerminology,
-        icon: Icons.menu_book,
-        page: TerminologyPage(termKey: widget.initialTerminologyTermKey),
-      ),
-      _NavigationItem(
         title: l10n.timerTitle,
         icon: Icons.timer,
         page: const TimerPage(),
+      ),
+      _NavigationItem(
+        title: l10n.navGuides,
+        icon: Icons.fitness_center,
+        page: ExerciseGuidesPage(
+          initialGuideSlug: widget.initialGuideSlug,
+          initialGuideId: widget.initialGuideId,
+        ),
+      ),
+      _NavigationItem(
+        title: l10n.navTerminology,
+        icon: Icons.menu_book,
+        page: TerminologyPage(termKey: widget.initialTerminologyTermKey),
       ),
       _NavigationItem(
         title: l10n.navProfile,
