@@ -225,7 +225,10 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
         if (_data!.days.isEmpty)
           Text(AppLocalizations.of(context)!.trainerNoScheduledDays)
         else ...[
-          for (final day in calendarDays) _dayCard(day),
+          for (final week in _calendarWeeks(calendarDays)) ...[
+            _weekTitle(week.key),
+            for (final day in week.value) _dayCard(day),
+          ],
           if (_data!.days.length > 5)
             Align(
               alignment: Alignment.center,
@@ -265,6 +268,31 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
               onDelete: () => _deleteFeedback(item),
             ),
       ],
+    );
+  }
+
+  List<MapEntry<int, List<Map<String, dynamic>>>> _calendarWeeks(
+    Iterable<Map<String, dynamic>> days,
+  ) {
+    final weeks = <int, List<Map<String, dynamic>>>{};
+    for (final day in days) {
+      final week = (day['week'] as num?)?.toInt() ?? 0;
+      weeks.putIfAbsent(week, () => []).add(day);
+    }
+    return weeks.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
+  }
+
+  Widget _weekTitle(int week) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 12, 4, 8),
+      child: Text(
+        week > 0 ? l10n.weekNumber(week) : l10n.defaultWorkoutTitle,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
   }
 
@@ -323,7 +351,10 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
           ),
         ),
       _sectionTitle(AppLocalizations.of(context)!.trainerWorkoutDays),
-      for (final day in _data!.days) _dayCard(day),
+      for (final week in _calendarWeeks(_data!.days)) ...[
+        _weekTitle(week.key),
+        for (final day in week.value) _dayCard(day),
+      ],
     ],
   );
 
