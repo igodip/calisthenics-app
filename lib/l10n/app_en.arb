@@ -109,7 +109,19 @@
   "trainingHeaderReps": "Repetitions",
   "trainingTodayTitle": "Today's Workout",
   "trainingStartWorkout": "Start Workout",
+  "trainingMarkAsCompleted": "Mark as completed",
   "trainingWorkoutCompleted": "Workout Completed",
+  "trainingIncompleteTitle": "Attention",
+  "trainingIncompleteMessage": "Not all exercises have been completed ({count}).",
+  "@trainingIncompleteMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingIncompleteOptionIgnore": "Ignore unfinished exercises and mark as complete",
+  "trainingIncompleteOptionCompleteAll": "Mark all exercises and workout as complete",
   "trainingDurationMinutes": "{minutes} min",
   "@trainingDurationMinutes": {
     "placeholders": {

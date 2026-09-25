@@ -574,11 +574,41 @@ abstract class AppLocalizations {
   /// **'Inizia allenamento'**
   String get trainingStartWorkout;
 
+  /// No description provided for @trainingMarkAsCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Segna come completato'**
+  String get trainingMarkAsCompleted;
+
   /// No description provided for @trainingWorkoutCompleted.
   ///
   /// In it, this message translates to:
   /// **'Allenamento completato'**
   String get trainingWorkoutCompleted;
+
+  /// No description provided for @trainingIncompleteTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Attenzione'**
+  String get trainingIncompleteTitle;
+
+  /// No description provided for @trainingIncompleteMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Non tutti gli esercizi sono stati completati ({count}).'**
+  String trainingIncompleteMessage(int count);
+
+  /// No description provided for @trainingIncompleteOptionIgnore.
+  ///
+  /// In it, this message translates to:
+  /// **'Ignora esercizi non completati e segna come completato'**
+  String get trainingIncompleteOptionIgnore;
+
+  /// No description provided for @trainingIncompleteOptionCompleteAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Segna tutti gli esercizi e allenamento come completati'**
+  String get trainingIncompleteOptionCompleteAll;
 
   /// No description provided for @trainingDurationMinutes.
   ///

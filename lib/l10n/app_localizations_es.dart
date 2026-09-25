@@ -270,7 +270,26 @@ class AppLocalizationsEs extends AppLocalizations {
   String get trainingStartWorkout => 'Iniciar entrenamiento';
 
   @override
+  String get trainingMarkAsCompleted => 'Marcar como completado';
+
+  @override
   String get trainingWorkoutCompleted => 'Entrenamiento completado';
+
+  @override
+  String get trainingIncompleteTitle => 'Atención';
+
+  @override
+  String trainingIncompleteMessage(int count) {
+    return 'No todos los ejercicios se han completado ($count).';
+  }
+
+  @override
+  String get trainingIncompleteOptionIgnore =>
+      'Ignorar ejercicios no completados y marcar como completado';
+
+  @override
+  String get trainingIncompleteOptionCompleteAll =>
+      'Marcar todos los ejercicios y el entrenamiento como completados';
 
   @override
   String trainingDurationMinutes(int minutes) {
