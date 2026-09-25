@@ -109,7 +109,19 @@
   "trainingHeaderReps": "Ripetizioni",
   "trainingTodayTitle": "Allenamento di oggi",
   "trainingStartWorkout": "Inizia allenamento",
+  "trainingMarkAsCompleted": "Segna come completato",
   "trainingWorkoutCompleted": "Allenamento completato",
+  "trainingIncompleteTitle": "Attenzione",
+  "trainingIncompleteMessage": "Non tutti gli esercizi sono stati completati ({count}).",
+  "@trainingIncompleteMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingIncompleteOptionIgnore": "Ignora esercizi non completati e segna come completato",
+  "trainingIncompleteOptionCompleteAll": "Segna tutti gli esercizi e allenamento come completati",
   "trainingDurationMinutes": "{minutes} min",
   "@trainingDurationMinutes": {
     "placeholders": {

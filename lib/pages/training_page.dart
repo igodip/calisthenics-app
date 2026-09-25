@@ -12,6 +12,8 @@ import '../model/exercise_guide.dart';
 import '../model/terminology_entry.dart';
 import 'home_page.dart';
 
+enum _WorkoutCompletionAction { cancel, ignoreIncomplete, completeAll }
+
 class Training extends StatefulWidget {
   final WorkoutDay day;
 
@@ -233,12 +235,12 @@ class _TrainingState extends State<Training> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: colorScheme.primary.withValues(alpha: 0.35),
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
+                        color: colorScheme.primary.withValues(alpha: 0.28),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
@@ -247,31 +249,63 @@ class _TrainingState extends State<Training> {
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      surfaceTintColor: Colors.transparent,
+                      minimumSize: const Size.fromHeight(56),
+                      padding: const EdgeInsets.symmetric(horizontal: 18),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: _updatingCompletion
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
-                        : Text(
-                            _isCompleted
-                                ? l10n.trainingWorkoutCompleted
-                                : l10n.trainingStartWorkout,
-                            style: textTheme.titleSmall?.copyWith(
-                              color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SizeTransition(
+                            sizeFactor: animation,
+                            axisAlignment: -1,
+                            child: child,
                           ),
+                        );
+                      },
+                      child: _updatingCompletion
+                          ? const SizedBox(
+                              key: ValueKey('loading'),
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                          : Row(
+                              key: ValueKey(
+                                _isCompleted ? 'completed' : 'not-completed',
+                              ),
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _isCompleted
+                                      ? Icons.check_circle_rounded
+                                      : Icons.play_circle_fill_rounded,
+                                  size: 22,
+                                  color: colorScheme.onPrimary,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  _isCompleted
+                                      ? l10n.trainingWorkoutCompleted
+                                      : l10n.trainingMarkAsCompleted,
+                                  style: textTheme.titleSmall?.copyWith(
+                                    color: colorScheme.onPrimary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
                   ),
                 ),
               ),
@@ -308,28 +342,18 @@ class _TrainingState extends State<Training> {
       if (!mounted) return;
 
       setState(() {
-        _exercises[index] = WorkoutExercise(
-          id: exercise.id,
-          exerciseId: exercise.exerciseId,
-          exerciseSlug: exercise.exerciseSlug,
-          name: exercise.name,
-          notes: exercise.notes,
-          traineeNotes: exercise.traineeNotes,
-          exerciseFeedback: exercise.exerciseFeedback,
-          completedReps: exercise.completedReps,
-          position: exercise.position,
-          durationMinutes: exercise.durationMinutes,
-          terminology: exercise.terminology,
-          skills: exercise.skills,
-          isCompleted: newValue,
-        );
+        _exercises[index] = _copyExercise(exercise, isCompleted: newValue);
         _completionChanged = true;
         _sortExercises();
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.trainingExerciseCompletionSaved)),
-      );
+      if (newValue && _allExercisesCompleted() && !_isCompleted) {
+        await _saveWorkoutCompletion(newValue: true, isAutoCompleted: true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.trainingExerciseCompletionSaved)),
+        );
+      }
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -473,6 +497,81 @@ class _TrainingState extends State<Training> {
   }
 
   Future<void> _toggleCompletion() async {
+    final l10n = AppLocalizations.of(context)!;
+    final dayId = widget.day.id;
+
+    if (dayId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.trainingCompletionUnavailable)),
+      );
+      return;
+    }
+
+    if (_isCompleted) {
+      await _saveWorkoutCompletion(newValue: false, isAutoCompleted: false);
+      return;
+    }
+
+    if (_allExercisesCompleted()) {
+      await _saveWorkoutCompletion(newValue: true, isAutoCompleted: false);
+      return;
+    }
+
+    final action = await _showIncompleteWorkoutDialog();
+    if (action == null || action == _WorkoutCompletionAction.cancel) {
+      return;
+    }
+
+    if (action == _WorkoutCompletionAction.completeAll) {
+      await _saveWorkoutCompletion(
+        newValue: true,
+        isAutoCompleted: false,
+        markAllExercises: true,
+      );
+      return;
+    }
+
+    await _saveWorkoutCompletion(newValue: true, isAutoCompleted: false);
+  }
+
+  Future<_WorkoutCompletionAction?> _showIncompleteWorkoutDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final pendingCount = _exercises
+        .where((exercise) => !exercise.isCompleted)
+        .length;
+
+    return showDialog<_WorkoutCompletionAction>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.trainingIncompleteTitle),
+        content: Text(l10n.trainingIncompleteMessage(pendingCount)),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.of(context).pop(_WorkoutCompletionAction.cancel),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(
+              context,
+            ).pop(_WorkoutCompletionAction.ignoreIncomplete),
+            child: Text(l10n.trainingIncompleteOptionIgnore),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.of(context).pop(_WorkoutCompletionAction.completeAll),
+            child: Text(l10n.trainingIncompleteOptionCompleteAll),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _saveWorkoutCompletion({
+    required bool newValue,
+    required bool isAutoCompleted,
+    bool markAllExercises = false,
+  }) async {
     final dayId = widget.day.id;
     final l10n = AppLocalizations.of(context)!;
 
@@ -483,13 +582,38 @@ class _TrainingState extends State<Training> {
       return;
     }
 
-    final newValue = !_isCompleted;
-
     setState(() {
       _updatingCompletion = true;
     });
 
     try {
+      if (markAllExercises) {
+        final exerciseUpdates = _exercises
+            .where((exercise) => exercise.id != null)
+            .map(
+              (exercise) => Supabase.instance.client
+                  .from('day_exercises')
+                  .update({'completed': true})
+                  .eq('id', exercise.id!),
+            )
+            .toList();
+
+        if (exerciseUpdates.isNotEmpty) {
+          await Future.wait(exerciseUpdates);
+        }
+
+        if (!mounted) return;
+
+        setState(() {
+          for (var index = 0; index < _exercises.length; index++) {
+            _exercises[index] = _copyExercise(
+              _exercises[index],
+              isCompleted: true,
+            );
+          }
+        });
+      }
+
       final completedAt = newValue ? DateTime.now().toUtc() : null;
       await Supabase.instance.client
           .from('days')
@@ -525,9 +649,11 @@ class _TrainingState extends State<Training> {
         _completionChanged = true;
       });
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.trainingCompletionSaved)));
+      if (!isAutoCompleted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.trainingCompletionSaved)));
+      }
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -595,7 +721,8 @@ class _TrainingState extends State<Training> {
 
   WorkoutExercise _copyExercise(
     WorkoutExercise exercise, {
-    required int completedReps,
+    int? completedReps,
+    bool? isCompleted,
   }) {
     return WorkoutExercise(
       id: exercise.id,
@@ -605,13 +732,18 @@ class _TrainingState extends State<Training> {
       notes: exercise.notes,
       traineeNotes: exercise.traineeNotes,
       exerciseFeedback: exercise.exerciseFeedback,
-      completedReps: completedReps,
+      completedReps: completedReps ?? exercise.completedReps,
       position: exercise.position,
       durationMinutes: exercise.durationMinutes,
       terminology: exercise.terminology,
       skills: exercise.skills,
-      isCompleted: exercise.isCompleted,
+      isCompleted: isCompleted ?? exercise.isCompleted,
     );
+  }
+
+  bool _allExercisesCompleted() {
+    if (_exercises.isEmpty) return false;
+    return _exercises.every((exercise) => exercise.isCompleted);
   }
 
   String? _selectedFeelingLabel(AppLocalizations l10n) {
