@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
-import '../theme/app_theme.dart';
+import 'timer_components.dart' as timer_components;
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
@@ -16,7 +17,7 @@ class TimerPage extends StatefulWidget {
   State<TimerPage> createState() => _TimerPageState();
 }
 
-class _TimerPageState extends State<TimerPage> {
+class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
   static const int _defaultWorkSeconds = 40;
   static const int _defaultRestSeconds = 90;
   static const int _defaultRounds = 4;
@@ -24,13 +25,18 @@ class _TimerPageState extends State<TimerPage> {
   static const String _restSecondsKey = 'timer_rest_seconds';
   static const String _roundsKey = 'timer_rounds';
   static const String _exerciseNamesKey = 'timer_exercise_names';
+  static const String _intervalSessionKey = 'timer_interval_session';
 
   Timer? _intervalTimer;
   final FlutterTts _flutterTts = FlutterTts();
 
   bool _didSeedExercises = false;
+  bool _showWorkoutTimers = false;
   bool _isRunning = false;
+  bool _isPreparing = false;
+  bool _hasStarted = false;
   bool _isRestPhase = false;
+  DateTime? _lastIntervalSyncAt;
   int? _lastCountdownAnnouncement;
   int _remainingSeconds = _defaultWorkSeconds;
   int _workSeconds = _defaultWorkSeconds;
@@ -39,6 +45,12 @@ class _TimerPageState extends State<TimerPage> {
   int _exerciseIndex = 0;
   int _roundIndex = 0;
   List<_WorkoutExercise> _exercises = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   @override
   void didChangeDependencies() {
@@ -72,9 +84,25 @@ class _TimerPageState extends State<TimerPage> {
 
   @override
   void dispose() {
+    _syncIntervalFromWallClock(updateUi: false);
     _intervalTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_saveIntervalRunState());
     unawaited(_flutterTts.stop());
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _syncIntervalFromWallClock();
+      if (_isRunning) _restartTicker();
+    } else if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _syncIntervalFromWallClock();
+      unawaited(_saveIntervalRunState());
+    }
   }
 
   int get _exerciseCount => _exercises.length;
@@ -87,20 +115,117 @@ class _TimerPageState extends State<TimerPage> {
 
   void _restartTicker() {
     _intervalTimer?.cancel();
-    if (_remainingSeconds <= 0) {
-      _advancePhase(autoContinue: true);
-      return;
+    if (!_isRunning) return;
+    _intervalTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => _syncIntervalFromWallClock(advanceAtLeastOneSecond: true),
+    );
+  }
+
+  bool _moveIntervalPhaseForward() {
+    if (_exerciseCount == 0) {
+      _isRunning = false;
+      _isPreparing = false;
+      _remainingSeconds = _workSeconds;
+      return true;
     }
-    _intervalTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_remainingSeconds > 1) {
-        setState(() {
-          _remainingSeconds -= 1;
-        });
-        _announceCountdownIfNeeded(_remainingSeconds);
-        return;
+
+    final isLastExercise = _exerciseIndex == _exerciseCount - 1;
+    final isLastRound = _roundIndex == _rounds - 1;
+    if (!_isRestPhase && isLastExercise && isLastRound) {
+      _isRunning = false;
+      _remainingSeconds = 0;
+      return true;
+    }
+
+    if (_isRestPhase) {
+      if (isLastExercise) {
+        _exerciseIndex = 0;
+        _roundIndex += 1;
+      } else {
+        _exerciseIndex += 1;
       }
-      _advancePhase(autoContinue: true);
-    });
+      _isRestPhase = false;
+      _remainingSeconds = _workSeconds;
+    } else if (_restSeconds == 0) {
+      if (isLastExercise) {
+        _exerciseIndex = 0;
+        _roundIndex += 1;
+      } else {
+        _exerciseIndex += 1;
+      }
+      _remainingSeconds = _workSeconds;
+    } else {
+      _isRestPhase = true;
+      _remainingSeconds = _restSeconds;
+    }
+    return false;
+  }
+
+  int _consumeIntervalSeconds(int elapsedSeconds) {
+    var remainingElapsed = elapsedSeconds;
+    var transitions = 0;
+    while (_isRunning && remainingElapsed > 0) {
+      if (remainingElapsed < _remainingSeconds) {
+        _remainingSeconds -= remainingElapsed;
+        break;
+      }
+      remainingElapsed -= _remainingSeconds;
+      if (_isPreparing) {
+        _isPreparing = false;
+        _remainingSeconds = _workSeconds;
+        transitions += 1;
+      } else if (_moveIntervalPhaseForward()) {
+        transitions += 1;
+        break;
+      } else {
+        transitions += 1;
+      }
+    }
+    return transitions;
+  }
+
+  void _syncIntervalFromWallClock({
+    bool updateUi = true,
+    bool advanceAtLeastOneSecond = false,
+  }) {
+    if (!_isRunning) return;
+    final now = DateTime.now();
+    final elapsed = _lastIntervalSyncAt == null
+        ? 0
+        : now.difference(_lastIntervalSyncAt!).inSeconds;
+    if (elapsed <= 0 && !advanceAtLeastOneSecond) return;
+    final elapsedToApply = math.max(advanceAtLeastOneSecond ? 1 : 0, elapsed);
+    var transitions = 0;
+    void update() {
+      transitions = _consumeIntervalSeconds(elapsedToApply);
+      _lastIntervalSyncAt = _isRunning ? now : null;
+    }
+
+    if (updateUi && mounted) {
+      setState(update);
+    } else {
+      update();
+    }
+
+    if (transitions > 0) {
+      HapticFeedback.mediumImpact();
+      _lastCountdownAnnouncement = null;
+      if (_isRunning) {
+        unawaited(
+          _speakCue(
+            _isRestPhase
+                ? AppLocalizations.of(context)!.timerCountdownStop
+                : AppLocalizations.of(context)!.timerCountdownGo,
+          ),
+        );
+      } else if (_isWorkoutComplete()) {
+        unawaited(_speakCue(AppLocalizations.of(context)!.timerCountdownStop));
+      }
+      unawaited(_saveIntervalRunState());
+    } else if (_isRunning) {
+      _announceCountdownIfNeeded(_remainingSeconds);
+    }
   }
 
   void _resetWorkoutState() {
@@ -109,11 +234,15 @@ class _TimerPageState extends State<TimerPage> {
     unawaited(_flutterTts.stop());
     setState(() {
       _isRunning = false;
+      _isPreparing = false;
+      _hasStarted = false;
       _isRestPhase = false;
       _remainingSeconds = _workSeconds;
       _exerciseIndex = 0;
       _roundIndex = 0;
+      _lastIntervalSyncAt = null;
     });
+    unawaited(_saveIntervalRunState());
   }
 
   void _startTimer() {
@@ -121,20 +250,30 @@ class _TimerPageState extends State<TimerPage> {
       return;
     }
     setState(() {
-      _isRunning = true;
-      if (_remainingSeconds == 0) {
-        _remainingSeconds = _currentPhaseDuration;
+      if (!_hasStarted || _remainingSeconds == 0) {
+        _hasStarted = true;
+        _isPreparing = true;
+        _isRestPhase = false;
+        _remainingSeconds = 10;
+        _exerciseIndex = 0;
+        _roundIndex = 0;
       }
+      _isRunning = true;
+      _lastIntervalSyncAt = DateTime.now();
     });
     _restartTicker();
+    unawaited(_saveIntervalRunState());
   }
 
   void _pauseTimer() {
+    _syncIntervalFromWallClock(updateUi: false);
     _intervalTimer?.cancel();
     unawaited(_flutterTts.stop());
     setState(() {
       _isRunning = false;
+      _lastIntervalSyncAt = null;
     });
+    unawaited(_saveIntervalRunState());
   }
 
   void _toggleRunning() {
@@ -153,6 +292,7 @@ class _TimerPageState extends State<TimerPage> {
     if (_exerciseCount == 0) {
       return;
     }
+    _syncIntervalFromWallClock(updateUi: false);
     final minimumValue = _isRestPhase ? 0 : 5;
     final updatedValue = (_remainingSeconds + deltaSeconds).clamp(
       minimumValue,
@@ -160,10 +300,13 @@ class _TimerPageState extends State<TimerPage> {
     );
     setState(() {
       _remainingSeconds = updatedValue;
+      _lastIntervalSyncAt = _isRunning ? DateTime.now() : null;
     });
+    unawaited(_saveIntervalRunState());
   }
 
   void _setWorkDuration(int valueSeconds) {
+    _syncIntervalFromWallClock(updateUi: false);
     final updatedValue = valueSeconds.clamp(5, 36000);
     setState(() {
       _workSeconds = updatedValue;
@@ -174,9 +317,11 @@ class _TimerPageState extends State<TimerPage> {
       }
     });
     unawaited(_saveTimerPreferences());
+    unawaited(_saveIntervalRunState());
   }
 
   void _setRestDuration(int valueSeconds) {
+    _syncIntervalFromWallClock(updateUi: false);
     final updatedValue = valueSeconds.clamp(0, 36000);
     setState(() {
       _restSeconds = updatedValue;
@@ -189,6 +334,7 @@ class _TimerPageState extends State<TimerPage> {
       }
     });
     unawaited(_saveTimerPreferences());
+    unawaited(_saveIntervalRunState());
     if (_isRestPhase && _isRunning && updatedValue == 0) {
       _intervalTimer?.cancel();
       _advancePhase(autoContinue: true);
@@ -201,13 +347,17 @@ class _TimerPageState extends State<TimerPage> {
     setState(() {
       _rounds = updatedValue;
       _isRunning = false;
+      _isPreparing = false;
+      _hasStarted = false;
       _isRestPhase = false;
       _remainingSeconds = _workSeconds;
       _exerciseIndex = 0;
       _roundIndex = 0;
+      _lastIntervalSyncAt = null;
     });
     _intervalTimer?.cancel();
     unawaited(_saveTimerPreferences());
+    unawaited(_saveIntervalRunState());
   }
 
   Future<void> _editNumber({
@@ -286,6 +436,8 @@ class _TimerPageState extends State<TimerPage> {
     if (name == null || name.isEmpty) {
       return;
     }
+    _syncIntervalFromWallClock(updateUi: false);
+    _intervalTimer?.cancel();
 
     setState(() {
       if (index == null) {
@@ -293,19 +445,26 @@ class _TimerPageState extends State<TimerPage> {
           ..._exercises,
           _WorkoutExercise(name: name, icon: _iconForIndex(_exercises.length)),
         ];
+        _isRunning = false;
+        _isPreparing = false;
+        _hasStarted = false;
+        _lastIntervalSyncAt = null;
       } else {
         final updated = [..._exercises];
         updated[index] = updated[index].copyWith(name: name);
         _exercises = updated;
       }
       _isRunning = false;
+      _isPreparing = false;
+      _hasStarted = false;
+      _lastIntervalSyncAt = null;
       _isRestPhase = false;
       _remainingSeconds = _workSeconds;
       _exerciseIndex = 0;
       _roundIndex = 0;
     });
-    _intervalTimer?.cancel();
     unawaited(_saveTimerPreferences());
+    unawaited(_saveIntervalRunState());
   }
 
   void _removeExerciseAt(int index) {
@@ -317,12 +476,16 @@ class _TimerPageState extends State<TimerPage> {
     setState(() {
       _exercises = updated;
       _isRunning = false;
+      _isPreparing = false;
+      _hasStarted = false;
+      _lastIntervalSyncAt = null;
       _isRestPhase = false;
       _remainingSeconds = _workSeconds;
       _exerciseIndex = 0;
       _roundIndex = 0;
     });
     unawaited(_saveTimerPreferences());
+    unawaited(_saveIntervalRunState());
   }
 
   Future<void> _restoreTimerPreferences() async {
@@ -331,6 +494,15 @@ class _TimerPageState extends State<TimerPage> {
     final restSeconds = preferences.getInt(_restSecondsKey);
     final rounds = preferences.getInt(_roundsKey);
     final exerciseNames = preferences.getStringList(_exerciseNamesKey);
+    final savedRun = preferences.getString(_intervalSessionKey);
+    Map<String, dynamic>? restoredRun;
+    if (savedRun != null) {
+      try {
+        restoredRun = jsonDecode(savedRun) as Map<String, dynamic>;
+      } catch (_) {
+        await preferences.remove(_intervalSessionKey);
+      }
+    }
 
     if (!mounted) {
       return;
@@ -345,7 +517,7 @@ class _TimerPageState extends State<TimerPage> {
       _workSeconds = (workSeconds ?? _defaultWorkSeconds).clamp(5, 36000);
       _restSeconds = (restSeconds ?? _defaultRestSeconds).clamp(0, 36000);
       _rounds = (rounds ?? _defaultRounds).clamp(1, 99);
-      if (restoredExercises.isNotEmpty) {
+      if (exerciseNames != null) {
         _exercises = List<_WorkoutExercise>.generate(
           restoredExercises.length,
           (index) => _WorkoutExercise(
@@ -354,8 +526,55 @@ class _TimerPageState extends State<TimerPage> {
           ),
         );
       }
-      _remainingSeconds = _isRestPhase ? _restSeconds : _workSeconds;
+      if (restoredRun == null) {
+        _remainingSeconds = _workSeconds;
+      } else {
+        _isRunning = restoredRun['isRunning'] as bool? ?? false;
+        _isPreparing = restoredRun['isPreparing'] as bool? ?? false;
+        _hasStarted = restoredRun['hasStarted'] as bool? ?? false;
+        _isRestPhase = restoredRun['isRestPhase'] as bool? ?? false;
+        _remainingSeconds =
+            (restoredRun['remainingSeconds'] as int? ?? _workSeconds).clamp(
+              0,
+              36000,
+            );
+        _exerciseIndex = (restoredRun['exerciseIndex'] as int? ?? 0).clamp(
+          0,
+          math.max(0, _exerciseCount - 1),
+        );
+        _roundIndex = (restoredRun['roundIndex'] as int? ?? 0).clamp(
+          0,
+          _rounds - 1,
+        );
+        final syncAt = restoredRun['lastSyncAt'] as int?;
+        _lastIntervalSyncAt = _isRunning
+            ? (syncAt == null
+                  ? DateTime.now()
+                  : DateTime.fromMillisecondsSinceEpoch(syncAt))
+            : null;
+      }
     });
+    if (_isRunning) {
+      _syncIntervalFromWallClock();
+      _restartTicker();
+    }
+  }
+
+  Future<void> _saveIntervalRunState() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(
+      _intervalSessionKey,
+      jsonEncode({
+        'isRunning': _isRunning,
+        'isPreparing': _isPreparing,
+        'hasStarted': _hasStarted,
+        'isRestPhase': _isRestPhase,
+        'remainingSeconds': _remainingSeconds,
+        'exerciseIndex': _exerciseIndex,
+        'roundIndex': _roundIndex,
+        'lastSyncAt': _lastIntervalSyncAt?.millisecondsSinceEpoch,
+      }),
+    );
   }
 
   Future<void> _saveTimerPreferences() async {
@@ -371,68 +590,40 @@ class _TimerPageState extends State<TimerPage> {
 
   void _advancePhase({required bool autoContinue}) {
     final l10n = AppLocalizations.of(context)!;
+
     if (_exerciseCount == 0) {
       _intervalTimer?.cancel();
       _lastCountdownAnnouncement = null;
       setState(() {
         _isRunning = false;
+        _isPreparing = false;
+        _lastIntervalSyncAt = null;
         _remainingSeconds = _workSeconds;
       });
+      unawaited(_saveIntervalRunState());
       return;
     }
-
-    final isLastExercise = _exerciseIndex == _exerciseCount - 1;
-    final isLastRound = _roundIndex == _rounds - 1;
-
-    HapticFeedback.mediumImpact();
-
-    if (!_isRestPhase && isLastExercise && isLastRound) {
-      _intervalTimer?.cancel();
-      _lastCountdownAnnouncement = null;
-      unawaited(_speakCue(l10n.timerCountdownStop));
-      setState(() {
-        _isRunning = false;
-        _remainingSeconds = 0;
-      });
-      return;
-    }
-
+    var completed = false;
     setState(() {
-      if (_isRestPhase) {
-        if (isLastExercise) {
-          _exerciseIndex = 0;
-          _roundIndex += 1;
-        } else {
-          _exerciseIndex += 1;
-        }
+      if (_isPreparing) {
         _isRestPhase = false;
         _remainingSeconds = _workSeconds;
       } else {
-        if (_restSeconds == 0) {
-          if (isLastExercise) {
-            _exerciseIndex = 0;
-            _roundIndex += 1;
-          } else {
-            _exerciseIndex += 1;
-          }
-          _isRestPhase = false;
-          _remainingSeconds = _workSeconds;
-        } else {
-          _isRestPhase = true;
-          _remainingSeconds = _restSeconds;
-        }
+        completed = _moveIntervalPhaseForward();
       }
-      _isRunning = autoContinue;
+      _isPreparing = false;
+      _isRunning = autoContinue && !completed;
+      _lastIntervalSyncAt = _isRunning ? DateTime.now() : null;
     });
+    HapticFeedback.mediumImpact();
     _lastCountdownAnnouncement = null;
     unawaited(
-      _speakCue(_isRestPhase ? l10n.timerCountdownStop : l10n.timerCountdownGo),
+      _speakCue(completed ? l10n.timerCountdownStop : l10n.timerCountdownGo),
     );
 
     _intervalTimer?.cancel();
-    if (autoContinue) {
-      _restartTicker();
-    }
+    if (_isRunning) _restartTicker();
+    unawaited(_saveIntervalRunState());
   }
 
   Future<void> _configureSpeech() async {
@@ -555,11 +746,17 @@ class _TimerPageState extends State<TimerPage> {
     final colorScheme = theme.colorScheme;
     final currentExercise = _currentExercise();
     final nextExercise = _nextExercise();
-    final phaseLabel = _isRestPhase ? l10n.timerPhaseRest : l10n.timerPhaseWork;
+    final phaseLabel = _isPreparing
+        ? l10n.timerPhasePrepare
+        : _isRestPhase
+        ? l10n.timerPhaseRest
+        : l10n.timerPhaseWork;
     final phaseColor = _isRestPhase
         ? colorScheme.tertiary
         : colorScheme.primary;
-    final progress = _currentPhaseDuration == 0
+    final progress = _isPreparing
+        ? 1 - (_remainingSeconds / 10)
+        : _currentPhaseDuration == 0
         ? 0.0
         : (1 - (_remainingSeconds / _currentPhaseDuration)).clamp(0.0, 1.0);
     final headlineExercise = _exerciseCount == 0
@@ -607,205 +804,260 @@ class _TimerPageState extends State<TimerPage> {
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        headlineExercise,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: phaseColor,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
                       const SizedBox(height: 16),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: [
-                          _MetricChip(
-                            icon: Icons.repeat,
-                            label: '${l10n.timerRoundsLabel}: $roundCounter',
+                      SegmentedButton<bool>(
+                        segments: [
+                          ButtonSegment<bool>(
+                            value: false,
+                            label: Text(l10n.timerSectionExercises),
                           ),
-                          _MetricChip(
-                            icon: Icons.checklist_rounded,
-                            label: setCounter,
-                          ),
-                          _MetricChip(
-                            icon: Icons.timer_outlined,
-                            label: _isRestPhase
-                                ? _formatSeconds(_restSeconds)
-                                : _formatSeconds(_workSeconds),
+                          ButtonSegment<bool>(
+                            value: true,
+                            label: Text(l10n.timerSectionWorkouts),
                           ),
                         ],
+                        selected: {_showWorkoutTimers},
+                        onSelectionChanged: (selection) => setState(
+                          () => _showWorkoutTimers = selection.first,
+                        ),
                       ),
-                      const SizedBox(height: 24),
-                      Center(
-                        child: Stack(
-                          alignment: Alignment.center,
+                      const SizedBox(height: 20),
+                      Visibility(
+                        visible: !_showWorkoutTimers,
+                        maintainState: true,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SizedBox(
-                              width: ringSize,
-                              height: ringSize,
-                              child: CustomPaint(
-                                painter: _IntervalRingPainter(
-                                  progress: progress,
-                                  activeColor: phaseColor,
-                                  inactiveColor: colorScheme.onSurface
-                                      .withValues(alpha: 0.1),
-                                  thickness: ringThickness,
-                                ),
+                            const SizedBox(height: 8),
+                            Text(
+                              headlineExercise,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                color: phaseColor,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
+                            const SizedBox(height: 16),
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 10,
+                              runSpacing: 10,
                               children: [
-                                Text(
-                                  phaseLabel,
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    color: phaseColor,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 1.4,
-                                    fontSize: phaseFontSize,
+                                timer_components.MetricChip(
+                                  icon: Icons.repeat,
+                                  label:
+                                      '${l10n.timerRoundsLabel}: $roundCounter',
+                                ),
+                                timer_components.MetricChip(
+                                  icon: Icons.checklist_rounded,
+                                  label: setCounter,
+                                ),
+                                timer_components.MetricChip(
+                                  icon: Icons.timer_outlined,
+                                  label: _isRestPhase
+                                      ? _formatSeconds(_restSeconds)
+                                      : _formatSeconds(_workSeconds),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            Center(
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: ringSize,
+                                    height: ringSize,
+                                    child: CustomPaint(
+                                      painter:
+                                          timer_components.IntervalRingPainter(
+                                            progress: progress,
+                                            activeColor: phaseColor,
+                                            inactiveColor: colorScheme.onSurface
+                                                .withValues(alpha: 0.1),
+                                            thickness: ringThickness,
+                                          ),
+                                    ),
+                                  ),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        phaseLabel,
+                                        style: theme.textTheme.titleLarge
+                                            ?.copyWith(
+                                              color: phaseColor,
+                                              fontWeight: FontWeight.w800,
+                                              letterSpacing: 1.4,
+                                              fontSize: phaseFontSize,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 14),
+                                      Text(
+                                        _formatSeconds(_remainingSeconds),
+                                        style: theme.textTheme.displayMedium
+                                            ?.copyWith(
+                                              fontSize: timeFontSize,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        nextLabel,
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color:
+                                                  colorScheme.onSurfaceVariant,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: [
+                                timer_components.ControlButton(
+                                  key: const ValueKey('exercise-timer-toggle'),
+                                  label: _isRunning
+                                      ? l10n.timerControlPause
+                                      : l10n.timerControlPlay,
+                                  icon: _isRunning
+                                      ? Icons.pause
+                                      : Icons.play_arrow,
+                                  onPressed: _exerciseCount == 0
+                                      ? null
+                                      : _toggleRunning,
+                                  isPrimary: true,
+                                ),
+                                timer_components.ControlButton(
+                                  label: l10n.timerControlSkip,
+                                  icon: Icons.skip_next_rounded,
+                                  onPressed: _exerciseCount == 0
+                                      ? null
+                                      : () => _advancePhase(
+                                          autoContinue: _isRunning,
+                                        ),
+                                ),
+                                timer_components.ControlButton(
+                                  label: l10n.timerControlReset,
+                                  icon: Icons.restart_alt,
+                                  onPressed: _resetWorkout,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 18),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                timer_components.AdjustButton(
+                                  label: l10n.timerAdjustDecrease,
+                                  onPressed: () => _adjustCurrentPhase(-10),
+                                ),
+                                const SizedBox(width: 12),
+                                timer_components.AdjustButton(
+                                  label: l10n.timerAdjustIncrease,
+                                  onPressed: () => _adjustCurrentPhase(10),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            timer_components.ExerciseRail(
+                              exercises: _exercises
+                                  .map(
+                                    (exercise) =>
+                                        timer_components.WorkoutExercise(
+                                          name: exercise.name,
+                                          icon: exercise.icon,
+                                        ),
+                                  )
+                                  .toList(),
+                              activeIndex: _exerciseIndex,
+                              activeColor: phaseColor,
+                              isRestPhase: _isRestPhase,
+                              completedIndexes: {
+                                for (var i = 0; i < _exerciseCount; i += 1)
+                                  if (_isExerciseCompletedInCurrentRound(i)) i,
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: [
+                                SizedBox(
+                                  width: constraints.maxWidth > 560
+                                      ? (constraints.maxWidth - 12) / 2
+                                      : constraints.maxWidth,
+                                  child: timer_components.TimerConfigRow(
+                                    title: l10n.timerWorkDurationLabel,
+                                    value: _formatSeconds(_workSeconds),
+                                    onEdit: () => _editNumber(
+                                      title: l10n.timerWorkDurationLabel,
+                                      currentValue: _workSeconds,
+                                      onConfirm: _setWorkDuration,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 14),
-                                Text(
-                                  _formatSeconds(_remainingSeconds),
-                                  style: theme.textTheme.displayMedium
-                                      ?.copyWith(
-                                        fontSize: timeFontSize,
-                                        fontWeight: FontWeight.w900,
-                                      ),
+                                SizedBox(
+                                  width: constraints.maxWidth > 560
+                                      ? (constraints.maxWidth - 12) / 2
+                                      : constraints.maxWidth,
+                                  child: timer_components.TimerConfigRow(
+                                    title: l10n.timerRestDurationLabel,
+                                    value: _formatSeconds(_restSeconds),
+                                    onEdit: () => _editNumber(
+                                      title: l10n.timerRestDurationLabel,
+                                      currentValue: _restSeconds,
+                                      onConfirm: _setRestDuration,
+                                    ),
+                                  ),
                                 ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  nextLabel,
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                    fontWeight: FontWeight.w600,
+                                SizedBox(
+                                  width: constraints.maxWidth > 560
+                                      ? (constraints.maxWidth - 12) / 2
+                                      : constraints.maxWidth,
+                                  child: timer_components.TimerConfigRow(
+                                    title: l10n.timerRoundsLabel,
+                                    value: _rounds.toString(),
+                                    onEdit: () => _editNumber(
+                                      title: l10n.timerRoundsLabel,
+                                      currentValue: _rounds,
+                                      onConfirm: _setRounds,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 20),
+                            timer_components.ExerciseEditorCard(
+                              title: l10n.timerExercisesLabel,
+                              addLabel: l10n.timerAddExercise,
+                              emptyLabel: l10n.timerNoExercisesConfigured,
+                              exercises: _exercises
+                                  .map(
+                                    (exercise) =>
+                                        timer_components.WorkoutExercise(
+                                          name: exercise.name,
+                                          icon: exercise.icon,
+                                        ),
+                                  )
+                                  .toList(),
+                              onAdd: () => _editExerciseName(),
+                              onEdit: _editExerciseName,
+                              onRemove: _removeExerciseAt,
+                            ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: [
-                          _ControlButton(
-                            label: _isRunning
-                                ? l10n.timerControlPause
-                                : l10n.timerControlPlay,
-                            icon: _isRunning ? Icons.pause : Icons.play_arrow,
-                            onPressed: _exerciseCount == 0
-                                ? null
-                                : _toggleRunning,
-                            isPrimary: true,
-                          ),
-                          _ControlButton(
-                            label: l10n.timerControlSkip,
-                            icon: Icons.skip_next_rounded,
-                            onPressed: _exerciseCount == 0
-                                ? null
-                                : () => _advancePhase(autoContinue: _isRunning),
-                          ),
-                          _ControlButton(
-                            label: l10n.timerControlReset,
-                            icon: Icons.restart_alt,
-                            onPressed: _resetWorkout,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _AdjustButton(
-                            label: l10n.timerAdjustDecrease,
-                            onPressed: () => _adjustCurrentPhase(-10),
-                          ),
-                          const SizedBox(width: 12),
-                          _AdjustButton(
-                            label: l10n.timerAdjustIncrease,
-                            onPressed: () => _adjustCurrentPhase(10),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      _ExerciseRail(
-                        exercises: _exercises,
-                        activeIndex: _exerciseIndex,
-                        activeColor: phaseColor,
-                        isRestPhase: _isRestPhase,
-                        completedIndexes: {
-                          for (var i = 0; i < _exerciseCount; i += 1)
-                            if (_isExerciseCompletedInCurrentRound(i)) i,
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: [
-                          SizedBox(
-                            width: constraints.maxWidth > 560
-                                ? (constraints.maxWidth - 12) / 2
-                                : constraints.maxWidth,
-                            child: _TimerConfigRow(
-                              title: l10n.timerWorkDurationLabel,
-                              value: _formatSeconds(_workSeconds),
-                              onEdit: () => _editNumber(
-                                title: l10n.timerWorkDurationLabel,
-                                currentValue: _workSeconds,
-                                onConfirm: _setWorkDuration,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: constraints.maxWidth > 560
-                                ? (constraints.maxWidth - 12) / 2
-                                : constraints.maxWidth,
-                            child: _TimerConfigRow(
-                              title: l10n.timerRestDurationLabel,
-                              value: _formatSeconds(_restSeconds),
-                              onEdit: () => _editNumber(
-                                title: l10n.timerRestDurationLabel,
-                                currentValue: _restSeconds,
-                                onConfirm: _setRestDuration,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: constraints.maxWidth > 560
-                                ? (constraints.maxWidth - 12) / 2
-                                : constraints.maxWidth,
-                            child: _TimerConfigRow(
-                              title: l10n.timerRoundsLabel,
-                              value: _rounds.toString(),
-                              onEdit: () => _editNumber(
-                                title: l10n.timerRoundsLabel,
-                                currentValue: _rounds,
-                                onConfirm: _setRounds,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      _ExerciseEditorCard(
-                        title: l10n.timerExercisesLabel,
-                        addLabel: l10n.timerAddExercise,
-                        emptyLabel: l10n.timerNoExercisesConfigured,
-                        exercises: _exercises,
-                        onAdd: () => _editExerciseName(),
-                        onEdit: _editExerciseName,
-                        onRemove: _removeExerciseAt,
-                      ),
+                      if (_showWorkoutTimers)
+                        timer_components.WorkoutTimerPanel(l10n: l10n),
                     ],
                   ),
                 ),
@@ -826,433 +1078,5 @@ class _WorkoutExercise {
 
   _WorkoutExercise copyWith({String? name, IconData? icon}) {
     return _WorkoutExercise(name: name ?? this.name, icon: icon ?? this.icon);
-  }
-}
-
-class _MetricChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _MetricChip({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(999),
-        color: theme.colorScheme.surfaceContainerHighest.withValues(
-          alpha: 0.45,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ExerciseRail extends StatelessWidget {
-  final List<_WorkoutExercise> exercises;
-  final int activeIndex;
-  final Color activeColor;
-  final bool isRestPhase;
-  final Set<int> completedIndexes;
-
-  const _ExerciseRail({
-    required this.exercises,
-    required this.activeIndex,
-    required this.activeColor,
-    required this.isRestPhase,
-    required this.completedIndexes,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (exercises.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final theme = Theme.of(context);
-    final appColors = theme.extension<AppColors>();
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      alignment: WrapAlignment.center,
-      children: [
-        for (var i = 0; i < exercises.length; i += 1)
-          Builder(
-            builder: (context) {
-              final isCompleted = completedIndexes.contains(i);
-              final isActive = i == activeIndex && !isRestPhase;
-              final icon = isCompleted ? Icons.check_circle : exercises[i].icon;
-              final iconColor = isCompleted
-                  ? (appColors?.success ?? theme.colorScheme.secondary)
-                  : (isActive
-                        ? activeColor
-                        : theme.colorScheme.onSurfaceVariant);
-              final textColor = isCompleted
-                  ? (appColors?.success ?? theme.colorScheme.secondary)
-                  : (isActive ? activeColor : null);
-
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 220),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  color: isCompleted
-                      ? (appColors?.successContainer ??
-                            theme.colorScheme.secondaryContainer)
-                      : isActive
-                      ? activeColor.withValues(alpha: 0.16)
-                      : theme.colorScheme.surfaceContainerHighest.withValues(
-                          alpha: 0.3,
-                        ),
-                  border: Border.all(
-                    color: isCompleted
-                        ? (appColors?.success ?? theme.colorScheme.secondary)
-                        : isActive
-                        ? activeColor
-                        : theme.colorScheme.outlineVariant,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(icon, size: 18, color: iconColor),
-                    const SizedBox(width: 8),
-                    Text(
-                      exercises[i].name,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: textColor,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-      ],
-    );
-  }
-}
-
-class _TimerConfigRow extends StatelessWidget {
-  final String title;
-  final String value;
-  final VoidCallback onEdit;
-
-  const _TimerConfigRow({
-    required this.title,
-    required this.value,
-    required this.onEdit,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: theme.colorScheme.surfaceContainerHighest.withValues(
-          alpha: 0.35,
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(onPressed: onEdit, icon: const Icon(Icons.edit_outlined)),
-        ],
-      ),
-    );
-  }
-}
-
-class _ExerciseEditorCard extends StatelessWidget {
-  final String title;
-  final String addLabel;
-  final String emptyLabel;
-  final List<_WorkoutExercise> exercises;
-  final VoidCallback onAdd;
-  final ValueChanged<int> onRemove;
-  final Future<void> Function({int? index}) onEdit;
-
-  const _ExerciseEditorCard({
-    required this.title,
-    required this.addLabel,
-    required this.emptyLabel,
-    required this.exercises,
-    required this.onAdd,
-    required this.onEdit,
-    required this.onRemove,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        color: theme.colorScheme.surfaceContainerHighest.withValues(
-          alpha: 0.22,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              FilledButton.tonalIcon(
-                onPressed: onAdd,
-                icon: const Icon(Icons.add),
-                label: Text(addLabel),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (exercises.isEmpty)
-            Text(
-              emptyLabel,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            )
-          else
-            Column(
-              children: [
-                for (var i = 0; i < exercises.length; i += 1) ...[
-                  _ExerciseEditorRow(
-                    exercise: exercises[i],
-                    onEdit: () => onEdit(index: i),
-                    onRemove: () => onRemove(i),
-                  ),
-                  if (i != exercises.length - 1) const SizedBox(height: 10),
-                ],
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ExerciseEditorRow extends StatelessWidget {
-  final _WorkoutExercise exercise;
-  final VoidCallback onEdit;
-  final VoidCallback onRemove;
-
-  const _ExerciseEditorRow({
-    required this.exercise,
-    required this.onEdit,
-    required this.onRemove,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final materialL10n = MaterialLocalizations.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: theme.colorScheme.surface,
-      ),
-      child: Row(
-        children: [
-          Icon(exercise.icon, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              exercise.name,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          IconButton(onPressed: onEdit, icon: const Icon(Icons.edit_outlined)),
-          IconButton(
-            onPressed: onRemove,
-            tooltip: materialL10n.deleteButtonTooltip,
-            icon: const Icon(Icons.delete_outline),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _IntervalRingPainter extends CustomPainter {
-  final double progress;
-  final Color activeColor;
-  final Color inactiveColor;
-  final double thickness;
-
-  const _IntervalRingPainter({
-    required this.progress,
-    required this.activeColor,
-    required this.inactiveColor,
-    required this.thickness,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    const startAngle = -math.pi / 2;
-    const totalSweep = math.pi * 2;
-    const segments = 60;
-    const gapRadians = 0.02;
-    final segmentSweep = (totalSweep / segments) - gapRadians;
-
-    final activePaint = Paint()
-      ..color = activeColor
-      ..strokeWidth = thickness
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    final inactivePaint = Paint()
-      ..color = inactiveColor
-      ..strokeWidth = thickness
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final activeSegments = (segments * progress).round();
-    for (var i = 0; i < segments; i += 1) {
-      final paint = i < activeSegments ? activePaint : inactivePaint;
-      final angle = startAngle + (i * (segmentSweep + gapRadians));
-      canvas.drawArc(rect, angle, segmentSweep, false, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _IntervalRingPainter oldDelegate) {
-    return oldDelegate.progress != progress ||
-        oldDelegate.activeColor != activeColor ||
-        oldDelegate.inactiveColor != inactiveColor ||
-        oldDelegate.thickness != thickness;
-  }
-}
-
-class _AdjustButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onPressed;
-
-  const _AdjustButton({required this.label, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      ),
-      child: Text(label),
-    );
-  }
-}
-
-class _ControlButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final VoidCallback? onPressed;
-  final bool isPrimary;
-
-  const _ControlButton({
-    required this.label,
-    required this.icon,
-    required this.onPressed,
-    this.isPrimary = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final style = isPrimary
-        ? FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          )
-        : OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          );
-    final button = isPrimary
-        ? FilledButton(
-            onPressed: onPressed,
-            style: style,
-            child: _ControlContent(label: label, icon: icon),
-          )
-        : OutlinedButton(
-            onPressed: onPressed,
-            style: style,
-            child: _ControlContent(label: label, icon: icon),
-          );
-
-    return button;
-  }
-}
-
-class _ControlContent extends StatelessWidget {
-  final String label;
-  final IconData icon;
-
-  const _ControlContent({required this.label, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 20),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: theme.textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.4,
-          ),
-        ),
-      ],
-    );
   }
 }

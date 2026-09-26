@@ -1372,6 +1372,126 @@ abstract class AppLocalizations {
   /// **'Timer'**
   String get timerTitle;
 
+  /// No description provided for @timerSectionExercises.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer esercizi'**
+  String get timerSectionExercises;
+
+  /// No description provided for @timerSectionWorkouts.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer workout'**
+  String get timerSectionWorkouts;
+
+  /// No description provided for @timerModeAmrap.
+  ///
+  /// In it, this message translates to:
+  /// **'AMRAP'**
+  String get timerModeAmrap;
+
+  /// No description provided for @timerModeEmom.
+  ///
+  /// In it, this message translates to:
+  /// **'EMOM'**
+  String get timerModeEmom;
+
+  /// No description provided for @timerModeForTime.
+  ///
+  /// In it, this message translates to:
+  /// **'FOR TIME'**
+  String get timerModeForTime;
+
+  /// No description provided for @timerModeTabata.
+  ///
+  /// In it, this message translates to:
+  /// **'TABATA'**
+  String get timerModeTabata;
+
+  /// No description provided for @timerWorkoutDuration.
+  ///
+  /// In it, this message translates to:
+  /// **'Durata (min)'**
+  String get timerWorkoutDuration;
+
+  /// No description provided for @timerWorkoutUnlimited.
+  ///
+  /// In it, this message translates to:
+  /// **'Più a lungo possibile'**
+  String get timerWorkoutUnlimited;
+
+  /// No description provided for @timerWorkoutElapsed.
+  ///
+  /// In it, this message translates to:
+  /// **'Tempo trascorso'**
+  String get timerWorkoutElapsed;
+
+  /// No description provided for @timerWorkoutMinute.
+  ///
+  /// In it, this message translates to:
+  /// **'Minuto {minute}'**
+  String timerWorkoutMinute(int minute);
+
+  /// No description provided for @timerTabataWork.
+  ///
+  /// In it, this message translates to:
+  /// **'Lavoro'**
+  String get timerTabataWork;
+
+  /// No description provided for @timerTabataRest.
+  ///
+  /// In it, this message translates to:
+  /// **'Recupero'**
+  String get timerTabataRest;
+
+  /// No description provided for @timerWorkoutFinish.
+  ///
+  /// In it, this message translates to:
+  /// **'Termina'**
+  String get timerWorkoutFinish;
+
+  /// No description provided for @timerWorkoutComplete.
+  ///
+  /// In it, this message translates to:
+  /// **'COMPLETATO'**
+  String get timerWorkoutComplete;
+
+  /// No description provided for @timerPhasePrepare.
+  ///
+  /// In it, this message translates to:
+  /// **'PREPARATI'**
+  String get timerPhasePrepare;
+
+  /// No description provided for @timerAmrapReps.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripetizioni'**
+  String get timerAmrapReps;
+
+  /// No description provided for @timerAmrapAddRep.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi'**
+  String get timerAmrapAddRep;
+
+  /// No description provided for @timerChangeModeTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Cambiare timer?'**
+  String get timerChangeModeTitle;
+
+  /// No description provided for @timerChangeModeWarning.
+  ///
+  /// In it, this message translates to:
+  /// **'Se cambi timer perderai i progressi del timer attuale.'**
+  String get timerChangeModeWarning;
+
+  /// No description provided for @timerChangeModeConfirm.
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia timer'**
+  String get timerChangeModeConfirm;
+
   /// No description provided for @timerExercisePushUps.
   ///
   /// In it, this message translates to:

@@ -725,6 +725,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timerTitle => 'Timer';
 
   @override
+  String get timerSectionExercises => 'Exercise timer';
+
+  @override
+  String get timerSectionWorkouts => 'Workout timers';
+
+  @override
+  String get timerModeAmrap => 'AMRAP';
+
+  @override
+  String get timerModeEmom => 'EMOM';
+
+  @override
+  String get timerModeForTime => 'FOR TIME';
+
+  @override
+  String get timerModeTabata => 'TABATA';
+
+  @override
+  String get timerWorkoutDuration => 'Duration (min)';
+
+  @override
+  String get timerWorkoutUnlimited => 'As long as possible';
+
+  @override
+  String get timerWorkoutElapsed => 'Elapsed';
+
+  @override
+  String timerWorkoutMinute(int minute) {
+    return 'Minute $minute';
+  }
+
+  @override
+  String get timerTabataWork => 'Work';
+
+  @override
+  String get timerTabataRest => 'Rest';
+
+  @override
+  String get timerWorkoutFinish => 'Finish';
+
+  @override
+  String get timerWorkoutComplete => 'COMPLETE';
+
+  @override
+  String get timerPhasePrepare => 'GET READY';
+
+  @override
+  String get timerAmrapReps => 'Reps';
+
+  @override
+  String get timerAmrapAddRep => 'Add rep';
+
+  @override
+  String get timerChangeModeTitle => 'Change timer?';
+
+  @override
+  String get timerChangeModeWarning =>
+      'If you change timers, you will lose the progress on the current timer.';
+
+  @override
+  String get timerChangeModeConfirm => 'Change timer';
+
+  @override
   String get timerExercisePushUps => 'Push-ups';
 
   @override

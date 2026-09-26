@@ -396,6 +396,33 @@
   "add": "Add",
   "start": "Start",
   "timerTitle": "Timer",
+  "timerSectionExercises": "Exercise timer",
+  "timerSectionWorkouts": "Workout timers",
+  "timerModeAmrap": "AMRAP",
+  "timerModeEmom": "EMOM",
+  "timerModeForTime": "FOR TIME",
+  "timerModeTabata": "TABATA",
+  "timerWorkoutDuration": "Duration (min)",
+  "timerWorkoutUnlimited": "As long as possible",
+  "timerWorkoutElapsed": "Elapsed",
+  "timerWorkoutMinute": "Minute {minute}",
+  "@timerWorkoutMinute": {
+    "placeholders": {
+      "minute": {
+        "type": "int"
+      }
+    }
+  },
+  "timerTabataWork": "Work",
+  "timerTabataRest": "Rest",
+  "timerWorkoutFinish": "Finish",
+  "timerWorkoutComplete": "COMPLETE",
+  "timerPhasePrepare": "GET READY",
+  "timerAmrapReps": "Reps",
+  "timerAmrapAddRep": "Add rep",
+  "timerChangeModeTitle": "Change timer?",
+  "timerChangeModeWarning": "If you change timers, you will lose the progress on the current timer.",
+  "timerChangeModeConfirm": "Change timer",
   "timerExercisePushUps": "Push-ups",
   "timerExercisePullUps": "Pull-ups",
   "timerExerciseSquats": "Squats",
