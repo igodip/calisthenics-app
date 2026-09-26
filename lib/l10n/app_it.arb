@@ -396,6 +396,33 @@
   "add": "Aggiungi",
   "start": "Avvia",
   "timerTitle": "Timer",
+  "timerSectionExercises": "Timer esercizi",
+  "timerSectionWorkouts": "Timer workout",
+  "timerModeAmrap": "AMRAP",
+  "timerModeEmom": "EMOM",
+  "timerModeForTime": "FOR TIME",
+  "timerModeTabata": "TABATA",
+  "timerWorkoutDuration": "Durata (min)",
+  "timerWorkoutUnlimited": "Più a lungo possibile",
+  "timerWorkoutElapsed": "Tempo trascorso",
+  "timerWorkoutMinute": "Minuto {minute}",
+  "@timerWorkoutMinute": {
+    "placeholders": {
+      "minute": {
+        "type": "int"
+      }
+    }
+  },
+  "timerTabataWork": "Lavoro",
+  "timerTabataRest": "Recupero",
+  "timerWorkoutFinish": "Termina",
+  "timerWorkoutComplete": "COMPLETATO",
+  "timerPhasePrepare": "PREPARATI",
+  "timerAmrapReps": "Ripetizioni",
+  "timerAmrapAddRep": "Aggiungi",
+  "timerChangeModeTitle": "Cambiare timer?",
+  "timerChangeModeWarning": "Se cambi timer perderai i progressi del timer attuale.",
+  "timerChangeModeConfirm": "Cambia timer",
   "timerExercisePushUps": "Piegamenti",
   "timerExercisePullUps": "Trazioni",
   "timerExerciseSquats": "Squat",

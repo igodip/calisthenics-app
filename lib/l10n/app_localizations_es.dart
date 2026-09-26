@@ -735,6 +735,69 @@ class AppLocalizationsEs extends AppLocalizations {
   String get timerTitle => 'Temporizador';
 
   @override
+  String get timerSectionExercises => 'Timer de ejercicios';
+
+  @override
+  String get timerSectionWorkouts => 'Timers de workout';
+
+  @override
+  String get timerModeAmrap => 'AMRAP';
+
+  @override
+  String get timerModeEmom => 'EMOM';
+
+  @override
+  String get timerModeForTime => 'FOR TIME';
+
+  @override
+  String get timerModeTabata => 'TABATA';
+
+  @override
+  String get timerWorkoutDuration => 'Duración (min)';
+
+  @override
+  String get timerWorkoutUnlimited => 'Durante el mayor tiempo posible';
+
+  @override
+  String get timerWorkoutElapsed => 'Tiempo transcurrido';
+
+  @override
+  String timerWorkoutMinute(int minute) {
+    return 'Minuto $minute';
+  }
+
+  @override
+  String get timerTabataWork => 'Trabajo';
+
+  @override
+  String get timerTabataRest => 'Descanso';
+
+  @override
+  String get timerWorkoutFinish => 'Terminar';
+
+  @override
+  String get timerWorkoutComplete => 'COMPLETADO';
+
+  @override
+  String get timerPhasePrepare => 'PREPÁRATE';
+
+  @override
+  String get timerAmrapReps => 'Repeticiones';
+
+  @override
+  String get timerAmrapAddRep => 'Añadir';
+
+  @override
+  String get timerChangeModeTitle => '¿Cambiar temporizador?';
+
+  @override
+  String get timerChangeModeWarning =>
+      'Si cambias de temporizador, perderás el progreso del actual.';
+
+  @override
+  String get timerChangeModeConfirm => 'Cambiar';
+
+  @override
   String get timerExercisePushUps => 'Flexiones';
 
   @override
