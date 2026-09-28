@@ -124,6 +124,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get homeDashboardSubtitle => 'Your training at a glance';
+
+  @override
   String get homeViewStats => 'View Stats';
 
   @override
@@ -1182,6 +1185,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainerExerciseFallback => 'Exercise';
+
+  @override
+  String get trainerEditExerciseTitle => 'Edit exercise';
+
+  @override
+  String get trainerExerciseName => 'Exercise name';
+
+  @override
+  String get trainerExerciseDuration => 'Duration';
+
+  @override
+  String get trainerExerciseNotes => 'Trainer notes';
+
+  @override
+  String get trainerExerciseUpdated => 'Exercise updated successfully.';
+
+  @override
+  String get trainerExerciseNameRequired => 'Enter an exercise name.';
+
+  @override
+  String get trainerExerciseDurationInvalid =>
+      'Enter a valid duration in minutes.';
 
   @override
   String trainerMinutesDuration(String minutes) {

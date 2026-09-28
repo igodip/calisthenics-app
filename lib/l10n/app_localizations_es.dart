@@ -125,6 +125,9 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get homeDashboardSubtitle => 'Tu entrenamiento de un vistazo';
+
+  @override
   String get homeViewStats => 'Ver estadísticas';
 
   @override
@@ -1195,6 +1198,29 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get trainerExerciseFallback => 'Ejercicio';
+
+  @override
+  String get trainerEditExerciseTitle => 'Editar ejercicio';
+
+  @override
+  String get trainerExerciseName => 'Nombre del ejercicio';
+
+  @override
+  String get trainerExerciseDuration => 'Duración';
+
+  @override
+  String get trainerExerciseNotes => 'Notas del entrenador';
+
+  @override
+  String get trainerExerciseUpdated => 'Ejercicio actualizado correctamente.';
+
+  @override
+  String get trainerExerciseNameRequired =>
+      'Introduce el nombre del ejercicio.';
+
+  @override
+  String get trainerExerciseDurationInvalid =>
+      'Introduce una duración válida en minutos.';
 
   @override
   String trainerMinutesDuration(String minutes) {

@@ -430,6 +430,56 @@ class TrainerRepository {
   static String _normalizeExerciseName(String value) =>
       value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim();
 
+  Future<void> updateDayExercise(
+    Object id, {
+    required String name,
+    required int? durationMinutes,
+    required String notes,
+    Object? planId,
+  }) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) {
+      throw ArgumentError('Exercise name is required.');
+    }
+
+    final catalogRows = await _client
+        .from('exercises')
+        .select('id, slug, name');
+    Map<String, dynamic>? matchedExercise;
+    final needle = _normalizeExerciseName(trimmedName);
+    for (final row in List<Map<String, dynamic>>.from(catalogRows)) {
+      final candidates = [
+        row['name'],
+        row['slug'],
+      ].whereType<String>().map(_normalizeExerciseName);
+      if (candidates.contains(needle)) {
+        matchedExercise = row;
+        break;
+      }
+    }
+
+    final updatedRows = await _client
+        .from('day_exercises')
+        .update({
+          'exercise_id': matchedExercise?['id'],
+          'exercise': matchedExercise?['name'] ?? trimmedName,
+          'duration_minutes': durationMinutes,
+          'notes': notes.trim().isEmpty ? null : notes.trim(),
+        })
+        .eq('id', id)
+        .select('id');
+    if ((updatedRows as List).length != 1) {
+      throw StateError('The exercise was not updated.');
+    }
+
+    if (planId != null) {
+      await PushNotificationService.instance.notifyEvent(
+        'trainer_plan_updated',
+        planId,
+      );
+    }
+  }
+
   Future<void> deletePlan(Object id) async {
     final links = await _client
         .from('workout_plan_days')

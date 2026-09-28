@@ -316,6 +316,12 @@ abstract class AppLocalizations {
   /// **'Ciao, {name}!'**
   String homeGreeting(String name);
 
+  /// No description provided for @homeDashboardSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Il tuo allenamento in sintesi'**
+  String get homeDashboardSubtitle;
+
   /// No description provided for @homeViewStats.
   ///
   /// In it, this message translates to:
@@ -2235,6 +2241,48 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Esercizio'**
   String get trainerExerciseFallback;
+
+  /// No description provided for @trainerEditExerciseTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica esercizio'**
+  String get trainerEditExerciseTitle;
+
+  /// No description provided for @trainerExerciseName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome esercizio'**
+  String get trainerExerciseName;
+
+  /// No description provided for @trainerExerciseDuration.
+  ///
+  /// In it, this message translates to:
+  /// **'Durata'**
+  String get trainerExerciseDuration;
+
+  /// No description provided for @trainerExerciseNotes.
+  ///
+  /// In it, this message translates to:
+  /// **'Note del trainer'**
+  String get trainerExerciseNotes;
+
+  /// No description provided for @trainerExerciseUpdated.
+  ///
+  /// In it, this message translates to:
+  /// **'Esercizio aggiornato correttamente.'**
+  String get trainerExerciseUpdated;
+
+  /// No description provided for @trainerExerciseNameRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci il nome dell’esercizio.'**
+  String get trainerExerciseNameRequired;
+
+  /// No description provided for @trainerExerciseDurationInvalid.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci una durata valida in minuti.'**
+  String get trainerExerciseDurationInvalid;
 
   /// No description provided for @trainerMinutesDuration.
   ///

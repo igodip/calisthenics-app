@@ -1,4 +1,3 @@
-import 'package:calisync/components/section_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -34,142 +33,196 @@ class _ProgressCardState extends State<ProgressCard> {
       builder: (context, snapshot) {
         final overview = snapshot.data ?? const _ProgressOverview.empty();
         final dateFormatter = DateFormat.yMMMd(l10n.localeName);
-        return SectionCard(
+        return Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                colorScheme.primaryContainer.withValues(alpha: 0.82),
+                colorScheme.surfaceContainerHighest.withValues(alpha: 0.82),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: colorScheme.primary.withValues(alpha: 0.2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: theme.shadowColor.withValues(alpha: 0.18),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.homeProgressTitle,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              if (overview.hasPlan) ...[
-                Row(
-                  children: [
-                    Icon(
-                      Icons.flag_outlined,
-                      size: 16,
+              Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.insights_rounded,
                       color: colorScheme.primary,
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      l10n.homePlanLatestLabel,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  overview.planTitle,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
                   ),
-                ),
-                if (overview.planStartedAt != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.homePlanStartedLabel(
-                      dateFormatter.format(overview.planStartedAt!),
-                    ),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.homeProgressTitle,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ],
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _StatTile(
-                        value: overview.monthlyStats.workoutsValue,
-                        label: l10n.homeProgressWorkoutsLabel,
-                        icon: Icons.fitness_center,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _StatTile(
-                        value: l10n.homeProgressTimeValue(
-                          overview.monthlyStats.hoursTrained,
-                          overview.monthlyStats.minutesTrained,
-                        ),
-                        label: l10n.homeProgressTimeTrainedLabel,
-                        icon: Icons.timer,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
+              ),
+              const SizedBox(height: 16),
+              if (overview.hasPlan) ...[
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colorScheme.surface.withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(18),
+                    color: colorScheme.surface.withValues(alpha: 0.42),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: colorScheme.outlineVariant),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Text(
-                        l10n.homePlanStatsTitle,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: LinearProgressIndicator(
-                          value: overview.planStats.completionRate,
-                          minHeight: 10,
-                          backgroundColor: colorScheme.surfaceContainerHighest,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            appColors?.success ?? colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.homePlanStatsCompletionValue(
-                          overview.planStats.completionPercentage,
-                        ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _MiniStatTile(
-                              label: l10n.homePlanStatsDaysLabel,
-                              value: overview.planStats.daysValue,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.flag_outlined,
+                                  size: 16,
+                                  color: colorScheme.primary,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  l10n.homePlanLatestLabel,
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _MiniStatTile(
-                              label: l10n.homePlanStatsExercisesLabel,
-                              value: overview.planStats.exercisesValue,
+                            const SizedBox(height: 8),
+                            Text(
+                              overview.planTitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
-                          ),
-                        ],
+                            if (overview.planStartedAt != null) ...[
+                              const SizedBox(height: 5),
+                              Text(
+                                l10n.homePlanStartedLabel(
+                                  dateFormatter.format(overview.planStartedAt!),
+                                ),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      _ProgressRing(
+                        progress: overview.planStats.completionRate,
+                        percentage: overview.planStats.completionPercentage,
+                        color: appColors?.success ?? colorScheme.primary,
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 12),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final tileWidth = (constraints.maxWidth - 12) / 2;
+                    return Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        SizedBox(
+                          width: tileWidth,
+                          child: _StatTile(
+                            value: overview.monthlyStats.workoutsValue,
+                            label: l10n.homeProgressWorkoutsLabel,
+                            icon: Icons.fitness_center,
+                          ),
+                        ),
+                        SizedBox(
+                          width: tileWidth,
+                          child: _StatTile(
+                            value: l10n.homeProgressTimeValue(
+                              overview.monthlyStats.hoursTrained,
+                              overview.monthlyStats.minutesTrained,
+                            ),
+                            label: l10n.homeProgressTimeTrainedLabel,
+                            icon: Icons.timer_outlined,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _MiniStatTile(
+                        label: l10n.homePlanStatsDaysLabel,
+                        value: overview.planStats.daysValue,
+                        icon: Icons.calendar_today_outlined,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _MiniStatTile(
+                        label: l10n.homePlanStatsExercisesLabel,
+                        value: overview.planStats.exercisesValue,
+                        icon: Icons.task_alt_outlined,
+                      ),
+                    ),
+                  ],
+                ),
               ] else ...[
-                Text(
-                  l10n.homeProgressNoPlan,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface.withValues(alpha: 0.35),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.event_note_outlined,
+                        size: 42,
+                        color: colorScheme.primary,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        l10n.homeProgressNoPlan,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -430,10 +483,15 @@ class _StatTile extends StatelessWidget {
 }
 
 class _MiniStatTile extends StatelessWidget {
-  const _MiniStatTile({required this.label, required this.value});
+  const _MiniStatTile({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   final String label;
   final String value;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -444,20 +502,69 @@ class _MiniStatTile extends StatelessWidget {
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            value,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+          Icon(icon, size: 20, color: theme.colorScheme.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 4),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressRing extends StatelessWidget {
+  const _ProgressRing({
+    required this.progress,
+    required this.percentage,
+    required this.color,
+  });
+
+  final double progress;
+  final int percentage;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox.square(
+      dimension: 78,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox.square(
+            dimension: 72,
+            child: CircularProgressIndicator(
+              value: progress,
+              strokeWidth: 8,
+              strokeCap: StrokeCap.round,
+              color: color,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            ),
+          ),
           Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+            '$percentage%',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
