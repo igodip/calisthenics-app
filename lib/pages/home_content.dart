@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/progress_card.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/app_theme.dart';
 import 'profile_page.dart';
 
 class HomeContent extends StatefulWidget {
@@ -229,18 +230,69 @@ class _HomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            l10n.homeGreeting(displayName),
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
+    final colors = theme.extension<AppColors>();
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        gradient:
+            colors?.primaryGradient ??
+            LinearGradient(
+              colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
+            ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.24),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: -22,
+            bottom: -30,
+            child: Icon(
+              Icons.fitness_center,
+              size: 126,
+              color: Colors.white.withValues(alpha: 0.09),
             ),
           ),
-        ),
-        _AvatarChip(initials: initials, imageUrl: imageUrl),
-      ],
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.homeDashboardSubtitle.toUpperCase(),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.78),
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.homeGreeting(displayName),
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                _AvatarChip(initials: initials, imageUrl: imageUrl),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -256,27 +308,26 @@ class _AvatarChip extends StatelessWidget {
     final theme = Theme.of(context);
     final avatarUrl = imageUrl?.trim();
     final avatarText = initials.isEmpty ? null : initials;
-    return CircleAvatar(
-      radius: 18,
-      backgroundColor: theme.colorScheme.primaryContainer,
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: 0.25),
+      ),
       child: CircleAvatar(
-        radius: 16,
+        radius: 28,
         backgroundColor: theme.colorScheme.surface,
         backgroundImage: avatarUrl == null || avatarUrl.isEmpty
             ? null
             : NetworkImage(avatarUrl),
         child: avatarUrl == null || avatarUrl.isEmpty
             ? (avatarText == null
-                  ? Icon(
-                      Icons.person,
-                      color: theme.colorScheme.onSurfaceVariant,
-                      size: 18,
-                    )
+                  ? const Icon(Icons.person, color: Colors.white, size: 26)
                   : Text(
                       avatarText,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w700,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
                       ),
                     ))
             : null,

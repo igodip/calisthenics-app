@@ -42,6 +42,7 @@
       }
     }
   },
+  "homeDashboardSubtitle": "Il tuo allenamento in sintesi",
   "homeViewStats": "Vedi statistiche",
   "homeProgressTitle": "Progressi mensili",
   "homeProgressWorkoutsLabel": "Allenamenti",
@@ -574,6 +575,13 @@
   "trainerExercisesCompleted": "{completed}/{total} esercizi completati",
   "@trainerExercisesCompleted": {"placeholders": {"completed": {"type": "int"}, "total": {"type": "int"}}},
   "trainerExerciseFallback": "Esercizio",
+  "trainerEditExerciseTitle": "Modifica esercizio",
+  "trainerExerciseName": "Nome esercizio",
+  "trainerExerciseDuration": "Durata",
+  "trainerExerciseNotes": "Note del trainer",
+  "trainerExerciseUpdated": "Esercizio aggiornato correttamente.",
+  "trainerExerciseNameRequired": "Inserisci il nome dell’esercizio.",
+  "trainerExerciseDurationInvalid": "Inserisci una durata valida in minuti.",
   "trainerMinutesDuration": "{minutes} min",
   "@trainerMinutesDuration": {"placeholders": {"minutes": {"type": "String"}}},
   "trainerExerciseResult": "{minutes} min · {reps} rip.",

@@ -359,7 +359,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
       _sectionTitle(AppLocalizations.of(context)!.trainerWorkoutDays),
       for (final week in _calendarWeeks(_data!.days)) ...[
         _weekTitle(week.key),
-        for (final day in week.value) _dayCard(day),
+        for (final day in week.value) _dayCard(day, editable: true),
       ],
     ],
   );
@@ -463,7 +463,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     };
   }
 
-  Widget _dayCard(Map<String, dynamic> day) {
+  Widget _dayCard(Map<String, dynamic> day, {bool editable = false}) {
     final exercises = trainerRelationRows(day['day_exercises']);
     final done = exercises.where((item) => item['completed'] == true).length;
     return Card(
@@ -490,6 +490,15 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
                 '${exercise['exercise'] ?? AppLocalizations.of(context)!.trainerExerciseFallback}',
               ),
               subtitle: Text(_exerciseSubtitle(exercise)),
+              trailing: editable
+                  ? IconButton(
+                      tooltip: AppLocalizations.of(
+                        context,
+                      )!.trainerEditExerciseTitle,
+                      onPressed: () => _editExercise(day, exercise),
+                      icon: const Icon(Icons.edit_outlined),
+                    )
+                  : null,
             ),
         ],
       ),
@@ -511,6 +520,136 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
       if (exerciseFeedback.isNotEmpty)
         l10n.trainerTraineeExerciseFeedback(exerciseFeedback),
     ].join('\n');
+  }
+
+  Future<void> _editExercise(
+    Map<String, dynamic> day,
+    Map<String, dynamic> exercise,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    var name = '${exercise['exercise'] ?? ''}';
+    final durationValue = exercise['duration_minutes'];
+    var duration = durationValue == null ? '' : '$durationValue';
+    var notes = '${exercise['notes'] ?? ''}';
+    String? validationError;
+
+    final values =
+        await showDialog<({String name, int? durationMinutes, String notes})>(
+          context: context,
+          builder: (dialogContext) => StatefulBuilder(
+            builder: (context, setDialogState) => AlertDialog(
+              title: Text(l10n.trainerEditExerciseTitle),
+              content: SizedBox(
+                width: 440,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        initialValue: name,
+                        onChanged: (value) => name = value,
+                        autofocus: true,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          labelText: l10n.trainerExerciseName,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        initialValue: duration,
+                        onChanged: (value) => duration = value,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: l10n.trainerExerciseDuration,
+                          suffixText: 'min',
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        initialValue: notes,
+                        onChanged: (value) => notes = value,
+                        minLines: 2,
+                        maxLines: 5,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          labelText: l10n.trainerExerciseNotes,
+                        ),
+                      ),
+                      if (validationError != null) ...[
+                        const SizedBox(height: 12),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            validationError!,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(l10n.trainerCancel),
+                ),
+                FilledButton.icon(
+                  onPressed: () {
+                    final trimmedName = name.trim();
+                    final durationText = duration.trim();
+                    final parsedDuration = durationText.isEmpty
+                        ? null
+                        : int.tryParse(durationText);
+                    if (trimmedName.isEmpty) {
+                      setDialogState(
+                        () =>
+                            validationError = l10n.trainerExerciseNameRequired,
+                      );
+                      return;
+                    }
+                    if (durationText.isNotEmpty &&
+                        (parsedDuration == null || parsedDuration < 0)) {
+                      setDialogState(
+                        () => validationError =
+                            l10n.trainerExerciseDurationInvalid,
+                      );
+                      return;
+                    }
+                    Navigator.pop(dialogContext, (
+                      name: trimmedName,
+                      durationMinutes: parsedDuration,
+                      notes: notes,
+                    ));
+                  },
+                  icon: const Icon(Icons.save_outlined),
+                  label: Text(l10n.trainerSave),
+                ),
+              ],
+            ),
+          ),
+        );
+
+    if (values == null || !mounted) return;
+
+    final links = trainerRelationRows(day['workout_plan_days']);
+    final planId = links.isEmpty ? null : links.first['plan_id'];
+    try {
+      await widget.repository.updateDayExercise(
+        exercise['id']!,
+        name: values.name,
+        durationMinutes: values.durationMinutes,
+        notes: values.notes,
+        planId: planId,
+      );
+      if (!mounted) return;
+      _message(l10n.trainerExerciseUpdated);
+      await _load();
+    } catch (error) {
+      if (mounted) _message(error);
+    }
   }
 
   Future<void> _deleteFeedback(TrainerFeedback item) async {
