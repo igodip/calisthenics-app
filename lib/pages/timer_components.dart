@@ -393,11 +393,14 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
         : _mode == WorkoutTimerMode.emom
         ? l10n.timerWorkoutMinute(_elapsedSeconds ~/ 60 + 1)
         : _modeLabel(l10n);
-    final displaySeconds = switch (_mode) {
-      WorkoutTimerMode.forTime => _elapsedSeconds,
-      WorkoutTimerMode.emom when !_isFinished => 60 - (_elapsedSeconds % 60),
-      _ => _remainingSeconds,
-    };
+    final displaySeconds = _isPreparing
+        ? _remainingSeconds
+        : switch (_mode) {
+            WorkoutTimerMode.forTime => _elapsedSeconds,
+            WorkoutTimerMode.emom when !_isFinished =>
+              60 - (_elapsedSeconds % 60),
+            _ => _remainingSeconds,
+          };
     final progress = switch (_mode) {
       WorkoutTimerMode.amrap => 1 - (_remainingSeconds / (_amrapMinutes * 60)),
       WorkoutTimerMode.emom => (_elapsedSeconds % 60) / 60,
@@ -503,7 +506,8 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                        if (_mode == WorkoutTimerMode.emom) ...[
+                        if (_mode == WorkoutTimerMode.emom &&
+                            !_isPreparing) ...[
                           const SizedBox(height: 8),
                           Text(
                             '${l10n.timerWorkoutElapsed}: ${_formatSeconds(totalElapsed)}',

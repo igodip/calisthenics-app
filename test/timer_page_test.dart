@@ -79,6 +79,7 @@ void main() {
     await tester.pump();
     expect(find.text('GET READY'), findsOneWidget);
     expect(find.text('00:10'), findsOneWidget);
+    expect(find.text('Elapsed: 00:00'), findsNothing);
 
     await tester.pump(const Duration(seconds: 4));
     expect(find.text('00:06'), findsOneWidget);
@@ -123,5 +124,19 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('As long as possible'), findsOneWidget);
     expect(find.text('01:00'), findsOneWidget);
+
+    await tester.ensureVisible(workoutToggle);
+    await tester.tap(workoutToggle);
+    await tester.pump();
+    expect(find.text('GET READY'), findsOneWidget);
+    expect(find.text('00:10'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 4));
+    expect(find.text('00:06'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 6));
+    expect(find.text('Minute 1'), findsOneWidget);
+    expect(find.text('01:00'), findsOneWidget);
+    expect(find.text('Elapsed: 00:00'), findsOneWidget);
   });
 }
