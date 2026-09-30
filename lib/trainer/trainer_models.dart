@@ -37,6 +37,7 @@ class TrainerTrainee {
     required this.height,
     required this.paid,
     required this.paymentAmount,
+    this.paymentNotes = '',
     required this.coachTip,
     required this.trainerNotes,
     required this.completedExercises,
@@ -50,6 +51,7 @@ class TrainerTrainee {
   final double? height;
   final bool paid;
   final double? paymentAmount;
+  final String paymentNotes;
   final String coachTip;
   final String trainerNotes;
   final int completedExercises;
@@ -63,6 +65,7 @@ class TrainerTrainee {
   TrainerTrainee copyWith({
     bool? paid,
     double? paymentAmount,
+    String? paymentNotes,
     String? coachTip,
     String? trainerNotes,
     String? profileImageUrl,
@@ -73,6 +76,7 @@ class TrainerTrainee {
     height: height,
     paid: paid ?? this.paid,
     paymentAmount: paymentAmount ?? this.paymentAmount,
+    paymentNotes: paymentNotes ?? this.paymentNotes,
     coachTip: coachTip ?? this.coachTip,
     trainerNotes: trainerNotes ?? this.trainerNotes,
     completedExercises: completedExercises,

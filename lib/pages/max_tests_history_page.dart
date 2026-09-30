@@ -54,19 +54,27 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
   Future<List<MaxTest>> _loadMaxTests(String userId) async {
     final response = await supabase
         .from('max_tests')
-        .select('exercise, value, unit, recorded_at')
+        .select(
+          'id, exercise_id, exercise, value, unit, recorded_at, created_at',
+        )
         .eq('trainee_id', userId)
-        .order('recorded_at', ascending: true);
+        .order('recorded_at', ascending: true)
+        .order('created_at', ascending: true)
+        .order('id', ascending: true);
 
     final items = (response as List?)?.cast<Map<String, dynamic>>() ?? [];
     return items.map(MaxTest.fromMap).toList();
   }
 
   String _resolveExerciseKey(
-    String exercise,
+    MaxTest test,
     Map<String, ExerciseGuide> guidesById,
     Map<String, ExerciseGuide> guidesByName,
   ) {
+    if (test.exerciseId != null && test.exerciseId!.isNotEmpty) {
+      return test.exerciseId!;
+    }
+    final exercise = test.exercise;
     final trimmed = exercise.trim();
     if (guidesById.containsKey(trimmed)) {
       return trimmed;
@@ -196,7 +204,7 @@ class _MaxTestsHistoryPageState extends State<MaxTestsHistoryPage> {
                               ? displayName
                               : '$displayName ($unitLabel)';
                           final key = _resolveExerciseKey(
-                            test.exercise,
+                            test,
                             exerciseGuideById,
                             exerciseGuideByName,
                           );

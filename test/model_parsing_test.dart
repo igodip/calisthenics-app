@@ -21,12 +21,16 @@ void main() {
 
   test('MaxTest parses database values', () {
     final test = MaxTest.fromMap({
+      'id': 'max-test-1',
+      'exercise_id': 'exercise-1',
       'exercise': 'Pull-up',
       'value': 15,
       'unit': 'reps',
       'recorded_at': '2026-08-08T10:00:00.000Z',
     });
 
+    expect(test.id, 'max-test-1');
+    expect(test.exerciseId, 'exercise-1');
     expect(test.exercise, 'Pull-up');
     expect(test.value, 15);
     expect(test.unit, 'reps');

@@ -44,7 +44,7 @@ class TrainerRepository {
 
     final paymentRows = await _client
         .from('trainee_monthly_payments')
-        .select('trainee_id, paid, amount')
+        .select('trainee_id, paid, amount, notes')
         .eq('month_start', currentMonthStart())
         .inFilter('trainee_id', ids);
     final payments = {
@@ -90,6 +90,7 @@ class TrainerRepository {
         height: (row['height'] as num?)?.toDouble(),
         paid: payment?['paid'] == true,
         paymentAmount: (payment?['amount'] as num?)?.toDouble(),
+        paymentNotes: (payment?['notes'] as String?) ?? '',
         coachTip: (assignment['coach_tip'] as String?) ?? '',
         trainerNotes: (assignment['trainer_notes'] as String?) ?? '',
         completedExercises: counts[0],
@@ -225,13 +226,19 @@ class TrainerRepository {
     String traineeId, {
     required bool paid,
     double? amount,
+    String? notes,
   }) async {
+    final normalizedNotes = notes?.trim() ?? '';
+    if (normalizedNotes.length > 2000) {
+      throw ArgumentError('Payment notes cannot exceed 2000 characters.');
+    }
     await _client.from('trainee_monthly_payments').upsert({
       'trainee_id': traineeId,
       'month_start': currentMonthStart(),
       'paid': paid,
       'paid_at': paid ? DateTime.now().toUtc().toIso8601String() : null,
       'amount': amount,
+      'notes': normalizedNotes.isEmpty ? null : normalizedNotes,
     }, onConflict: 'trainee_id,month_start');
     await PushNotificationService.instance.notifyEvent(
       'trainer_payment_updated',
@@ -258,9 +265,13 @@ class TrainerRepository {
           .order('week'),
       _client
           .from('max_tests')
-          .select('id, exercise, value, unit, recorded_at')
+          .select(
+            'id, exercise_id, exercise, value, unit, recorded_at, created_at',
+          )
           .eq('trainee_id', trainee.id)
-          .order('recorded_at', ascending: false),
+          .order('recorded_at', ascending: false)
+          .order('created_at', ascending: false)
+          .order('id', ascending: false),
       _client
           .from('trainee_weight_logs')
           .select('id, weight, recorded_at, notes')
@@ -268,7 +279,7 @@ class TrainerRepository {
           .order('recorded_at', ascending: false),
       _client
           .from('trainee_monthly_payments')
-          .select('id, month_start, paid, paid_at, amount')
+          .select('id, month_start, paid, paid_at, amount, notes')
           .eq('trainee_id', trainee.id)
           .order('month_start', ascending: false),
     ]);
@@ -287,16 +298,54 @@ class TrainerRepository {
 
   Future<void> addMaxTest(
     String traineeId, {
+    required String exerciseId,
     required String exercise,
     required double value,
     required String unit,
-  }) => _client.from('max_tests').insert({
-    'trainee_id': traineeId,
-    'exercise': exercise,
-    'value': value,
-    'unit': unit,
-    'recorded_at': DateTime.now().toIso8601String().substring(0, 10),
-  });
+    required DateTime recordedAt,
+  }) async {
+    final trimmedExercise = exercise.trim();
+    final normalizedUnit = unit.trim().toLowerCase();
+    if (exerciseId.isEmpty || trimmedExercise.isEmpty) {
+      throw ArgumentError('Exercise is required.');
+    }
+    if (!value.isFinite || value <= 0) {
+      throw ArgumentError('Value must be greater than zero.');
+    }
+    if (!const {'kg', 'reps', 'seconds', 'minutes'}.contains(normalizedUnit)) {
+      throw ArgumentError('Invalid unit.');
+    }
+    final rows = await _client
+        .from('max_tests')
+        .insert({
+          'trainee_id': traineeId,
+          'exercise_id': exerciseId,
+          'exercise': trimmedExercise,
+          'value': value,
+          'unit': normalizedUnit,
+          'recorded_at': _dateOnly(recordedAt),
+        })
+        .select('id');
+    if ((rows as List).length != 1) {
+      throw StateError('The max test was not saved.');
+    }
+  }
+
+  Future<void> deleteMaxTest(Object id) async {
+    final rows = await _client
+        .from('max_tests')
+        .delete()
+        .eq('id', id)
+        .select('id');
+    if ((rows as List).length != 1) {
+      throw StateError('The max test was not deleted.');
+    }
+  }
+
+  static String _dateOnly(DateTime value) =>
+      '${value.year.toString().padLeft(4, '0')}-'
+      '${value.month.toString().padLeft(2, '0')}-'
+      '${value.day.toString().padLeft(2, '0')}';
 
   Future<void> addWeight(String traineeId, double weight, String notes) =>
       _client.from('trainee_weight_logs').insert({

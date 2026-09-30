@@ -20,8 +20,37 @@ import 'max_tests_menu_page.dart';
 import 'timer_page.dart';
 import 'workout_plan_page.dart';
 
+enum HomeSection {
+  home,
+  workoutPlan,
+  maxTests,
+  traineeFeedback,
+  timer,
+  guides,
+  terminology,
+  profile,
+  trainerDashboard,
+  trainerTrainees,
+  trainerFeedback,
+  trainerPayments,
+  adminConsole,
+}
+
+HomeSection homeSectionForNotificationRoute(
+  String route, {
+  required bool isTrainer,
+}) {
+  return switch (route) {
+    'trainee_plan' => HomeSection.workoutPlan,
+    'trainee_feedback' => HomeSection.traineeFeedback,
+    'trainer_feedback' when isTrainer => HomeSection.trainerFeedback,
+    _ => HomeSection.home,
+  };
+}
+
 class _NavigationItem {
   const _NavigationItem({
+    required this.section,
     required this.title,
     required this.icon,
     required this.page,
@@ -29,6 +58,7 @@ class _NavigationItem {
     this.badgeCount = 0,
   });
 
+  final HomeSection section;
   final String title;
   final IconData icon;
   final Widget page;
@@ -40,39 +70,33 @@ class HomePage extends StatefulWidget {
   const HomePage({
     super.key,
     required this.title,
-    this.initialIndex = 0,
+    this.initialSection = HomeSection.home,
     this.initialTerminologyTermKey,
     this.initialGuideSlug,
     this.initialGuideId,
   });
   final String title;
-  final int initialIndex;
+  final HomeSection initialSection;
   final String? initialTerminologyTermKey;
   final String? initialGuideSlug;
   final String? initialGuideId;
-
-  static const int terminologyIndex = 6;
-  static const int guidesIndex = 2;
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  late int selectedIndex;
+  late HomeSection selectedSection;
   String? _cachedLocale;
   TrainerProfile? _trainerProfile;
   bool _isAdmin = false;
   int _trainerUnreadFeedbackCount = 0;
   bool _roleLookupComplete = false;
 
-  static const int _workoutPlanIndex = 1;
-  static const int _maxTestsIndex = 4;
-
   @override
   void initState() {
     super.initState();
-    selectedIndex = widget.initialIndex;
+    selectedSection = widget.initialSection;
     PushNotificationService.instance.addListener(_handleNotificationRoute);
     _loadTrainerRole();
   }
@@ -115,13 +139,11 @@ class _HomePageState extends State<HomePage> {
     if (!mounted || !_roleLookupComplete) return;
     final route = PushNotificationService.instance.takePendingRoute();
     if (route == null) return;
-    final index = switch (route) {
-      'trainee_plan' => _workoutPlanIndex,
-      'trainee_feedback' => 5,
-      'trainer_feedback' when _trainerProfile != null => 10,
-      _ => 0,
-    };
-    setState(() => selectedIndex = index);
+    final section = homeSectionForNotificationRoute(
+      route,
+      isTrainer: _trainerProfile != null,
+    );
+    setState(() => selectedSection = section);
   }
 
   @override
@@ -135,9 +157,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _selectIndex(int index) {
+  void _selectSection(HomeSection section) {
     setState(() {
-      selectedIndex = index;
+      selectedSection = section;
     });
   }
 
@@ -149,34 +171,40 @@ class _HomePageState extends State<HomePage> {
 
     final navigationItems = [
       _NavigationItem(
+        section: HomeSection.home,
         title: l10n.navHome,
         icon: Icons.home,
         page: HomeContent(
-          onOpenPlan: () => _selectIndex(_workoutPlanIndex),
-          onViewStats: () => _selectIndex(_maxTestsIndex),
+          onOpenPlan: () => _selectSection(HomeSection.workoutPlan),
+          onViewStats: () => _selectSection(HomeSection.maxTests),
         ),
       ),
       _NavigationItem(
+        section: HomeSection.workoutPlan,
         title: l10n.workoutPlanTitle,
         icon: Icons.event_note,
         page: const WorkoutPlanPage(),
       ),
       _NavigationItem(
+        section: HomeSection.maxTests,
         title: l10n.profileMaxTestsTitle,
         icon: Icons.emoji_events_outlined,
         page: const MaxTestsMenuPage(),
       ),
       _NavigationItem(
+        section: HomeSection.traineeFeedback,
         title: l10n.traineeFeedbackTitle,
         icon: Icons.feedback,
         page: const TraineeFeedbackPage(),
       ),
       _NavigationItem(
+        section: HomeSection.timer,
         title: l10n.timerTitle,
         icon: Icons.timer,
         page: const TimerPage(),
       ),
       _NavigationItem(
+        section: HomeSection.guides,
         title: l10n.navGuides,
         icon: Icons.fitness_center,
         page: ExerciseGuidesPage(
@@ -185,11 +213,13 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       _NavigationItem(
+        section: HomeSection.terminology,
         title: l10n.navTerminology,
         icon: Icons.menu_book,
         page: TerminologyPage(termKey: widget.initialTerminologyTermKey),
       ),
       _NavigationItem(
+        section: HomeSection.profile,
         title: l10n.navProfile,
         icon: Icons.person,
         page: const ProfilePage(),
@@ -199,17 +229,20 @@ class _HomePageState extends State<HomePage> {
     if (_trainerProfile != null) {
       navigationItems.addAll([
         _NavigationItem(
+          section: HomeSection.trainerDashboard,
           title: l10n.trainerNavDashboard,
           icon: Icons.dashboard_customize,
           page: const TrainerSectionPage(section: TrainerSection.dashboard),
           groupTitle: l10n.trainerMenuGroup,
         ),
         _NavigationItem(
+          section: HomeSection.trainerTrainees,
           title: l10n.trainerNavTrainees,
           icon: Icons.groups,
           page: const TrainerSectionPage(section: TrainerSection.trainees),
         ),
         _NavigationItem(
+          section: HomeSection.trainerFeedback,
           title: l10n.trainerNavFeedback,
           icon: Icons.mark_chat_unread,
           page: TrainerSectionPage(
@@ -223,6 +256,7 @@ class _HomePageState extends State<HomePage> {
           badgeCount: _trainerUnreadFeedbackCount,
         ),
         _NavigationItem(
+          section: HomeSection.trainerPayments,
           title: l10n.trainerNavPayments,
           icon: Icons.payments,
           page: const TrainerSectionPage(section: TrainerSection.payments),
@@ -233,6 +267,7 @@ class _HomePageState extends State<HomePage> {
     if (_isAdmin) {
       navigationItems.add(
         _NavigationItem(
+          section: HomeSection.adminConsole,
           title: l10n.adminNavConsole,
           icon: Icons.admin_panel_settings,
           page: const AdminConsolePage(),
@@ -241,7 +276,11 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    final currentTitle = navigationItems[selectedIndex].title;
+    final currentItem = navigationItems.firstWhere(
+      (item) => item.section == selectedSection,
+      orElse: () => navigationItems.first,
+    );
+    final currentTitle = currentItem.title;
 
     final scaffold = Scaffold(
       extendBody: true,
@@ -291,13 +330,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              for (final entry in navigationItems.indexed) ...[
-                if (entry.$2.groupTitle != null) ...[
+              for (final item in navigationItems) ...[
+                if (item.groupTitle != null) ...[
                   const Divider(height: 24),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                     child: Text(
-                      entry.$2.groupTitle!,
+                      item.groupTitle!,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: colorScheme.primary,
                         fontWeight: FontWeight.w700,
@@ -307,17 +346,17 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
                 ListTile(
-                  leading: entry.$2.badgeCount > 0
+                  leading: item.badgeCount > 0
                       ? Badge.count(
-                          count: entry.$2.badgeCount,
-                          child: Icon(entry.$2.icon),
+                          count: item.badgeCount,
+                          child: Icon(item.icon),
                         )
-                      : Icon(entry.$2.icon),
-                  title: Text(entry.$2.title),
-                  selected: selectedIndex == entry.$1,
+                      : Icon(item.icon),
+                  title: Text(item.title),
+                  selected: currentItem.section == item.section,
                   onTap: () {
                     setState(() {
-                      selectedIndex = entry.$1;
+                      selectedSection = item.section;
                     });
                     Navigator.pop(context);
                   },
@@ -356,7 +395,7 @@ class _HomePageState extends State<HomePage> {
               );
             },
             child: Container(
-              key: ValueKey<int>(selectedIndex),
+              key: ValueKey<HomeSection>(currentItem.section),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -372,7 +411,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
-                  child: navigationItems[selectedIndex].page,
+                  child: currentItem.page,
                 ),
               ),
             ),

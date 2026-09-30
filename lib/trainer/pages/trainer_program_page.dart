@@ -8,6 +8,16 @@ import '../trainer_models.dart';
 import '../trainer_repository.dart';
 import '../pdf/trainer_pdf_import.dart';
 import '../../l10n/app_localizations.dart';
+import '../../data/exercise_guides.dart';
+import '../../model/exercise_guide.dart';
+
+typedef _MaxTestDraft = ({
+  String exerciseId,
+  String exercise,
+  double value,
+  String unit,
+  DateTime recordedAt,
+});
 
 class TrainerProgramPage extends StatefulWidget {
   const TrainerProgramPage({
@@ -37,6 +47,9 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   bool _saving = false;
   bool _importingPdf = false;
   bool _showAllCalendarDays = false;
+  Future<List<ExerciseGuide>>? _exerciseGuidesFuture;
+  String? _exerciseGuidesLocale;
+  List<ExerciseGuide> _exerciseGuides = const [];
 
   @override
   void initState() {
@@ -53,6 +66,22 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     _tip.dispose();
     _notes.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = AppLocalizations.of(context)!.localeName;
+    if (_exerciseGuidesFuture == null || _exerciseGuidesLocale != locale) {
+      _exerciseGuidesLocale = locale;
+      final future = ExerciseGuides.load(locale);
+      _exerciseGuidesFuture = future;
+      future.then((guides) {
+        if (mounted && _exerciseGuidesLocale == locale) {
+          setState(() => _exerciseGuides = guides);
+        }
+      }).ignore();
+    }
   }
 
   Future<void> _load() async {
@@ -379,7 +408,14 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   Widget _history() => TrainerResponsiveList(
     onRefresh: _load,
     children: [
-      _sectionTitle(AppLocalizations.of(context)!.trainerMaxTests),
+      _sectionTitle(
+        AppLocalizations.of(context)!.trainerMaxTests,
+        action: IconButton.filledTonal(
+          tooltip: AppLocalizations.of(context)!.trainerAddMaxTest,
+          onPressed: _showAddMaxTest,
+          icon: const Icon(Icons.add),
+        ),
+      ),
       if (_data!.maxTests.isEmpty)
         Text(AppLocalizations.of(context)!.trainerNoMaxTests)
       else
@@ -388,9 +424,15 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
             margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
               leading: const Icon(Icons.emoji_events),
-              title: Text('${test['exercise']}'),
-              subtitle: Text('${test['recorded_at'] ?? ''}'),
-              trailing: Text('${test['value']} ${test['unit']}'),
+              title: Text(_maxTestExerciseLabel(test)),
+              subtitle: Text(
+                '${test['recorded_at'] ?? ''} · ${test['value']} ${test['unit']}',
+              ),
+              trailing: IconButton(
+                tooltip: AppLocalizations.of(context)!.trainerDeleteMaxTest,
+                onPressed: () => _deleteMaxTest(test),
+                icon: const Icon(Icons.delete_outline),
+              ),
             ),
           ),
       _sectionTitle(AppLocalizations.of(context)!.trainerWeightHistory),
@@ -422,8 +464,8 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
               title: Text('${payment['month_start']}'),
               subtitle: Text(
                 payment['paid'] == true
-                    ? AppLocalizations.of(context)!.trainerPaid
-                    : AppLocalizations.of(context)!.trainerOverdue,
+                    ? '${AppLocalizations.of(context)!.trainerPaid}${_paymentNotesSuffix(payment)}'
+                    : '${AppLocalizations.of(context)!.trainerOverdue}${_paymentNotesSuffix(payment)}',
               ),
               trailing: Text(
                 payment['amount'] == null ? '—' : '€${payment['amount']}',
@@ -432,6 +474,11 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
           ),
     ],
   );
+
+  String _paymentNotesSuffix(Map<String, dynamic> payment) {
+    final notes = payment['notes']?.toString().trim() ?? '';
+    return notes.isEmpty ? '' : '\n$notes';
+  }
 
   Widget _row(String label, String value) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 5),
@@ -452,6 +499,83 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
       ],
     ),
   );
+
+  Future<void> _showAddMaxTest() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final guides = await _exerciseGuidesFuture;
+      if (!mounted) return;
+      if (guides == null || guides.isEmpty) {
+        _message(l10n.trainerMaxTestNoExercises);
+        return;
+      }
+      _exerciseGuides = guides;
+      final draft = await showDialog<_MaxTestDraft>(
+        context: context,
+        builder: (context) => _AddMaxTestDialog(guides: guides),
+      );
+      if (draft == null || !mounted) return;
+      await widget.repository.addMaxTest(
+        widget.trainee.id,
+        exerciseId: draft.exerciseId,
+        exercise: draft.exercise,
+        value: draft.value,
+        unit: draft.unit,
+        recordedAt: draft.recordedAt,
+      );
+      if (!mounted) return;
+      _message(l10n.trainerMaxTestSaved);
+      await _load();
+    } catch (error) {
+      if (mounted) _message(l10n.trainerMaxTestSaveError('$error'));
+    }
+  }
+
+  String _maxTestExerciseLabel(Map<String, dynamic> test) {
+    final exerciseId = test['exercise_id']?.toString();
+    final raw = test['exercise']?.toString().trim() ?? '';
+    for (final guide in _exerciseGuides) {
+      if ((exerciseId != null && guide.databaseId == exerciseId) ||
+          guide.id.toLowerCase() == raw.toLowerCase() ||
+          guide.name.toLowerCase() == raw.toLowerCase()) {
+        return guide.name;
+      }
+    }
+    return raw.isEmpty
+        ? AppLocalizations.of(context)!.trainerExerciseFallback
+        : raw;
+  }
+
+  Future<void> _deleteMaxTest(Map<String, dynamic> test) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.trainerDeleteMaxTestTitle),
+        content: Text(l10n.trainerDeleteMaxTestMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.trainerCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.trainerDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await widget.repository.deleteMaxTest(test['id']!);
+      if (!mounted) return;
+      _message(l10n.trainerMaxTestDeleted);
+      await _load();
+    } catch (error) {
+      if (mounted) _message(l10n.trainerMaxTestDeleteError('$error'));
+    }
+  }
+
   Widget _sectionTitle(String title, {Widget? action}) => Padding(
     padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
     child: Row(
@@ -885,5 +1009,146 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     name.dispose();
     if (!shouldImport || planName.isEmpty) return null;
     return TrainerPdfPlan(name: planName, days: imported.days);
+  }
+}
+
+class _AddMaxTestDialog extends StatefulWidget {
+  const _AddMaxTestDialog({required this.guides});
+
+  final List<ExerciseGuide> guides;
+
+  @override
+  State<_AddMaxTestDialog> createState() => _AddMaxTestDialogState();
+}
+
+class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
+  static const _units = ['kg', 'reps', 'seconds', 'minutes'];
+
+  final _formKey = GlobalKey<FormState>();
+  final _value = TextEditingController();
+  ExerciseGuide? _exercise;
+  String _unit = 'reps';
+  DateTime _recordedAt = DateTime.now();
+
+  @override
+  void dispose() {
+    _value.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AlertDialog(
+      title: Text(l10n.trainerAddMaxTest),
+      content: SizedBox(
+        width: 440,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<ExerciseGuide>(
+                  initialValue: _exercise,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    labelText: l10n.trainerMaxTestExercise,
+                  ),
+                  items: [
+                    for (final guide in widget.guides)
+                      DropdownMenuItem(
+                        value: guide,
+                        child: Text(
+                          guide.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _exercise = value),
+                  validator: (value) => value == null
+                      ? l10n.trainerMaxTestExerciseRequired
+                      : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _value,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: l10n.trainerMaxTestValue,
+                  ),
+                  validator: (raw) {
+                    final parsed = double.tryParse(
+                      (raw ?? '').trim().replaceAll(',', '.'),
+                    );
+                    return parsed == null || !parsed.isFinite || parsed <= 0
+                        ? l10n.trainerMaxTestValueInvalid
+                        : null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  initialValue: _unit,
+                  decoration: InputDecoration(
+                    labelText: l10n.trainerMaxTestUnit,
+                  ),
+                  items: [
+                    for (final unit in _units)
+                      DropdownMenuItem(value: unit, child: Text(unit)),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) setState(() => _unit = value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_outlined),
+                  title: Text(l10n.trainerMaxTestDate),
+                  subtitle: Text(DateFormat.yMMMd().format(_recordedAt)),
+                  onTap: _pickDate,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.trainerCancel),
+        ),
+        FilledButton.icon(
+          onPressed: _submit,
+          icon: const Icon(Icons.save_outlined),
+          label: Text(l10n.trainerSave),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final selected = await showDatePicker(
+      context: context,
+      initialDate: _recordedAt,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(now.year, now.month, now.day),
+    );
+    if (selected != null && mounted) setState(() => _recordedAt = selected);
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    final exercise = _exercise!;
+    Navigator.pop(context, (
+      exerciseId: exercise.databaseId,
+      exercise: exercise.id,
+      value: double.parse(_value.text.trim().replaceAll(',', '.')),
+      unit: _unit,
+      recordedAt: _recordedAt,
+    ));
   }
 }
