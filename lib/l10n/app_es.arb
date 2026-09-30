@@ -573,6 +573,8 @@
   "trainerAddMaxTest": "Añadir prueba máxima",
   "trainerMaxTestExercise": "Ejercicio",
   "trainerMaxTestExerciseRequired": "Selecciona un ejercicio.",
+  "trainerMaxTestOther": "Otro",
+  "trainerMaxTestCustomExerciseName": "Nombre del ejercicio personalizado",
   "trainerMaxTestValue": "Resultado",
   "trainerMaxTestValueInvalid": "Introduce un valor mayor que cero.",
   "trainerMaxTestUnit": "Unidad",

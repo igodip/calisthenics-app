@@ -306,7 +306,7 @@ class TrainerRepository {
 
   Future<void> addMaxTest(
     String traineeId, {
-    required String exerciseId,
+    required String? exerciseId,
     required String exercise,
     required double value,
     required String unit,
@@ -315,7 +315,7 @@ class TrainerRepository {
   }) async {
     final trimmedExercise = exercise.trim();
     final normalizedUnit = unit.trim().toLowerCase();
-    if (exerciseId.isEmpty || trimmedExercise.isEmpty) {
+    if (trimmedExercise.isEmpty) {
       throw ArgumentError('Exercise is required.');
     }
     if (!value.isFinite || value <= 0) {

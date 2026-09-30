@@ -1193,6 +1193,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainerMaxTestExerciseRequired => 'Seleziona un esercizio.';
 
   @override
+  String get trainerMaxTestOther => 'Altro';
+
+  @override
+  String get trainerMaxTestCustomExerciseName =>
+      'Nome esercizio personalizzato';
+
+  @override
   String get trainerMaxTestValue => 'Risultato';
 
   @override

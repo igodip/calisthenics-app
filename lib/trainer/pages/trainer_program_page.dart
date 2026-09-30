@@ -12,7 +12,7 @@ import '../../data/exercise_guides.dart';
 import '../../model/exercise_guide.dart';
 
 typedef _MaxTestDraft = ({
-  String exerciseId,
+  String? exerciseId,
   String exercise,
   double value,
   String unit,
@@ -1083,11 +1083,13 @@ class _AddMaxTestDialog extends StatefulWidget {
 
 class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
   static const _units = ['kg', 'reps', 'seconds', 'minutes'];
+  static const _customExerciseOption = 'custom';
 
   final _formKey = GlobalKey<FormState>();
   final _value = TextEditingController();
   final _notes = TextEditingController();
-  ExerciseGuide? _exercise;
+  final _customExercise = TextEditingController();
+  Object? _selectedExercise;
   String _unit = 'reps';
   DateTime _recordedAt = DateTime.now();
 
@@ -1095,12 +1097,42 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
   void dispose() {
     _value.dispose();
     _notes.dispose();
+    _customExercise.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final customExerciseSelected = _selectedExercise == _customExerciseOption;
+    final exerciseDropdown = DropdownButtonFormField<Object>(
+      initialValue: _selectedExercise,
+      isExpanded: true,
+      decoration: InputDecoration(
+        labelText: l10n.trainerMaxTestExercise,
+        border: customExerciseSelected ? InputBorder.none : null,
+        contentPadding: customExerciseSelected
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)
+            : null,
+      ),
+      items: [
+        for (final guide in widget.guides)
+          DropdownMenuItem(
+            value: guide,
+            child: Text(guide.name, overflow: TextOverflow.ellipsis),
+          ),
+        DropdownMenuItem(
+          value: _customExerciseOption,
+          child: Text(l10n.trainerMaxTestOther),
+        ),
+      ],
+      onChanged: (value) {
+        if (value != null) setState(() => _selectedExercise = value);
+      },
+      validator: (_) => _selectedExercise == null
+          ? l10n.trainerMaxTestExerciseRequired
+          : null,
+    );
     return AlertDialog(
       title: Text(l10n.trainerAddMaxTest),
       content: SizedBox(
@@ -1111,27 +1143,55 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                DropdownButtonFormField<ExerciseGuide>(
-                  initialValue: _exercise,
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: l10n.trainerMaxTestExercise,
-                  ),
-                  items: [
-                    for (final guide in widget.guides)
-                      DropdownMenuItem(
-                        value: guide,
-                        child: Text(
-                          guide.name,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                if (customExerciseSelected)
+                  Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
                       ),
-                  ],
-                  onChanged: (value) => setState(() => _exercise = value),
-                  validator: (value) => value == null
-                      ? l10n.trainerMaxTestExerciseRequired
-                      : null,
-                ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        exerciseDropdown,
+                        SizedBox(
+                          height: 1,
+                          child: Center(
+                            child: SizedBox(
+                              width: 28,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.outlineVariant,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        TextFormField(
+                          controller: _customExercise,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            labelText: l10n.trainerMaxTestCustomExerciseName,
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                          validator: (value) =>
+                              value == null || value.trim().isEmpty
+                              ? l10n.trainerMaxTestExerciseRequired
+                              : null,
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  exerciseDropdown,
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _value,
@@ -1217,10 +1277,12 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    final exercise = _exercise!;
+    final selectedExercise = _selectedExercise;
+    final isCustom = selectedExercise == _customExerciseOption;
+    final exercise = isCustom ? null : selectedExercise as ExerciseGuide;
     Navigator.pop(context, (
-      exerciseId: exercise.databaseId,
-      exercise: exercise.id,
+      exerciseId: exercise?.databaseId,
+      exercise: isCustom ? _customExercise.text.trim() : exercise!.id,
       value: double.parse(_value.text.trim().replaceAll(',', '.')),
       unit: _unit,
       recordedAt: _recordedAt,

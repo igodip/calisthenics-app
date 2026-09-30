@@ -2236,6 +2236,18 @@ abstract class AppLocalizations {
   /// **'Seleziona un esercizio.'**
   String get trainerMaxTestExerciseRequired;
 
+  /// No description provided for @trainerMaxTestOther.
+  ///
+  /// In it, this message translates to:
+  /// **'Altro'**
+  String get trainerMaxTestOther;
+
+  /// No description provided for @trainerMaxTestCustomExerciseName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome esercizio personalizzato'**
+  String get trainerMaxTestCustomExerciseName;
+
   /// No description provided for @trainerMaxTestValue.
   ///
   /// In it, this message translates to:
