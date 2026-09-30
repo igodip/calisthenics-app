@@ -2578,6 +2578,12 @@ abstract class AppLocalizations {
   /// **'Nessuna assegnazione trainer.'**
   String get adminNoAssignments;
 
+  /// No description provided for @adminSearchAssignments.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca assegnazioni'**
+  String get adminSearchAssignments;
+
   /// No description provided for @adminSearchUsers.
   ///
   /// In it, this message translates to:

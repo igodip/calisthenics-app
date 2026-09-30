@@ -1390,6 +1390,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get adminNoAssignments => 'Todavía no hay asignaciones.';
 
   @override
+  String get adminSearchAssignments => 'Buscar asignaciones';
+
+  @override
   String get adminSearchUsers => 'Buscar usuarios';
 
   @override

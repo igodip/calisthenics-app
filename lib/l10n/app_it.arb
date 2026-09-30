@@ -639,6 +639,7 @@
   "adminSuspended": "Sospesi",
   "adminNoUsers": "Nessun utente corrispondente.",
   "adminNoAssignments": "Nessuna assegnazione trainer.",
+  "adminSearchAssignments": "Cerca assegnazioni",
   "adminSearchUsers": "Cerca utenti",
   "adminRoleAdmin": "Amministratore",
   "adminRoleTrainer": "Trainer",

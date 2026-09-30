@@ -4,6 +4,59 @@ import '../../l10n/app_localizations.dart';
 import '../admin_models.dart';
 import '../admin_repository.dart';
 
+class AssignmentGroup {
+  const AssignmentGroup({
+    required this.trainerId,
+    required this.trainerName,
+    required this.assignments,
+  });
+
+  final String trainerId;
+  final String trainerName;
+  final List<AdminAssignment> assignments;
+}
+
+List<AssignmentGroup> groupAssignmentsByTrainer(
+  List<AdminAssignment> assignments, {
+  String query = '',
+}) {
+  final normalizedQuery = query.trim().toLowerCase();
+  final filteredAssignments = assignments.where((assignment) {
+    if (normalizedQuery.isEmpty) return true;
+    return assignment.traineeName.toLowerCase().contains(normalizedQuery) ||
+        assignment.trainerName.toLowerCase().contains(normalizedQuery);
+  }).toList();
+
+  final grouped = <String, List<AdminAssignment>>{};
+  for (final assignment in filteredAssignments) {
+    final groupKey = assignment.trainerId.isEmpty
+        ? assignment.trainerName
+        : assignment.trainerId;
+    grouped.putIfAbsent(groupKey, () => <AdminAssignment>[]).add(assignment);
+  }
+
+  final entries = grouped.entries.toList()
+    ..sort(
+      (a, b) => a.value.first.trainerName.toLowerCase().compareTo(
+        b.value.first.trainerName.toLowerCase(),
+      ),
+    );
+
+  return entries.map((entry) {
+    final groupAssignments = [...entry.value]
+      ..sort(
+        (a, b) =>
+            a.traineeName.toLowerCase().compareTo(b.traineeName.toLowerCase()),
+      );
+
+    return AssignmentGroup(
+      trainerId: entry.key,
+      trainerName: groupAssignments.first.trainerName,
+      assignments: groupAssignments,
+    );
+  }).toList();
+}
+
 class AdminConsolePage extends StatefulWidget {
   const AdminConsolePage({super.key});
 
@@ -14,12 +67,14 @@ class AdminConsolePage extends StatefulWidget {
 class _AdminConsolePageState extends State<AdminConsolePage> {
   final _repository = AdminRepository();
   final _searchController = TextEditingController();
+  final _assignmentSearchController = TextEditingController();
   final _busyUsers = <String>{};
   bool _loading = true;
   Object? _error;
   List<AdminUser> _users = const [];
   List<AdminAssignment> _assignments = const [];
   String _query = '';
+  String _assignmentQuery = '';
 
   @override
   void initState() {
@@ -30,6 +85,7 @@ class _AdminConsolePageState extends State<AdminConsolePage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _assignmentSearchController.dispose();
     super.dispose();
   }
 
@@ -478,11 +534,35 @@ class _AdminConsolePageState extends State<AdminConsolePage> {
   }
 
   Widget _buildAssignments(AppLocalizations l10n) {
+    final assignmentGroups = groupAssignmentsByTrainer(
+      _assignments,
+      query: _assignmentQuery,
+    );
+
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          TextField(
+            controller: _assignmentSearchController,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              labelText: l10n.adminSearchAssignments,
+              suffixIcon: _assignmentQuery.isEmpty
+                  ? null
+                  : IconButton(
+                      onPressed: () {
+                        _assignmentSearchController.clear();
+                        setState(() => _assignmentQuery = '');
+                      },
+                      icon: const Icon(Icons.clear),
+                    ),
+            ),
+            onChanged: (value) =>
+                setState(() => _assignmentQuery = value.trim()),
+          ),
+          const SizedBox(height: 12),
           Align(
             alignment: Alignment.centerRight,
             child: FilledButton.icon(
@@ -492,21 +572,92 @@ class _AdminConsolePageState extends State<AdminConsolePage> {
             ),
           ),
           const SizedBox(height: 12),
-          if (_assignments.isEmpty)
+          if (assignmentGroups.isEmpty)
             Padding(
               padding: const EdgeInsets.all(32),
               child: Center(child: Text(l10n.adminNoAssignments)),
             ),
-          for (final assignment in _assignments)
+          for (final group in assignmentGroups)
             Card(
-              child: ListTile(
-                leading: const Icon(Icons.account_tree_outlined),
-                title: Text(assignment.traineeName),
-                subtitle: Text(assignment.trainerName),
-                trailing: IconButton(
-                  tooltip: l10n.adminRemoveAssignment,
-                  onPressed: () => _removeAssignment(assignment),
-                  icon: const Icon(Icons.link_off),
+              margin: const EdgeInsets.only(bottom: 12),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primaryContainer,
+                          child: Text(
+                            group.trainerName.isEmpty
+                                ? '?'
+                                : group.trainerName[0].toUpperCase(),
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                group.trainerName,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              Text(
+                                '${group.assignments.length} ${group.assignments.length == 1 ? l10n.adminAssignmentTrainee : l10n.adminTrainees}',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            '${group.assignments.length}',
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    ...group.assignments.map(
+                      (assignment) => ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        leading: CircleAvatar(
+                          radius: 16,
+                          child: Text(
+                            assignment.traineeName.isEmpty
+                                ? '?'
+                                : assignment.traineeName[0].toUpperCase(),
+                          ),
+                        ),
+                        title: Text(assignment.traineeName),
+                        subtitle: Text(
+                          '${l10n.adminAssignmentTrainer}: ${assignment.trainerName}',
+                        ),
+                        trailing: IconButton(
+                          tooltip: l10n.adminRemoveAssignment,
+                          onPressed: () => _removeAssignment(assignment),
+                          icon: const Icon(Icons.link_off),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
