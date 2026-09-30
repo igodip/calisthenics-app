@@ -170,6 +170,47 @@ void main() {
     expect(savedNotes, 'Paid in cash');
   });
 
+  testWidgets('trainer sees private max test notes in history', (tester) async {
+    final repository = _FakeTrainerRepository(
+      TrainerProgramData(
+        plans: const [],
+        days: const [],
+        maxTests: const [
+          {
+            'id': 'max-test-1',
+            'exercise': 'squat',
+            'value': 140,
+            'unit': 'kg',
+            'recorded_at': '2026-09-30',
+            'trainer_notes': 'Keep the same depth next time',
+          },
+        ],
+        weightLogs: const [],
+        payments: const [],
+        feedback: const [],
+      ),
+    );
+
+    await pumpAt(
+      tester,
+      TrainerProgramPage(
+        trainee: trainee,
+        allTrainees: [trainee],
+        repository: repository,
+        onTraineeChanged: (_) {},
+      ),
+      const Size(500, 800),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('History'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('Keep the same depth next time'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets(
     'trainee card shows initials when no profile image is available',
     (tester) async {

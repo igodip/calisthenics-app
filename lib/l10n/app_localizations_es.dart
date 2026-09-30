@@ -1213,6 +1213,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get trainerMaxTestSaved => 'Prueba máxima guardada.';
 
   @override
+  String get trainerMaxTestPrivateNotesHint =>
+      'Visibles solo para los entrenadores asignados';
+
+  @override
+  String get trainerEditMaxTestNotes => 'Editar notas privadas';
+
+  @override
+  String get trainerMaxTestNotesUpdated =>
+      'Notas de la prueba máxima actualizadas.';
+
+  @override
   String trainerMaxTestSaveError(String error) {
     return 'No se pudo guardar la prueba máxima: $error';
   }

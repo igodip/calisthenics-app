@@ -266,7 +266,7 @@ class TrainerRepository {
       _client
           .from('max_tests')
           .select(
-            'id, exercise_id, exercise, value, unit, recorded_at, created_at',
+            'id, exercise_id, exercise, value, unit, recorded_at, created_at, max_test_trainer_notes(notes)',
           )
           .eq('trainee_id', trainee.id)
           .order('recorded_at', ascending: false)
@@ -286,10 +286,18 @@ class TrainerRepository {
     final feedback = (await loadFeedback(
       allTrainees,
     )).where((item) => item.traineeId == trainee.id).toList();
+    final maxTests = List<Map<String, dynamic>>.from(results[2] as List).map((
+      row,
+    ) {
+      final privateNotes = trainerRelationRow(
+        row['max_test_trainer_notes'],
+      )?['notes'];
+      return <String, dynamic>{...row, 'trainer_notes': privateNotes};
+    }).toList();
     return TrainerProgramData(
       plans: List<Map<String, dynamic>>.from(results[0] as List),
       days: List<Map<String, dynamic>>.from(results[1] as List),
-      maxTests: List<Map<String, dynamic>>.from(results[2] as List),
+      maxTests: maxTests,
       weightLogs: List<Map<String, dynamic>>.from(results[3] as List),
       payments: List<Map<String, dynamic>>.from(results[4] as List),
       feedback: feedback,
@@ -303,6 +311,7 @@ class TrainerRepository {
     required double value,
     required String unit,
     required DateTime recordedAt,
+    String notes = '',
   }) async {
     final trimmedExercise = exercise.trim();
     final normalizedUnit = unit.trim().toLowerCase();
@@ -315,7 +324,8 @@ class TrainerRepository {
     if (!const {'kg', 'reps', 'seconds', 'minutes'}.contains(normalizedUnit)) {
       throw ArgumentError('Invalid unit.');
     }
-    final rows = await _client
+    final normalizedNotes = _validateMaxTestNotes(notes);
+    final inserted = await _client
         .from('max_tests')
         .insert({
           'trainee_id': traineeId,
@@ -325,10 +335,47 @@ class TrainerRepository {
           'unit': normalizedUnit,
           'recorded_at': _dateOnly(recordedAt),
         })
-        .select('id');
-    if ((rows as List).length != 1) {
+        .select('id')
+        .single();
+    final maxTestId = inserted['id'];
+    if (maxTestId == null) {
       throw StateError('The max test was not saved.');
     }
+    if (normalizedNotes.isNotEmpty) {
+      try {
+        await _client.from('max_test_trainer_notes').insert({
+          'max_test_id': maxTestId,
+          'notes': normalizedNotes,
+        });
+      } catch (_) {
+        await _client.from('max_tests').delete().eq('id', maxTestId);
+        rethrow;
+      }
+    }
+  }
+
+  Future<void> saveMaxTestTrainerNotes(Object maxTestId, String notes) async {
+    final normalizedNotes = _validateMaxTestNotes(notes);
+    if (normalizedNotes.isEmpty) {
+      await _client
+          .from('max_test_trainer_notes')
+          .delete()
+          .eq('max_test_id', maxTestId);
+      return;
+    }
+    await _client.from('max_test_trainer_notes').upsert({
+      'max_test_id': maxTestId,
+      'notes': normalizedNotes,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    }, onConflict: 'max_test_id');
+  }
+
+  static String _validateMaxTestNotes(String notes) {
+    final normalized = notes.trim();
+    if (normalized.length > 2000) {
+      throw ArgumentError('Max test notes cannot exceed 2000 characters.');
+    }
+    return normalized;
   }
 
   Future<void> deleteMaxTest(Object id) async {
