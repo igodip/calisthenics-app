@@ -447,10 +447,10 @@ class _ExerciseGroupCardState extends State<_ExerciseGroupCard> {
     final bestValueLabel = widget.bestValue.toStringAsFixed(
       widget.bestValue.truncateToDouble() == widget.bestValue ? 0 : 1,
     );
-    final nextGoal = widget.bestValue == 0 ? 1 : widget.bestValue * 1.1;
-    final goalLabel = nextGoal.toStringAsFixed(
-      nextGoal.truncateToDouble() == nextGoal ? 0 : 1,
-    );
+    final nextGoal = widget.bestValue == 0
+        ? 1
+        : (widget.bestValue * 1.1).ceil();
+    final goalLabel = nextGoal.toString();
 
     return DecoratedBox(
       decoration: BoxDecoration(
