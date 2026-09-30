@@ -17,7 +17,10 @@ typedef _MaxTestDraft = ({
   double value,
   String unit,
   DateTime recordedAt,
+  String notes,
 });
+
+enum _MaxTestAction { editNotes, delete }
 
 class TrainerProgramPage extends StatefulWidget {
   const TrainerProgramPage({
@@ -426,12 +429,40 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
               leading: const Icon(Icons.emoji_events),
               title: Text(_maxTestExerciseLabel(test)),
               subtitle: Text(
-                '${test['recorded_at'] ?? ''} · ${test['value']} ${test['unit']}',
+                '${test['recorded_at'] ?? ''} · ${test['value']} ${test['unit']}${_maxTestNotesSuffix(test)}',
               ),
-              trailing: IconButton(
-                tooltip: AppLocalizations.of(context)!.trainerDeleteMaxTest,
-                onPressed: () => _deleteMaxTest(test),
-                icon: const Icon(Icons.delete_outline),
+              isThreeLine: _maxTestPrivateNotes(test).isNotEmpty,
+              trailing: PopupMenuButton<_MaxTestAction>(
+                onSelected: (action) {
+                  switch (action) {
+                    case _MaxTestAction.editNotes:
+                      _editMaxTestNotes(test);
+                    case _MaxTestAction.delete:
+                      _deleteMaxTest(test);
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: _MaxTestAction.editNotes,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.edit_note_outlined),
+                      title: Text(
+                        AppLocalizations.of(context)!.trainerEditMaxTestNotes,
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: _MaxTestAction.delete,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.delete_outline),
+                      title: Text(
+                        AppLocalizations.of(context)!.trainerDeleteMaxTest,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -522,6 +553,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
         value: draft.value,
         unit: draft.unit,
         recordedAt: draft.recordedAt,
+        notes: draft.notes,
       );
       if (!mounted) return;
       _message(l10n.trainerMaxTestSaved);
@@ -544,6 +576,34 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     return raw.isEmpty
         ? AppLocalizations.of(context)!.trainerExerciseFallback
         : raw;
+  }
+
+  String _maxTestPrivateNotes(Map<String, dynamic> test) =>
+      test['trainer_notes']?.toString().trim() ?? '';
+
+  String _maxTestNotesSuffix(Map<String, dynamic> test) {
+    final notes = _maxTestPrivateNotes(test);
+    return notes.isEmpty
+        ? ''
+        : '\n${AppLocalizations.of(context)!.trainerPrivateNotes}: $notes';
+  }
+
+  Future<void> _editMaxTestNotes(Map<String, dynamic> test) async {
+    final l10n = AppLocalizations.of(context)!;
+    final notes = await showDialog<String>(
+      context: context,
+      builder: (context) =>
+          _EditMaxTestNotesDialog(initialNotes: _maxTestPrivateNotes(test)),
+    );
+    if (notes == null || !mounted) return;
+    try {
+      await widget.repository.saveMaxTestTrainerNotes(test['id']!, notes);
+      if (!mounted) return;
+      _message(l10n.trainerMaxTestNotesUpdated);
+      await _load();
+    } catch (error) {
+      if (mounted) _message(l10n.trainerMaxTestSaveError('$error'));
+    }
   }
 
   Future<void> _deleteMaxTest(Map<String, dynamic> test) async {
@@ -1026,6 +1086,7 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
 
   final _formKey = GlobalKey<FormState>();
   final _value = TextEditingController();
+  final _notes = TextEditingController();
   ExerciseGuide? _exercise;
   String _unit = 'reps';
   DateTime _recordedAt = DateTime.now();
@@ -1033,6 +1094,7 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
   @override
   void dispose() {
     _value.dispose();
+    _notes.dispose();
     super.dispose();
   }
 
@@ -1110,6 +1172,19 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
                   subtitle: Text(DateFormat.yMMMd().format(_recordedAt)),
                   onTap: _pickDate,
                 ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _notes,
+                  minLines: 2,
+                  maxLines: 5,
+                  maxLength: 2000,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    labelText: l10n.trainerPrivateNotes,
+                    helperText: l10n.trainerMaxTestPrivateNotesHint,
+                    alignLabelWithHint: true,
+                  ),
+                ),
               ],
             ),
           ),
@@ -1149,6 +1224,65 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
       value: double.parse(_value.text.trim().replaceAll(',', '.')),
       unit: _unit,
       recordedAt: _recordedAt,
+      notes: _notes.text,
     ));
+  }
+}
+
+class _EditMaxTestNotesDialog extends StatefulWidget {
+  const _EditMaxTestNotesDialog({required this.initialNotes});
+
+  final String initialNotes;
+
+  @override
+  State<_EditMaxTestNotesDialog> createState() =>
+      _EditMaxTestNotesDialogState();
+}
+
+class _EditMaxTestNotesDialogState extends State<_EditMaxTestNotesDialog> {
+  late final TextEditingController _notes;
+
+  @override
+  void initState() {
+    super.initState();
+    _notes = TextEditingController(text: widget.initialNotes);
+  }
+
+  @override
+  void dispose() {
+    _notes.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AlertDialog(
+      title: Text(l10n.trainerEditMaxTestNotes),
+      content: TextField(
+        controller: _notes,
+        autofocus: true,
+        minLines: 3,
+        maxLines: 6,
+        maxLength: 2000,
+        textCapitalization: TextCapitalization.sentences,
+        decoration: InputDecoration(
+          labelText: l10n.trainerPrivateNotes,
+          helperText: l10n.trainerMaxTestPrivateNotesHint,
+          alignLabelWithHint: true,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.trainerCancel),
+        ),
+        FilledButton.icon(
+          onPressed: () => Navigator.pop(context, _notes.text),
+          icon: const Icon(Icons.save_outlined),
+          label: Text(l10n.trainerSave),
+        ),
+      ],
+    );
   }
 }

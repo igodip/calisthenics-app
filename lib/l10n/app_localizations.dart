@@ -2272,6 +2272,24 @@ abstract class AppLocalizations {
   /// **'Test massimale salvato.'**
   String get trainerMaxTestSaved;
 
+  /// No description provided for @trainerMaxTestPrivateNotesHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Visibili solo ai trainer assegnati'**
+  String get trainerMaxTestPrivateNotesHint;
+
+  /// No description provided for @trainerEditMaxTestNotes.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica note private'**
+  String get trainerEditMaxTestNotes;
+
+  /// No description provided for @trainerMaxTestNotesUpdated.
+  ///
+  /// In it, this message translates to:
+  /// **'Note del massimale aggiornate.'**
+  String get trainerMaxTestNotesUpdated;
+
   /// No description provided for @trainerMaxTestSaveError.
   ///
   /// In it, this message translates to:
