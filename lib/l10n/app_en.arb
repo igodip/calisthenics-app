@@ -639,6 +639,7 @@
   "adminSuspended": "Suspended",
   "adminNoUsers": "No matching users.",
   "adminNoAssignments": "No trainer assignments yet.",
+  "adminSearchAssignments": "Search assignments",
   "adminSearchUsers": "Search users",
   "adminRoleAdmin": "Admin",
   "adminRoleTrainer": "Trainer",

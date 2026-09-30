@@ -1374,6 +1374,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminNoAssignments => 'No trainer assignments yet.';
 
   @override
+  String get adminSearchAssignments => 'Search assignments';
+
+  @override
   String get adminSearchUsers => 'Search users';
 
   @override

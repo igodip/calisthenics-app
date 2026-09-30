@@ -1387,6 +1387,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get adminNoAssignments => 'Nessuna assegnazione trainer.';
 
   @override
+  String get adminSearchAssignments => 'Cerca assegnazioni';
+
+  @override
   String get adminSearchUsers => 'Cerca utenti';
 
   @override
