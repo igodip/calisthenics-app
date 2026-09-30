@@ -149,10 +149,15 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   }
 
   Widget _overview() {
-    final calendarDays = _showAllCalendarDays
-        ? _data!.days
-        : _data!.days.take(5);
-    final hiddenDays = _data!.days.length - 5;
+    final calendarWeeks = _calendarWeeks(_data!.days);
+    final visibleWeeks = _showAllCalendarDays
+        ? calendarWeeks
+        : calendarWeeks.take(2).toList();
+    final visibleDayCount = visibleWeeks.fold<int>(
+      0,
+      (count, week) => count + week.value.length,
+    );
+    final hiddenDays = _data!.days.length - visibleDayCount;
     return TrainerResponsiveList(
       onRefresh: _load,
       children: [
@@ -231,11 +236,11 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
         if (_data!.days.isEmpty)
           Text(AppLocalizations.of(context)!.trainerNoScheduledDays)
         else ...[
-          for (final week in _calendarWeeks(calendarDays)) ...[
+          for (final week in visibleWeeks) ...[
             _weekTitle(week.key),
             for (final day in week.value) _dayCard(day),
           ],
-          if (_data!.days.length > 5)
+          if (calendarWeeks.length > visibleWeeks.length)
             Align(
               alignment: Alignment.center,
               child: TextButton.icon(
@@ -284,6 +289,13 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     for (final day in days) {
       final week = (day['week'] as num?)?.toInt() ?? 0;
       weeks.putIfAbsent(week, () => []).add(day);
+    }
+    for (final daysInWeek in weeks.values) {
+      daysInWeek.sort((a, b) {
+        final aCode = '${a['day_code'] ?? a['title'] ?? ''}'.toUpperCase();
+        final bCode = '${b['day_code'] ?? b['title'] ?? ''}'.toUpperCase();
+        return aCode.compareTo(bCode);
+      });
     }
     return weeks.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
   }

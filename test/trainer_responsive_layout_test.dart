@@ -2,7 +2,9 @@ import 'package:calisync/trainer/components/trainer_trainee_card.dart';
 import 'package:calisync/trainer/pages/trainer_dashboard_page.dart';
 import 'package:calisync/trainer/pages/trainer_feedback_page.dart';
 import 'package:calisync/trainer/pages/trainer_payments_page.dart';
+import 'package:calisync/trainer/pages/trainer_program_page.dart';
 import 'package:calisync/trainer/trainer_models.dart';
+import 'package:calisync/trainer/trainer_repository.dart';
 import 'package:calisync/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -99,6 +101,56 @@ void main() {
     }
   });
 
+  testWidgets('trainee calendar shows the first two weeks in day order', (
+    tester,
+  ) async {
+    final days = [
+      {'week': 2, 'day_code': 'C', 'title': 'Week 2 - Day C'},
+      {'week': 1, 'day_code': 'C', 'title': 'Week 1 - Day C'},
+      {'week': 2, 'day_code': 'A', 'title': 'Week 2 - Day A'},
+      {'week': 3, 'day_code': 'A', 'title': 'Week 3 - Day A'},
+      {'week': 1, 'day_code': 'A', 'title': 'Week 1 - Day A'},
+      {'week': 2, 'day_code': 'B', 'title': 'Week 2 - Day B'},
+      {'week': 1, 'day_code': 'B', 'title': 'Week 1 - Day B'},
+    ];
+    final repository = _FakeTrainerRepository(
+      TrainerProgramData(
+        plans: const [],
+        days: days,
+        maxTests: const [],
+        weightLogs: const [],
+        payments: const [],
+        feedback: const [],
+      ),
+    );
+
+    await pumpAt(
+      tester,
+      TrainerProgramPage(
+        trainee: trainee,
+        allTrainees: [trainee],
+        repository: repository,
+        onTraineeChanged: (_) {},
+      ),
+      const Size(800, 900),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Week 3 - Day A'), findsNothing);
+    final dayTitles = [
+      'Week 1 - Day A',
+      'Week 1 - Day B',
+      'Week 1 - Day C',
+      'Week 2 - Day A',
+      'Week 2 - Day B',
+      'Week 2 - Day C',
+    ];
+    final positions = dayTitles
+        .map((title) => tester.getTopLeft(find.text(title)).dy)
+        .toList();
+    expect(positions, orderedEquals(positions.toList()..sort()));
+  });
+
   testWidgets(
     'trainee card shows initials when no profile image is available',
     (tester) async {
@@ -143,4 +195,16 @@ void main() {
 
     expect(trainee.profileImageUrl, 'https://example.com/avatar.png');
   });
+}
+
+class _FakeTrainerRepository extends Fake implements TrainerRepository {
+  _FakeTrainerRepository(this.program);
+
+  final TrainerProgramData program;
+
+  @override
+  Future<TrainerProgramData> loadProgram(
+    TrainerTrainee trainee,
+    List<TrainerTrainee> allTrainees,
+  ) async => program;
 }
