@@ -573,6 +573,8 @@
   "trainerAddMaxTest": "Add max test",
   "trainerMaxTestExercise": "Exercise",
   "trainerMaxTestExerciseRequired": "Select an exercise.",
+  "trainerMaxTestOther": "Other",
+  "trainerMaxTestCustomExerciseName": "Custom exercise name",
   "trainerMaxTestValue": "Result",
   "trainerMaxTestValueInvalid": "Enter a value greater than zero.",
   "trainerMaxTestUnit": "Unit",
