@@ -775,7 +775,7 @@ class _TrainingState extends State<Training> {
       MaterialPageRoute(
         builder: (context) => HomePage(
           title: l10n.appTitle,
-          initialIndex: HomePage.guidesIndex,
+          initialSection: HomeSection.guides,
           initialGuideSlug: exercise.exerciseSlug,
           initialGuideId: exercise.exerciseId,
         ),
@@ -861,7 +861,7 @@ class _TrainingState extends State<Training> {
       MaterialPageRoute(
         builder: (context) => HomePage(
           title: l10n.appTitle,
-          initialIndex: HomePage.terminologyIndex,
+          initialSection: HomeSection.terminology,
           initialTerminologyTermKey: termKey,
         ),
       ),

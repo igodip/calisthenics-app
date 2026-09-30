@@ -48,6 +48,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get themeYellowLabel => 'Giallo';
 
   @override
+  String get themePurpleLabel => 'Viola';
+
+  @override
+  String get themeOrangeLabel => 'Arancione';
+
+  @override
   String get onboardingTitleOne => 'Allenati meglio';
 
   @override
@@ -1027,6 +1033,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainerMonthlyAmount => 'Importo mensile';
 
   @override
+  String get trainerPaymentNotes => 'Note sul pagamento';
+
+  @override
   String get trainerAppAccessActive => 'Accesso all’app attivo';
 
   @override
@@ -1173,6 +1182,57 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get trainerNoMaxTests => 'Nessun test massimale.';
+
+  @override
+  String get trainerAddMaxTest => 'Aggiungi test massimale';
+
+  @override
+  String get trainerMaxTestExercise => 'Esercizio';
+
+  @override
+  String get trainerMaxTestExerciseRequired => 'Seleziona un esercizio.';
+
+  @override
+  String get trainerMaxTestValue => 'Risultato';
+
+  @override
+  String get trainerMaxTestValueInvalid =>
+      'Inserisci un valore maggiore di zero.';
+
+  @override
+  String get trainerMaxTestUnit => 'Unità';
+
+  @override
+  String get trainerMaxTestDate => 'Data del test';
+
+  @override
+  String get trainerMaxTestNoExercises => 'Nessun esercizio disponibile.';
+
+  @override
+  String get trainerMaxTestSaved => 'Test massimale salvato.';
+
+  @override
+  String trainerMaxTestSaveError(String error) {
+    return 'Impossibile salvare il test massimale: $error';
+  }
+
+  @override
+  String get trainerDeleteMaxTest => 'Elimina test massimale';
+
+  @override
+  String get trainerDeleteMaxTestTitle => 'Eliminare il test massimale?';
+
+  @override
+  String get trainerDeleteMaxTestMessage =>
+      'Il risultato verrà eliminato definitivamente.';
+
+  @override
+  String get trainerMaxTestDeleted => 'Test massimale eliminato.';
+
+  @override
+  String trainerMaxTestDeleteError(String error) {
+    return 'Impossibile eliminare il test massimale: $error';
+  }
 
   @override
   String get trainerWeightHistory => 'Cronologia peso';

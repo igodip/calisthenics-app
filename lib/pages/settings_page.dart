@@ -19,6 +19,8 @@ class SettingsPage extends StatelessWidget {
       (AppThemeType.red, l10n.themeRedLabel),
       (AppThemeType.blue, l10n.themeBlueLabel),
       (AppThemeType.yellow, l10n.themeYellowLabel),
+      (AppThemeType.purple, l10n.themePurpleLabel),
+      (AppThemeType.orange, l10n.themeOrangeLabel),
     ];
 
     return Scaffold(
@@ -26,8 +28,7 @@ class SettingsPage extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
               Text(
                 l10n.settingsThemeTitle,

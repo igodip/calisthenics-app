@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 
-enum AppThemeType { defaultTheme, black, pink, red, blue, yellow }
+enum AppThemeType {
+  defaultTheme,
+  black,
+  pink,
+  red,
+  blue,
+  yellow,
+  purple,
+  orange,
+}
 
 @immutable
 class AppColors extends ThemeExtension<AppColors> {
@@ -126,6 +135,20 @@ class AppTheme {
   static const Color _yellowSurfaceVariant = Color(0xFF433823);
   static const Color _yellowTertiary = Color(0xFFFFF4CC);
 
+  static const Color _purplePrimary = Color(0xFFAB76E8);
+  static const Color _purpleSecondary = Color(0xFF8E5BC7);
+  static const Color _purpleBackground = Color(0xFF21182B);
+  static const Color _purpleSurface = Color(0xFF2D2239);
+  static const Color _purpleSurfaceVariant = Color(0xFF392B49);
+  static const Color _purpleTertiary = Color(0xFFF0E2FF);
+
+  static const Color _orangePrimary = Color(0xFFFF9E45);
+  static const Color _orangeSecondary = Color(0xFFE77922);
+  static const Color _orangeBackground = Color(0xFF2B1E14);
+  static const Color _orangeSurface = Color(0xFF39271A);
+  static const Color _orangeSurfaceVariant = Color(0xFF493221);
+  static const Color _orangeTertiary = Color(0xFFFFE8D1);
+
   static const Color _success = Color(0xFF6C9C48);
   static const Color _warning = Color(0xFFFFA726);
 
@@ -141,6 +164,10 @@ class AppTheme {
         return AppThemeType.blue;
       case 'yellow':
         return AppThemeType.yellow;
+      case 'purple':
+        return AppThemeType.purple;
+      case 'orange':
+        return AppThemeType.orange;
       case 'default':
       default:
         return AppThemeType.defaultTheme;
@@ -154,6 +181,8 @@ class AppTheme {
       AppThemeType.red => 'red',
       AppThemeType.blue => 'blue',
       AppThemeType.yellow => 'yellow',
+      AppThemeType.purple => 'purple',
+      AppThemeType.orange => 'orange',
       AppThemeType.defaultTheme => 'default',
     };
   }
@@ -165,6 +194,8 @@ class AppTheme {
       AppThemeType.red => _redPrimary,
       AppThemeType.blue => _bluePrimary,
       AppThemeType.yellow => _yellowPrimary,
+      AppThemeType.purple => _purplePrimary,
+      AppThemeType.orange => _orangePrimary,
       AppThemeType.defaultTheme => _defaultPrimary,
     };
   }
@@ -215,6 +246,24 @@ class AppTheme {
         surfaceVariant: _yellowSurfaceVariant,
         tertiary: _yellowTertiary,
         surfaceTint: _yellowTertiary.withValues(alpha: 0.2),
+      ),
+      AppThemeType.purple => _buildTheme(
+        primary: _purplePrimary,
+        secondary: _purpleSecondary,
+        background: _purpleBackground,
+        surface: _purpleSurface,
+        surfaceVariant: _purpleSurfaceVariant,
+        tertiary: _purpleTertiary,
+        surfaceTint: _purpleTertiary.withValues(alpha: 0.2),
+      ),
+      AppThemeType.orange => _buildTheme(
+        primary: _orangePrimary,
+        secondary: _orangeSecondary,
+        background: _orangeBackground,
+        surface: _orangeSurface,
+        surfaceVariant: _orangeSurfaceVariant,
+        tertiary: _orangeTertiary,
+        surfaceTint: _orangeTertiary.withValues(alpha: 0.2),
       ),
       AppThemeType.defaultTheme => _buildTheme(
         primary: _defaultPrimary,

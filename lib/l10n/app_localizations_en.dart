@@ -48,6 +48,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeYellowLabel => 'Yellow';
 
   @override
+  String get themePurpleLabel => 'Purple';
+
+  @override
+  String get themeOrangeLabel => 'Orange';
+
+  @override
   String get onboardingTitleOne => 'Train smarter';
 
   @override
@@ -1017,6 +1023,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainerMonthlyAmount => 'Monthly amount';
 
   @override
+  String get trainerPaymentNotes => 'Payment notes';
+
+  @override
   String get trainerAppAccessActive => 'App access active';
 
   @override
@@ -1162,6 +1171,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainerNoMaxTests => 'No max tests.';
+
+  @override
+  String get trainerAddMaxTest => 'Add max test';
+
+  @override
+  String get trainerMaxTestExercise => 'Exercise';
+
+  @override
+  String get trainerMaxTestExerciseRequired => 'Select an exercise.';
+
+  @override
+  String get trainerMaxTestValue => 'Result';
+
+  @override
+  String get trainerMaxTestValueInvalid => 'Enter a value greater than zero.';
+
+  @override
+  String get trainerMaxTestUnit => 'Unit';
+
+  @override
+  String get trainerMaxTestDate => 'Test date';
+
+  @override
+  String get trainerMaxTestNoExercises => 'No exercises are available.';
+
+  @override
+  String get trainerMaxTestSaved => 'Max test saved.';
+
+  @override
+  String trainerMaxTestSaveError(String error) {
+    return 'Unable to save max test: $error';
+  }
+
+  @override
+  String get trainerDeleteMaxTest => 'Delete max test';
+
+  @override
+  String get trainerDeleteMaxTestTitle => 'Delete max test?';
+
+  @override
+  String get trainerDeleteMaxTestMessage =>
+      'This result will be permanently removed.';
+
+  @override
+  String get trainerMaxTestDeleted => 'Max test deleted.';
+
+  @override
+  String trainerMaxTestDeleteError(String error) {
+    return 'Unable to delete max test: $error';
+  }
 
   @override
   String get trainerWeightHistory => 'Weight history';

@@ -178,6 +178,18 @@ abstract class AppLocalizations {
   /// **'Giallo'**
   String get themeYellowLabel;
 
+  /// No description provided for @themePurpleLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Viola'**
+  String get themePurpleLabel;
+
+  /// No description provided for @themeOrangeLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Arancione'**
+  String get themeOrangeLabel;
+
   /// No description provided for @onboardingTitleOne.
   ///
   /// In it, this message translates to:
@@ -1930,6 +1942,12 @@ abstract class AppLocalizations {
   /// **'Importo mensile'**
   String get trainerMonthlyAmount;
 
+  /// No description provided for @trainerPaymentNotes.
+  ///
+  /// In it, this message translates to:
+  /// **'Note sul pagamento'**
+  String get trainerPaymentNotes;
+
   /// No description provided for @trainerAppAccessActive.
   ///
   /// In it, this message translates to:
@@ -2199,6 +2217,96 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nessun test massimale.'**
   String get trainerNoMaxTests;
+
+  /// No description provided for @trainerAddMaxTest.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi test massimale'**
+  String get trainerAddMaxTest;
+
+  /// No description provided for @trainerMaxTestExercise.
+  ///
+  /// In it, this message translates to:
+  /// **'Esercizio'**
+  String get trainerMaxTestExercise;
+
+  /// No description provided for @trainerMaxTestExerciseRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona un esercizio.'**
+  String get trainerMaxTestExerciseRequired;
+
+  /// No description provided for @trainerMaxTestValue.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultato'**
+  String get trainerMaxTestValue;
+
+  /// No description provided for @trainerMaxTestValueInvalid.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un valore maggiore di zero.'**
+  String get trainerMaxTestValueInvalid;
+
+  /// No description provided for @trainerMaxTestUnit.
+  ///
+  /// In it, this message translates to:
+  /// **'Unità'**
+  String get trainerMaxTestUnit;
+
+  /// No description provided for @trainerMaxTestDate.
+  ///
+  /// In it, this message translates to:
+  /// **'Data del test'**
+  String get trainerMaxTestDate;
+
+  /// No description provided for @trainerMaxTestNoExercises.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun esercizio disponibile.'**
+  String get trainerMaxTestNoExercises;
+
+  /// No description provided for @trainerMaxTestSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Test massimale salvato.'**
+  String get trainerMaxTestSaved;
+
+  /// No description provided for @trainerMaxTestSaveError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile salvare il test massimale: {error}'**
+  String trainerMaxTestSaveError(String error);
+
+  /// No description provided for @trainerDeleteMaxTest.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina test massimale'**
+  String get trainerDeleteMaxTest;
+
+  /// No description provided for @trainerDeleteMaxTestTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare il test massimale?'**
+  String get trainerDeleteMaxTestTitle;
+
+  /// No description provided for @trainerDeleteMaxTestMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Il risultato verrà eliminato definitivamente.'**
+  String get trainerDeleteMaxTestMessage;
+
+  /// No description provided for @trainerMaxTestDeleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Test massimale eliminato.'**
+  String get trainerMaxTestDeleted;
+
+  /// No description provided for @trainerMaxTestDeleteError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile eliminare il test massimale: {error}'**
+  String trainerMaxTestDeleteError(String error);
 
   /// No description provided for @trainerWeightHistory.
   ///

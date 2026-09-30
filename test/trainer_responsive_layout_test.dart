@@ -89,7 +89,7 @@ void main() {
         tester,
         TrainerPaymentsPage(
           trainees: [trainee],
-          onSave: (_, _, _) async {},
+          onSave: (_, _, _, _) async {},
           onRefresh: () async {},
         ),
         size,
@@ -149,6 +149,25 @@ void main() {
         .map((title) => tester.getTopLeft(find.text(title)).dy)
         .toList();
     expect(positions, orderedEquals(positions.toList()..sort()));
+  });
+
+  testWidgets('payment notes are submitted with the payment', (tester) async {
+    String? savedNotes;
+    await pumpAt(
+      tester,
+      TrainerPaymentsPage(
+        trainees: [trainee],
+        onSave: (_, _, _, notes) async => savedNotes = notes,
+        onRefresh: () async {},
+      ),
+      const Size(500, 800),
+    );
+
+    await tester.enterText(find.byType(TextField).at(1), 'Paid in cash');
+    await tester.tap(find.byIcon(Icons.save_outlined));
+    await tester.pump();
+
+    expect(savedNotes, 'Paid in cash');
   });
 
   testWidgets(

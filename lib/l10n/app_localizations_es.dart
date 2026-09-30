@@ -48,6 +48,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get themeYellowLabel => 'Amarillo';
 
   @override
+  String get themePurpleLabel => 'Morado';
+
+  @override
+  String get themeOrangeLabel => 'Naranja';
+
+  @override
   String get onboardingTitleOne => 'Entrena de forma inteligente';
 
   @override
@@ -1029,6 +1035,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get trainerMonthlyAmount => 'Importe mensual';
 
   @override
+  String get trainerPaymentNotes => 'Notas del pago';
+
+  @override
   String get trainerAppAccessActive => 'Acceso a la app activo';
 
   @override
@@ -1175,6 +1184,56 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get trainerNoMaxTests => 'No hay pruebas máximas.';
+
+  @override
+  String get trainerAddMaxTest => 'Añadir prueba máxima';
+
+  @override
+  String get trainerMaxTestExercise => 'Ejercicio';
+
+  @override
+  String get trainerMaxTestExerciseRequired => 'Selecciona un ejercicio.';
+
+  @override
+  String get trainerMaxTestValue => 'Resultado';
+
+  @override
+  String get trainerMaxTestValueInvalid => 'Introduce un valor mayor que cero.';
+
+  @override
+  String get trainerMaxTestUnit => 'Unidad';
+
+  @override
+  String get trainerMaxTestDate => 'Fecha de la prueba';
+
+  @override
+  String get trainerMaxTestNoExercises => 'No hay ejercicios disponibles.';
+
+  @override
+  String get trainerMaxTestSaved => 'Prueba máxima guardada.';
+
+  @override
+  String trainerMaxTestSaveError(String error) {
+    return 'No se pudo guardar la prueba máxima: $error';
+  }
+
+  @override
+  String get trainerDeleteMaxTest => 'Eliminar prueba máxima';
+
+  @override
+  String get trainerDeleteMaxTestTitle => '¿Eliminar la prueba máxima?';
+
+  @override
+  String get trainerDeleteMaxTestMessage =>
+      'El resultado se eliminará permanentemente.';
+
+  @override
+  String get trainerMaxTestDeleted => 'Prueba máxima eliminada.';
+
+  @override
+  String trainerMaxTestDeleteError(String error) {
+    return 'No se pudo eliminar la prueba máxima: $error';
+  }
 
   @override
   String get trainerWeightHistory => 'Historial de peso';

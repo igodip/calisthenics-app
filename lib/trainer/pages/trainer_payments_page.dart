@@ -12,7 +12,12 @@ class TrainerPaymentsPage extends StatefulWidget {
     required this.onRefresh,
   });
   final List<TrainerTrainee> trainees;
-  final Future<void> Function(TrainerTrainee trainee, bool paid, double? amount)
+  final Future<void> Function(
+    TrainerTrainee trainee,
+    bool paid,
+    double? amount,
+    String notes,
+  )
   onSave;
   final Future<void> Function() onRefresh;
 
@@ -22,6 +27,7 @@ class TrainerPaymentsPage extends StatefulWidget {
 
 class _TrainerPaymentsPageState extends State<TrainerPaymentsPage> {
   final Map<String, TextEditingController> _amounts = {};
+  final Map<String, TextEditingController> _notes = {};
   final Set<String> _saving = {};
 
   TextEditingController _controller(TrainerTrainee trainee) =>
@@ -32,9 +38,18 @@ class _TrainerPaymentsPageState extends State<TrainerPaymentsPage> {
         ),
       );
 
+  TextEditingController _notesController(TrainerTrainee trainee) =>
+      _notes.putIfAbsent(
+        trainee.id,
+        () => TextEditingController(text: trainee.paymentNotes),
+      );
+
   @override
   void dispose() {
     for (final controller in _amounts.values) {
+      controller.dispose();
+    }
+    for (final controller in _notes.values) {
       controller.dispose();
     }
     super.dispose();
@@ -48,6 +63,7 @@ class _TrainerPaymentsPageState extends State<TrainerPaymentsPage> {
         trainee,
         paid,
         text.isEmpty ? null : double.tryParse(text),
+        _notesController(trainee).text,
       );
     } finally {
       if (mounted) setState(() => _saving.remove(trainee.id));
@@ -124,6 +140,17 @@ class _TrainerPaymentsPageState extends State<TrainerPaymentsPage> {
                       prefixText: '€ ',
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _notesController(trainee),
+                    minLines: 2,
+                    maxLines: 4,
+                    maxLength: 2000,
+                    decoration: InputDecoration(
+                      labelText: l10n.trainerPaymentNotes,
+                      alignLabelWithHint: true,
+                    ),
+                  ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(l10n.trainerAppAccessActive),
@@ -131,6 +158,21 @@ class _TrainerPaymentsPageState extends State<TrainerPaymentsPage> {
                     onChanged: _saving.contains(trainee.id)
                         ? null
                         : (value) => _save(trainee, value),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: FilledButton.icon(
+                      onPressed: _saving.contains(trainee.id)
+                          ? null
+                          : () => _save(trainee, trainee.paid),
+                      icon: _saving.contains(trainee.id)
+                          ? const SizedBox.square(
+                              dimension: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save_outlined),
+                      label: Text(l10n.trainerSave),
+                    ),
                   ),
                 ],
               ),

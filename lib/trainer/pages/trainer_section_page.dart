@@ -171,13 +171,23 @@ class _TrainerSectionPageState extends State<TrainerSectionPage> {
     TrainerTrainee trainee,
     bool paid,
     double? amount,
+    String notes,
   ) async {
     try {
-      await _repository.savePayment(trainee.id, paid: paid, amount: amount);
+      await _repository.savePayment(
+        trainee.id,
+        paid: paid,
+        amount: amount,
+        notes: notes,
+      );
       setState(() {
         _trainees = _trainees.map((entry) {
           return entry.id == trainee.id
-              ? entry.copyWith(paid: paid, paymentAmount: amount)
+              ? entry.copyWith(
+                  paid: paid,
+                  paymentAmount: amount,
+                  paymentNotes: notes.trim(),
+                )
               : entry;
         }).toList();
       });

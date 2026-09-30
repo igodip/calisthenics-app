@@ -46,6 +46,7 @@ class ExerciseGuideTranslation {
 
 class ExerciseGuide {
   const ExerciseGuide({
+    required this.databaseId,
     required this.id,
     required this.name,
     required this.difficulty,
@@ -54,6 +55,7 @@ class ExerciseGuide {
     required this.description,
   });
 
+  final String databaseId;
   final String id;
   final String name;
   final Difficulty difficulty;
@@ -77,6 +79,7 @@ class ExerciseGuide {
     }
 
     return ExerciseGuide(
+      databaseId: row['id']?.toString() ?? '',
       id: slug,
       name: resolvedName,
       difficulty: _difficultyFromString(row['difficulty'] as String?),
