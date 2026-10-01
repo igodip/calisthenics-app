@@ -104,9 +104,17 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     }
   }
 
-  void _message(Object message) => ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text('$message')));
+  void _message(Object message) => ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          Icon(Icons.check_circle, color: Colors.greenAccent.shade400),
+          const SizedBox(width: 12),
+          Expanded(child: Text('$message')),
+        ],
+      ),
+    ),
+  );
 
   Future<void> _saveCoach() async {
     final savedMessage = AppLocalizations.of(context)!.trainerCoachFieldsSaved;
