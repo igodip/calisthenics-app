@@ -412,7 +412,7 @@ class AppTheme {
         prefixIconColor: Colors.white70,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: surfaceVariant,
+        backgroundColor: Color.lerp(surfaceVariant, Colors.black, 0.35),
         behavior: SnackBarBehavior.floating,
         contentTextStyle: const TextStyle(color: Colors.white),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
