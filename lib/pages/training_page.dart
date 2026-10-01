@@ -101,8 +101,11 @@ class _TrainingState extends State<Training> {
                     theme.appBarTheme.backgroundColor ?? colorScheme.surface,
                 elevation: 0,
                 foregroundColor:
-                    theme.appBarTheme.foregroundColor ?? colorScheme.onSurface,
-                title: Text(l10n.trainingTodayTitle),
+                    theme.appBarTheme.foregroundColor ?? Colors.white,
+                title: Text(
+                  l10n.trainingTodayTitle,
+                  style: textTheme.titleLarge?.copyWith(color: Colors.white),
+                ),
               ),
               body: SafeArea(
                 child: ListView(
