@@ -841,8 +841,35 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
         planId: planId,
       );
       if (!mounted) return;
+      final currentData = _data;
+      if (currentData != null) {
+        final updatedExercise = Map<String, dynamic>.from(exercise)
+          ..['exercise'] = values.name
+          ..['duration_minutes'] = values.durationMinutes
+          ..['notes'] = values.notes;
+        final updatedDays = currentData.days.map((currentDay) {
+          if (!identical(currentDay, day)) return currentDay;
+          return {
+            ...currentDay,
+            'day_exercises': trainerRelationRows(currentDay['day_exercises'])
+                .map((item) {
+                  return item['id'] == exercise['id'] ? updatedExercise : item;
+                })
+                .toList(),
+          };
+        }).toList();
+        setState(() {
+          _data = TrainerProgramData(
+            plans: currentData.plans,
+            days: updatedDays,
+            maxTests: currentData.maxTests,
+            weightLogs: currentData.weightLogs,
+            payments: currentData.payments,
+            feedback: currentData.feedback,
+          );
+        });
+      }
       _message(l10n.trainerExerciseUpdated);
-      await _load();
     } catch (error) {
       if (mounted) _message(error);
     }
