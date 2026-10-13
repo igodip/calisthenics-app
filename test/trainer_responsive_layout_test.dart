@@ -109,7 +109,12 @@ void main() {
       {'week': 1, 'day_code': 'C', 'title': 'Week 1 - Day C'},
       {'week': 2, 'day_code': 'A', 'title': 'Week 2 - Day A'},
       {'week': 3, 'day_code': 'A', 'title': 'Week 3 - Day A'},
-      {'week': 1, 'day_code': 'A', 'title': 'Week 1 - Day A'},
+      {
+        'week': 1,
+        'day_code': 'A',
+        'title': 'Week 1 - Day A',
+        'completed': true,
+      },
       {'week': 2, 'day_code': 'B', 'title': 'Week 2 - Day B'},
       {'week': 1, 'day_code': 'B', 'title': 'Week 1 - Day B'},
     ];
@@ -149,6 +154,35 @@ void main() {
         .map((title) => tester.getTopLeft(find.text(title)).dy)
         .toList();
     expect(positions, orderedEquals(positions.toList()..sort()));
+
+    final completedDayTitle = find.text('Week 1 - Day A');
+    final completedDayCard = tester.widget<Card>(
+      find.ancestor(of: completedDayTitle, matching: find.byType(Card)).first,
+    );
+    expect(completedDayCard.color, Colors.green.shade50);
+    expect(completedDayCard.elevation, 3);
+    expect(
+      tester.widget<Icon>(
+        find.descendant(
+          of: find.ancestor(
+            of: completedDayTitle,
+            matching: find.byType(ExpansionTile),
+          ),
+          matching: find.byIcon(Icons.calendar_today),
+        ),
+      ).color,
+      Theme.of(tester.element(completedDayTitle)).colorScheme.secondary,
+    );
+    expect(
+      find.descendant(
+        of: find.ancestor(
+          of: completedDayTitle,
+          matching: find.byType(ExpansionTile),
+        ),
+        matching: find.byIcon(Icons.check_circle),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('payment notes are submitted with the payment', (tester) async {

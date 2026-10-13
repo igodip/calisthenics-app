@@ -266,7 +266,7 @@ class _TrainingState extends State<Training> {
                           opacity: animation,
                           child: SizeTransition(
                             sizeFactor: animation,
-                            axisAlignment: -1,
+                            alignment: AlignmentDirectional.topCenter,
                             child: child,
                           ),
                         );
