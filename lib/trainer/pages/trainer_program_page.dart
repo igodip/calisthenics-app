@@ -10,6 +10,7 @@ import '../pdf/trainer_pdf_import.dart';
 import '../../l10n/app_localizations.dart';
 import '../../data/exercise_guides.dart';
 import '../../model/exercise_guide.dart';
+import '../../theme/app_theme.dart';
 
 typedef _MaxTestDraft = ({
   String? exerciseId,
@@ -670,10 +671,24 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   Widget _dayCard(Map<String, dynamic> day, {bool editable = false}) {
     final exercises = trainerRelationRows(day['day_exercises']);
     final done = exercises.where((item) => item['completed'] == true).length;
+    final isCompleted = day['completed'] == true;
+    final theme = Theme.of(context);
+    final appColors = theme.extension<AppColors>();
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      clipBehavior: Clip.antiAlias,
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: isCompleted
+          ? appColors?.successContainer ?? Colors.green.shade50
+          : null,
       child: ExpansionTile(
-        leading: CircleAvatar(child: Text('${day['week'] ?? '—'}')),
+        leading: Icon(
+          Icons.calendar_today,
+          color: isCompleted
+              ? appColors?.success ?? theme.colorScheme.secondary
+              : theme.colorScheme.primary,
+        ),
         title: Text(
           '${day['title'] ?? day['day_code'] ?? AppLocalizations.of(context)!.trainerTrainingDayFallback}',
         ),
@@ -681,6 +696,19 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
           AppLocalizations.of(
             context,
           )!.trainerExercisesCompleted(done, exercises.length),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isCompleted) ...[
+              Icon(
+                Icons.check_circle,
+                color: appColors?.success ?? theme.colorScheme.secondary,
+              ),
+              const SizedBox(width: 8),
+            ],
+            const Icon(Icons.expand_more),
+          ],
         ),
         children: [
           for (final exercise in exercises)
