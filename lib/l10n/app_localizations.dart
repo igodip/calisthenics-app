@@ -1174,17 +1174,11 @@ abstract class AppLocalizations {
   /// **'Aggiorna le tue informazioni personali'**
   String get profileEditSubtitle;
 
-  /// No description provided for @profileThemeSettingsTitle.
+  /// No description provided for @profileSettingsSubtitle.
   ///
   /// In it, this message translates to:
-  /// **'Colori del tema'**
-  String get profileThemeSettingsTitle;
-
-  /// No description provided for @profileThemeSettingsSubtitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Scegli il colore del tema dell\'app'**
-  String get profileThemeSettingsSubtitle;
+  /// **'Tema, privacy e gestione dell’account'**
+  String get profileSettingsSubtitle;
 
   /// No description provided for @profileLanguageSettingsTitle.
   ///

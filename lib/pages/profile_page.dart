@@ -461,9 +461,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: ListTile(
-                      leading: const Icon(Icons.palette_outlined),
-                      title: Text(l10n.profileThemeSettingsTitle),
-                      subtitle: Text(l10n.profileThemeSettingsSubtitle),
+                      leading: const Icon(Icons.settings_outlined),
+                      title: Text(l10n.accountSettingsTitle),
+                      subtitle: Text(l10n.profileSettingsSubtitle),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
