@@ -5,9 +5,10 @@ import '../l10n/app_localizations.dart';
 import '../model/terminology_entry.dart';
 
 class TerminologyPage extends StatefulWidget {
-  const TerminologyPage({super.key, this.termKey});
+  const TerminologyPage({super.key, this.termKey, this.loadTerms});
 
   final String? termKey;
+  final Future<List<TerminologyEntry>> Function(String locale)? loadTerms;
 
   @override
   State<TerminologyPage> createState() => _TerminologyPageState();
@@ -20,6 +21,8 @@ class _TerminologyPageState extends State<TerminologyPage> {
   final Map<String, GlobalKey> _entryKeys = {};
   String? _highlightedTermKey;
   bool _didScrollToTarget = false;
+  int _scrollRequest = 0;
+  int? _scheduledRequest;
 
   @override
   void initState() {
@@ -33,9 +36,12 @@ class _TerminologyPageState extends State<TerminologyPage> {
     final locale = Localizations.localeOf(context).languageCode;
     if (_localeCode != locale) {
       _localeCode = locale;
-      _terminologyFuture = TerminologyRepository.load(locale);
+      _terminologyFuture = (widget.loadTerms ?? TerminologyRepository.load)(
+        locale,
+      );
       _entryKeys.clear();
       _didScrollToTarget = false;
+      _scrollRequest++;
     }
   }
 
@@ -45,6 +51,15 @@ class _TerminologyPageState extends State<TerminologyPage> {
     if (oldWidget.termKey != widget.termKey) {
       _highlightedTermKey = widget.termKey?.trim().toLowerCase();
       _didScrollToTarget = false;
+      _scrollRequest++;
+    }
+    if (oldWidget.loadTerms != widget.loadTerms) {
+      _terminologyFuture = (widget.loadTerms ?? TerminologyRepository.load)(
+        _localeCode!,
+      );
+      _entryKeys.clear();
+      _didScrollToTarget = false;
+      _scrollRequest++;
     }
   }
 
@@ -55,32 +70,34 @@ class _TerminologyPageState extends State<TerminologyPage> {
   }
 
   void _scrollToHighlightedEntry(List<TerminologyEntry> terms) {
-    if (_didScrollToTarget || _highlightedTermKey == null) {
+    if (_didScrollToTarget ||
+        _highlightedTermKey == null ||
+        _scheduledRequest == _scrollRequest) {
       return;
     }
     final targetKey = _highlightedTermKey!;
     final exists = terms.any(
-      (entry) => entry.termKey.toLowerCase() == targetKey,
+      (entry) => entry.termKey.trim().toLowerCase() == targetKey,
     );
     if (!exists) {
       _didScrollToTarget = true;
       return;
     }
+    final request = _scrollRequest;
+    _scheduledRequest = request;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || request != _scrollRequest) return;
+      _scheduledRequest = null;
       final key = _entryKeys[targetKey];
       final context = key?.currentContext;
-      if (!mounted || context == null) return;
+      if (context == null) return;
+      _didScrollToTarget = true;
       Scrollable.ensureVisible(
         context,
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
         alignment: 0.1,
       );
-      if (mounted) {
-        setState(() {
-          _didScrollToTarget = true;
-        });
-      }
     });
   }
 
@@ -148,74 +165,84 @@ class _TerminologyPageState extends State<TerminologyPage> {
           slivers: [
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              sliver: SliverList.separated(
-                itemCount: terms.length,
-                itemBuilder: (context, index) {
-                  final entry = terms[index];
-                  final termKey = entry.termKey.toLowerCase();
-                  final entryKey = _entryKeys.putIfAbsent(
-                    termKey,
-                    () => GlobalKey(),
-                  );
-                  final isHighlighted = termKey == _highlightedTermKey;
-                  return DecoratedBox(
-                    key: entryKey,
-                    decoration: BoxDecoration(
-                      color: isHighlighted
-                          ? colorScheme.primaryContainer.withValues(alpha: 0.6)
-                          : colorScheme.surfaceContainerHighest.withValues(
-                              alpha: 0.5,
-                            ),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isHighlighted
-                            ? colorScheme.primary
-                            : colorScheme.outlineVariant,
-                        width: isHighlighted ? 1.5 : 1,
+              // Lay out the glossary together so even off-screen, variable-height
+              // entries have a context and an exact offset for ensureVisible.
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  children: List<Widget>.generate(terms.length, (index) {
+                    final entry = terms[index];
+                    final termKey = entry.termKey.trim().toLowerCase();
+                    final entryKey = _entryKeys.putIfAbsent(
+                      termKey,
+                      () => GlobalKey(),
+                    );
+                    final isHighlighted = termKey == _highlightedTermKey;
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        bottom: index == terms.length - 1 ? 0 : 12,
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              CircleAvatar(
-                                radius: 18,
-                                backgroundColor: colorScheme.primaryContainer,
-                                child: Icon(
-                                  Icons.fitness_center,
-                                  size: 18,
-                                  color: colorScheme.onPrimaryContainer,
+                      child: DecoratedBox(
+                        key: entryKey,
+                        decoration: BoxDecoration(
+                          color: isHighlighted
+                              ? colorScheme.primaryContainer.withValues(
+                                  alpha: 0.6,
+                                )
+                              : colorScheme.surfaceContainerHighest.withValues(
+                                  alpha: 0.5,
                                 ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  entry.term,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w700,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isHighlighted
+                                ? colorScheme.primary
+                                : colorScheme.outlineVariant,
+                            width: isHighlighted ? 1.5 : 1,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor:
+                                        colorScheme.primaryContainer,
+                                    child: Icon(
+                                      Icons.fitness_center,
+                                      size: 18,
+                                      color: colorScheme.onPrimaryContainer,
+                                    ),
                                   ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      entry.term,
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                entry.description,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  height: 1.4,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            entry.description,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 12),
+                    );
+                  }),
+                ),
               ),
             ),
           ],
