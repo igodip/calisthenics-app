@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/store_screenshot_scenario.dart';
@@ -6,15 +8,15 @@ void main() {
   testWidgets('store capture visits populated real screens in both languages', (
     tester,
   ) async {
-    const width = double.fromEnvironment(
+    const width = int.fromEnvironment(
       'SCREENSHOT_TEST_WIDTH',
       defaultValue: 393,
     );
-    const height = double.fromEnvironment(
+    const height = int.fromEnvironment(
       'SCREENSHOT_TEST_HEIGHT',
       defaultValue: 852,
     );
-    tester.view.physicalSize = const Size(width, height);
+    tester.view.physicalSize = Size(width.toDouble(), height.toDouble());
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
