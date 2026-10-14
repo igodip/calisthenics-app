@@ -5,27 +5,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/store_screenshot_scenario.dart';
 
 void main() {
-  testWidgets('store capture visits populated real screens in both languages', (
-    tester,
-  ) async {
-    const width = int.fromEnvironment(
-      'SCREENSHOT_TEST_WIDTH',
-      defaultValue: 393,
-    );
-    const height = int.fromEnvironment(
-      'SCREENSHOT_TEST_HEIGHT',
-      defaultValue: 852,
-    );
-    tester.view.physicalSize = Size(width.toDouble(), height.toDouble());
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final captured = <String>[];
-    await captureStoreScreens(
-      tester,
-      capture: (name) async => captured.add(name),
-    );
-    expect(captured, hasLength(10));
-    expect(captured.toSet(), hasLength(10));
-  });
+  testWidgets(
+    'store capture visits populated real screens in both languages',
+    (tester) async {
+      const width = int.fromEnvironment(
+        'SCREENSHOT_TEST_WIDTH',
+        defaultValue: 393,
+      );
+      const height = int.fromEnvironment(
+        'SCREENSHOT_TEST_HEIGHT',
+        defaultValue: 852,
+      );
+      tester.view.physicalSize = Size(width.toDouble(), height.toDouble());
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final captured = <String>[];
+      await captureStoreScreens(
+        tester,
+        capture: (name) async => captured.add(name),
+      );
+      expect(captured, hasLength(10));
+      expect(captured.toSet(), hasLength(10));
+    },
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
 }

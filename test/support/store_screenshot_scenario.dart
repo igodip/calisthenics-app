@@ -21,19 +21,22 @@ Future<void> captureStoreScreens(
 }) async {
   SharedPreferences.setMockInitialValues({'hasSeenOnboarding': true});
   final backend = StoreDemoBackend();
-  await Supabase.initialize(
-    url: 'https://${StoreDemoBackend.host}',
-    publishableKey: 'fixture-only-public-key',
-    httpClient: backend.client,
-    authOptions: const FlutterAuthClientOptions(
-      autoRefreshToken: false,
-      detectSessionInUri: false,
-    ),
-  );
-  await Supabase.instance.client.auth.signInWithPassword(
-    email: 'alex@example.invalid',
-    password: 'fixture-only-not-a-password',
-  );
+  debugPrint('Store capture: initializing demo backend');
+  await tester.runAsync(() async {
+    await Supabase.initialize(
+      url: 'https://${StoreDemoBackend.host}',
+      publishableKey: 'fixture-only-public-key',
+      httpClient: backend.client,
+      authOptions: const FlutterAuthClientOptions(
+        autoRefreshToken: false,
+        detectSessionInUri: false,
+      ),
+    );
+    await Supabase.instance.client.auth.signInWithPassword(
+      email: 'alex@example.invalid',
+      password: 'fixture-only-not-a-password',
+    );
+  });
   final preferences = await SharedPreferences.getInstance();
 
   Future<void> settle() async {

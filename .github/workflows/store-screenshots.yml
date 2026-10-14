@@ -35,11 +35,11 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - name: Exercise the capture flow at phone size
-        run: flutter test test/store_screenshot_flow_test.dart --dart-define=STORE_SCREENSHOTS=true --timeout=2m
+        run: flutter test test/store_screenshot_flow_test.dart --dart-define=STORE_SCREENSHOTS=true --reporter=expanded
       - name: Exercise the capture flow at tablet size
         run: >-
           flutter test test/store_screenshot_flow_test.dart
-          --dart-define=STORE_SCREENSHOTS=true --timeout=2m
+          --dart-define=STORE_SCREENSHOTS=true --reporter=expanded
           --dart-define=SCREENSHOT_TEST_WIDTH=1032
           --dart-define=SCREENSHOT_TEST_HEIGHT=1376
 
