@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../components/privacy_policy_link.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -453,6 +454,14 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                           ),
                           const SizedBox(height: 24),
+                          if (!isLoginMode) ...[
+                            Text(
+                              l10n.registrationPrivacyNotice,
+                              textAlign: TextAlign.center,
+                            ),
+                            const PrivacyPolicyLink(),
+                            const SizedBox(height: 12),
+                          ],
                           ElevatedButton(
                             onPressed: loading ? null : _submit,
                             child: loading

@@ -1,9 +1,79 @@
-# Privacy Policy
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CaliSync privacy policy: account and training data, trainer access, notifications, retention, and account deletion.">
+  <title>CaliSync Privacy Policy</title>
+  <style>
+    body { margin: 0; color: #172033; background: #f7f8fc; font: 17px/1.65 system-ui, sans-serif; }
+    main { max-width: 880px; margin: 32px auto; padding: 28px; background: white; border-radius: 16px; }
+    h1,h2,h3 { line-height: 1.3; } a { color: #174cba; } li { margin-bottom: 8px; }
+    table { border-collapse: collapse; width: 100%; } td,th { padding: 12px; border: 1px solid #d8deeb; text-align: left; vertical-align: top; }
+    .table { overflow-x: auto; } :focus-visible { outline: 3px solid #174cba; outline-offset: 3px; }
+  </style>
+</head>
+<body><main>
+  <h1>CaliSync Privacy Policy</h1>
+  <p>Effective date: 14 October 2026</p>
+  <p>CaliSync (also displayed as Calisthenics) helps trainees follow workout programs and communicate with their trainers. Igor Maria Di Paolo operates the app. For privacy questions and requests, contact <a href="mailto:dipaoloigor@gmail.com">dipaoloigor@gmail.com</a>.</p>
+  <p>This policy covers the app, its Supabase backend, push notifications, and support requests. It describes the current service, including its access limitations. We do not sell personal data or use it for targeted advertising.</p>
 
-Calisync processes account, profile, and workout data required to provide its features. This data is not sold.
+  <h2>Information we process and why</h2>
+  <div class="table"><table>
+    <thead><tr><th scope="col">Information</th><th scope="col">Purpose and source</th></tr></thead>
+    <tbody>
+      <tr><td>Account email, authentication credentials, account ID, roles and session information</td><td>You provide an email and password to register and sign in. Supabase manages authentication, password protection, sessions and recovery emails. We use account IDs and trainee, trainer or admin roles to provide access and manage accounts.</td></tr>
+      <tr><td>Profile name, optional photo, weight, height and weight-history notes</td><td>You supply these details to personalize the app and help your assigned trainers provide coaching. The initial profile name may be derived from the part of your email before “@”.</td></tr>
+      <tr><td>Workout plans, exercise names and notes, schedules, completion status, repetitions, duration, feedback feelings, maximum-test results and dates</td><td>You and your trainers create these records to plan workouts, track progress and review results. Training and body measurements may reveal health or fitness information.</td></tr>
+      <tr><td>Feedback messages, trainer replies, coach tips, exercise comments and trainer notes</td><td>These records support coaching and communication. Trainer-only maximum-test notes are stored separately and excluded from trainee access. Other profile and exercise notes follow the access rules explained below.</td></tr>
+      <tr><td>Monthly payment status, recorded amount, dates and payment notes</td><td>Trainers record payment information to manage coaching and activate training access. The app does not ask for card numbers or bank-account details and does not process card payments.</td></tr>
+      <tr><td>Push registration tokens, platform, Firebase installation identifiers, notification contents and delivery-related technical data</td><td>These identify app installations and route coaching notifications to the correct devices through Firebase Cloud Messaging and, on Apple devices, Apple Push Notification service.</td></tr>
+      <tr><td>Support correspondence and deletion requests</td><td>Information you email to support is used to answer your request, verify account ownership and handle deletion or other privacy requests. Do not send your password.</td></tr>
+      <tr><td>Service-request metadata and operational logs</td><td>Hosting, authentication, email and notification providers may process IP addresses, timestamps, errors and delivery information to operate, secure and troubleshoot the service.</td></tr>
+    </tbody>
+  </table></div>
+  <p>The app stores theme/language preferences, onboarding status, cached profile-photo URLs, and timer settings/session state locally on your device. Trainer PDF imports are parsed on the device; extracted plan and exercise records are saved to Supabase. The import flow does not upload the original PDF to our backend.</p>
+  <p>The app requests camera/photo access when you choose a profile image, and notification permission where required by the operating system. You can refuse optional permissions or change them in device settings. We do not implement advertising, advertising-ID tracking, Firebase Analytics, Crashlytics, precise-location collection, contact-list access, HealthKit, Health Connect or Fitbit integration in the current app.</p>
 
-The app may request camera access for profile photos and Internet access to synchronize data with its backend.
+  <h2>Who can access your information</h2>
+  <ul>
+    <li><strong>You:</strong> your profile, programs, recorded progress, feedback/replies and payment information are available through your account.</li>
+    <li><strong>Assigned trainers:</strong> trainers assigned to your account can access profile details, body measurements and history, programs, exercise records, maximum tests, feedback/replies and payment records to provide coaching. More than one trainer can be assigned; feedback is accessible to assigned trainers and is not a private conversation exclusively with one named trainer.</li>
+    <li><strong>App administrators:</strong> admins manage user roles, suspension and trainer assignments. Current backend permissions also allow broad access to profiles, feedback, plans, progress, weights and payments. Trainer-only maximum-test notes have no admin-role access, but an admin who is also an assigned trainer can access them as a trainer. Do not assume all coaching information is hidden from administrators.</li>
+    <li><strong>Technical operators and providers:</strong> authorized backend operators and service credentials can access server-stored data to run the service. Database access rules do not prevent privileged operators from reading plaintext records.</li>
+  </ul>
+  <p>Current workout-day policies are broader than the assigned-trainer rules: trainer accounts can access workout-day rows outside their own assignments. Workout-day titles and notes must not be treated as confidential from other trainer accounts. This is a limitation of the current permissions, not a promise that such access is required for coaching.</p>
+  <p><strong>Profile-photo visibility:</strong> uploaded avatars use public storage URLs. Anyone who has a photo URL may be able to view that image without signing in. Do not upload sensitive documents or confidential images as your profile photo.</p>
+  <p>Information may also be disclosed when required by applicable law or necessary to investigate misuse and protect the service. Your trainer may maintain their own records outside CaliSync; contact them separately about those records.</p>
 
-If you have any questions about this Privacy Policy, contact us at: dipaoloigor@gmail.com
+  <h2>Hosting and service providers</h2>
+  <p>Supabase hosts authentication, database records, profile-photo storage and backend functions. Google Firebase provides push registration and message delivery; Apple delivers iOS notifications through APNs. Support emails are handled through the support mailbox provider. Visiting these public policy pages also sends ordinary web-request information to GitHub Pages, our website host.</p>
+  <p>Providers may process data in countries outside your country of residence, depending on service configuration and their infrastructure. Relevant provider information: <a href="https://supabase.com/privacy">Supabase privacy</a>, <a href="https://firebase.google.com/support/privacy">Firebase privacy and security</a>, <a href="https://www.apple.com/legal/privacy/">Apple privacy</a>, and <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub privacy</a>.</p>
 
-Account deletion: delete your account in Profile → Settings → Delete account, or request deletion at https://igodip.github.io/calisthenics-app/delete-account.html. See that page for the data removed and backup-retention limitations.
+  <h2>Push notifications and message previews</h2>
+  <p>On supported Android/iOS installations, Firebase initializes when the app starts. When a signed-in user allows notifications, the app obtains a push token and records it in Supabase with the account ID and platform. Firebase also processes installation identifiers and technical delivery data under its own service terms.</p>
+  <p>When feedback is submitted or answered, a plan or coach tip changes, or payment status is updated, the app sends an event type and record ID to a backend function. That function validates the sender, reads the corresponding database records, resolves recipients and their push tokens, then sends a notification payload to Firebase. Firebase routes Apple-device messages through APNs.</p>
+  <p><strong>The current payload can contain personal content:</strong> a trainee name, an excerpt of feedback or a trainer reply, a coach tip, a plan title, or paid/unpaid status. Payloads also include the event type and an app-navigation route. Google and Apple delivery services process these payloads, and previews can appear on the lock screen or in the app. Notifications are not end-to-end encrypted.</p>
+  <p>You can turn off notifications or lock-screen previews in your device settings. Refusing notification permission does not delete stored coaching records. Logout attempts to unregister the current device token; account deletion removes that account's backend token records. Invalid/unregistered tokens reported by Firebase are removed by the sending function. Provider-side identifiers and queued messages follow the provider's retention rules.</p>
+
+  <h2>Security</h2>
+  <p>The app communicates with its backend over HTTPS and uses authenticated sessions and database access rules. Personal records are readable by the backend; they are not protected by client-side end-to-end encryption. Public photo URLs, broader trainer/admin permissions and notification previews have the limitations described above. Do not include information in notes or messages that you do not want the authorized recipients or technical operators to access.</p>
+
+  <h2>Retention and deletion</h2>
+  <p>Active account, coaching, body-measurement, feedback and payment records are kept to provide your account and history until you delete those records through available features or delete your account. The app has no automatic inactivity-deletion schedule. Device preferences and timer state remain locally until cleared, removed with the app, or cleared by the account-deletion flow.</p>
+  <p>Use Profile → Settings → Delete account to permanently remove your sign-in account and associated active-service records. Account controls remain available when training access is unpaid. You can also <a href="delete-account.html">request deletion without the app</a> by emailing support from your account email. Support verifies ownership before completing an email request.</p>
+  <p>Successful in-app deletion removes authentication, your profile and uploaded avatars, trainee plans and unshared workout days/exercises, progress records, feedback/replies, weight history, maximum tests and associated private notes, payment records, exercise unlocks, notification registrations, roles and assignments. The app clears locally cached photo URLs and timer data and signs you out. Some photos may be removed before a database deletion error; retry or contact support if deletion reports a failure.</p>
+  <p>Deleting a trainer account removes its role and assignments; it does not delete other users' accounts or their workout history. Workout days still used by another user's plan are retained. Downloaded copies, screenshots and independent records held by recipients cannot be erased by the app.</p>
+  <p>Deletion from the active service does not immediately erase historical infrastructure backups, provider operational logs, provider-side installation data or support email. Their retention follows the actual provider/project configuration and applicable obligations. There is currently no app-enforced fixed retention period for support email. Contact support for the current backup/log retention configuration and to request removal of correspondence where applicable. We do not promise a fixed purge deadline that the service does not enforce.</p>
+
+  <h2>Your choices and requests</h2>
+  <p>You can edit profile information, choose whether to upload a photo, adjust device permissions, sign out and delete your account. Contact <a href="mailto:dipaoloigor@gmail.com">dipaoloigor@gmail.com</a> to request access, a copy, correction, restriction or deletion of data that you cannot manage in the app. We verify identity before disclosing information or acting on account requests.</p>
+  <p>We process account and coaching data to provide the service you request, operational information to maintain security and reliability, and optional device permissions where you authorize them. Depending on your jurisdiction and the data involved, additional consent or other legal requirements may apply, particularly to health information. Where applicable, you may withdraw consent, object to processing or contact your data-protection authority. This policy does not waive those rights.</p>
+  <p>The app is not designed to solicit children's personal information. If a child has supplied data without appropriate authorization, contact support so we can review and address it.</p>
+
+  <h2>Changes and contact</h2>
+  <p>We update the effective date when this policy changes. Material changes affecting how personal data is used or shared will be communicated through an appropriate service channel. Questions about your trainer's separate activities should also be directed to that trainer.</p>
+  <p><a href="mailto:dipaoloigor@gmail.com">dipaoloigor@gmail.com</a> · <a href="support-page.html">Support</a> · <a href="delete-account.html">Request account deletion</a></p>
+</main></body>
+</html>

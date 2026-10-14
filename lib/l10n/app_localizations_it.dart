@@ -9,6 +9,21 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get privacyPolicyTitle => 'Informativa sulla privacy';
+
+  @override
+  String get registrationPrivacyNotice =>
+      'Prima di creare un account, leggi come CaliSync usa i tuoi dati, inclusi l’accesso di trainer e amministratori e le anteprime delle notifiche.';
+
+  @override
+  String get privacySettingsDescription =>
+      'Scopri come vengono trattati account, allenamenti, foto e notifiche e come richiedere l’eliminazione.';
+
+  @override
+  String get privacyPolicyOpenError =>
+      'Impossibile aprire l’informativa. Apri questo indirizzo nel browser:';
+
+  @override
   String get waitingForTrainerTitle => 'In attesa del tuo trainer';
 
   @override

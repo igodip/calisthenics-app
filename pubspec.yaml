@@ -43,6 +43,7 @@ dependencies:
   pdfrx: ^2.2.24
   firebase_core: ^4.14.0
   firebase_messaging: ^16.6.0
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

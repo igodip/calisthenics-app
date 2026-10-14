@@ -9,6 +9,21 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get privacyPolicyTitle => 'Privacy policy';
+
+  @override
+  String get registrationPrivacyNotice =>
+      'Before creating an account, review how CaliSync uses your data, including trainer and administrator access and notification previews.';
+
+  @override
+  String get privacySettingsDescription =>
+      'Read how your account, training, photos and notifications are processed, and how to request deletion.';
+
+  @override
+  String get privacyPolicyOpenError =>
+      'Could not open the privacy policy. Open this address in your browser:';
+
+  @override
   String get waitingForTrainerTitle => 'Waiting for your trainer';
 
   @override

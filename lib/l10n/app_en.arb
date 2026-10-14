@@ -1,4 +1,8 @@
 {
+  "privacyPolicyTitle": "Privacy policy",
+  "registrationPrivacyNotice": "Before creating an account, review how CaliSync uses your data, including trainer and administrator access and notification previews.",
+  "privacySettingsDescription": "Read how your account, training, photos and notifications are processed, and how to request deletion.",
+  "privacyPolicyOpenError": "Could not open the privacy policy. Open this address in your browser:",
   "waitingForTrainerTitle": "Waiting for your trainer",
   "waitingForTrainerDescription": "Your training access has not been activated yet. Contact your trainer to arrange or confirm payment. You can still manage your profile and account, read feedback, and browse exercise guides.",
   "trainingAccessChecking": "Checking training access…",
