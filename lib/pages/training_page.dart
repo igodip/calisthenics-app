@@ -1124,9 +1124,7 @@ class _ExerciseCard extends StatelessWidget {
                                   textStyle: textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
-                                  chipBackground: colorScheme.primary
-                                      .withValues(alpha: 0.12),
-                                  chipForeground: colorScheme.primary,
+                                  linkColor: colorScheme.primary,
                                 )
                               : Text(
                                   detailText,
@@ -1490,8 +1488,7 @@ Widget _buildTerminologyNoteText({
   required Map<String, TerminologyEntry> translations,
   required ValueChanged<String> onTap,
   required TextStyle? textStyle,
-  required Color chipBackground,
-  required Color chipForeground,
+  required Color linkColor,
 }) {
   final detectedKeys = _scanTerminologyKeys(text, translations);
   if (detectedKeys.isEmpty) {
@@ -1505,9 +1502,8 @@ Widget _buildTerminologyNoteText({
         translations: translations,
         detectedKeys: detectedKeys,
         onTap: onTap,
-        chipBackground: chipBackground,
-        chipForeground: chipForeground,
         textStyle: textStyle,
+        linkColor: linkColor,
       ),
     ),
   );
@@ -1518,9 +1514,8 @@ List<InlineSpan> _buildTerminologySpans({
   required Map<String, TerminologyEntry> translations,
   required List<String> detectedKeys,
   required ValueChanged<String> onTap,
-  required Color chipBackground,
-  required Color chipForeground,
   required TextStyle? textStyle,
+  required Color linkColor,
 }) {
   final sortedKeys = detectedKeys.toList()
     ..sort((a, b) => b.length.compareTo(a.length));
@@ -1547,21 +1542,23 @@ List<InlineSpan> _buildTerminologySpans({
     spans.add(
       WidgetSpan(
         alignment: PlaceholderAlignment.middle,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2),
-          child: ActionChip(
-            label: Text(
-              label,
-              style: textStyle?.copyWith(
-                color: chipForeground,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            onPressed: () => onTap(translation?.termKey ?? matchKey),
-            backgroundColor: chipBackground,
+        child: TextButton(
+          onPressed: () => onTap(translation?.termKey ?? matchKey),
+          style: TextButton.styleFrom(
+            foregroundColor: linkColor,
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             visualDensity: VisualDensity.compact,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            shape: const StadiumBorder(),
+          ),
+          child: Text(
+            label,
+            style: textStyle?.copyWith(
+              color: linkColor,
+              decoration: TextDecoration.underline,
+              decorationColor: linkColor,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
