@@ -306,12 +306,14 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         foregroundColor: colorScheme.onSurface,
         actions: [
-          IconButton(
-            tooltip: l10n.navProfile,
-            onPressed: () => _selectSection(HomeSection.profile),
-            icon: const Icon(Icons.account_circle_outlined),
-          ),
-          const SizedBox(width: 8),
+          if (selectedSection != HomeSection.profile) ...[
+            IconButton(
+              tooltip: l10n.navProfile,
+              onPressed: () => _selectSection(HomeSection.profile),
+              icon: const Icon(Icons.account_circle_outlined),
+            ),
+            const SizedBox(width: 8),
+          ],
         ],
       ),
       drawer: Drawer(
