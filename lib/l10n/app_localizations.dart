@@ -1387,7 +1387,7 @@ abstract class AppLocalizations {
   /// No description provided for @invalidCredentials.
   ///
   /// In it, this message translates to:
-  /// **'Credenziali errate.'**
+  /// **'Credenziali invalide.'**
   String get invalidCredentials;
 
   /// No description provided for @signupEmailCheck.

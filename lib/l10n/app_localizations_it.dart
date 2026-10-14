@@ -737,7 +737,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get passwordMismatch => 'Le password non coincidono.';
 
   @override
-  String get invalidCredentials => 'Credenziali errate.';
+  String get invalidCredentials => 'Credenziali invalide.';
 
   @override
   String get signupEmailCheck =>

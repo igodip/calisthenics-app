@@ -384,7 +384,7 @@
   },
   "missingFieldsError": "Compila tutti i campi richiesti.",
   "passwordMismatch": "Le password non coincidono.",
-  "invalidCredentials": "Credenziali errate.",
+  "invalidCredentials": "Credenziali invalide.",
   "signupEmailCheck": "Registrazione completata! Controlla la tua email per confermare l'account.",
   "unexpectedError": "Errore inatteso: {error}",
   "@unexpectedError": {
