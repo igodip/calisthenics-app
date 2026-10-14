@@ -76,79 +76,91 @@ class _PlanExpiredGateState extends State<PlanExpiredGate> {
         }
         final loading = snapshot.connectionState != ConnectionState.done;
         return Material(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Center(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 480),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 24),
-                    if (loading)
-                      const CircularProgressIndicator()
-                    else
-                      Icon(
-                        Icons.hourglass_empty,
-                        size: 56,
-                        color: Theme.of(context).colorScheme.primary,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Color.lerp(
+                      Theme.of(context).colorScheme.surface,
+                      Colors.black,
+                      0.06,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 24),
+                      if (loading)
+                        const CircularProgressIndicator()
+                      else
+                        Icon(
+                          Icons.hourglass_empty,
+                          size: 56,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      const SizedBox(height: 20),
+                      Text(
+                        loading
+                            ? l10n.trainingAccessChecking
+                            : snapshot.hasError
+                            ? l10n.trainingAccessErrorTitle
+                            : l10n.waitingForTrainerTitle,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                    const SizedBox(height: 20),
-                    Text(
-                      loading
-                          ? l10n.trainingAccessChecking
-                          : snapshot.hasError
-                          ? l10n.trainingAccessErrorTitle
-                          : l10n.waitingForTrainerTitle,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      snapshot.hasError
-                          ? l10n.trainingAccessErrorDescription
-                          : l10n.waitingForTrainerDescription,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        FilledButton.icon(
-                          onPressed:
-                              widget.onOpenProfile ??
-                              () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const ProfilePage(),
+                      const SizedBox(height: 12),
+                      Text(
+                        snapshot.hasError
+                            ? l10n.trainingAccessErrorDescription
+                            : l10n.waitingForTrainerDescription,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          FilledButton.icon(
+                            onPressed:
+                                widget.onOpenProfile ??
+                                () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const ProfilePage(),
+                                  ),
                                 ),
-                              ),
-                          icon: const Icon(Icons.person_outline),
-                          label: Text(l10n.navProfile),
-                        ),
-                        OutlinedButton.icon(
-                          onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const SettingsPage(),
-                            ),
+                            icon: const Icon(Icons.person_outline),
+                            label: Text(l10n.navProfile),
                           ),
-                          icon: const Icon(Icons.settings_outlined),
-                          label: Text(l10n.accountSettingsTitle),
-                        ),
-                        OutlinedButton.icon(
-                          onPressed: loading ? null : _refresh,
-                          icon: const Icon(Icons.refresh),
-                          label: Text(l10n.trainingAccessRefresh),
-                        ),
-                        TextButton.icon(
-                          onPressed: () => logout(context),
-                          icon: const Icon(Icons.logout),
-                          label: Text(l10n.logout),
-                        ),
-                      ],
-                    ),
-                  ],
+                          OutlinedButton.icon(
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const SettingsPage(),
+                              ),
+                            ),
+                            icon: const Icon(Icons.settings_outlined),
+                            label: Text(l10n.accountSettingsTitle),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: loading ? null : _refresh,
+                            icon: const Icon(Icons.refresh),
+                            label: Text(l10n.trainingAccessRefresh),
+                          ),
+                          TextButton.icon(
+                            onPressed: () => logout(context),
+                            icon: const Icon(Icons.logout),
+                            label: Text(l10n.logout),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
