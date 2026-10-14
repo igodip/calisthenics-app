@@ -183,9 +183,9 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (context, _) {
           final options = <(String?, String)>[
             (null, l10n.languageSystemLabel),
+            ('it', l10n.languageItalianLabel),
             ('en', l10n.languageEnglishLabel),
             ('es', l10n.languageSpanishLabel),
-            ('it', l10n.languageItalianLabel),
           ];
           final currentCode = controller.locale?.languageCode;
           return SafeArea(
