@@ -3,6 +3,7 @@ import 'package:calisync/theme/app_theme.dart';
 import 'package:calisync/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
 import '../components/account_deletion_section.dart';
+import '../components/privacy_policy_link.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -65,6 +66,19 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.privacySettingsDescription),
+                      const PrivacyPolicyLink(),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               const AccountDeletionSection(),
             ],
           ),

@@ -1,4 +1,8 @@
 {
+  "privacyPolicyTitle": "Política de privacidad",
+  "registrationPrivacyNotice": "Antes de crear una cuenta, consulta cómo CaliSync usa tus datos, incluido el acceso de entrenadores y administradores y las vistas previas de notificaciones.",
+  "privacySettingsDescription": "Consulta cómo se tratan tu cuenta, entrenamientos, fotos y notificaciones y cómo solicitar su eliminación.",
+  "privacyPolicyOpenError": "No se pudo abrir la política. Abre esta dirección en tu navegador:",
   "waitingForTrainerTitle": "Esperando a tu entrenador",
   "waitingForTrainerDescription": "Tu acceso al entrenamiento aún no está activo. Contacta con tu entrenador para acordar o confirmar el pago. Puedes gestionar tu perfil y cuenta, leer comentarios y consultar las guías de ejercicios.",
   "trainingAccessChecking": "Comprobando acceso al entrenamiento…",

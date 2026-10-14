@@ -100,6 +100,30 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @privacyPolicyTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Informativa sulla privacy'**
+  String get privacyPolicyTitle;
+
+  /// No description provided for @registrationPrivacyNotice.
+  ///
+  /// In it, this message translates to:
+  /// **'Prima di creare un account, leggi come CaliSync usa i tuoi dati, inclusi l’accesso di trainer e amministratori e le anteprime delle notifiche.'**
+  String get registrationPrivacyNotice;
+
+  /// No description provided for @privacySettingsDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Scopri come vengono trattati account, allenamenti, foto e notifiche e come richiedere l’eliminazione.'**
+  String get privacySettingsDescription;
+
+  /// No description provided for @privacyPolicyOpenError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aprire l’informativa. Apri questo indirizzo nel browser:'**
+  String get privacyPolicyOpenError;
+
   /// No description provided for @waitingForTrainerTitle.
   ///
   /// In it, this message translates to:

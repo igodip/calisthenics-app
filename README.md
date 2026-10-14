@@ -45,6 +45,11 @@ role key is shipped in the application.
 
 ## Account deletion
 
+The public privacy policy is
+https://igodip.github.io/calisthenics-app/docs/privacy-policy.html and is linked
+before registration and in Settings. Store submission mappings and production
+verification items are in `docs/store-privacy-disclosures.md`.
+
 Profile → Settings offers permanent account deletion, including when the payment
 gate is active. The authenticated `delete-account` Edge Function derives the
 target ID from the verified session, removes files under that user's `avatars/`
