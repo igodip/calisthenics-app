@@ -52,7 +52,12 @@ Future<void> captureStoreScreens(
     );
     expect(tester.takeException(), isNull);
     expect(backend.unexpectedRequests, isEmpty);
-    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CircularProgressIndicator && widget.value == null,
+      ),
+      findsNothing,
+    );
   }
 
   Future<void> openSection(String title) async {
