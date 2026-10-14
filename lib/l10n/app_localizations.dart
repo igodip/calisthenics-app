@@ -100,6 +100,48 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @waitingForTrainerTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'In attesa del tuo trainer'**
+  String get waitingForTrainerTitle;
+
+  /// No description provided for @waitingForTrainerDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Il tuo accesso agli allenamenti non è ancora attivo. Contatta il trainer per concordare o confermare il pagamento. Puoi comunque gestire profilo e account, leggere i feedback e consultare le guide agli esercizi.'**
+  String get waitingForTrainerDescription;
+
+  /// No description provided for @trainingAccessChecking.
+  ///
+  /// In it, this message translates to:
+  /// **'Verifica accesso agli allenamenti…'**
+  String get trainingAccessChecking;
+
+  /// No description provided for @trainingAccessErrorTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile verificare l’accesso'**
+  String get trainingAccessErrorTitle;
+
+  /// No description provided for @trainingAccessErrorDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Controlla la connessione e riprova. Profilo, impostazioni e uscita dall’account restano disponibili.'**
+  String get trainingAccessErrorDescription;
+
+  /// No description provided for @trainingAccessRefresh.
+  ///
+  /// In it, this message translates to:
+  /// **'Verifica di nuovo'**
+  String get trainingAccessRefresh;
+
+  /// No description provided for @accountSettingsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni'**
+  String get accountSettingsTitle;
+
   /// No description provided for @deleteAccountTitle.
   ///
   /// In it, this message translates to:

@@ -2,229 +2,159 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../pages/profile_page.dart';
 import '../pages/settings_page.dart';
 
-final supabase = Supabase.instance.client;
-
+/// Gates training content only. Keep enclosing navigation outside this widget.
 class PlanExpiredGate extends StatefulWidget {
-  final Widget child;
-  final bool useOverlay;
-  final bool bypass;
-
   const PlanExpiredGate({
     super.key,
     required this.child,
-    this.useOverlay = false,
     this.bypass = false,
+    this.onOpenProfile,
+    this.loadAccess,
   });
+  final Widget child;
+  final bool bypass;
+  final VoidCallback? onOpenProfile;
+  final Future<bool> Function()? loadAccess;
 
   @override
   State<PlanExpiredGate> createState() => _PlanExpiredGateState();
 }
 
 class _PlanExpiredGateState extends State<PlanExpiredGate> {
-  late Future<bool> _expiredFuture;
+  Future<bool>? _access;
 
   @override
   void initState() {
     super.initState();
-    _expiredFuture = _fetchLatestPlanExpired();
+    if (!widget.bypass) _access = _load();
+  }
+
+  @override
+  void didUpdateWidget(PlanExpiredGate oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.bypass != widget.bypass ||
+        oldWidget.loadAccess != widget.loadAccess) {
+      _access = widget.bypass ? null : _load();
+    }
+  }
+
+  Future<bool> _load() async {
+    if (widget.loadAccess != null) return widget.loadAccess!();
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) return false;
+    final payment = await client
+        .from('trainee_monthly_payments')
+        .select('paid')
+        .eq('trainee_id', userId)
+        .order('month_start', ascending: false)
+        .limit(1)
+        .maybeSingle();
+    return payment?['paid'] == true;
+  }
+
+  void _refresh() {
+    final access = _load();
+    setState(() {
+      _access = access;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.bypass) return widget.child;
-    return FutureBuilder<bool>(
-      future: _expiredFuture,
-      builder: (context, snapshot) {
-        final isWaiting = snapshot.connectionState == ConnectionState.waiting;
-        final isExpired = snapshot.data == false;
-        if (widget.useOverlay) {
-          return Stack(
-            children: [
-              AbsorbPointer(
-                absorbing: isWaiting || isExpired,
-                child: widget.child,
-              ),
-              if (isWaiting)
-                const Positioned.fill(
-                  child: ColoredBox(
-                    color: Color(0x88000000),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                ),
-              if (!isWaiting && isExpired)
-                Positioned.fill(
-                  child: _ExpiredPlanCover(
-                    title: AppLocalizations.of(context)!.profilePlanExpired,
-                    description: AppLocalizations.of(
-                      context,
-                    )!.homeEmptyDescription,
-                  ),
-                ),
-            ],
-          );
-        }
-
-        if (isWaiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        if (isExpired) {
-          return _ExpiredPlanScreen(
-            title: AppLocalizations.of(context)!.profilePlanExpired,
-            description: AppLocalizations.of(context)!.homeEmptyDescription,
-          );
-        }
-
-        return widget.child;
-      },
-    );
-  }
-
-  Future<bool> _fetchLatestPlanExpired() async {
-    final client = Supabase.instance.client;
-    final userId = client.auth.currentUser?.id;
-    if (userId == null) return false;
-
-    final paymentResponse = await supabase
-        .from('trainee_monthly_payments')
-        .select('paid, month_start')
-        .eq('trainee_id', userId)
-        .order('month_start', ascending: false)
-        .limit(1)
-        .maybeSingle();
-
-    return paymentResponse?['paid'] as bool? ?? false;
-  }
-}
-
-class _ExpiredPlanScreen extends StatelessWidget {
-  final String title;
-  final String description;
-
-  const _ExpiredPlanScreen({required this.title, required this.description});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 360),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Card(
-                margin: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: _ExpiredPlanContent(
-                    title: title,
-                    description: description,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ExpiredPlanCover extends StatelessWidget {
-  final String title;
-  final String description;
-
-  const _ExpiredPlanCover({required this.title, required this.description});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ColoredBox(
-      color: theme.colorScheme.surface.withValues(alpha: 0.9),
-      child: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 360),
-            child: Card(
-              margin: const EdgeInsets.all(24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: _ExpiredPlanContent(
-                  title: title,
-                  description: description,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ExpiredPlanContent extends StatelessWidget {
-  final String title;
-  final String description;
-
-  const _ExpiredPlanContent({required this.title, required this.description});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.assignment_late_outlined,
-          size: 64,
-          color: theme.colorScheme.error,
-        ),
-        const SizedBox(height: 16),
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          description,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+    return FutureBuilder<bool>(
+      future: _access,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.data == true) {
+          return widget.child;
+        }
+        final loading = snapshot.connectionState != ConnectionState.done;
+        return Material(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 24),
+                    if (loading)
+                      const CircularProgressIndicator()
+                    else
+                      Icon(
+                        Icons.hourglass_empty,
+                        size: 56,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    const SizedBox(height: 20),
+                    Text(
+                      loading
+                          ? l10n.trainingAccessChecking
+                          : snapshot.hasError
+                          ? l10n.trainingAccessErrorTitle
+                          : l10n.waitingForTrainerTitle,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      snapshot.hasError
+                          ? l10n.trainingAccessErrorDescription
+                          : l10n.waitingForTrainerDescription,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        FilledButton.icon(
+                          onPressed:
+                              widget.onOpenProfile ??
+                              () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const ProfilePage(),
+                                ),
+                              ),
+                          icon: const Icon(Icons.person_outline),
+                          label: Text(l10n.navProfile),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const SettingsPage(),
+                            ),
+                          ),
+                          icon: const Icon(Icons.settings_outlined),
+                          label: Text(l10n.accountSettingsTitle),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: loading ? null : _refresh,
+                          icon: const Icon(Icons.refresh),
+                          label: Text(l10n.trainingAccessRefresh),
+                        ),
+                        TextButton.icon(
+                          onPressed: () => logout(context),
+                          icon: const Icon(Icons.logout),
+                          label: Text(l10n.logout),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
-        FilledButton.icon(
-          onPressed: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          },
-          icon: const Icon(Icons.home_outlined),
-          label: Text(l10n.navHome),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const SettingsPage())),
-          child: Text(l10n.deleteAccountSettings),
-        ),
-      ],
+        );
+      },
     );
   }
 }

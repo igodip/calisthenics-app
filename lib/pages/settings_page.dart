@@ -25,7 +25,7 @@ class SettingsPage extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsThemeTitle)),
+      appBar: AppBar(title: Text(l10n.accountSettingsTitle)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),

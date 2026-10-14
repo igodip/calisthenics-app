@@ -9,6 +9,29 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get waitingForTrainerTitle => 'Esperando a tu entrenador';
+
+  @override
+  String get waitingForTrainerDescription =>
+      'Tu acceso al entrenamiento aún no está activo. Contacta con tu entrenador para acordar o confirmar el pago. Puedes gestionar tu perfil y cuenta, leer comentarios y consultar las guías de ejercicios.';
+
+  @override
+  String get trainingAccessChecking => 'Comprobando acceso al entrenamiento…';
+
+  @override
+  String get trainingAccessErrorTitle => 'No se pudo comprobar el acceso';
+
+  @override
+  String get trainingAccessErrorDescription =>
+      'Comprueba tu conexión y reintenta. El perfil, los ajustes y cerrar sesión siguen disponibles.';
+
+  @override
+  String get trainingAccessRefresh => 'Comprobar de nuevo';
+
+  @override
+  String get accountSettingsTitle => 'Ajustes';
+
+  @override
   String get deleteAccountTitle => 'Eliminar cuenta';
 
   @override

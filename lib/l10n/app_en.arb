@@ -1,4 +1,11 @@
 {
+  "waitingForTrainerTitle": "Waiting for your trainer",
+  "waitingForTrainerDescription": "Your training access has not been activated yet. Contact your trainer to arrange or confirm payment. You can still manage your profile and account, read feedback, and browse exercise guides.",
+  "trainingAccessChecking": "Checking training access…",
+  "trainingAccessErrorTitle": "Could not check training access",
+  "trainingAccessErrorDescription": "Check your connection and try again. Your profile, settings and logout remain available.",
+  "trainingAccessRefresh": "Check again",
+  "accountSettingsTitle": "Settings",
   "deleteAccountTitle": "Delete account",
   "deleteAccountConfirmation": "Permanently delete your account, profile photos, trainee plans, feedback, progress and payment records? This cannot be undone. Other users’ accounts and workout history are preserved.",
   "deleteAccountDescription": "Permanently remove your account and associated data.",
