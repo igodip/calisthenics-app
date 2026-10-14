@@ -1,4 +1,11 @@
 {
+  "waitingForTrainerTitle": "Esperando a tu entrenador",
+  "waitingForTrainerDescription": "Tu acceso al entrenamiento aún no está activo. Contacta con tu entrenador para acordar o confirmar el pago. Puedes gestionar tu perfil y cuenta, leer comentarios y consultar las guías de ejercicios.",
+  "trainingAccessChecking": "Comprobando acceso al entrenamiento…",
+  "trainingAccessErrorTitle": "No se pudo comprobar el acceso",
+  "trainingAccessErrorDescription": "Comprueba tu conexión y reintenta. El perfil, los ajustes y cerrar sesión siguen disponibles.",
+  "trainingAccessRefresh": "Comprobar de nuevo",
+  "accountSettingsTitle": "Ajustes",
   "deleteAccountTitle": "Eliminar cuenta",
   "deleteAccountConfirmation": "¿Eliminar permanentemente tu cuenta, fotos, planes de alumno, comentarios, progreso y pagos? No se puede deshacer. Las cuentas y el historial de otros usuarios se conservan.",
   "deleteAccountDescription": "Elimina permanentemente tu cuenta y sus datos asociados.",

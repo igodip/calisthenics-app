@@ -1,4 +1,11 @@
 {
+  "waitingForTrainerTitle": "In attesa del tuo trainer",
+  "waitingForTrainerDescription": "Il tuo accesso agli allenamenti non è ancora attivo. Contatta il trainer per concordare o confermare il pagamento. Puoi comunque gestire profilo e account, leggere i feedback e consultare le guide agli esercizi.",
+  "trainingAccessChecking": "Verifica accesso agli allenamenti…",
+  "trainingAccessErrorTitle": "Impossibile verificare l’accesso",
+  "trainingAccessErrorDescription": "Controlla la connessione e riprova. Profilo, impostazioni e uscita dall’account restano disponibili.",
+  "trainingAccessRefresh": "Verifica di nuovo",
+  "accountSettingsTitle": "Impostazioni",
   "deleteAccountTitle": "Elimina account",
   "deleteAccountConfirmation": "Eliminare definitivamente account, foto profilo, piani allievo, feedback, progressi e pagamenti? Questa operazione è irreversibile. Gli account e lo storico degli altri utenti vengono conservati.",
   "deleteAccountDescription": "Rimuovi definitivamente il tuo account e i dati associati.",

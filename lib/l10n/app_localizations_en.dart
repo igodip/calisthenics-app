@@ -9,6 +9,29 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get waitingForTrainerTitle => 'Waiting for your trainer';
+
+  @override
+  String get waitingForTrainerDescription =>
+      'Your training access has not been activated yet. Contact your trainer to arrange or confirm payment. You can still manage your profile and account, read feedback, and browse exercise guides.';
+
+  @override
+  String get trainingAccessChecking => 'Checking training access…';
+
+  @override
+  String get trainingAccessErrorTitle => 'Could not check training access';
+
+  @override
+  String get trainingAccessErrorDescription =>
+      'Check your connection and try again. Your profile, settings and logout remain available.';
+
+  @override
+  String get trainingAccessRefresh => 'Check again';
+
+  @override
+  String get accountSettingsTitle => 'Settings';
+
+  @override
   String get deleteAccountTitle => 'Delete account';
 
   @override

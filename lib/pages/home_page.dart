@@ -36,6 +36,14 @@ enum HomeSection {
   adminConsole,
 }
 
+bool requiresTrainingAccess(HomeSection section) => switch (section) {
+  HomeSection.home ||
+  HomeSection.workoutPlan ||
+  HomeSection.maxTests ||
+  HomeSection.timer => true,
+  _ => false,
+};
+
 HomeSection homeSectionForNotificationRoute(
   String route, {
   required bool isTrainer,
@@ -411,7 +419,14 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
-                  child: currentItem.page,
+                  child: requiresTrainingAccess(currentItem.section)
+                      ? PlanExpiredGate(
+                          bypass: _trainerProfile != null || _isAdmin,
+                          onOpenProfile: () =>
+                              _selectSection(HomeSection.profile),
+                          child: currentItem.page,
+                        )
+                      : currentItem.page,
                 ),
               ),
             ),
@@ -420,10 +435,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    return PlanExpiredGate(
-      useOverlay: true,
-      bypass: _trainerProfile != null || _isAdmin,
-      child: scaffold,
-    );
+    return scaffold;
   }
 }
