@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:calisync/admin/admin_repository.dart';
 import 'package:calisync/components/selection_card.dart';
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/model/workout_plan.dart';
@@ -28,7 +29,9 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _setScreenshotProtection(enabled: true);
+      if (!mounted) return;
+      _setScreenshotProtection(enabled: true);
+      unawaited(_disableScreenshotProtectionForAdmin());
     });
     _planDataFuture = _loadPlanData();
   }
@@ -75,6 +78,25 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         );
       }
     });
+  }
+
+  Future<void> _disableScreenshotProtectionForAdmin() async {
+    try {
+      if (await AdminRepository().isCurrentUserAdmin() && mounted) {
+        _setScreenshotProtection(enabled: false);
+      }
+    } catch (error, stackTrace) {
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stackTrace,
+          library: 'admin',
+          context: ErrorDescription(
+            'while checking whether screenshot protection should be disabled',
+          ),
+        ),
+      );
+    }
   }
 
   @override
