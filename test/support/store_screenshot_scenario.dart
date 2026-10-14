@@ -37,13 +37,18 @@ Future<void> captureStoreScreens(
   final preferences = await SharedPreferences.getInstance();
 
   Future<void> settle() async {
-    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 15),
+    );
     expect(tester.takeException(), isNull);
     expect(backend.unexpectedRequests, isEmpty);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   }
 
   Future<void> openSection(String title) async {
+    debugPrint('Store capture: opening $title');
     final home = find.byType(HomePage);
     final scaffold = find
         .descendant(of: home, matching: find.byType(Scaffold))
@@ -61,6 +66,7 @@ Future<void> captureStoreScreens(
 
   try {
     for (final language in ['it', 'en']) {
+      debugPrint('Store capture: loading $language home');
       backend.locale = language;
       final theme = ThemeController(
         preferences: preferences,
@@ -108,9 +114,12 @@ Future<void> captureStoreScreens(
       await tester.pumpAndSettle();
     }
     expect(backend.unexpectedRequests, isEmpty);
+    debugPrint('Store capture: all ten screens completed');
   } finally {
     await tester.pumpWidget(const SizedBox.shrink());
-    await Supabase.instance.dispose();
+    // Supabase owns a real JSON isolate; dispose outside the widget fake clock.
+    await tester.runAsync(() => Supabase.instance.dispose());
     backend.client.close();
+    debugPrint('Store capture: cleanup completed');
   }
 }
