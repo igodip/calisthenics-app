@@ -1,0 +1,117 @@
+name: App Store screenshots
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [stable, main]
+    paths:
+      - '.github/workflows/store-screenshots.yml'
+      - 'integration_test/store_screenshots_test.dart'
+      - 'test_driver/store_screenshots.dart'
+      - 'test/support/store_*'
+      - 'test/store_screenshot_flow_test.dart'
+      - 'tool/store_screenshots/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: store-screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.38.5
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - name: Exercise the capture flow at phone size
+        run: flutter test test/store_screenshot_flow_test.dart
+      - name: Exercise the capture flow at tablet size
+        run: >-
+          flutter test test/store_screenshot_flow_test.dart
+          --dart-define=SCREENSHOT_TEST_WIDTH=1032
+          --dart-define=SCREENSHOT_TEST_HEIGHT=1376
+
+  capture:
+    needs: check
+    runs-on: macos-15
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        device: [iphone, ipad]
+    env:
+      DEVICE_FAMILY: ${{ matrix.device }}
+      SCREENSHOT_OUTPUT_DIR: ${{ github.workspace }}/build/store-screenshots/${{ matrix.device }}/raw
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.38.5
+          cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow==11.3.0
+      - run: flutter pub get
+      - name: Boot a supported simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "build/store-screenshots/$DEVICE_FAMILY"
+          xcrun simctl list devices available --json > "build/store-screenshots/$DEVICE_FAMILY/simulators.json"
+          SIMULATOR_ID="$(python tool/store_screenshots/select_simulator.py "$DEVICE_FAMILY")"
+          echo "SIMULATOR_ID=$SIMULATOR_ID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$SIMULATOR_ID" || xcrun simctl bootstatus "$SIMULATOR_ID" -b
+          xcrun simctl bootstatus "$SIMULATOR_ID" -b
+          xcrun simctl status_bar "$SIMULATOR_ID" override --time '9:41' --dataNetwork wifi --wifiMode active --wifiBars 3 --batteryState charged --batteryLevel 100
+      - name: Allow captures in this debug simulator checkout only
+        run: /usr/libexec/PlistBuddy -c 'Add :CalisyncStoreScreenshots bool true' ios/Runner/Info.plist
+      - name: Capture real app screens with demo data
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter drive --debug --no-pub \
+            --driver=test_driver/store_screenshots.dart \
+            --target=integration_test/store_screenshots_test.dart \
+            --dart-define=STORE_SCREENSHOTS=true \
+            -d "$SIMULATOR_ID" \
+            2>&1 | tee "build/store-screenshots/$DEVICE_FAMILY/capture.log"
+      - name: Validate dimensions and prepare store assets
+        shell: bash
+        run: |
+          python tool/store_screenshots/prepare_assets.py \
+            "build/store-screenshots/$DEVICE_FAMILY" \
+            --device "$DEVICE_FAMILY" --commit "$(git rev-parse HEAD)"
+      - name: Upload screenshots and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-screenshots-${{ matrix.device }}
+          path: build/store-screenshots/${{ matrix.device }}/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Clean up simulator
+        if: always()
+        shell: bash
+        run: |
+          if [[ -n "${SIMULATOR_ID:-}" ]]; then
+            xcrun simctl status_bar "$SIMULATOR_ID" clear || true
+            xcrun simctl shutdown "$SIMULATOR_ID" || true
+          fi

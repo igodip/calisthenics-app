@@ -15,6 +15,13 @@ import UIKit
   }
 
   private func enableScreenSecurity() {
+    #if DEBUG && targetEnvironment(simulator)
+    // Only the screenshot workflow inserts this key in its temporary checkout.
+    // Device builds and release builds always retain screen protection.
+    if Bundle.main.object(forInfoDictionaryKey: "CalisyncStoreScreenshots") as? Bool == true {
+      return
+    }
+    #endif
     guard let window = window else { return }
 
     let textField = UITextField(frame: .zero)

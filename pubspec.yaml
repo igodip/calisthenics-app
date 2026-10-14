@@ -47,6 +47,9 @@ dependencies:
   no_screenshot: ^1.2.0
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
+  http: ^1.2.0
   flutter_test:
     sdk: flutter
 

@@ -40,6 +40,8 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   }
 
   void _setScreenshotProtection({required bool enabled}) {
+    // Fixture-only debug captures. This switch is ignored in release builds.
+    if (kDebugMode && const bool.fromEnvironment('STORE_SCREENSHOTS')) return;
     if (kIsWeb ||
         (defaultTargetPlatform != TargetPlatform.android &&
             defaultTargetPlatform != TargetPlatform.iOS)) {
