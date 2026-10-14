@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:calisync/components/selection_card.dart';
 import 'package:calisync/model/workout_day.dart';
 import 'package:calisync/model/workout_plan.dart';
 import 'package:calisync/pages/training_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
@@ -18,11 +22,59 @@ class WorkoutPlanPage extends StatefulWidget {
 
 class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   late Future<_WorkoutPlanData> _planDataFuture;
+  Future<void> _screenshotProtectionQueue = Future<void>.value();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _setScreenshotProtection(enabled: true);
+    });
     _planDataFuture = _loadPlanData();
+  }
+
+  @override
+  void dispose() {
+    _setScreenshotProtection(enabled: false);
+    super.dispose();
+  }
+
+  void _setScreenshotProtection({required bool enabled}) {
+    if (kIsWeb ||
+        (defaultTargetPlatform != TargetPlatform.android &&
+            defaultTargetPlatform != TargetPlatform.iOS)) {
+      return;
+    }
+
+    _screenshotProtectionQueue = _screenshotProtectionQueue.then((_) async {
+      try {
+        final succeeded = enabled
+            ? await NoScreenshot.instance.screenshotOff()
+            : await NoScreenshot.instance.screenshotOn();
+
+        if (!succeeded) {
+          FlutterError.reportError(
+            FlutterErrorDetails(
+              exception: StateError(
+                'Could not ${enabled ? 'disable' : 'enable'} screenshots.',
+              ),
+              library: 'no_screenshot',
+            ),
+          );
+        }
+      } catch (error, stackTrace) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stackTrace,
+            library: 'no_screenshot',
+            context: ErrorDescription(
+              'while ${enabled ? 'disabling' : 'enabling'} screenshots',
+            ),
+          ),
+        );
+      }
+    });
   }
 
   @override
