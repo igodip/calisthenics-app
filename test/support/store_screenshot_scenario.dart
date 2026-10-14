@@ -19,6 +19,11 @@ Future<void> captureStoreScreens(
   WidgetTester tester, {
   required CaptureScreen capture,
 }) async {
+  final previousErrorHandler = FlutterError.onError;
+  FlutterError.onError = (details) {
+    FlutterError.dumpErrorToConsole(details, forceReport: true);
+    previousErrorHandler?.call(details);
+  };
   SharedPreferences.setMockInitialValues({'hasSeenOnboarding': true});
   final backend = StoreDemoBackend();
   debugPrint('Store capture: initializing demo backend');
@@ -123,6 +128,7 @@ Future<void> captureStoreScreens(
     // Supabase owns a real JSON isolate; dispose outside the widget fake clock.
     await tester.runAsync(() => Supabase.instance.dispose());
     backend.client.close();
+    FlutterError.onError = previousErrorHandler;
     debugPrint('Store capture: cleanup completed');
   }
 }
