@@ -236,6 +236,7 @@ class StoreDemoBackend {
       return http.Response(
         jsonEncode(result),
         200,
+        request: request,
         headers: {'content-type': 'application/json; charset=utf-8'},
       );
     } catch (error) {
@@ -244,6 +245,7 @@ class StoreDemoBackend {
       return http.Response(
         jsonEncode({'message': description}),
         500,
+        request: request,
         headers: {'content-type': 'application/json'},
       );
     }
