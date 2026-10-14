@@ -61,7 +61,16 @@
       }
     }
   },
-  "homeDashboardSubtitle": "Il tuo allenamento in sintesi",
+  "homeMotivationalSentence1": "PRONTO A SUPERARTI?",
+  "homeMotivationalSentence2": "OGGI SI MIGLIORA!",
+  "homeMotivationalSentence3": "PRONTO A DARE IL MASSIMO?",
+  "homeMotivationalSentence4": "IL MEGLIO DEVE ANCORA VENIRE",
+  "homeMotivationalSentence5": "PRONTO A FARE PROGRESSI?",
+  "homeMotivationalSentence6": "LA TUA PROSSIMA SFIDA TI ASPETTA",
+  "homeMotivationalSentence7": "OGGI PUOI FARE DI PIÙ",
+  "homeMotivationalSentence8": "NON SMETTERE DI MIGLIORARE",
+  "homeMotivationalSentence9": "COSTRUISCI LA TUA VERSIONE MIGLIORE",
+  "homeMotivationalSentence10": "UN PASSO AVANTI, OGNI GIORNO",
   "homeViewStats": "Vedi statistiche",
   "homeProgressTitle": "Progressi mensili",
   "homeProgressWorkoutsLabel": "Allenamenti",

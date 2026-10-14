@@ -189,7 +189,34 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get homeDashboardSubtitle => 'Your training at a glance';
+  String get homeMotivationalSentence1 => 'READY TO OUTDO YOURSELF?';
+
+  @override
+  String get homeMotivationalSentence2 => 'GET BETTER TODAY!';
+
+  @override
+  String get homeMotivationalSentence3 => 'READY TO GIVE IT YOUR ALL?';
+
+  @override
+  String get homeMotivationalSentence4 => 'THE BEST IS YET TO COME';
+
+  @override
+  String get homeMotivationalSentence5 => 'READY TO MAKE PROGRESS?';
+
+  @override
+  String get homeMotivationalSentence6 => 'YOUR NEXT CHALLENGE AWAITS';
+
+  @override
+  String get homeMotivationalSentence7 => 'YOU CAN DO MORE TODAY';
+
+  @override
+  String get homeMotivationalSentence8 => 'NEVER STOP IMPROVING';
+
+  @override
+  String get homeMotivationalSentence9 => 'BUILD YOUR BEST SELF';
+
+  @override
+  String get homeMotivationalSentence10 => 'ONE STEP FORWARD, EVERY DAY';
 
   @override
   String get homeViewStats => 'View Stats';

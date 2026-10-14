@@ -430,11 +430,65 @@ abstract class AppLocalizations {
   /// **'Ciao, {name}!'**
   String homeGreeting(String name);
 
-  /// No description provided for @homeDashboardSubtitle.
+  /// No description provided for @homeMotivationalSentence1.
   ///
   /// In it, this message translates to:
-  /// **'Il tuo allenamento in sintesi'**
-  String get homeDashboardSubtitle;
+  /// **'PRONTO A SUPERARTI?'**
+  String get homeMotivationalSentence1;
+
+  /// No description provided for @homeMotivationalSentence2.
+  ///
+  /// In it, this message translates to:
+  /// **'OGGI SI MIGLIORA!'**
+  String get homeMotivationalSentence2;
+
+  /// No description provided for @homeMotivationalSentence3.
+  ///
+  /// In it, this message translates to:
+  /// **'PRONTO A DARE IL MASSIMO?'**
+  String get homeMotivationalSentence3;
+
+  /// No description provided for @homeMotivationalSentence4.
+  ///
+  /// In it, this message translates to:
+  /// **'IL MEGLIO DEVE ANCORA VENIRE'**
+  String get homeMotivationalSentence4;
+
+  /// No description provided for @homeMotivationalSentence5.
+  ///
+  /// In it, this message translates to:
+  /// **'PRONTO A FARE PROGRESSI?'**
+  String get homeMotivationalSentence5;
+
+  /// No description provided for @homeMotivationalSentence6.
+  ///
+  /// In it, this message translates to:
+  /// **'LA TUA PROSSIMA SFIDA TI ASPETTA'**
+  String get homeMotivationalSentence6;
+
+  /// No description provided for @homeMotivationalSentence7.
+  ///
+  /// In it, this message translates to:
+  /// **'OGGI PUOI FARE DI PIÙ'**
+  String get homeMotivationalSentence7;
+
+  /// No description provided for @homeMotivationalSentence8.
+  ///
+  /// In it, this message translates to:
+  /// **'NON SMETTERE DI MIGLIORARE'**
+  String get homeMotivationalSentence8;
+
+  /// No description provided for @homeMotivationalSentence9.
+  ///
+  /// In it, this message translates to:
+  /// **'COSTRUISCI LA TUA VERSIONE MIGLIORE'**
+  String get homeMotivationalSentence9;
+
+  /// No description provided for @homeMotivationalSentence10.
+  ///
+  /// In it, this message translates to:
+  /// **'UN PASSO AVANTI, OGNI GIORNO'**
+  String get homeMotivationalSentence10;
 
   /// No description provided for @homeViewStats.
   ///

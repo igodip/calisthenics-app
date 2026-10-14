@@ -61,7 +61,16 @@
       }
     }
   },
-  "homeDashboardSubtitle": "Your training at a glance",
+  "homeMotivationalSentence1": "READY TO OUTDO YOURSELF?",
+  "homeMotivationalSentence2": "GET BETTER TODAY!",
+  "homeMotivationalSentence3": "READY TO GIVE IT YOUR ALL?",
+  "homeMotivationalSentence4": "THE BEST IS YET TO COME",
+  "homeMotivationalSentence5": "READY TO MAKE PROGRESS?",
+  "homeMotivationalSentence6": "YOUR NEXT CHALLENGE AWAITS",
+  "homeMotivationalSentence7": "YOU CAN DO MORE TODAY",
+  "homeMotivationalSentence8": "NEVER STOP IMPROVING",
+  "homeMotivationalSentence9": "BUILD YOUR BEST SELF",
+  "homeMotivationalSentence10": "ONE STEP FORWARD, EVERY DAY",
   "homeViewStats": "View Stats",
   "homeProgressTitle": "Monthly Progress",
   "homeProgressWorkoutsLabel": "Workouts",

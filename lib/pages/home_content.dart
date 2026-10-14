@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:calisync/components/coach_tip.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,10 +28,12 @@ class _HomeContentState extends State<HomeContent> {
   late Future<String?> _coachTip;
   late Future<bool> _latePaymentFuture;
   late Future<_AnsweredFeedback?> _lastAnsweredFeedbackFuture;
+  late final int _motivationalSentenceIndex;
 
   @override
   void initState() {
     super.initState();
+    _motivationalSentenceIndex = Random().nextInt(10);
     final client = Supabase.instance.client;
     _profileFuture = getUserData();
     _coachTip = _loadCoachTipForUser(
@@ -147,6 +151,7 @@ class _HomeContentState extends State<HomeContent> {
               imageUrl: (avatarUrl == null || avatarUrl.isEmpty)
                   ? null
                   : avatarUrl,
+              motivationalSentenceIndex: _motivationalSentenceIndex,
             ),
             const SizedBox(height: 16),
             FutureBuilder<bool>(
@@ -220,15 +225,29 @@ class _HomeHeader extends StatelessWidget {
     required this.displayName,
     required this.initials,
     required this.imageUrl,
+    required this.motivationalSentenceIndex,
   });
 
   final String displayName;
   final String initials;
   final String? imageUrl;
+  final int motivationalSentenceIndex;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final motivationalSentences = [
+      l10n.homeMotivationalSentence1,
+      l10n.homeMotivationalSentence2,
+      l10n.homeMotivationalSentence3,
+      l10n.homeMotivationalSentence4,
+      l10n.homeMotivationalSentence5,
+      l10n.homeMotivationalSentence6,
+      l10n.homeMotivationalSentence7,
+      l10n.homeMotivationalSentence8,
+      l10n.homeMotivationalSentence9,
+      l10n.homeMotivationalSentence10,
+    ];
     final theme = Theme.of(context);
     final colors = theme.extension<AppColors>();
     return Container(
@@ -268,7 +287,7 @@ class _HomeHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.homeDashboardSubtitle.toUpperCase(),
+                        motivationalSentences[motivationalSentenceIndex],
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: Colors.white.withValues(alpha: 0.78),
                           fontWeight: FontWeight.w700,

@@ -61,7 +61,16 @@
       }
     }
   },
-  "homeDashboardSubtitle": "Tu entrenamiento de un vistazo",
+  "homeMotivationalSentence1": "¿LISTO PARA SUPERARTE?",
+  "homeMotivationalSentence2": "¡HOY PUEDES MEJORAR!",
+  "homeMotivationalSentence3": "¿LISTO PARA DARLO TODO?",
+  "homeMotivationalSentence4": "LO MEJOR ESTÁ POR VENIR",
+  "homeMotivationalSentence5": "¿LISTO PARA PROGRESAR?",
+  "homeMotivationalSentence6": "TU PRÓXIMO RETO TE ESPERA",
+  "homeMotivationalSentence7": "HOY PUEDES HACER MÁS",
+  "homeMotivationalSentence8": "NO DEJES DE MEJORAR",
+  "homeMotivationalSentence9": "CONSTRUYE TU MEJOR VERSIÓN",
+  "homeMotivationalSentence10": "UN PASO ADELANTE, CADA DÍA",
   "homeViewStats": "Ver estadísticas",
   "homeProgressTitle": "Progreso mensual",
   "homeProgressWorkoutsLabel": "Entrenamientos",

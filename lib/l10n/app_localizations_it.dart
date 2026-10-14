@@ -190,7 +190,34 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get homeDashboardSubtitle => 'Il tuo allenamento in sintesi';
+  String get homeMotivationalSentence1 => 'PRONTO A SUPERARTI?';
+
+  @override
+  String get homeMotivationalSentence2 => 'OGGI SI MIGLIORA!';
+
+  @override
+  String get homeMotivationalSentence3 => 'PRONTO A DARE IL MASSIMO?';
+
+  @override
+  String get homeMotivationalSentence4 => 'IL MEGLIO DEVE ANCORA VENIRE';
+
+  @override
+  String get homeMotivationalSentence5 => 'PRONTO A FARE PROGRESSI?';
+
+  @override
+  String get homeMotivationalSentence6 => 'LA TUA PROSSIMA SFIDA TI ASPETTA';
+
+  @override
+  String get homeMotivationalSentence7 => 'OGGI PUOI FARE DI PIÙ';
+
+  @override
+  String get homeMotivationalSentence8 => 'NON SMETTERE DI MIGLIORARE';
+
+  @override
+  String get homeMotivationalSentence9 => 'COSTRUISCI LA TUA VERSIONE MIGLIORE';
+
+  @override
+  String get homeMotivationalSentence10 => 'UN PASSO AVANTI, OGNI GIORNO';
 
   @override
   String get homeViewStats => 'Vedi statistiche';
