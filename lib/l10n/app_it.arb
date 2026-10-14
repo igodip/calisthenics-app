@@ -1,4 +1,10 @@
 {
+  "deleteAccountTitle": "Elimina account",
+  "deleteAccountConfirmation": "Eliminare definitivamente account, foto profilo, piani allievo, feedback, progressi e pagamenti? Questa operazione è irreversibile. Gli account e lo storico degli altri utenti vengono conservati.",
+  "deleteAccountDescription": "Rimuovi definitivamente il tuo account e i dati associati.",
+  "deleteAccountProgress": "Eliminazione account…",
+  "deleteAccountError": "Impossibile completare l’eliminazione. Riprova o contatta dipaoloigor@gmail.com.",
+  "deleteAccountSettings": "Impostazioni ed eliminazione account",
   "appTitle": "Calisync",
   "authErrorMessage": "Errore durante l'autenticazione",
   "navHome": "Home",

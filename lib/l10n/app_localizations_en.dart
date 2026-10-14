@@ -9,6 +9,27 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get deleteAccountTitle => 'Delete account';
+
+  @override
+  String get deleteAccountConfirmation =>
+      'Permanently delete your account, profile photos, trainee plans, feedback, progress and payment records? This cannot be undone. Other users’ accounts and workout history are preserved.';
+
+  @override
+  String get deleteAccountDescription =>
+      'Permanently remove your account and associated data.';
+
+  @override
+  String get deleteAccountProgress => 'Deleting account…';
+
+  @override
+  String get deleteAccountError =>
+      'Could not complete account deletion. Retry or contact dipaoloigor@gmail.com.';
+
+  @override
+  String get deleteAccountSettings => 'Settings and account deletion';
+
+  @override
   String get appTitle => 'Calisync';
 
   @override

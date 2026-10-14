@@ -1,4 +1,10 @@
 {
+  "deleteAccountTitle": "Delete account",
+  "deleteAccountConfirmation": "Permanently delete your account, profile photos, trainee plans, feedback, progress and payment records? This cannot be undone. Other users’ accounts and workout history are preserved.",
+  "deleteAccountDescription": "Permanently remove your account and associated data.",
+  "deleteAccountProgress": "Deleting account…",
+  "deleteAccountError": "Could not complete account deletion. Retry or contact dipaoloigor@gmail.com.",
+  "deleteAccountSettings": "Settings and account deletion",
   "appTitle": "Calisync",
   "authErrorMessage": "Authentication error",
   "navHome": "Home",

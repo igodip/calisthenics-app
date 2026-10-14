@@ -43,7 +43,29 @@ suspension/restoration, and trainer-to-trainee assignments. Privileged actions
 run through database functions that verify the authenticated admin; no service
 role key is shipped in the application.
 
-## Getting Started
+## Account deletion
+
+Profile → Settings offers permanent account deletion, including when the payment
+gate is active. The authenticated `delete-account` Edge Function derives the
+target ID from the verified session, removes files under that user's `avatars/`
+prefix, then calls the service-role-only `delete_account_data` RPC. Database
+deletion is transactional; shared workout days and other users' accounts remain.
+If file deletion succeeds but the database transaction fails, the user can retry;
+some photos may already have been removed. No user ID is accepted from the app.
+
+Deploy migration `20261014120000_add_account_deletion.sql` before deploying
+`supabase functions deploy delete-account --project-ref jrqjysycoqhlnyufhliy`.
+Never test successful deletion against a real user's account; use a disposable
+test account with sample data and verify denied anonymous/cross-account access.
+
+The public email-request page is `docs/delete-account.html`, intended for
+https://igodip.github.io/calisthenics-app/delete-account.html. Publish the `docs`
+site and configure this URL in the store listing. Support must verify ownership
+and complete requests sent to dipaoloigor@gmail.com. Backup retention follows the
+actual infrastructure configuration; deleting active records does not purge
+historical infrastructure backups immediately.
+
+## Local development
 
 This project is a standard Flutter application. To run it locally:
 

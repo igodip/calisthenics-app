@@ -9,6 +9,27 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get deleteAccountTitle => 'Elimina account';
+
+  @override
+  String get deleteAccountConfirmation =>
+      'Eliminare definitivamente account, foto profilo, piani allievo, feedback, progressi e pagamenti? Questa operazione è irreversibile. Gli account e lo storico degli altri utenti vengono conservati.';
+
+  @override
+  String get deleteAccountDescription =>
+      'Rimuovi definitivamente il tuo account e i dati associati.';
+
+  @override
+  String get deleteAccountProgress => 'Eliminazione account…';
+
+  @override
+  String get deleteAccountError =>
+      'Impossibile completare l’eliminazione. Riprova o contatta dipaoloigor@gmail.com.';
+
+  @override
+  String get deleteAccountSettings => 'Impostazioni ed eliminazione account';
+
+  @override
   String get appTitle => 'Calisync';
 
   @override

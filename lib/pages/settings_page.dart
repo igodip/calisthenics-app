@@ -2,6 +2,7 @@ import 'package:calisync/l10n/app_localizations.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:calisync/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
+import '../components/account_deletion_section.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -63,6 +64,8 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 24),
+              const AccountDeletionSection(),
             ],
           ),
         ),
