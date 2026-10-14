@@ -6,6 +6,7 @@ import 'package:calisync/trainer/pages/trainer_program_page.dart';
 import 'package:calisync/trainer/trainer_models.dart';
 import 'package:calisync/trainer/trainer_repository.dart';
 import 'package:calisync/l10n/app_localizations.dart';
+import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -39,6 +40,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
+        theme: AppTheme.theme,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(body: child),
@@ -159,19 +161,24 @@ void main() {
     final completedDayCard = tester.widget<Card>(
       find.ancestor(of: completedDayTitle, matching: find.byType(Card)).first,
     );
-    expect(completedDayCard.color, Colors.green.shade50);
+    expect(
+      completedDayCard.color,
+      AppTheme.theme.extension<AppColors>()!.successContainer,
+    );
     expect(completedDayCard.elevation, 3);
     expect(
-      tester.widget<Icon>(
-        find.descendant(
-          of: find.ancestor(
-            of: completedDayTitle,
-            matching: find.byType(ExpansionTile),
-          ),
-          matching: find.byIcon(Icons.calendar_today),
-        ),
-      ).color,
-      Theme.of(tester.element(completedDayTitle)).colorScheme.secondary,
+      tester
+          .widget<Icon>(
+            find.descendant(
+              of: find.ancestor(
+                of: completedDayTitle,
+                matching: find.byType(ExpansionTile),
+              ),
+              matching: find.byIcon(Icons.calendar_today),
+            ),
+          )
+          .color,
+      AppTheme.theme.extension<AppColors>()!.success,
     );
     expect(
       find.descendant(

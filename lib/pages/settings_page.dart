@@ -43,25 +43,79 @@ class SettingsPage extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: RadioGroup<AppThemeType>(
-                  groupValue: controller.themeType,
-                  onChanged: (value) {
-                    if (value != null) controller.setTheme(value);
-                  },
-                  child: Column(
-                    children: [
-                      for (final option in themeOptions)
-                        RadioListTile<AppThemeType>(
-                          value: option.$1,
-                          title: Text(option.$2),
-                          secondary: CircleAvatar(
-                            radius: 12,
-                            backgroundColor: AppTheme.previewColorFor(
-                              option.$1,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final columns = constraints.maxWidth >= 500 ? 4 : 2;
+                      final width =
+                          (constraints.maxWidth - 12 * (columns - 1)) / columns;
+                      return Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: [
+                          for (final option in themeOptions)
+                            SizedBox(
+                              width: width,
+                              child: Semantics(
+                                selected: controller.themeType == option.$1,
+                                button: true,
+                                child: Material(
+                                  color: controller.themeType == option.$1
+                                      ? theme.colorScheme.primaryContainer
+                                      : theme.scaffoldBackgroundColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    side: BorderSide(
+                                      color: controller.themeType == option.$1
+                                          ? theme.colorScheme.primary
+                                          : theme.colorScheme.outlineVariant,
+                                    ),
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: InkWell(
+                                    onTap: () => controller.setTheme(option.$1),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(14),
+                                      child: Column(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 20,
+                                            backgroundColor:
+                                                AppTheme.previewColorFor(
+                                                  option.$1,
+                                                ),
+                                            child:
+                                                controller.themeType ==
+                                                    option.$1
+                                                ? Icon(
+                                                    Icons.check_rounded,
+                                                    color:
+                                                        AppTheme.previewColorFor(
+                                                              option.$1,
+                                                            ).computeLuminance() >
+                                                            0.179
+                                                        ? Colors.black
+                                                        : Colors.white,
+                                                  )
+                                                : null,
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Text(
+                                            option.$2,
+                                            textAlign: TextAlign.center,
+                                            style: theme.textTheme.labelLarge,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                    ],
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),

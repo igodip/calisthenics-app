@@ -242,8 +242,8 @@ class _HomeHeader extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.24),
-            blurRadius: 22,
+            color: theme.shadowColor.withValues(alpha: 0.16),
+            blurRadius: 24,
             offset: const Offset(0, 10),
           ),
         ],

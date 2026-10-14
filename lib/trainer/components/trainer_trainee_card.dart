@@ -21,7 +21,7 @@ class TrainerTraineeCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onOpen,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -53,7 +53,7 @@ class TrainerTraineeCard extends StatelessWidget {
                           children: [
                             Text(
                               trainee.name,
-                              style: Theme.of(context).textTheme.headlineSmall
+                              style: Theme.of(context).textTheme.titleLarge
                                   ?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: colors.onSurface,

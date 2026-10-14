@@ -298,44 +298,54 @@ class _HomePageState extends State<HomePage> {
         title: Text(
           currentTitle,
           style: theme.textTheme.titleLarge?.copyWith(
-            color: colorScheme.onPrimary,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w700,
-            letterSpacing: 0.8,
+            letterSpacing: -0.4,
           ),
         ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [colorScheme.primary, colorScheme.secondary],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+        backgroundColor: theme.scaffoldBackgroundColor,
+        foregroundColor: colorScheme.onSurface,
+        actions: [
+          IconButton(
+            tooltip: l10n.navProfile,
+            onPressed: () => _selectSection(HomeSection.profile),
+            icon: const Icon(Icons.account_circle_outlined),
           ),
-        ),
+          const SizedBox(width: 8),
+        ],
       ),
       drawer: Drawer(
         child: SafeArea(
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [colorScheme.primary, colorScheme.secondary],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
-                    currentTitle,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: colorScheme.onPrimary,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.8,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Icon(
+                        Icons.fitness_center_rounded,
+                        color: colorScheme.primary,
+                        size: 28,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 18),
+                    Text(l10n.appTitle, style: theme.textTheme.headlineSmall),
+                    const SizedBox(height: 4),
+                    Text(
+                      currentTitle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               for (final item in navigationItems) ...[
@@ -353,21 +363,27 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ],
-                ListTile(
-                  leading: item.badgeCount > 0
-                      ? Badge.count(
-                          count: item.badgeCount,
-                          child: Icon(item.icon),
-                        )
-                      : Icon(item.icon),
-                  title: Text(item.title),
-                  selected: currentItem.section == item.section,
-                  onTap: () {
-                    setState(() {
-                      selectedSection = item.section;
-                    });
-                    Navigator.pop(context);
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: ListTile(
+                    leading: item.badgeCount > 0
+                        ? Badge.count(
+                            count: item.badgeCount,
+                            child: Icon(item.icon),
+                          )
+                        : Icon(item.icon),
+                    title: Text(item.title),
+                    selected: currentItem.section == item.section,
+                    onTap: () {
+                      setState(() {
+                        selectedSection = item.section;
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
               ],
             ],
@@ -378,8 +394,8 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              colorScheme.primaryContainer.withValues(alpha: 0.12),
-              colorScheme.secondaryContainer.withValues(alpha: 0.08),
+              theme.scaffoldBackgroundColor,
+              colorScheme.primaryContainer.withValues(alpha: 0.18),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -407,15 +423,8 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: theme.cardColor.withValues(alpha: 0.9),
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.shadowColor.withValues(alpha: 0.06),
-                      offset: const Offset(0, 12),
-                      blurRadius: 24,
-                    ),
-                  ],
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
