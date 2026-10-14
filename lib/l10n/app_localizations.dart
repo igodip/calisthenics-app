@@ -100,6 +100,42 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina account'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountConfirmation.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare definitivamente account, foto profilo, piani allievo, feedback, progressi e pagamenti? Questa operazione è irreversibile. Gli account e lo storico degli altri utenti vengono conservati.'**
+  String get deleteAccountConfirmation;
+
+  /// No description provided for @deleteAccountDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi definitivamente il tuo account e i dati associati.'**
+  String get deleteAccountDescription;
+
+  /// No description provided for @deleteAccountProgress.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminazione account…'**
+  String get deleteAccountProgress;
+
+  /// No description provided for @deleteAccountError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile completare l’eliminazione. Riprova o contatta dipaoloigor@gmail.com.'**
+  String get deleteAccountError;
+
+  /// No description provided for @deleteAccountSettings.
+  ///
+  /// In it, this message translates to:
+  /// **'Impostazioni ed eliminazione account'**
+  String get deleteAccountSettings;
+
   /// No description provided for @appTitle.
   ///
   /// In it, this message translates to:

@@ -1,4 +1,10 @@
 {
+  "deleteAccountTitle": "Eliminar cuenta",
+  "deleteAccountConfirmation": "¿Eliminar permanentemente tu cuenta, fotos, planes de alumno, comentarios, progreso y pagos? No se puede deshacer. Las cuentas y el historial de otros usuarios se conservan.",
+  "deleteAccountDescription": "Elimina permanentemente tu cuenta y sus datos asociados.",
+  "deleteAccountProgress": "Eliminando cuenta…",
+  "deleteAccountError": "No se pudo completar la eliminación. Reintenta o contacta con dipaoloigor@gmail.com.",
+  "deleteAccountSettings": "Ajustes y eliminación de cuenta",
   "appTitle": "Calisync",
   "authErrorMessage": "Error de autenticación",
   "navHome": "Inicio",

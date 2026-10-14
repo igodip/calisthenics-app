@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
+import '../pages/settings_page.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -216,6 +217,12 @@ class _ExpiredPlanContent extends StatelessWidget {
           },
           icon: const Icon(Icons.home_outlined),
           label: Text(l10n.navHome),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const SettingsPage())),
+          child: Text(l10n.deleteAccountSettings),
         ),
       ],
     );
