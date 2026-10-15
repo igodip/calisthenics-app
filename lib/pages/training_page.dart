@@ -549,21 +549,37 @@ class _TrainingState extends State<Training> {
         title: Text(l10n.trainingIncompleteTitle),
         content: Text(l10n.trainingIncompleteMessage(pendingCount)),
         actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.of(context).pop(_WorkoutCompletionAction.cancel),
-            child: Text(l10n.cancel),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            child: TextButton(
+              onPressed: () =>
+                  Navigator.of(context).pop(_WorkoutCompletionAction.cancel),
+              child: Text(l10n.cancel, textAlign: TextAlign.right),
+            ),
           ),
-          TextButton(
-            onPressed: () => Navigator.of(
-              context,
-            ).pop(_WorkoutCompletionAction.ignoreIncomplete),
-            child: Text(l10n.trainingIncompleteOptionIgnore),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            child: TextButton(
+              onPressed: () => Navigator.of(
+                context,
+              ).pop(_WorkoutCompletionAction.ignoreIncomplete),
+              child: Text(
+                l10n.trainingIncompleteOptionIgnore,
+                textAlign: TextAlign.right,
+              ),
+            ),
           ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.of(context).pop(_WorkoutCompletionAction.completeAll),
-            child: Text(l10n.trainingIncompleteOptionCompleteAll),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            child: FilledButton(
+              onPressed: () => Navigator.of(
+                context,
+              ).pop(_WorkoutCompletionAction.completeAll),
+              child: Text(
+                l10n.trainingIncompleteOptionCompleteAll,
+                textAlign: TextAlign.right,
+              ),
+            ),
           ),
         ],
       ),
