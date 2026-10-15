@@ -58,7 +58,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 3, vsync: this);
+    _tabs = TabController(length: 4, vsync: this);
     _tip = TextEditingController(text: widget.trainee.coachTip);
     _notes = TextEditingController(text: widget.trainee.trainerNotes);
     _load();
@@ -161,6 +161,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
             Tab(text: l10n.trainerOverviewTab),
             Tab(text: l10n.trainerPlanTab),
             Tab(text: l10n.trainerHistoryTab),
+            Tab(text: l10n.trainerMaxTests),
           ],
         ),
       ),
@@ -184,7 +185,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
             )
           : TabBarView(
               controller: _tabs,
-              children: [_overview(), _plan(), _history()],
+              children: [_overview(), _plan(), _history(), _maxTests()],
             ),
     );
   }
@@ -417,7 +418,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     ],
   );
 
-  Widget _history() => TrainerResponsiveList(
+  Widget _maxTests() => TrainerResponsiveList(
     onRefresh: _load,
     children: [
       _sectionTitle(
@@ -431,50 +432,96 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
       if (_data!.maxTests.isEmpty)
         Text(AppLocalizations.of(context)!.trainerNoMaxTests)
       else
-        for (final test in _data!.maxTests)
-          Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: ListTile(
-              leading: const Icon(Icons.emoji_events),
-              title: Text(_maxTestExerciseLabel(test)),
-              subtitle: Text(
-                '${test['recorded_at'] ?? ''} · ${test['value']} ${test['unit']}${_maxTestNotesSuffix(test)}',
-              ),
-              isThreeLine: _maxTestPrivateNotes(test).isNotEmpty,
-              trailing: PopupMenuButton<_MaxTestAction>(
-                onSelected: (action) {
-                  switch (action) {
-                    case _MaxTestAction.editNotes:
-                      _editMaxTestNotes(test);
-                    case _MaxTestAction.delete:
-                      _deleteMaxTest(test);
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: _MaxTestAction.editNotes,
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.edit_note_outlined),
-                      title: Text(
-                        AppLocalizations.of(context)!.trainerEditMaxTestNotes,
+        for (final group in _maxTestDateGroups()) ...[
+          _maxTestDateTitle(group.key),
+          for (final test in group.value)
+            Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: const Icon(Icons.emoji_events),
+                title: Text(_maxTestExerciseLabel(test)),
+                subtitle: Text(
+                  '${test['value']} ${test['unit']}${_maxTestNotesSuffix(test)}',
+                ),
+                isThreeLine: _maxTestPrivateNotes(test).isNotEmpty,
+                trailing: PopupMenuButton<_MaxTestAction>(
+                  onSelected: (action) {
+                    switch (action) {
+                      case _MaxTestAction.editNotes:
+                        _editMaxTestNotes(test);
+                      case _MaxTestAction.delete:
+                        _deleteMaxTest(test);
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: _MaxTestAction.editNotes,
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.edit_note_outlined),
+                        title: Text(
+                          AppLocalizations.of(context)!.trainerEditMaxTestNotes,
+                        ),
                       ),
                     ),
-                  ),
-                  PopupMenuItem(
-                    value: _MaxTestAction.delete,
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.delete_outline),
-                      title: Text(
-                        AppLocalizations.of(context)!.trainerDeleteMaxTest,
+                    PopupMenuItem(
+                      value: _MaxTestAction.delete,
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.delete_outline),
+                        title: Text(
+                          AppLocalizations.of(context)!.trainerDeleteMaxTest,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
+        ],
+    ],
+  );
+
+  List<MapEntry<String, List<Map<String, dynamic>>>> _maxTestDateGroups() {
+    final groups = <String, List<Map<String, dynamic>>>{};
+    for (final test in _data!.maxTests) {
+      final recordedAt = test['recorded_at']?.toString() ?? '';
+      final date = recordedAt.length >= 10
+          ? recordedAt.substring(0, 10)
+          : recordedAt;
+      groups.putIfAbsent(date, () => []).add(test);
+    }
+    return groups.entries.toList()
+      ..sort((a, b) {
+        final aDate = DateTime.tryParse(a.key);
+        final bDate = DateTime.tryParse(b.key);
+        if (aDate == null) return bDate == null ? a.key.compareTo(b.key) : 1;
+        if (bDate == null) return -1;
+        return bDate.compareTo(aDate);
+      });
+  }
+
+  Widget _maxTestDateTitle(String date) {
+    final parsedDate = DateTime.tryParse(date);
+    final label = parsedDate == null
+        ? (date.isEmpty ? '—' : date)
+        : DateFormat.yMMMMd(
+            AppLocalizations.of(context)!.localeName,
+          ).format(parsedDate);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
+      child: Text(
+        label,
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+
+  Widget _history() => TrainerResponsiveList(
+    onRefresh: _load,
+    children: [
       _sectionTitle(AppLocalizations.of(context)!.trainerWeightHistory),
       if (_data!.weightLogs.isEmpty)
         Text(AppLocalizations.of(context)!.trainerNoWeightEntries)

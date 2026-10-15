@@ -211,7 +211,7 @@ void main() {
     expect(savedNotes, 'Paid in cash');
   });
 
-  testWidgets('trainer sees private max test notes in history', (tester) async {
+  testWidgets('trainer sees max tests in their dedicated tab', (tester) async {
     final repository = _FakeTrainerRepository(
       TrainerProgramData(
         plans: const [],
@@ -224,6 +224,20 @@ void main() {
             'unit': 'kg',
             'recorded_at': '2026-09-30',
             'trainer_notes': 'Keep the same depth next time',
+          },
+          {
+            'id': 'max-test-2',
+            'exercise': 'deadlift',
+            'value': 180,
+            'unit': 'kg',
+            'recorded_at': '2026-10-01',
+          },
+          {
+            'id': 'max-test-3',
+            'exercise': 'bench press',
+            'value': 100,
+            'unit': 'kg',
+            'recorded_at': '2026-09-30',
           },
         ],
         weightLogs: const [],
@@ -245,11 +259,23 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('History'));
     await tester.pumpAndSettle();
+    expect(find.textContaining('Keep the same depth next time'), findsNothing);
+
+    await tester.tap(find.text('Max tests').first);
+    await tester.pumpAndSettle();
 
     expect(
       find.textContaining('Keep the same depth next time'),
       findsOneWidget,
     );
+    expect(find.text('October 1, 2026'), findsOneWidget);
+    expect(find.text('September 30, 2026'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('October 1, 2026')).dy,
+      lessThan(tester.getTopLeft(find.text('September 30, 2026')).dy),
+    );
+    expect(find.text('deadlift'), findsOneWidget);
+    expect(find.text('bench press'), findsOneWidget);
   });
 
   testWidgets(
