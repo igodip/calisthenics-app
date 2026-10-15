@@ -119,7 +119,6 @@
   "refresh": "Refresh",
   "homeEmptyTitle": "No workouts available",
   "homeEmptyDescription": "Contact your coach to receive a new plan.",
-  "homeLatePaymentDescription": "Your payment is due. Please settle it to keep your plan active.",
   "homePlanDefaultTitle": "Workout plan",
   "homePlanLatestLabel": "Latest plan",
   "homePlanStartedLabel": "Started {date}",

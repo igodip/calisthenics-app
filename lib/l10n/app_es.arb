@@ -119,7 +119,6 @@
   "refresh": "Actualizar",
   "homeEmptyTitle": "No hay entrenamientos disponibles",
   "homeEmptyDescription": "Contacta a tu entrenador para recibir un nuevo plan.",
-  "homeLatePaymentDescription": "Tu pago está pendiente. Por favor, regularízalo para mantener tu plan activo.",
   "homePlanDefaultTitle": "Plan de entrenamiento",
   "homePlanLatestLabel": "Último plan",
   "homePlanStartedLabel": "Iniciado {date}",

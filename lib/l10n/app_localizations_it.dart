@@ -325,10 +325,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Contatta il tuo coach per ricevere una nuova scheda.';
 
   @override
-  String get homeLatePaymentDescription =>
-      'Il pagamento è in scadenza. Effettualo per mantenere attivo il tuo piano.';
-
-  @override
   String get homePlanDefaultTitle => 'Piano di allenamento';
 
   @override

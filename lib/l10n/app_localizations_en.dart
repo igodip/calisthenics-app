@@ -322,10 +322,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Contact your coach to receive a new plan.';
 
   @override
-  String get homeLatePaymentDescription =>
-      'Your payment is due. Please settle it to keep your plan active.';
-
-  @override
   String get homePlanDefaultTitle => 'Workout plan';
 
   @override

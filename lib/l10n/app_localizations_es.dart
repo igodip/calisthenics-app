@@ -326,10 +326,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Contacta a tu entrenador para recibir un nuevo plan.';
 
   @override
-  String get homeLatePaymentDescription =>
-      'Tu pago está pendiente. Por favor, regularízalo para mantener tu plan activo.';
-
-  @override
   String get homePlanDefaultTitle => 'Plan de entrenamiento';
 
   @override
