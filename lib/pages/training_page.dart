@@ -294,7 +294,7 @@ class _TrainingState extends State<Training> {
                                       ? Icons.check_circle_rounded
                                       : Icons.play_circle_fill_rounded,
                                   size: 22,
-                                  color: colorScheme.onPrimary,
+                                  color: Colors.white,
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
@@ -302,7 +302,7 @@ class _TrainingState extends State<Training> {
                                       ? l10n.trainingWorkoutCompleted
                                       : l10n.trainingMarkAsCompleted,
                                   style: textTheme.titleSmall?.copyWith(
-                                    color: colorScheme.onPrimary,
+                                    color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
