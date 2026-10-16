@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:calisync/trainer/pdf/trainer_pdf_import.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -274,44 +273,42 @@ Dips    Controlled    3x8    4x8    90 sec
     }
   });
 
-  test(
-    'replaces the Scarico exercises with the Massimali instruction',
-    () async {
-      TestWidgetsFlutterBinding.ensureInitialized();
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(
-            const MethodChannel('plugins.flutter.io/path_provider'),
-            (call) async => Directory.systemTemp.path,
-          );
-      final plan = await const TrainerPdfImportService().read(
-        'test/fixtures/pdf_import/igor_6_7_6_8.pdf',
-        'Igor 6.7-6.8',
-      );
-      final maxTests = plan.days.singleWhere(
-        (day) => day.week == 5 && day.dayCode == 'C',
-      );
-
-      expect(maxTests.weekTitle, 'Scarico');
-      expect(maxTests.exercises, hasLength(1));
-      expect(maxTests.exercises.single.name, 'MASSIMALI');
-      expect(
-        maxTests.exercises.single.notes,
-        'Chiedi al tuo trainer cosa fare',
-      );
-      expect(
-        plan.days
-            .singleWhere((day) => day.week == 5 && day.dayCode == 'A')
-            .exercises,
-        hasLength(6),
-      );
-      expect(
-        plan.days
-            .singleWhere((day) => day.week == 5 && day.dayCode == 'B')
-            .exercises,
-        hasLength(7),
-      );
-    },
-  );
+  test('only the Massimali day/week replaces its exercises', () {
+    final plan = const TrainerPdfImportService().parsePages(const [
+      '''
+GIORNO A
+Esercizi    Sett 1    Scarico    Rec/Som
+Squat    4x5    2x5    2 min
+''',
+      '''
+GIORNO C
+Esercizi    Sett 1    Scarico    Rec/Som
+Pull up    4x5    MASSIMALI    2 min
+Dips    3x8    2x8    90 sec
+''',
+    ], 'Max-test regression');
+    final maxTests = plan.days.singleWhere(
+      (day) => day.week == 5 && day.dayCode == 'C',
+    );
+    expect(maxTests.weekTitle, 'Scarico');
+    expect(maxTests.exercises.single.name, 'MASSIMALI');
+    expect(maxTests.exercises.single.notes, 'Chiedi al tuo trainer cosa fare');
+    expect(
+      plan.days
+          .singleWhere((day) => day.week == 1 && day.dayCode == 'C')
+          .exercises
+          .map((exercise) => exercise.name),
+      ['Pull up', 'Dips'],
+    );
+    expect(
+      plan.days
+          .singleWhere((day) => day.week == 5 && day.dayCode == 'A')
+          .exercises
+          .single
+          .name,
+      'Squat',
+    );
+  });
 
   test('matches the imported website Bux layout fixture', () {
     final fixture =

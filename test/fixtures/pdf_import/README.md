@@ -17,3 +17,16 @@ fixture covers the alternate eight-column layout where `NOTE` appears before
 the week columns, verifies all 20 exercise slots across four weeks plus
 `Scarico` (100 exercises), and preserves note text that starts close to the
 exercise-column boundary.
+
+`trainer_pdf_import_test.dart` tests the parser without native libraries.
+`trainer_pdf_native_import_test.dart` also extracts text from the real PDF and
+checks the Massimali replacement. Flutter's test runner does not bundle the
+desktop PDFium plugin, so that file locates and validates the native library
+and configures the worker before the Flutter binding is created. It uses
+`PDFIUM_PATH` when supplied; otherwise the test-only `pdfium_dart` helper downloads
+its pinned PDFium release into `PDFRX_CACHE_DIR` (or the system temporary
+directory's `calisync-pdf-tests` cache). CI caches that runtime by platform and lockfile. Only this
+native file allows extra setup time for the first download; the PDF import
+itself retains its 30-second timeout. For offline runs, set `PDFIUM_PATH` to a
+compatible local PDFium library. The PDFium WASM debug-size warning is unrelated
+to loading the native library.

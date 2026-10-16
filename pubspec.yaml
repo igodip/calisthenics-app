@@ -47,6 +47,7 @@ dependencies:
   no_screenshot: ^1.2.0
 
 dev_dependencies:
+  pdfium_dart: ^0.1.3
   integration_test:
     sdk: flutter
   http: ^1.2.0
