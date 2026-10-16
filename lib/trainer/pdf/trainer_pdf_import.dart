@@ -16,9 +16,11 @@ class TrainerPdfDay {
     required this.dayCode,
     required this.title,
     required this.exercises,
+    this.weekTitle,
   });
 
   final int week;
+  final String? weekTitle;
   final String dayCode;
   final String title;
   final List<TrainerPdfExercise> exercises;
@@ -135,22 +137,37 @@ class TrainerPdfImportService {
       final weekLabel = effectiveWeeks[weekIndex];
       for (final page in parsedPages) {
         final exercises = <TrainerPdfExercise>[];
-        for (final row in page.rows) {
-          final programming =
-              row.programming[weekLabel] ??
-              (effectiveWeeks.length == 1 ? row.fallbackProgramming : '');
-          final notes = <String>[
-            'PDF exercise: ${row.exercise}',
-            if (row.notes.isNotEmpty) row.notes,
-            if (programming.isNotEmpty) '$weekLabel: $programming',
-            if (row.recovery.isNotEmpty) 'Rec/Som: ${row.recovery}',
-          ].join('\n\n');
-          exercises.add(TrainerPdfExercise(name: row.exercise, notes: notes));
+        final isMaxTestWeek = page.rows.any(
+          (row) =>
+              row.programming[weekLabel]?.toLowerCase().contains('massimali') ??
+              false,
+        );
+        if (isMaxTestWeek) {
+          exercises.add(
+            const TrainerPdfExercise(
+              name: 'MASSIMALI',
+              notes: 'Chiedi al tuo trainer cosa fare',
+            ),
+          );
+        } else {
+          for (final row in page.rows) {
+            final programming =
+                row.programming[weekLabel] ??
+                (effectiveWeeks.length == 1 ? row.fallbackProgramming : '');
+            final notes = <String>[
+              'PDF exercise: ${row.exercise}',
+              if (row.notes.isNotEmpty) row.notes,
+              if (programming.isNotEmpty) '$weekLabel: $programming',
+              if (row.recovery.isNotEmpty) 'Rec/Som: ${row.recovery}',
+            ].join('\n\n');
+            exercises.add(TrainerPdfExercise(name: row.exercise, notes: notes));
+          }
         }
         if (exercises.isNotEmpty) {
           days.add(
             TrainerPdfDay(
-              week: weekIndex + 1,
+              week: weekLabel == 'Scarico' ? 5 : weekIndex + 1,
+              weekTitle: weekLabel == 'Scarico' ? weekLabel : null,
               dayCode: page.dayCode,
               title: 'GIORNO ${page.dayCode}',
               exercises: exercises,

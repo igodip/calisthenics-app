@@ -580,7 +580,7 @@
   "trainerPdfSummary": "Se detectaron {days} días y {exercises} ejercicios",
   "@trainerPdfSummary": {"placeholders": {"days": {"type": "int"}, "exercises": {"type": "int"}}},
   "trainerPdfDaySummary": "Semana {week} · Día {day}: {exercises} ejercicios",
-  "@trainerPdfDaySummary": {"placeholders": {"week": {"type": "int"}, "day": {"type": "String"}, "exercises": {"type": "int"}}},
+  "@trainerPdfDaySummary": {"placeholders": {"week": {"type": "String"}, "day": {"type": "String"}, "exercises": {"type": "int"}}},
   "trainerPdfConfirmImport": "Importar plan",
   "trainerPdfImportSuccess": "Plan de entrenamiento importado correctamente.",
   "trainerPdfImportFailed": "No se pudo importar el PDF. Comprueba que contenga tablas de entrenamiento DÍA A–G.",

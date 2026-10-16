@@ -580,7 +580,7 @@
   "trainerPdfSummary": "{days} days and {exercises} exercises detected",
   "@trainerPdfSummary": {"placeholders": {"days": {"type": "int"}, "exercises": {"type": "int"}}},
   "trainerPdfDaySummary": "Week {week} · Day {day}: {exercises} exercises",
-  "@trainerPdfDaySummary": {"placeholders": {"week": {"type": "int"}, "day": {"type": "String"}, "exercises": {"type": "int"}}},
+  "@trainerPdfDaySummary": {"placeholders": {"week": {"type": "String"}, "day": {"type": "String"}, "exercises": {"type": "int"}}},
   "trainerPdfConfirmImport": "Import plan",
   "trainerPdfImportSuccess": "Workout plan imported successfully.",
   "trainerPdfImportFailed": "The PDF could not be imported. Make sure it contains GIORNO A–G workout tables.",

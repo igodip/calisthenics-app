@@ -193,7 +193,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     final response = await client
         .from('days')
         .select(
-          'id, week, day_code, title, notes, completed, '
+          'id, week, week_title, day_code, title, notes, completed, '
           'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) ), '
           'day_exercises ( id, position, notes, completed, completed_reps, trainee_notes, exercise_feedback, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes)',
         )
@@ -298,6 +298,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       return WorkoutDay(
         id: row['id'] as String?,
         week: (row['week'] as num?)?.toInt() ?? 0,
+        weekTitle: row['week_title'] as String?,
         dayCode: (row['day_code'] as String? ?? '').trim(),
         title: row['title'] as String?,
         notes: row['notes'] as String?,
@@ -714,9 +715,15 @@ class _WorkoutWeekSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final weekTitle = week > 0
-        ? l10n.weekNumber(week)
-        : l10n.defaultWorkoutTitle;
+    final weekTitles = days
+        .map((day) => day.weekTitle?.trim())
+        .whereType<String>()
+        .where((title) => title.isNotEmpty)
+        .toList();
+    final resolvedWeekTitle = weekTitles.isEmpty ? null : weekTitles.first;
+    final weekTitle =
+        resolvedWeekTitle ??
+        (week > 0 ? l10n.weekNumber(week) : l10n.defaultWorkoutTitle);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),

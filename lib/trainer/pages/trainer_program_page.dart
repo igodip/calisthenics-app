@@ -279,7 +279,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
           Text(AppLocalizations.of(context)!.trainerNoScheduledDays)
         else ...[
           for (final week in visibleWeeks) ...[
-            _weekTitle(week.key),
+            _weekTitle(week.key, week.value),
             for (final day in week.value) _dayCard(day),
           ],
           if (calendarWeeks.length > visibleWeeks.length)
@@ -342,12 +342,22 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     return weeks.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
   }
 
-  Widget _weekTitle(int week) {
+  Widget _weekTitle(int week, [Iterable<Map<String, dynamic>>? days]) {
     final l10n = AppLocalizations.of(context)!;
+    final weekTitles =
+        days
+            ?.map((day) => day['week_title'])
+            .whereType<String>()
+            .map((title) => title.trim())
+            .where((title) => title.isNotEmpty)
+            .toList() ??
+        const <String>[];
+    final weekTitle = weekTitles.isEmpty ? null : weekTitles.first;
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 12, 4, 8),
       child: Text(
-        week > 0 ? l10n.weekNumber(week) : l10n.defaultWorkoutTitle,
+        weekTitle ??
+            (week > 0 ? l10n.weekNumber(week) : l10n.defaultWorkoutTitle),
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
           color: Theme.of(context).colorScheme.primary,
           fontWeight: FontWeight.w700,
@@ -412,7 +422,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
         ),
       _sectionTitle(AppLocalizations.of(context)!.trainerWorkoutDays),
       for (final week in _calendarWeeks(_data!.days)) ...[
-        _weekTitle(week.key),
+        _weekTitle(week.key, week.value),
         for (final day in week.value) _dayCard(day, editable: true),
       ],
     ],
@@ -491,14 +501,13 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
           : recordedAt;
       groups.putIfAbsent(date, () => []).add(test);
     }
-    return groups.entries.toList()
-      ..sort((a, b) {
-        final aDate = DateTime.tryParse(a.key);
-        final bDate = DateTime.tryParse(b.key);
-        if (aDate == null) return bDate == null ? a.key.compareTo(b.key) : 1;
-        if (bDate == null) return -1;
-        return bDate.compareTo(aDate);
-      });
+    return groups.entries.toList()..sort((a, b) {
+      final aDate = DateTime.tryParse(a.key);
+      final bDate = DateTime.tryParse(b.key);
+      if (aDate == null) return bDate == null ? a.key.compareTo(b.key) : 1;
+      if (bDate == null) return -1;
+      return bDate.compareTo(aDate);
+    });
   }
 
   Widget _maxTestDateTitle(String date) {
@@ -793,10 +802,12 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     final result = completedReps == null
         ? l10n.trainerMinutesDuration(minutes)
         : l10n.trainerExerciseResult(minutes, '$completedReps');
+    final notes = '${exercise['notes'] ?? ''}'.trim();
     final traineeNotes = '${exercise['trainee_notes'] ?? ''}'.trim();
     final exerciseFeedback = '${exercise['exercise_feedback'] ?? ''}'.trim();
     return [
       result,
+      if (notes.isNotEmpty) notes,
       if (traineeNotes.isNotEmpty) l10n.trainerTraineeNote(traineeNotes),
       if (exerciseFeedback.isNotEmpty)
         l10n.trainerTraineeExerciseFeedback(exerciseFeedback),
@@ -1153,7 +1164,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Text(
                           l10n.trainerPdfDaySummary(
-                            day.week,
+                            day.weekTitle ?? l10n.weekNumber(day.week),
                             day.dayCode,
                             day.exercises.length,
                           ),

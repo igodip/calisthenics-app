@@ -2282,7 +2282,7 @@ abstract class AppLocalizations {
   ///
   /// In it, this message translates to:
   /// **'Settimana {week} · Giorno {day}: {exercises} esercizi'**
-  String trainerPdfDaySummary(int week, String day, int exercises);
+  String trainerPdfDaySummary(String week, String day, int exercises);
 
   /// No description provided for @trainerPdfConfirmImport.
   ///

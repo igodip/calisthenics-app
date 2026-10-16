@@ -35,6 +35,7 @@ class WorkoutExercise {
 class WorkoutDay {
   final String? id;
   final int week;
+  final String? weekTitle;
   final String dayCode;
   final String? title;
   final String? notes;
@@ -48,6 +49,7 @@ class WorkoutDay {
 
   const WorkoutDay({
     required this.week,
+    this.weekTitle,
     required this.dayCode,
     required this.exercises,
     this.id,
@@ -68,7 +70,12 @@ class WorkoutDay {
   }) {
     final parts = <String>[];
     if (includeWeek && week > 0) {
-      parts.add(l10n.weekNumber(week));
+      final resolvedWeekTitle = weekTitle?.trim();
+      parts.add(
+        resolvedWeekTitle == null || resolvedWeekTitle.isEmpty
+            ? l10n.weekNumber(week)
+            : resolvedWeekTitle,
+      );
     }
     if (dayCode.isNotEmpty) {
       parts.add(dayCode.toUpperCase());

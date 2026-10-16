@@ -107,7 +107,12 @@ void main() {
     tester,
   ) async {
     final days = [
-      {'week': 2, 'day_code': 'C', 'title': 'Week 2 - Day C'},
+      {
+        'week': 2,
+        'week_title': 'Scarico',
+        'day_code': 'C',
+        'title': 'Week 2 - Day C',
+      },
       {'week': 1, 'day_code': 'C', 'title': 'Week 1 - Day C'},
       {'week': 2, 'day_code': 'A', 'title': 'Week 2 - Day A'},
       {'week': 3, 'day_code': 'A', 'title': 'Week 3 - Day A'},
@@ -144,6 +149,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Week 3 - Day A'), findsNothing);
+    expect(find.text('Scarico'), findsOneWidget);
     final dayTitles = [
       'Week 1 - Day A',
       'Week 1 - Day B',

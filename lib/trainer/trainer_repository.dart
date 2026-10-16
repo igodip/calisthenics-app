@@ -272,7 +272,7 @@ class TrainerRepository {
       _client
           .from('days')
           .select(
-            'id, title, week, day_code, notes, completed, completed_at, workout_plan_days!inner(plan_id, position, workout_plans!inner(trainee_id)), day_exercises(id, exercise, duration_minutes, notes, trainee_notes, exercise_feedback, completed, completed_reps, position)',
+            'id, title, week, week_title, day_code, notes, completed, completed_at, workout_plan_days!inner(plan_id, position, workout_plans!inner(trainee_id)), day_exercises(id, exercise, duration_minutes, notes, trainee_notes, exercise_feedback, completed, completed_reps, position)',
           )
           .eq('workout_plan_days.workout_plans.trainee_id', trainee.id)
           .order('week'),
@@ -465,6 +465,7 @@ class TrainerRepository {
             for (final day in imported.days)
               {
                 'week': day.week,
+                'week_title': day.weekTitle,
                 'day_code': day.dayCode,
                 'title': day.title,
                 'notes': null,

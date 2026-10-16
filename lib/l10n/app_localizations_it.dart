@@ -1216,7 +1216,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String trainerPdfDaySummary(int week, String day, int exercises) {
+  String trainerPdfDaySummary(String week, String day, int exercises) {
     return 'Settimana $week · Giorno $day: $exercises esercizi';
   }
 
