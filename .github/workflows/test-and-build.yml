@@ -8,8 +8,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      PDFRX_CACHE_DIR: ${{ runner.temp }}/pdfrx-tests
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -27,13 +25,15 @@ jobs:
       - name: Cache native PDF test runtime
         uses: actions/cache@v4
         with:
-          path: ${{ env.PDFRX_CACHE_DIR }}
+          path: ${{ runner.temp }}/pdfrx-tests
           key: ${{ runner.os }}-${{ runner.arch }}-pdfium-${{ hashFiles('pubspec.lock') }}
 
       - name: Check for lints
         run: flutter analyze
 
       - name: Run all tests
+        env:
+          PDFRX_CACHE_DIR: ${{ runner.temp }}/pdfrx-tests
         run: flutter test
 
   android:
