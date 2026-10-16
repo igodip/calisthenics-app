@@ -211,6 +211,40 @@ void main() {
     expect(savedNotes, 'Paid in cash');
   });
 
+  testWidgets('invalid payment amounts are rejected and empty amounts clear', (
+    tester,
+  ) async {
+    var saves = 0;
+    double? savedAmount = 1;
+    await pumpAt(
+      tester,
+      TrainerPaymentsPage(
+        trainees: [trainee],
+        onSave: (_, _, amount, _) async {
+          saves++;
+          savedAmount = amount;
+        },
+        onRefresh: () async {},
+      ),
+      const Size(500, 800),
+    );
+    for (final invalid in ['abc', '-1', 'NaN', 'Infinity']) {
+      await tester.enterText(find.byType(TextField).first, invalid);
+      await tester.tap(find.byIcon(Icons.save_outlined));
+      await tester.pump();
+      expect(saves, 0);
+      expect(
+        find.text('Enter a valid amount of zero or more.'),
+        findsOneWidget,
+      );
+    }
+    await tester.enterText(find.byType(TextField).first, '');
+    await tester.tap(find.byIcon(Icons.save_outlined));
+    await tester.pump();
+    expect(saves, 1);
+    expect(savedAmount, isNull);
+  });
+
   testWidgets('trainer sees max tests in their dedicated tab', (tester) async {
     final repository = _FakeTrainerRepository(
       TrainerProgramData(

@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../components/progress_card.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../data/account_access.dart';
 import 'profile_page.dart';
 
 class HomeContent extends StatefulWidget {
@@ -52,6 +53,8 @@ class _HomeContentState extends State<HomeContent> {
         .from('trainee_trainers')
         .select('coach_tip')
         .eq('trainee_id', userId)
+        .order('assigned_at', ascending: false)
+        .limit(1)
         .maybeSingle();
     if (response == null) {
       return null;
@@ -101,35 +104,8 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Future<bool> _fetchIsPaymentLate() async {
-    final client = Supabase.instance.client;
-    final userId = client.auth.currentUser?.id;
-    if (userId == null) {
-      return false;
-    }
-
-    final paymentResponse = await client
-        .from('trainee_monthly_payments')
-        .select('paid, month_start')
-        .eq('trainee_id', userId)
-        .order('month_start', ascending: false)
-        .limit(1)
-        .maybeSingle();
-
-    if (paymentResponse == null) return false;
-
-    final paid = paymentResponse['paid'] as bool? ?? true;
-    final monthStartStr = paymentResponse['month_start'] as String?;
-    if (monthStartStr == null) return false;
-
-    final monthStart = DateTime.parse(monthStartStr);
-    final now = DateTime.now();
-
-    final isCurrentMonth =
-        monthStart.year == now.year && monthStart.month == now.month;
-
-    if (!isCurrentMonth) return true;
-
-    return !paid;
+    final access = await AccountAccess.load();
+    return !access.hasTrainingAccess;
   }
 
   @override

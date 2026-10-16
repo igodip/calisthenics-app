@@ -1,4 +1,5 @@
 // lib/pages/home_page.dart
+import 'dart:async';
 import 'package:calisync/admin/admin_repository.dart';
 import 'package:calisync/admin/pages/admin_console_page.dart';
 import 'package:calisync/pages/profile_page.dart';
@@ -11,6 +12,7 @@ import 'package:calisync/trainer/trainer_repository.dart';
 import 'package:flutter/material.dart';
 
 import '../components/plan_expired_gate.dart';
+import '../data/account_access.dart';
 import '../data/exercise_guides.dart' as guide_data;
 import '../data/terminology_repository.dart';
 import '../l10n/app_localizations.dart';
@@ -93,38 +95,51 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late HomeSection selectedSection;
   String? _cachedLocale;
   TrainerProfile? _trainerProfile;
   bool _isAdmin = false;
   int _trainerUnreadFeedbackCount = 0;
   bool _roleLookupComplete = false;
+  bool _rolesLoading = false;
+  Object? _roleError;
+  Timer? _rolesTimer;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     selectedSection = widget.initialSection;
     PushNotificationService.instance.addListener(_handleNotificationRoute);
     _loadTrainerRole();
+    _rolesTimer = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => _loadTrainerRole(),
+    );
   }
 
   @override
   void dispose() {
+    _rolesTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     PushNotificationService.instance.removeListener(_handleNotificationRoute);
     super.dispose();
   }
 
   Future<void> _loadTrainerRole() async {
+    if (_rolesLoading || !mounted) return;
+    _rolesLoading = true;
     try {
-      final roles = await Future.wait<Object?>([
-        TrainerRepository().currentTrainer().catchError((_) => null),
-        AdminRepository().isCurrentUserAdmin().catchError((_) => false),
-      ]);
+      final access = await AccountAccess.load();
       if (mounted) {
         setState(() {
-          _trainerProfile = roles[0] as TrainerProfile?;
-          _isAdmin = roles[1] as bool;
+          _trainerProfile = access.isTrainer && access.isActive
+              ? TrainerProfile(id: accessUserId(), name: access.name)
+              : null;
+          _isAdmin = access.isAdmin && access.isActive;
+          _roleError = null;
+          _roleLookupComplete = true;
         });
       }
       if (_trainerProfile != null) {
@@ -135,12 +150,19 @@ class _HomePageState extends State<HomePage> {
           // A badge failure must not hide the trainer workspace.
         }
       }
-    } catch (_) {
-      // The standard trainee experience remains available if role lookup fails.
+    } catch (error) {
+      if (mounted) setState(() => _roleError = error);
     } finally {
-      _roleLookupComplete = true;
+      _rolesLoading = false;
       _handleNotificationRoute();
     }
+  }
+
+  String accessUserId() => AdminRepository().currentUserId!;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _loadTrainerRole();
   }
 
   void _handleNotificationRoute() {
@@ -292,6 +314,28 @@ class _HomePageState extends State<HomePage> {
 
     final scaffold = Scaffold(
       extendBody: true,
+      bottomNavigationBar: _roleError == null
+          ? null
+          : Material(
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(child: Text(l10n.trainingAccessErrorTitle)),
+                      TextButton(
+                        onPressed: _loadTrainerRole,
+                        child: Text(l10n.retry),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
       appBar: AppBar(
         centerTitle: false,
         elevation: 0,
@@ -432,7 +476,6 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(24),
                   child: requiresTrainingAccess(currentItem.section)
                       ? PlanExpiredGate(
-                          bypass: _trainerProfile != null || _isAdmin,
                           onOpenProfile: () =>
                               _selectSection(HomeSection.profile),
                           child: currentItem.page,

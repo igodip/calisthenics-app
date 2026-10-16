@@ -220,8 +220,22 @@ async function resolveNotification(
   }
 
   if (type === 'trainer_payment_updated') {
+    // New clients send the exact saved payment ID, so a month rollover cannot
+    // change the record used to compose the notification.
+    const { data: payment } = await admin.from('trainee_monthly_payments')
+      .select('trainee_id, paid').eq('id', entityId).maybeSingle();
+    if (payment) {
+      if (!await isAssignedTrainer(admin, callerId, payment.trainee_id)) return null;
+      return {
+        recipientIds: [payment.trainee_id], title: 'Payment status updated',
+        body: payment.paid ? 'Your monthly payment is marked as paid' : 'Your monthly payment status changed',
+        route: 'trainee_home',
+      };
+    }
+    // Compatibility with older clients that send the trainee ID.
     if (!await isAssignedTrainer(admin, callerId, entityId)) return null;
-    const monthStart = new Date().toISOString().substring(0, 7) + '-01';
+    const { data: monthStart, error: monthError } = await admin.rpc('current_payment_month');
+    if (monthError) throw monthError;
     const { data } = await admin
       .from('trainee_monthly_payments')
       .select('paid')

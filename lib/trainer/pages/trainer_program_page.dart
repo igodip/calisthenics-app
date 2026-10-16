@@ -711,7 +711,9 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
       'upcoming' => l10n.trainerPlanStatusUpcoming,
       'draft' => l10n.trainerPlanStatusDraft,
       'archived' => l10n.trainerPlanStatusArchived,
-      _ => l10n.trainerPlanStatusActive,
+      'expired' => l10n.profilePlanExpired,
+      'active' => l10n.trainerPlanStatusActive,
+      _ => l10n.trainerPlanStatusInactive,
     };
   }
 

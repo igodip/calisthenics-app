@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../trainer_models.dart';
@@ -25,20 +26,39 @@ class TrainerSectionPage extends StatefulWidget {
   State<TrainerSectionPage> createState() => _TrainerSectionPageState();
 }
 
-class _TrainerSectionPageState extends State<TrainerSectionPage> {
+class _TrainerSectionPageState extends State<TrainerSectionPage>
+    with WidgetsBindingObserver {
   final _repository = TrainerRepository();
   bool _loading = true;
   Object? _error;
   List<TrainerTrainee> _trainees = const [];
   List<TrainerFeedback> _feedback = const [];
+  Timer? _timer;
+  bool _refreshing = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _load();
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) => _load());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _load();
   }
 
   Future<void> _load() async {
+    if (!mounted || _refreshing) return;
+    _refreshing = true;
     setState(() {
       _loading = true;
       _error = null;
@@ -58,6 +78,7 @@ class _TrainerSectionPageState extends State<TrainerSectionPage> {
     } catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {
+      _refreshing = false;
       if (mounted) setState(() => _loading = false);
     }
   }
@@ -186,6 +207,7 @@ class _TrainerSectionPageState extends State<TrainerSectionPage> {
               ? entry.copyWith(
                   paid: paid,
                   paymentAmount: amount,
+                  clearPaymentAmount: amount == null,
                   paymentNotes: notes.trim(),
                 )
               : entry;

@@ -1,6 +1,6 @@
 # CaliSync store privacy disclosures
 
-Reviewed 14 October 2026 against app code and deployed notification/database
+Reviewed 16 October 2026 against app code and deployed notification/database
 configuration. This is a submission worksheet, not an export of the live store
 console answers. Console access is required to update/confirm those answers.
 
@@ -57,9 +57,9 @@ also transmit actual content to providers, not only opaque device IDs.
 - No implemented location, contacts, microphone recording, advertising IDs,
   HealthKit, Health Connect, Fitbit, ad SDK, Analytics or Crashlytics collection.
 - Original imported PDFs are parsed locally; extracted plans are stored remotely.
-- Admins currently have broad access to personal/coaching records. Trainer
-  accounts can access workout-day rows outside their own assignments. Avoid
-  store/marketing claims that only the assigned trainer can read all content.
+- Admins currently have broad access to personal/coaching records. Workout-day
+  access is limited to the trainee, assigned trainers and admins, plus a trainer's
+  own unlinked draft days. Avoid claims that data is hidden from admins/operators.
 
 ## Owner checks before confirming live console declarations
 

@@ -223,6 +223,18 @@ class StoreDemoBackend {
         result = user;
       } else if (path == '/rest/v1/rpc/is_admin' && request.method == 'POST') {
         result = false;
+      } else if (path == '/rest/v1/rpc/current_account_access' &&
+          request.method == 'POST') {
+        result = {
+          'is_trainer': false,
+          'is_admin': false,
+          'is_trainee': true,
+          'is_paid': true,
+          'is_active': true,
+          'name': 'Alex Rossi',
+          'month_start':
+              '${now.year}-${now.month.toString().padLeft(2, '0')}-01',
+        };
       } else if (path.startsWith('/rest/v1/') && request.method == 'GET') {
         var rows = _rows(path.substring('/rest/v1/'.length));
         final limit = int.tryParse(request.url.queryParameters['limit'] ?? '');

@@ -9,6 +9,10 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get trainerPaymentAmountInvalid =>
+      'Enter a valid amount of zero or more.';
+
+  @override
   String get privacyPolicyTitle => 'Privacy policy';
 
   @override

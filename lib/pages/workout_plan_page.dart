@@ -198,6 +198,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
           'day_exercises ( id, position, notes, completed, completed_reps, trainee_notes, exercise_feedback, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes)',
         )
         .eq('workout_plan_days.workout_plans.trainee_id', userId)
+        .eq('workout_plan_days.workout_plans.status', 'active')
         .order('week', ascending: true)
         .order('day_code', ascending: true)
         .order(
@@ -571,8 +572,8 @@ class _WorkoutPlanBody extends StatelessWidget {
 
 bool _isPlanExpired(List<WorkoutPlan> plans) {
   if (plans.isEmpty) return false;
-  final latestPlan = plans.first;
-  return latestPlan.status?.trim().toLowerCase() == 'expired';
+  return !plans.any((plan) => plan.status?.trim().toLowerCase() == 'active') &&
+      plans.any((plan) => plan.status?.trim().toLowerCase() == 'expired');
 }
 
 class _ExpiredPlanStub extends StatelessWidget {

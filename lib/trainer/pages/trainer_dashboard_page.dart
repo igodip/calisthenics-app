@@ -70,7 +70,8 @@ class TrainerDashboardPage extends StatelessWidget {
                   child: TrainerMetricCard(
                     icon: Icons.verified_user,
                     label: l10n.trainerActivePlans,
-                    value: '$paid',
+                    value:
+                        '${trainees.fold<int>(0, (sum, trainee) => sum + trainee.activePlanCount)}',
                   ),
                 ),
                 SizedBox(

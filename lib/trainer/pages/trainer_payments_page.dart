@@ -29,6 +29,31 @@ class _TrainerPaymentsPageState extends State<TrainerPaymentsPage> {
   final Map<String, TextEditingController> _amounts = {};
   final Map<String, TextEditingController> _notes = {};
   final Set<String> _saving = {};
+  final Map<String, String> _amountErrors = {};
+
+  @override
+  void didUpdateWidget(TrainerPaymentsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final previous = {
+      for (final trainee in oldWidget.trainees) trainee.id: trainee,
+    };
+    for (final trainee in widget.trainees) {
+      final old = previous[trainee.id];
+      if (old == null || _saving.contains(trainee.id)) continue;
+      final newMonth = old.paymentMonth != trainee.paymentMonth;
+      final amount = _amounts[trainee.id];
+      if (amount != null &&
+          (newMonth ||
+              amount.text == (old.paymentAmount?.toStringAsFixed(2) ?? ''))) {
+        amount.text = trainee.paymentAmount?.toStringAsFixed(2) ?? '';
+      }
+      final notes = _notes[trainee.id];
+      if (notes != null &&
+          (newMonth || notes.text.trim() == old.paymentNotes.trim())) {
+        notes.text = trainee.paymentNotes;
+      }
+    }
+  }
 
   TextEditingController _controller(TrainerTrainee trainee) =>
       _amounts.putIfAbsent(
@@ -56,15 +81,28 @@ class _TrainerPaymentsPageState extends State<TrainerPaymentsPage> {
   }
 
   Future<void> _save(TrainerTrainee trainee, bool paid) async {
+    if (_saving.contains(trainee.id)) return;
+    final text = _controller(trainee).text.trim().replaceAll(',', '.');
+    final amount = text.isEmpty ? null : double.tryParse(text);
+    if (text.isNotEmpty && (amount == null || !amount.isFinite || amount < 0)) {
+      setState(
+        () => _amountErrors[trainee.id] = AppLocalizations.of(
+          context,
+        )!.trainerPaymentAmountInvalid,
+      );
+      return;
+    }
+    _amountErrors.remove(trainee.id);
     setState(() => _saving.add(trainee.id));
     try {
-      final text = _controller(trainee).text.trim().replaceAll(',', '.');
       await widget.onSave(
         trainee,
         paid,
-        text.isEmpty ? null : double.tryParse(text),
+        amount,
         _notesController(trainee).text,
       );
+    } catch (_) {
+      // The parent reports repository failures; keep the draft available to retry.
     } finally {
       if (mounted) setState(() => _saving.remove(trainee.id));
     }
@@ -132,17 +170,20 @@ class _TrainerPaymentsPageState extends State<TrainerPaymentsPage> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: _controller(trainee),
+                    enabled: !_saving.contains(trainee.id),
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
                     decoration: InputDecoration(
                       labelText: l10n.trainerMonthlyAmount,
                       prefixText: '€ ',
+                      errorText: _amountErrors[trainee.id],
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _notesController(trainee),
+                    enabled: !_saving.contains(trainee.id),
                     minLines: 2,
                     maxLines: 4,
                     maxLength: 2000,

@@ -1,5 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../data/account_access.dart';
 
 import '../l10n/app_localizations.dart';
 import '../pages/profile_page.dart';
@@ -23,13 +24,34 @@ class PlanExpiredGate extends StatefulWidget {
   State<PlanExpiredGate> createState() => _PlanExpiredGateState();
 }
 
-class _PlanExpiredGateState extends State<PlanExpiredGate> {
+class _PlanExpiredGateState extends State<PlanExpiredGate>
+    with WidgetsBindingObserver {
   Future<bool>? _access;
+  Timer? _timer;
+  bool _checking = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (!widget.bypass) _access = _load();
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (!widget.bypass && !_checking) _refresh();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !widget.bypass && !_checking) {
+      _refresh();
+    }
   }
 
   @override
@@ -42,18 +64,13 @@ class _PlanExpiredGateState extends State<PlanExpiredGate> {
   }
 
   Future<bool> _load() async {
-    if (widget.loadAccess != null) return widget.loadAccess!();
-    final client = Supabase.instance.client;
-    final userId = client.auth.currentUser?.id;
-    if (userId == null) return false;
-    final payment = await client
-        .from('trainee_monthly_payments')
-        .select('paid')
-        .eq('trainee_id', userId)
-        .order('month_start', ascending: false)
-        .limit(1)
-        .maybeSingle();
-    return payment?['paid'] == true;
+    _checking = true;
+    try {
+      if (widget.loadAccess != null) return await widget.loadAccess!();
+      return (await AccountAccess.load()).hasTrainingAccess;
+    } finally {
+      _checking = false;
+    }
   }
 
   void _refresh() {
@@ -70,8 +87,7 @@ class _PlanExpiredGateState extends State<PlanExpiredGate> {
     return FutureBuilder<bool>(
       future: _access,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done &&
-            snapshot.data == true) {
+        if (!snapshot.hasError && snapshot.data == true) {
           return widget.child;
         }
         final loading = snapshot.connectionState != ConnectionState.done;

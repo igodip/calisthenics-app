@@ -16,11 +16,6 @@ class TrainerRepository {
     return id;
   }
 
-  static String currentMonthStart() {
-    final now = DateTime.now();
-    return '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-01';
-  }
-
   Future<TrainerProfile?> currentTrainer() async {
     final row = await _client
         .from('trainers')
@@ -41,11 +36,22 @@ class TrainerRepository {
     final raw = List<Map<String, dynamic>>.from(rows);
     final ids = raw.map((e) => e['id'] as String).toList();
     if (ids.isEmpty) return const [];
+    final month = await _client.rpc('current_payment_month') as String;
+    final activePlans = await _client
+        .from('workout_plans')
+        .select('trainee_id')
+        .inFilter('trainee_id', ids)
+        .eq('status', 'active');
+    final activePlanCounts = <String, int>{};
+    for (final row in activePlans) {
+      final id = row['trainee_id'] as String;
+      activePlanCounts[id] = (activePlanCounts[id] ?? 0) + 1;
+    }
 
     final paymentRows = await _client
         .from('trainee_monthly_payments')
         .select('trainee_id, paid, amount, notes')
-        .eq('month_start', currentMonthStart())
+        .eq('month_start', month)
         .inFilter('trainee_id', ids);
     final payments = {
       for (final row in List<Map<String, dynamic>>.from(paymentRows))
@@ -57,6 +63,7 @@ class TrainerRepository {
         .select(
           'completed, days!inner(workout_plan_days!inner(workout_plans!inner(trainee_id)))',
         )
+        .eq('days.workout_plan_days.workout_plans.status', 'active')
         .inFilter('days.workout_plan_days.workout_plans.trainee_id', ids);
     final progress = <String, List<int>>{};
     for (final row in List<Map<String, dynamic>>.from(exerciseRows)) {
@@ -89,6 +96,8 @@ class TrainerRepository {
         weight: (row['weight'] as num?)?.toDouble(),
         height: (row['height'] as num?)?.toDouble(),
         paid: payment?['paid'] == true,
+        activePlanCount: activePlanCounts[id] ?? 0,
+        paymentMonth: month,
         paymentAmount: (payment?['amount'] as num?)?.toDouble(),
         paymentNotes: (payment?['notes'] as String?) ?? '',
         coachTip: (assignment['coach_tip'] as String?) ?? '',
@@ -232,17 +241,21 @@ class TrainerRepository {
     if (normalizedNotes.length > 2000) {
       throw ArgumentError('Payment notes cannot exceed 2000 characters.');
     }
-    await _client.from('trainee_monthly_payments').upsert({
-      'trainee_id': traineeId,
-      'month_start': currentMonthStart(),
-      'paid': paid,
-      'paid_at': paid ? DateTime.now().toUtc().toIso8601String() : null,
-      'amount': amount,
-      'notes': normalizedNotes.isEmpty ? null : normalizedNotes,
-    }, onConflict: 'trainee_id,month_start');
+    if (amount != null && (!amount.isFinite || amount < 0)) {
+      throw ArgumentError('Invalid payment amount');
+    }
+    final paymentId = await _client.rpc(
+      'save_monthly_payment',
+      params: {
+        'p_trainee_id': traineeId,
+        'p_paid': paid,
+        'p_amount': amount,
+        'p_notes': normalizedNotes,
+      },
+    );
     await PushNotificationService.instance.notifyEvent(
       'trainer_payment_updated',
-      traineeId,
+      paymentId as String,
     );
   }
 
@@ -508,16 +521,21 @@ class TrainerRepository {
         planId!,
       );
     } catch (_) {
-      if (dayIds.isNotEmpty) {
-        await _client.from('day_exercises').delete().inFilter('day_id', dayIds);
-        await _client
-            .from('workout_plan_days')
-            .delete()
-            .inFilter('day_id', dayIds);
-        await _client.from('days').delete().inFilter('id', dayIds);
-      }
-      if (planId != null) {
-        await _client.from('workout_plans').delete().eq('id', planId);
+      try {
+        if (planId != null) {
+          await _client.rpc(
+            'delete_workout_plan',
+            params: {'p_plan_id': planId},
+          );
+        }
+        // Also clean up newly created days if linking failed before the RPC
+        // could discover them. Linked days are removed atomically by the RPC.
+        if (dayIds.isNotEmpty) {
+          await _client.from('days').delete().inFilter('id', dayIds);
+        }
+      } catch (_) {
+        // Keep the original import failure; never continue destructive cleanup
+        // after a failed atomic plan deletion.
       }
       rethrow;
     }
@@ -577,18 +595,6 @@ class TrainerRepository {
   }
 
   Future<void> deletePlan(Object id) async {
-    final links = await _client
-        .from('workout_plan_days')
-        .select('day_id')
-        .eq('plan_id', id);
-    final dayIds = List<Map<String, dynamic>>.from(
-      links,
-    ).map((row) => row['day_id']).whereType<Object>().toList();
-    if (dayIds.isNotEmpty) {
-      await _client.from('day_exercises').delete().inFilter('day_id', dayIds);
-      await _client.from('workout_plan_days').delete().eq('plan_id', id);
-      await _client.from('days').delete().inFilter('id', dayIds);
-    }
-    await _client.from('workout_plans').delete().eq('id', id);
+    await _client.rpc('delete_workout_plan', params: {'p_plan_id': id});
   }
 }

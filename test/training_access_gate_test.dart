@@ -34,6 +34,7 @@ void main() {
   testWidgets('unpaid trainees retain navigation and account controls', (
     tester,
   ) async {
+    addTearDown(() => tester.pumpWidget(const SizedBox.shrink()));
     var profileOpened = false;
     await pumpGate(
       tester,
@@ -84,5 +85,16 @@ void main() {
     }, bypass: true);
     expect(queries, 0);
     expect(find.text('Training content'), findsOneWidget);
+  });
+
+  testWidgets('access is rechecked while screen stays open', (tester) async {
+    var allowed = true;
+    await pumpGate(tester, () async => allowed);
+    expect(find.text('Training content'), findsOneWidget);
+    allowed = false;
+    await tester.pump(const Duration(seconds: 30));
+    await tester.pumpAndSettle();
+    expect(find.text('Training content'), findsNothing);
+    expect(find.text('Waiting for your trainer'), findsOneWidget);
   });
 }

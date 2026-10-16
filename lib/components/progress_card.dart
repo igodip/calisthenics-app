@@ -244,6 +244,7 @@ class _ProgressCardState extends State<ProgressCard> {
         .from('workout_plans')
         .select('id, title, starts_on, created_at')
         .eq('trainee_id', userId)
+        .eq('status', 'active')
         .order('starts_on', ascending: false)
         .order('created_at', ascending: false)
         .limit(1)

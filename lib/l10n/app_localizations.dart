@@ -100,6 +100,12 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @trainerPaymentAmountInvalid.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un importo valido maggiore o uguale a zero.'**
+  String get trainerPaymentAmountInvalid;
+
   /// No description provided for @privacyPolicyTitle.
   ///
   /// In it, this message translates to:

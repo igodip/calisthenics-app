@@ -1,4 +1,5 @@
 // lib/pages/profile_page.dart
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:calisync/model/trainee.dart';
@@ -11,6 +12,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
+import '../data/account_access.dart';
 import 'login_page.dart';
 import 'settings_page.dart';
 
@@ -45,6 +47,8 @@ class UserProfileData {
     required this.isActive,
     required this.isPayed,
     this.profile,
+    this.isTrainer = false,
+    this.isAdmin = false,
   });
 
   final String userId;
@@ -53,6 +57,8 @@ class UserProfileData {
   final bool isActive;
   final bool isPayed;
   final Trainee? profile;
+  final bool isTrainer;
+  final bool isAdmin;
 
   String displayName(AppLocalizations l10n) {
     final fullName = profile?.name?.trim();
@@ -95,39 +101,33 @@ Future<UserProfileData> getUserData() async {
       .limit(1)
       .maybeSingle();
 
-  if (profileResponse == null) {
+  final access = await AccountAccess.load();
+  if (profileResponse == null && !access.isTrainer && !access.isAdmin) {
     throw Exception('user-not-found');
   }
 
-  var profile = Trainee.fromMap(profileResponse);
-  final profileImageUrl = profile.profileImageUrl?.trim();
+  var profile = profileResponse == null
+      ? null
+      : Trainee.fromMap(profileResponse);
+  final profileImageUrl = profile?.profileImageUrl?.trim();
   if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
     await ProfileImageCache.saveForUser(user.id, profileImageUrl);
   } else {
     final cachedImageUrl = await ProfileImageCache.loadForUser(user.id);
     if (cachedImageUrl != null && cachedImageUrl.isNotEmpty) {
-      profile = profile.copyWith(profileImageUrl: cachedImageUrl);
+      profile = profile?.copyWith(profileImageUrl: cachedImageUrl);
     }
   }
-  final name =
-      profile.name ?? (user.email != null ? user.email!.split('@').first : '');
-
-  final paymentResponse = await supabase
-      .from('trainee_monthly_payments')
-      .select('paid, month_start')
-      .eq('trainee_id', user.id)
-      .order('month_start', ascending: false)
-      .limit(1)
-      .maybeSingle();
-
-  final isPayed = paymentResponse?['paid'] as bool? ?? false;
+  final name = profile?.name ?? access.name;
 
   return UserProfileData(
     userId: user.id,
     email: user.email ?? '',
     username: name,
-    isActive: true,
-    isPayed: isPayed,
+    isActive: access.isActive,
+    isPayed: access.hasTrainingAccess,
+    isTrainer: access.isTrainer,
+    isAdmin: access.isAdmin,
     profile: profile,
   );
 }
@@ -158,18 +158,39 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> with WidgetsBindingObserver {
   late Future<UserProfileData> _profileFuture;
+  Timer? _timer;
+  bool _refreshing = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _profileFuture = getUserData();
+    _timer = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => _refreshProfile(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshProfile();
   }
 
   void _refreshProfile() {
+    if (!mounted || _refreshing) return;
+    _refreshing = true;
     setState(() {
-      _profileFuture = getUserData();
+      _profileFuture = getUserData().whenComplete(() => _refreshing = false);
     });
   }
 
@@ -265,11 +286,28 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            tooltip: l10n.accountSettingsTitle,
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const SettingsPage())),
+          ),
+          IconButton(
+            tooltip: l10n.logout,
+            icon: const Icon(Icons.logout),
+            onPressed: () => logout(context),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: FutureBuilder<UserProfileData>(
           future: _profileFuture,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -298,6 +336,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         errorText,
                         style: Theme.of(context).textTheme.bodySmall,
                         textAlign: TextAlign.center,
+                      ),
+                      TextButton(
+                        onPressed: _refreshProfile,
+                        child: Text(l10n.retry),
                       ),
                     ],
                   ),
@@ -403,7 +445,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: colorScheme.onPrimary,
                         ),
                         label: Text(
-                          data.isPayed
+                          data.isTrainer
+                              ? l10n.adminRoleTrainer
+                              : data.isAdmin
+                              ? l10n.adminRoleAdmin
+                              : data.isPayed
                               ? l10n.profilePlanActive
                               : l10n.profilePlanExpired,
                           style: statusChipTextStyle,
@@ -415,46 +461,48 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.badge_outlined),
-                          title: Text(l10n.profileUsername),
-                          subtitle: Text(
-                            data.username.isEmpty ? '-' : data.username,
+                  if (data.profile != null)
+                    Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.badge_outlined),
+                            title: Text(l10n.profileUsername),
+                            subtitle: Text(
+                              data.username.isEmpty ? '-' : data.username,
+                            ),
                           ),
-                        ),
-                        const Divider(height: 0),
-                        ListTile(
-                          leading: const Icon(Icons.monitor_weight_outlined),
-                          title: Text(l10n.profileWeight),
-                          subtitle: Text(weightText),
-                        ),
-                        const Divider(height: 0),
-                        ListTile(
-                          leading: const Icon(Icons.height),
-                          title: Text(l10n.profileHeight),
-                          subtitle: Text(heightText),
-                        ),
-                      ],
+                          const Divider(height: 0),
+                          ListTile(
+                            leading: const Icon(Icons.monitor_weight_outlined),
+                            title: Text(l10n.profileWeight),
+                            subtitle: Text(weightText),
+                          ),
+                          const Divider(height: 0),
+                          ListTile(
+                            leading: const Icon(Icons.height),
+                            title: Text(l10n.profileHeight),
+                            subtitle: Text(heightText),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 12),
-                  Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                  if (data.profile != null)
+                    Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.edit_outlined),
+                        title: Text(l10n.profileEdit),
+                        subtitle: Text(l10n.profileEditSubtitle),
+                        onTap: () => _showEditProfile(data),
+                      ),
                     ),
-                    child: ListTile(
-                      leading: const Icon(Icons.edit_outlined),
-                      title: Text(l10n.profileEdit),
-                      subtitle: Text(l10n.profileEditSubtitle),
-                      onTap: () => _showEditProfile(data),
-                    ),
-                  ),
                   const SizedBox(height: 12),
                   Card(
                     shape: RoundedRectangleBorder(

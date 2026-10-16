@@ -1,4 +1,5 @@
 {
+  "trainerPaymentAmountInvalid": "Inserisci un importo valido maggiore o uguale a zero.",
   "privacyPolicyTitle": "Informativa sulla privacy",
   "registrationPrivacyNotice": "Prima di creare un account, leggi come CaliSync usa i tuoi dati, inclusi l’accesso di trainer e amministratori e le anteprime delle notifiche.",
   "privacySettingsDescription": "Scopri come vengono trattati account, allenamenti, foto e notifiche e come richiedere l’eliminazione.",

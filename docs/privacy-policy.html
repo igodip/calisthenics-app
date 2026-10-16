@@ -15,7 +15,7 @@
 </head>
 <body><main>
   <h1>CaliSync Privacy Policy</h1>
-  <p>Effective date: 14 October 2026</p>
+  <p>Effective date: 16 October 2026</p>
   <p>CaliSync (also displayed as Calisthenics) helps trainees follow workout programs and communicate with their trainers. Igor Maria Di Paolo operates the app. For privacy questions and requests, contact <a href="mailto:dipaoloigor@gmail.com">dipaoloigor@gmail.com</a>.</p>
   <p>This policy covers the app, its Supabase backend, push notifications, and support requests. It describes the current service, including its access limitations. We do not sell personal data or use it for targeted advertising.</p>
 
@@ -43,7 +43,7 @@
     <li><strong>App administrators:</strong> admins manage user roles, suspension and trainer assignments. Current backend permissions also allow broad access to profiles, feedback, plans, progress, weights and payments. Trainer-only maximum-test notes have no admin-role access, but an admin who is also an assigned trainer can access them as a trainer. Do not assume all coaching information is hidden from administrators.</li>
     <li><strong>Technical operators and providers:</strong> authorized backend operators and service credentials can access server-stored data to run the service. Database access rules do not prevent privileged operators from reading plaintext records.</li>
   </ul>
-  <p>Current workout-day policies are broader than the assigned-trainer rules: trainer accounts can access workout-day rows outside their own assignments. Workout-day titles and notes must not be treated as confidential from other trainer accounts. This is a limitation of the current permissions, not a promise that such access is required for coaching.</p>
+  <p>Workout-day access is restricted to the trainee, assigned trainers and administrators. Trainers may also access their own newly created days before linking them to a plan. A trainer role alone does not grant access to other trainees' workout days.</p>
   <p><strong>Profile-photo visibility:</strong> uploaded avatars use public storage URLs. Anyone who has a photo URL may be able to view that image without signing in. Do not upload sensitive documents or confidential images as your profile photo.</p>
   <p>Information may also be disclosed when required by applicable law or necessary to investigate misuse and protect the service. Your trainer may maintain their own records outside CaliSync; contact them separately about those records.</p>
 
@@ -58,7 +58,7 @@
   <p>You can turn off notifications or lock-screen previews in your device settings. Refusing notification permission does not delete stored coaching records. Logout attempts to unregister the current device token; account deletion removes that account's backend token records. Invalid/unregistered tokens reported by Firebase are removed by the sending function. Provider-side identifiers and queued messages follow the provider's retention rules.</p>
 
   <h2>Security</h2>
-  <p>The app communicates with its backend over HTTPS and uses authenticated sessions and database access rules. Personal records are readable by the backend; they are not protected by client-side end-to-end encryption. Public photo URLs, broader trainer/admin permissions and notification previews have the limitations described above. Do not include information in notes or messages that you do not want the authorized recipients or technical operators to access.</p>
+  <p>The app communicates with its backend over HTTPS and uses authenticated sessions and database access rules. Personal records are readable by the backend; they are not protected by client-side end-to-end encryption. Public photo URLs, administrator access and notification previews have the limitations described above. Do not include information in notes or messages that you do not want the authorized recipients or technical operators to access.</p>
 
   <h2>Retention and deletion</h2>
   <p>Active account, coaching, body-measurement, feedback and payment records are kept to provide your account and history until you delete those records through available features or delete your account. The app has no automatic inactivity-deletion schedule. Device preferences and timer state remain locally until cleared, removed with the app, or cleared by the account-deletion flow.</p>
