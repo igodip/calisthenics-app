@@ -1,12 +1,12 @@
 import 'package:calisync/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../data/exercise_guides.dart';
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 import '../model/max_test.dart';
+import '../utils/app_date_format.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -318,7 +318,7 @@ class _MaxTestHistoryTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final appColors = theme.extension<AppColors>();
-    final dateText = DateFormat.yMMMd().format(test.recordedAt);
+    final dateText = AppDateFormat.date(test.recordedAt);
     final delta = previousTest == null
         ? null
         : test.value - previousTest!.value;

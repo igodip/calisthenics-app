@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_date_format.dart';
 
 class ProgressCard extends StatefulWidget {
   const ProgressCard({super.key});
@@ -32,7 +32,6 @@ class _ProgressCardState extends State<ProgressCard> {
       future: _progressFuture,
       builder: (context, snapshot) {
         final overview = snapshot.data ?? const _ProgressOverview.empty();
-        final dateFormatter = DateFormat.yMMMd(l10n.localeName);
         return Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
@@ -129,7 +128,7 @@ class _ProgressCardState extends State<ProgressCard> {
                               const SizedBox(height: 5),
                               Text(
                                 l10n.homePlanStartedLabel(
-                                  dateFormatter.format(overview.planStartedAt!),
+                                  AppDateFormat.date(overview.planStartedAt!),
                                 ),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: colorScheme.onSurfaceVariant,

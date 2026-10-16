@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../trainer_models.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/app_date_format.dart';
 
 class TrainerFeedbackCard extends StatefulWidget {
   const TrainerFeedbackCard({
@@ -111,7 +111,7 @@ class _TrainerFeedbackCardState extends State<TrainerFeedbackCard> {
             ),
             if (item.createdAt != null)
               Text(
-                DateFormat.yMMMd().add_Hm().format(item.createdAt!.toLocal()),
+                AppDateFormat.dateTime(item.createdAt!.toLocal()),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             const SizedBox(height: 12),

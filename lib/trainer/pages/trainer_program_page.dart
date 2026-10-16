@@ -11,6 +11,7 @@ import '../../l10n/app_localizations.dart';
 import '../../data/exercise_guides.dart';
 import '../../model/exercise_guide.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/app_date_format.dart';
 
 typedef _MaxTestDraft = ({
   String? exerciseId,
@@ -197,6 +198,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
 
   Widget _overview() {
     final planDays = _calendarPlanDays();
+    final traineeVisiblePlanId = _traineeVisiblePlanId(planDays);
     final visibleDayCount = planDays.fold<int>(0, (count, planDays) {
       final weeks = _calendarWeeks(planDays.days);
       final visibleWeeks = _showAllCalendarDays
@@ -292,6 +294,8 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
               planGroup,
               editable: false,
               weekLimit: _showAllCalendarDays ? null : 2,
+              isTraineeVisible:
+                  '${planGroup.plan?['id']}' == traineeVisiblePlanId,
             ),
           if (hiddenDays > 0)
             Align(
@@ -377,9 +381,21 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     return groups;
   }
 
+  String? _traineeVisiblePlanId(List<_TrainerPlanDays> planDays) {
+    for (final planGroup in planDays) {
+      final plan = planGroup.plan;
+      if (planGroup.days.isNotEmpty &&
+          '${plan?['status']}'.toLowerCase() == 'active') {
+        return '${plan?['id']}';
+      }
+    }
+    return null;
+  }
+
   Widget _planCalendarCard(
     _TrainerPlanDays planGroup, {
     required bool editable,
+    bool isTraineeVisible = false,
     int? weekLimit,
   }) {
     final l10n = AppLocalizations.of(context)!;
@@ -395,12 +411,10 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
         : weeks.take(weekLimit).toList();
     final title = '${plan?['title'] ?? l10n.trainerWorkoutPlanFallback}';
     final planId = plan?['id'] ?? 'unassigned';
-    final status = plan == null ? null : _planStatusLabel(plan['status']);
-    final startsOn = plan?['starts_on']?.toString();
+    final startsOn = AppDateFormat.dateValue(plan?['starts_on']);
     final notes = '${plan?['notes'] ?? ''}'.trim();
     final subtitle = [
-      if (status != null) status,
-      if (startsOn != null && startsOn.isNotEmpty) startsOn,
+      if (startsOn.isNotEmpty) startsOn,
       if (notes.isNotEmpty) notes,
     ].join(' · ');
 
@@ -448,13 +462,33 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
                 ],
               ),
             ),
-            if (isCompleted) ...[
-              Icon(
-                Icons.check_circle,
-                color: appColors?.success ?? theme.colorScheme.secondary,
+            if (isTraineeVisible || isCompleted)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isTraineeVisible)
+                    Chip(
+                      label: Text(l10n.profilePlanActive),
+                      visualDensity: VisualDensity.compact,
+                      backgroundColor: theme.colorScheme.primary,
+                      labelStyle: TextStyle(color: theme.colorScheme.onPrimary),
+                    ),
+                  if (isCompleted)
+                    Chip(
+                      label: Text(l10n.trainerPlanCompleted),
+                      visualDensity: VisualDensity.compact,
+                      backgroundColor:
+                          appColors?.successContainer ??
+                          theme.colorScheme.secondaryContainer,
+                      labelStyle: TextStyle(
+                        color:
+                            appColors?.success ??
+                            theme.colorScheme.onSecondaryContainer,
+                      ),
+                    ),
+                ],
               ),
-              if (editable && plan != null) const SizedBox(width: 8),
-            ],
             if (editable && plan != null)
               IconButton(
                 tooltip: l10n.trainerDeletePlanTitle,
@@ -506,46 +540,57 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     );
   }
 
-  Widget _plan() => TrainerResponsiveList(
-    onRefresh: _load,
-    children: [
-      Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: [
-          FilledButton.icon(
-            onPressed: _showCreatePlan,
-            icon: const Icon(Icons.add),
-            label: Text(AppLocalizations.of(context)!.trainerCreateWorkoutPlan),
-          ),
-          OutlinedButton.icon(
-            onPressed: _importingPdf ? null : _importPdf,
-            icon: _importingPdf
-                ? const SizedBox.square(
-                    dimension: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.picture_as_pdf_outlined),
-            label: Text(
-              _importingPdf
-                  ? AppLocalizations.of(context)!.trainerImportingPdf
-                  : AppLocalizations.of(context)!.trainerImportPdf,
+  Widget _plan() {
+    final planDays = _calendarPlanDays();
+    final traineeVisiblePlanId = _traineeVisiblePlanId(planDays);
+    return TrainerResponsiveList(
+      onRefresh: _load,
+      children: [
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [
+            FilledButton.icon(
+              onPressed: _showCreatePlan,
+              icon: const Icon(Icons.add),
+              label: Text(
+                AppLocalizations.of(context)!.trainerCreateWorkoutPlan,
+              ),
+            ),
+            OutlinedButton.icon(
+              onPressed: _importingPdf ? null : _importPdf,
+              icon: _importingPdf
+                  ? const SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.picture_as_pdf_outlined),
+              label: Text(
+                _importingPdf
+                    ? AppLocalizations.of(context)!.trainerImportingPdf
+                    : AppLocalizations.of(context)!.trainerImportPdf,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (_data!.plans.isEmpty && _data!.days.isEmpty)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(AppLocalizations.of(context)!.trainerNoPlans),
             ),
           ),
-        ],
-      ),
-      const SizedBox(height: 12),
-      if (_data!.plans.isEmpty && _data!.days.isEmpty)
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(AppLocalizations.of(context)!.trainerNoPlans),
+        for (final planGroup in planDays)
+          _planCalendarCard(
+            planGroup,
+            editable: true,
+            isTraineeVisible:
+                '${planGroup.plan?['id']}' == traineeVisiblePlanId,
           ),
-        ),
-      for (final planGroup in _calendarPlanDays())
-        _planCalendarCard(planGroup, editable: true),
-    ],
-  );
+      ],
+    );
+  }
 
   Widget _maxTests() => TrainerResponsiveList(
     onRefresh: _load,
@@ -633,9 +678,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     final parsedDate = DateTime.tryParse(date);
     final label = parsedDate == null
         ? (date.isEmpty ? '—' : date)
-        : DateFormat.yMMMMd(
-            AppLocalizations.of(context)!.localeName,
-          ).format(parsedDate);
+        : AppDateFormat.date(parsedDate);
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
       child: Text(
@@ -661,7 +704,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
               leading: const Icon(Icons.monitor_weight),
               title: Text('${log['weight']} kg'),
               subtitle: Text(
-                '${log['recorded_at'] ?? ''}${log['notes'] == null ? '' : ' · ${log['notes']}'}',
+                '${AppDateFormat.dateValue(log['recorded_at'])}${log['notes'] == null ? '' : ' · ${log['notes']}'}',
               ),
             ),
           ),
@@ -676,7 +719,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
               leading: Icon(
                 payment['paid'] == true ? Icons.check_circle : Icons.schedule,
               ),
-              title: Text('${payment['month_start']}'),
+              title: Text(AppDateFormat.dateValue(payment['month_start'])),
               subtitle: Text(
                 payment['paid'] == true
                     ? '${AppLocalizations.of(context)!.trainerPaid}${_paymentNotesSuffix(payment)}'
@@ -831,19 +874,6 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
       ],
     ),
   );
-
-  String _planStatusLabel(Object? value) {
-    final l10n = AppLocalizations.of(context)!;
-    return switch ('$value'.toLowerCase()) {
-      'inactive' => l10n.trainerPlanStatusInactive,
-      'upcoming' => l10n.trainerPlanStatusUpcoming,
-      'draft' => l10n.trainerPlanStatusDraft,
-      'archived' => l10n.trainerPlanStatusArchived,
-      'expired' => l10n.profilePlanExpired,
-      'active' => l10n.trainerPlanStatusActive,
-      _ => l10n.trainerPlanStatusInactive,
-    };
-  }
 
   Widget _dayCard(Map<String, dynamic> day, {bool editable = false}) {
     final exercises = trainerRelationRows(day['day_exercises']);
@@ -1471,7 +1501,7 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.event_outlined),
                   title: Text(l10n.trainerMaxTestDate),
-                  subtitle: Text(DateFormat.yMMMd().format(_recordedAt)),
+                  subtitle: Text(AppDateFormat.date(_recordedAt)),
                   onTap: _pickDate,
                 ),
                 const SizedBox(height: 12),
@@ -1510,6 +1540,7 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
     final now = DateTime.now();
     final selected = await showDatePicker(
       context: context,
+      locale: const Locale('it', 'IT'),
       initialDate: _recordedAt,
       firstDate: DateTime(2000),
       lastDate: DateTime(now.year, now.month, now.day),

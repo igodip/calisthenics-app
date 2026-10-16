@@ -7,12 +7,12 @@ import 'package:calisync/model/workout_plan.dart';
 import 'package:calisync/pages/training_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_date_format.dart';
 
 class WorkoutPlanPage extends StatefulWidget {
   const WorkoutPlanPage({super.key});
@@ -652,9 +652,8 @@ class _WorkoutPlanSection extends StatelessWidget {
     final weekEntries = daysByWeek.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
 
-    final dateFormat = DateFormat.yMMMMd(l10n.localeName);
     final startedLabel = plan.startedAt != null
-        ? l10n.homePlanStartedLabel(dateFormat.format(plan.startedAt!))
+        ? l10n.homePlanStartedLabel(AppDateFormat.date(plan.startedAt!))
         : null;
 
     return Card(

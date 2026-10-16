@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../data/exercise_guides.dart';
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
 import '../model/max_test.dart';
+import '../utils/app_date_format.dart';
 import 'max_tests_history_page.dart';
 
 final supabase = Supabase.instance.client;
@@ -756,7 +756,7 @@ class _MaxTestTile extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final highlightColor = colorScheme.secondary;
     final highlightOnColor = colorScheme.onSecondary;
-    final dateText = DateFormat.yMMMd().format(test.recordedAt);
+    final dateText = AppDateFormat.date(test.recordedAt);
 
     return ListTile(
       dense: true,

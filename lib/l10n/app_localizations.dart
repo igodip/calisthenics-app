@@ -2524,6 +2524,12 @@ abstract class AppLocalizations {
   /// **'{completed}/{total} esercizi completati'**
   String trainerExercisesCompleted(int completed, int total);
 
+  /// No description provided for @trainerPlanCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Completato'**
+  String get trainerPlanCompleted;
+
   /// No description provided for @trainerExerciseFallback.
   ///
   /// In it, this message translates to:

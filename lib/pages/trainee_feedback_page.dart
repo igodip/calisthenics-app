@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 import '../notifications/push_notification_service.dart';
+import '../utils/app_date_format.dart';
 
 class TraineeFeedbackPage extends StatefulWidget {
   const TraineeFeedbackPage({super.key});
@@ -361,14 +361,10 @@ class _FeedbackCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final sentText = DateFormat.yMMMd(
-      l10n.localeName,
-    ).format(feedback.createdAt);
+    final sentText = AppDateFormat.date(feedback.createdAt.toLocal());
     final answeredText = feedback.answeredAt == null
         ? null
-        : DateFormat.yMMMd(
-            l10n.localeName,
-          ).add_Hm().format(feedback.answeredAt!);
+        : AppDateFormat.dateTime(feedback.answeredAt!.toLocal());
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),

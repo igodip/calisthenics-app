@@ -1354,6 +1354,9 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get trainerPlanCompleted => 'Completato';
+
+  @override
   String get trainerExerciseFallback => 'Esercizio';
 
   @override

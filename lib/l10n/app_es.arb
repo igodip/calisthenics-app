@@ -624,6 +624,7 @@
   "trainerTrainingDayFallback": "Día de entrenamiento",
   "trainerExercisesCompleted": "{completed}/{total} ejercicios completados",
   "@trainerExercisesCompleted": {"placeholders": {"completed": {"type": "int"}, "total": {"type": "int"}}},
+  "trainerPlanCompleted": "Completado",
   "trainerExerciseFallback": "Ejercicio",
   "trainerEditExerciseTitle": "Editar ejercicio",
   "trainerExerciseName": "Nombre del ejercicio",

@@ -128,13 +128,24 @@ void main() {
     final repository = _FakeTrainerRepository(
       TrainerProgramData(
         plans: const [
-          {'id': 'plan-new', 'title': 'New plan'},
-          {'id': 'plan-old', 'title': 'Old plan'},
+          {
+            'id': 'plan-new',
+            'title': 'New plan',
+            'status': 'active',
+            'starts_on': '2026-10-10',
+          },
+          {
+            'id': 'plan-old',
+            'title': 'Old plan',
+            'status': 'archived',
+            'starts_on': '2026-09-10',
+          },
         ],
         days: [
           ...days.map(
             (day) => {
               ...day,
+              'completed': true,
               'workout_plan_days': {'plan_id': 'plan-new'},
             },
           ),
@@ -168,6 +179,55 @@ void main() {
     expect(find.text('Week 3 - Day A'), findsNothing);
     expect(find.text('Scarico'), findsOneWidget);
     expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('trainer-plan-calendar-plan-new')),
+        matching: find.text('Completed'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+        matching: find.text('Completed'),
+      ),
+      findsOneWidget,
+    );
+    final completedPlanTitle = find.text('Old plan');
+    final completedPlanDate = find.text('10/09/2026');
+    final completedPlanBadge = find.descendant(
+      of: find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+      matching: find.text('Completed'),
+    );
+    final completedTitleAndDateCenter =
+        (tester.getTopLeft(completedPlanTitle).dy +
+            tester.getBottomLeft(completedPlanDate).dy) /
+        2;
+    expect(
+      (tester.getCenter(completedPlanBadge).dy - completedTitleAndDateCenter)
+          .abs(),
+      lessThan(1),
+    );
+    final activePlanBadge = find.text('Active plan');
+    final activePlanCompletedBadge = find.descendant(
+      of: find.byKey(const ValueKey('trainer-plan-calendar-plan-new')),
+      matching: find.text('Completed'),
+    );
+    expect(
+      tester.getTopLeft(activePlanBadge).dy,
+      lessThan(tester.getTopLeft(activePlanCompletedBadge).dy),
+    );
+    expect(
+      tester.getTopRight(activePlanBadge).dx,
+      closeTo(tester.getTopRight(activePlanCompletedBadge).dx, 1),
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+        matching: find.text('Active plan'),
+      ),
+      findsNothing,
+    );
+    expect(
       find.byKey(const ValueKey('trainer-plan-calendar-plan-new')),
       findsOneWidget,
     );
@@ -188,7 +248,7 @@ void main() {
         of: find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
         matching: find.byIcon(Icons.check_circle),
       ),
-      findsNWidgets(2),
+      findsOneWidget,
     );
     final dayTitles = [
       'Week 1 - Day A',
@@ -253,19 +313,12 @@ void main() {
       AppTheme.theme.extension<AppColors>()!.successContainer,
     );
     expect(find.text('Old plan - Week 1 - Day A'), findsOneWidget);
-    final planHeaderCheck = find
-        .descendant(
-          of: find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
-          matching: find.byIcon(Icons.check_circle),
-        )
-        .first;
-    final planHeaderDelete = find.descendant(
-      of: find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
-      matching: find.byIcon(Icons.delete_outline),
-    );
     expect(
-      tester.getCenter(planHeaderCheck).dy,
-      tester.getCenter(planHeaderDelete).dy,
+      find.descendant(
+        of: find.byKey(const ValueKey('trainer-plan-calendar-plan-new')),
+        matching: find.text('Active plan'),
+      ),
+      findsOneWidget,
     );
   });
 
@@ -379,11 +432,11 @@ void main() {
       find.textContaining('Keep the same depth next time'),
       findsOneWidget,
     );
-    expect(find.text('October 1, 2026'), findsOneWidget);
-    expect(find.text('September 30, 2026'), findsOneWidget);
+    expect(find.text('01/10/2026'), findsOneWidget);
+    expect(find.text('30/09/2026'), findsOneWidget);
     expect(
-      tester.getTopLeft(find.text('October 1, 2026')).dy,
-      lessThan(tester.getTopLeft(find.text('September 30, 2026')).dy),
+      tester.getTopLeft(find.text('01/10/2026')).dy,
+      lessThan(tester.getTopLeft(find.text('30/09/2026')).dy),
     );
     expect(find.text('deadlift'), findsOneWidget);
     expect(find.text('bench press'), findsOneWidget);

@@ -8,6 +8,7 @@ import '../components/progress_card.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../data/account_access.dart';
+import '../utils/app_date_format.dart';
 import 'profile_page.dart';
 
 class HomeContent extends StatefulWidget {
@@ -354,7 +355,7 @@ class _LastAnsweredFeedbackCard extends StatelessWidget {
     final theme = Theme.of(context);
     final answeredLabel = feedback.answeredAt == null
         ? null
-        : '${l10n.traineeFeedbackAnsweredAtHome} ${MaterialLocalizations.of(context).formatShortDate(feedback.answeredAt!)}';
+        : '${l10n.traineeFeedbackAnsweredAtHome} ${AppDateFormat.date(feedback.answeredAt!.toLocal())}';
 
     return Card(
       child: Padding(

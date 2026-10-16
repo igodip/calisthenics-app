@@ -268,6 +268,7 @@ class TrainerRepository {
           .from('workout_plans')
           .select('id, title, status, starts_on, notes, created_at')
           .eq('trainee_id', trainee.id)
+          .order('starts_on', ascending: false)
           .order('created_at', ascending: false),
       _client
           .from('days')
