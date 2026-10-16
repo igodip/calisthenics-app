@@ -23,6 +23,11 @@ typedef _MaxTestDraft = ({
 
 enum _MaxTestAction { editNotes, delete }
 
+typedef _TrainerPlanDays = ({
+  Map<String, dynamic>? plan,
+  List<Map<String, dynamic>> days,
+});
+
 class TrainerProgramPage extends StatefulWidget {
   const TrainerProgramPage({
     super.key,
@@ -191,15 +196,19 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   }
 
   Widget _overview() {
-    final calendarWeeks = _calendarWeeks(_data!.days);
-    final visibleWeeks = _showAllCalendarDays
-        ? calendarWeeks
-        : calendarWeeks.take(2).toList();
-    final visibleDayCount = visibleWeeks.fold<int>(
-      0,
-      (count, week) => count + week.value.length,
-    );
-    final hiddenDays = _data!.days.length - visibleDayCount;
+    final planDays = _calendarPlanDays();
+    final visibleDayCount = planDays.fold<int>(0, (count, planDays) {
+      final weeks = _calendarWeeks(planDays.days);
+      final visibleWeeks = _showAllCalendarDays
+          ? weeks
+          : weeks.take(2).toList();
+      return count +
+          visibleWeeks.fold<int>(
+            0,
+            (weekCount, week) => weekCount + week.value.length,
+          );
+    });
+    final hiddenDays = (_data!.days.length - visibleDayCount).clamp(0, 1 << 31);
     return TrainerResponsiveList(
       onRefresh: _load,
       children: [
@@ -278,11 +287,13 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
         if (_data!.days.isEmpty)
           Text(AppLocalizations.of(context)!.trainerNoScheduledDays)
         else ...[
-          for (final week in visibleWeeks) ...[
-            _weekTitle(week.key, week.value),
-            for (final day in week.value) _dayCard(day),
-          ],
-          if (calendarWeeks.length > visibleWeeks.length)
+          for (final planGroup in planDays)
+            _planCalendarCard(
+              planGroup,
+              editable: false,
+              weekLimit: _showAllCalendarDays ? null : 2,
+            ),
+          if (hiddenDays > 0)
             Align(
               alignment: Alignment.center,
               child: TextButton.icon(
@@ -342,6 +353,135 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     return weeks.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
   }
 
+  List<_TrainerPlanDays> _calendarPlanDays() {
+    final groups = <_TrainerPlanDays>[];
+    final assignedDays = <Map<String, dynamic>>{};
+    for (final plan in _data!.plans) {
+      final planId = '${plan['id']}';
+      final days = _data!.days.where((day) {
+        final hasPlan = trainerRelationRows(
+          day['workout_plan_days'],
+        ).any((link) => '${link['plan_id']}' == planId);
+        if (hasPlan) assignedDays.add(day);
+        return hasPlan;
+      }).toList();
+      groups.add((plan: plan, days: days));
+    }
+
+    final unassignedDays = _data!.days
+        .where((day) => !assignedDays.contains(day))
+        .toList();
+    if (unassignedDays.isNotEmpty) {
+      groups.add((plan: null, days: unassignedDays));
+    }
+    return groups;
+  }
+
+  Widget _planCalendarCard(
+    _TrainerPlanDays planGroup, {
+    required bool editable,
+    int? weekLimit,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    final plan = planGroup.plan;
+    final weeks = _calendarWeeks(planGroup.days);
+    final isCompleted =
+        planGroup.days.isNotEmpty &&
+        planGroup.days.every((day) => day['completed'] == true);
+    final theme = Theme.of(context);
+    final appColors = theme.extension<AppColors>();
+    final visibleWeeks = weekLimit == null
+        ? weeks
+        : weeks.take(weekLimit).toList();
+    final title = '${plan?['title'] ?? l10n.trainerWorkoutPlanFallback}';
+    final planId = plan?['id'] ?? 'unassigned';
+    final status = plan == null ? null : _planStatusLabel(plan['status']);
+    final startsOn = plan?['starts_on']?.toString();
+    final notes = '${plan?['notes'] ?? ''}'.trim();
+    final subtitle = [
+      if (status != null) status,
+      if (startsOn != null && startsOn.isNotEmpty) startsOn,
+      if (notes.isNotEmpty) notes,
+    ].join(' · ');
+
+    return Card(
+      key: ValueKey('trainer-plan-calendar-$planId'),
+      margin: const EdgeInsets.only(bottom: 12),
+      color: isCompleted
+          ? appColors?.successContainer ?? Colors.green.shade50
+          : theme.colorScheme.primaryContainer.withValues(alpha: 0.25),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: isCompleted
+              ? appColors?.success ?? theme.colorScheme.secondary
+              : theme.colorScheme.primary,
+        ),
+      ),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        tilePadding: const EdgeInsets.all(16),
+        leading: const Icon(Icons.event_note),
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (isCompleted) ...[
+              Icon(
+                Icons.check_circle,
+                color: appColors?.success ?? theme.colorScheme.secondary,
+              ),
+              if (editable && plan != null) const SizedBox(width: 8),
+            ],
+            if (editable && plan != null)
+              IconButton(
+                tooltip: l10n.trainerDeletePlanTitle,
+                onPressed: () => _deletePlan(plan),
+                icon: const Icon(Icons.delete_outline),
+              ),
+          ],
+        ),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        children: [
+          if (visibleWeeks.isEmpty)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(l10n.trainerNoScheduledDays),
+              ),
+            ),
+          for (final week in visibleWeeks) ...[
+            _weekTitle(week.key, week.value),
+            for (final day in week.value) _dayCard(day, editable: editable),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _weekTitle(int week, [Iterable<Map<String, dynamic>>? days]) {
     final l10n = AppLocalizations.of(context)!;
     final weekTitles =
@@ -395,36 +535,15 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
         ],
       ),
       const SizedBox(height: 12),
-      if (_data!.plans.isEmpty)
+      if (_data!.plans.isEmpty && _data!.days.isEmpty)
         Card(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(AppLocalizations.of(context)!.trainerNoPlans),
           ),
         ),
-      for (final plan in _data!.plans)
-        Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            leading: const Icon(Icons.event_note),
-            title: Text(
-              '${plan['title'] ?? AppLocalizations.of(context)!.trainerWorkoutPlanFallback}',
-            ),
-            subtitle: Text(
-              '${_planStatusLabel(plan['status'])}${plan['starts_on'] == null ? '' : ' · ${plan['starts_on']}'}\n${plan['notes'] ?? ''}',
-            ),
-            isThreeLine: plan['notes'] != null,
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () => _deletePlan(plan),
-            ),
-          ),
-        ),
-      _sectionTitle(AppLocalizations.of(context)!.trainerWorkoutDays),
-      for (final week in _calendarWeeks(_data!.days)) ...[
-        _weekTitle(week.key, week.value),
-        for (final day in week.value) _dayCard(day, editable: true),
-      ],
+      for (final planGroup in _calendarPlanDays())
+        _planCalendarCard(planGroup, editable: true),
     ],
   );
 

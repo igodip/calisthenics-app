@@ -127,8 +127,25 @@ void main() {
     ];
     final repository = _FakeTrainerRepository(
       TrainerProgramData(
-        plans: const [],
-        days: days,
+        plans: const [
+          {'id': 'plan-new', 'title': 'New plan'},
+          {'id': 'plan-old', 'title': 'Old plan'},
+        ],
+        days: [
+          ...days.map(
+            (day) => {
+              ...day,
+              'workout_plan_days': {'plan_id': 'plan-new'},
+            },
+          ),
+          {
+            'week': 1,
+            'day_code': 'A',
+            'title': 'Old plan - Week 1 - Day A',
+            'completed': true,
+            'workout_plan_days': {'plan_id': 'plan-old'},
+          },
+        ],
         maxTests: const [],
         weightLogs: const [],
         payments: const [],
@@ -150,6 +167,29 @@ void main() {
 
     expect(find.text('Week 3 - Day A'), findsNothing);
     expect(find.text('Scarico'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('trainer-plan-calendar-plan-new')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+      findsOneWidget,
+    );
+    expect(
+      tester
+          .widget<Card>(
+            find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+          )
+          .color,
+      AppTheme.theme.extension<AppColors>()!.successContainer,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+        matching: find.byIcon(Icons.check_circle),
+      ),
+      findsNWidgets(2),
+    );
     final dayTitles = [
       'Week 1 - Day A',
       'Week 1 - Day B',
@@ -172,14 +212,14 @@ void main() {
       AppTheme.theme.extension<AppColors>()!.successContainer,
     );
     expect(completedDayCard.elevation, 3);
+    final completedDayTile = find
+        .ancestor(of: completedDayTitle, matching: find.byType(ExpansionTile))
+        .first;
     expect(
       tester
           .widget<Icon>(
             find.descendant(
-              of: find.ancestor(
-                of: completedDayTitle,
-                matching: find.byType(ExpansionTile),
-              ),
+              of: completedDayTile,
               matching: find.byIcon(Icons.calendar_today),
             ),
           )
@@ -188,13 +228,44 @@ void main() {
     );
     expect(
       find.descendant(
-        of: find.ancestor(
-          of: completedDayTitle,
-          matching: find.byType(ExpansionTile),
-        ),
+        of: completedDayTile,
         matching: find.byIcon(Icons.check_circle),
       ),
       findsOneWidget,
+    );
+
+    await tester.tap(find.text('Plan').first);
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('trainer-plan-calendar-plan-new')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+      findsOneWidget,
+    );
+    expect(
+      tester
+          .widget<Card>(
+            find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+          )
+          .color,
+      AppTheme.theme.extension<AppColors>()!.successContainer,
+    );
+    expect(find.text('Old plan - Week 1 - Day A'), findsOneWidget);
+    final planHeaderCheck = find
+        .descendant(
+          of: find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+          matching: find.byIcon(Icons.check_circle),
+        )
+        .first;
+    final planHeaderDelete = find.descendant(
+      of: find.byKey(const ValueKey('trainer-plan-calendar-plan-old')),
+      matching: find.byIcon(Icons.delete_outline),
+    );
+    expect(
+      tester.getCenter(planHeaderCheck).dy,
+      tester.getCenter(planHeaderDelete).dy,
     );
   });
 
