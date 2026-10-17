@@ -16,7 +16,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: 3.38.5
+          flutter-version: 3.47.5
           cache: true
 
       - name: Get Flutter packages
@@ -54,7 +54,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: 3.38.5
+          flutter-version: 3.47.5
           cache: true
 
       - name: Read base version from pubspec.yaml
@@ -219,7 +219,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: 3.38.5
+          flutter-version: 3.47.5
           cache: true
 
       - name: Read base version from pubspec.yaml

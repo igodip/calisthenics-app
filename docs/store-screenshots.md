@@ -54,7 +54,7 @@ capture option is supplied. Normal device builds are unaffected.
 
 ## Local Mac capture
 
-Install Flutter 3.38.5, Xcode, CocoaPods and a supported iOS simulator runtime.
+Install Flutter 3.47.5, Xcode, CocoaPods and a supported iOS simulator runtime.
 In a clean checkout:
 
 ~~~sh
