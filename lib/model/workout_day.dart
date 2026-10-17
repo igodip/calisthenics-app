@@ -42,6 +42,7 @@ class WorkoutDay {
   final bool isCompleted;
   final String? planId;
   final String? planName;
+  final String? planPdfStoragePath;
   final DateTime? planStartedAt;
   final DateTime? createdAt;
   final int? planPosition;
@@ -58,6 +59,7 @@ class WorkoutDay {
     this.isCompleted = false,
     this.planId,
     this.planName,
+    this.planPdfStoragePath,
     this.planStartedAt,
     this.createdAt,
     this.planPosition,

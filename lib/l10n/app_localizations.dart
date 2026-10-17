@@ -562,6 +562,18 @@ abstract class AppLocalizations {
   /// **'Piano di allenamento'**
   String get workoutPlanTitle;
 
+  /// No description provided for @workoutPlanPdfView.
+  ///
+  /// In it, this message translates to:
+  /// **'Visualizza PDF del trainer'**
+  String get workoutPlanPdfView;
+
+  /// No description provided for @workoutPlanPdfError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare il PDF della scheda. Riprova.'**
+  String get workoutPlanPdfError;
+
   /// No description provided for @traineeFeedbackTitle.
   ///
   /// In it, this message translates to:
@@ -2307,6 +2319,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Il PDF selezionato non è disponibile su questo dispositivo.'**
   String get trainerPdfPathUnavailable;
+
+  /// No description provided for @trainerPdfFileUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'PDF non valido o superiore a 25 MB. Seleziona un altro file.'**
+  String get trainerPdfFileUnavailable;
 
   /// No description provided for @trainerNoPlans.
   ///

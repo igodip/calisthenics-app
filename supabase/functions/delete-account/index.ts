@@ -23,24 +23,29 @@ Deno.serve(async (request) => {
     // Never accept a target user ID from the caller.
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const files: string[] = [];
-    async function collect(prefix: string) {
+    async function collect(bucket: string, prefix: string) {
       for (let offset = 0; ; offset += 100) {
-        const { data, error } = await admin.storage.from('avatars').list(prefix, {
-          limit: 100, offset, sortBy: { column: 'name', order: 'asc' },
+        const { data, error } = await admin.storage.from(bucket).list(prefix, {
+          limit: 100,
+          offset,
+          sortBy: { column: 'name', order: 'asc' },
         });
         if (error) throw error;
         for (const item of data ?? []) {
           const path = `${prefix}/${item.name}`;
           if (item.id) files.push(path);
-          else await collect(path);
+          else await collect(bucket, path);
         }
         if (!data || data.length < 100) break;
       }
     }
-    await collect(user.id);
-    for (let offset = 0; offset < files.length; offset += 100) {
-      const { error } = await admin.storage.from('avatars').remove(files.slice(offset, offset + 100));
-      if (error) throw error;
+    for (const bucket of ['avatars', 'workout-plan-pdfs']) {
+      files.length = 0;
+      await collect(bucket, user.id);
+      for (let offset = 0; offset < files.length; offset += 100) {
+        const { error } = await admin.storage.from(bucket).remove(files.slice(offset, offset + 100));
+        if (error) throw error;
+      }
     }
     const { error: deletionError } = await admin.rpc('delete_account_data', { p_user_id: user.id });
     if (deletionError) throw deletionError;

@@ -100,6 +100,8 @@
     }
   },
   "workoutPlanTitle": "Plan de entrenamiento",
+  "workoutPlanPdfView": "Ver PDF del entrenador",
+  "workoutPlanPdfError": "No se pudo cargar el PDF del plan. Inténtalo de nuevo.",
   "traineeFeedbackTitle": "Comentarios del alumno",
   "traineeFeedbackSubtitle": "Cuéntale a tu entrenador cómo te sientes y cómo va el plan.",
   "traineeFeedbackQuestionLabel": "¿Cómo se sintió tu entrenamiento?",
@@ -585,6 +587,7 @@
   "trainerPdfImportSuccess": "Plan de entrenamiento importado correctamente.",
   "trainerPdfImportFailed": "No se pudo importar el PDF. Comprueba que contenga tablas de entrenamiento DÍA A–G.",
   "trainerPdfPathUnavailable": "El PDF seleccionado no está disponible en este dispositivo.",
+  "trainerPdfFileUnavailable": "El PDF no es válido o supera los 25 MB. Selecciona otro archivo.",
   "trainerNoPlans": "No hay planes creados.",
   "trainerWorkoutPlanFallback": "Plan de entrenamiento",
   "trainerPlanStatusActive": "Activo",

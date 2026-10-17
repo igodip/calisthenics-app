@@ -8,11 +8,13 @@ import 'package:calisync/pages/training_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:no_screenshot/no_screenshot.dart';
+import 'package:pdfrx/pdfrx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_date_format.dart';
+import 'workout_plan_pdf_page.dart';
 
 class WorkoutPlanPage extends StatefulWidget {
   const WorkoutPlanPage({super.key});
@@ -24,6 +26,7 @@ class WorkoutPlanPage extends StatefulWidget {
 class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   late Future<_WorkoutPlanData> _planDataFuture;
   Future<void> _screenshotProtectionQueue = Future<void>.value();
+  bool _openingPlanPdf = false;
 
   @override
   void initState() {
@@ -115,6 +118,8 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       },
       buildPlanGroups: _buildPlanGroups,
       onOpenDay: _openDay,
+      onViewPdf: _viewPlanPdf,
+      isOpeningPlanPdf: _openingPlanPdf,
     );
   }
 
@@ -149,7 +154,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   ) async {
     final response = await client
         .from('workout_plans')
-        .select('status, starts_on, created_at')
+        .select('status, starts_on, created_at, pdf_storage_path')
         .eq('trainee_id', userId)
         .order('starts_on', ascending: false)
         .order('created_at', ascending: false);
@@ -194,7 +199,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         .from('days')
         .select(
           'id, week, week_title, day_code, title, notes, completed, '
-          'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at ) ), '
+          'workout_plan_days!inner ( position, workout_plans!inner ( id, title, starts_on, created_at, pdf_storage_path ) ), '
           'day_exercises ( id, position, notes, completed, completed_reps, trainee_notes, exercise_feedback, exercise, exercise_id, exercises ( id, slug, name ), duration_minutes)',
         )
         .eq('workout_plan_days.workout_plans.trainee_id', userId)
@@ -254,6 +259,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       final planCreatedAt = parseDate(planDetails['created_at']);
       final planId = planDetails['id'] as String?;
       final planName = planDetails['title'] as String?;
+      final planPdfStoragePath = planDetails['pdf_storage_path'] as String?;
 
       final exercises = dayExercises.map((exercise) {
         final exerciseValue = exercise['exercise'];
@@ -305,6 +311,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         isCompleted: row['completed'] as bool? ?? false,
         planId: planId,
         planName: planName,
+        planPdfStoragePath: planPdfStoragePath,
         planStartedAt: planStartedAt,
         createdAt: planCreatedAt,
         planPosition: planPosition,
@@ -384,6 +391,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         title: planTitle,
         startedAt: earliestDate(planDays),
         latestDate: latestDate(planDays),
+        pdfStoragePath: first.planPdfStoragePath,
         days: planDays,
       );
     }).toList();
@@ -414,6 +422,48 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       }
     });
   }
+
+  Future<void> _viewPlanPdf(_WorkoutPlanGroup plan) async {
+    final path = plan.pdfStoragePath;
+    if (_openingPlanPdf || path == null) return;
+    final l10n = AppLocalizations.of(context)!;
+    setState(() {
+      _openingPlanPdf = true;
+    });
+
+    try {
+      final bytes = await Supabase.instance.client.storage
+          .from('workout-plan-pdfs')
+          .download(path);
+      await pdfrxFlutterInitialize();
+      if (!mounted) return;
+      await Navigator.push<void>(
+        context,
+        MaterialPageRoute<void>(
+          builder: (_) => WorkoutPlanPdfPage(data: bytes, title: plan.title),
+        ),
+      );
+    } catch (error, stackTrace) {
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stackTrace,
+          library: 'workout_plan_pdf',
+          context: ErrorDescription('while creating or opening the plan PDF'),
+        ),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.workoutPlanPdfError)));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _openingPlanPdf = false;
+        });
+      }
+    }
+  }
 }
 
 class _WorkoutPlanBody extends StatelessWidget {
@@ -424,6 +474,8 @@ class _WorkoutPlanBody extends StatelessWidget {
   final List<_WorkoutPlanGroup> Function(List<WorkoutDay>, AppLocalizations)
   buildPlanGroups;
   final ValueChanged<WorkoutDay> onOpenDay;
+  final ValueChanged<_WorkoutPlanGroup> onViewPdf;
+  final bool isOpeningPlanPdf;
 
   const _WorkoutPlanBody({
     required this.l10n,
@@ -432,6 +484,8 @@ class _WorkoutPlanBody extends StatelessWidget {
     required this.onRetry,
     required this.buildPlanGroups,
     required this.onOpenDay,
+    required this.onViewPdf,
+    required this.isOpeningPlanPdf,
   });
 
   static const double _maxContentWidth = 720;
@@ -559,6 +613,8 @@ class _WorkoutPlanBody extends StatelessWidget {
                     child: _WorkoutPlanSection(
                       plan: plan,
                       onOpenDay: onOpenDay,
+                      onViewPdf: () => onViewPdf(plan),
+                      isOpeningPlanPdf: isOpeningPlanPdf,
                     ),
                   ),
                 ),
@@ -625,11 +681,13 @@ class _WorkoutPlanGroup {
   final String title;
   final DateTime? startedAt;
   final DateTime? latestDate;
+  final String? pdfStoragePath;
   final List<WorkoutDay> days;
 
   const _WorkoutPlanGroup({
     required this.title,
     required this.days,
+    this.pdfStoragePath,
     this.startedAt,
     this.latestDate,
   });
@@ -638,8 +696,15 @@ class _WorkoutPlanGroup {
 class _WorkoutPlanSection extends StatelessWidget {
   final _WorkoutPlanGroup plan;
   final ValueChanged<WorkoutDay> onOpenDay;
+  final VoidCallback onViewPdf;
+  final bool isOpeningPlanPdf;
 
-  const _WorkoutPlanSection({required this.plan, required this.onOpenDay});
+  const _WorkoutPlanSection({
+    required this.plan,
+    required this.onOpenDay,
+    required this.onViewPdf,
+    required this.isOpeningPlanPdf,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -693,6 +758,21 @@ class _WorkoutPlanSection extends StatelessWidget {
               onOpenDay: onOpenDay,
             ),
           ),
+          if (plan.pdfStoragePath != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
+                onPressed: isOpeningPlanPdf ? null : onViewPdf,
+                icon: isOpeningPlanPdf
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.picture_as_pdf_outlined),
+                label: Text(l10n.workoutPlanPdfView),
+              ),
+            ),
         ],
       ),
     );

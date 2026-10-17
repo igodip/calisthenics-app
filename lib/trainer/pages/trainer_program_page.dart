@@ -7,6 +7,7 @@ import '../components/trainer_responsive_list.dart';
 import '../trainer_models.dart';
 import '../trainer_repository.dart';
 import '../pdf/trainer_pdf_import.dart';
+import '../pdf/trainer_pdf_storage.dart';
 import '../../l10n/app_localizations.dart';
 import '../../data/exercise_guides.dart';
 import '../../model/exercise_guide.dart';
@@ -1250,23 +1251,24 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     );
     if (selection == null) return;
     final file = selection.files.single;
-    final path = file.path;
     final bytes = file.bytes;
-    if (path == null && bytes == null) {
-      _message(l10n.trainerPdfPathUnavailable);
+    if (bytes == null || !isValidWorkoutPlanPdf(bytes)) {
+      _message(l10n.trainerPdfFileUnavailable);
       return;
     }
 
     setState(() => _importingPdf = true);
     try {
       final importer = const TrainerPdfImportService();
-      final imported = bytes != null
-          ? await importer.readBytes(bytes, file.name)
-          : await importer.read(path!, file.name);
+      final imported = await importer.readBytes(bytes, file.name);
       if (!mounted) return;
       final confirmed = await _showPdfPreview(imported);
       if (confirmed == null || !mounted) return;
-      await widget.repository.createImportedPlan(widget.trainee.id, confirmed);
+      await widget.repository.createImportedPlan(
+        widget.trainee.id,
+        confirmed,
+        bytes,
+      );
       if (!mounted) return;
       _message(l10n.trainerPdfImportSuccess);
       await _load();

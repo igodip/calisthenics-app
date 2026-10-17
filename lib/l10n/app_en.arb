@@ -100,6 +100,8 @@
     }
   },
   "workoutPlanTitle": "Workout plan",
+  "workoutPlanPdfView": "View trainer PDF",
+  "workoutPlanPdfError": "Could not load the workout plan PDF. Please try again.",
   "traineeFeedbackTitle": "My feedback",
   "traineeFeedbackSubtitle": "Tell your coach how you're feeling and how the plan is going.",
   "traineeFeedbackQuestionLabel": "How did your training feel?",
@@ -585,6 +587,7 @@
   "trainerPdfImportSuccess": "Workout plan imported successfully.",
   "trainerPdfImportFailed": "The PDF could not be imported. Make sure it contains GIORNO A–G workout tables.",
   "trainerPdfPathUnavailable": "The selected PDF is not available on this device.",
+  "trainerPdfFileUnavailable": "The PDF is invalid or larger than 25 MB. Select another file.",
   "trainerNoPlans": "No plans created.",
   "trainerWorkoutPlanFallback": "Workout plan",
   "trainerPlanStatusActive": "Active",

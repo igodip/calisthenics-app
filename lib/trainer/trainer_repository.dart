@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../notifications/push_notification_service.dart';
 import 'trainer_models.dart';
 import 'pdf/trainer_pdf_import.dart';
+import 'pdf/trainer_pdf_storage.dart';
 
 class TrainerRepository {
   TrainerRepository([SupabaseClient? client])
@@ -443,8 +446,14 @@ class TrainerRepository {
   Future<void> createImportedPlan(
     String traineeId,
     TrainerPdfPlan imported,
+    Uint8List originalPdf,
   ) async {
+    if (!isValidWorkoutPlanPdf(originalPdf)) {
+      throw const FormatException('The selected workout PDF is invalid.');
+    }
     Object? planId;
+    String? pdfStoragePath;
+    var pdfUploadAttempted = false;
     var dayIds = <Object>[];
     try {
       final plan = await _client
@@ -459,6 +468,22 @@ class TrainerRepository {
           .select('id')
           .single();
       planId = plan['id'];
+      pdfStoragePath = workoutPlanPdfStoragePath(traineeId, planId!);
+      await _client.rpc(
+        'set_workout_plan_pdf_path',
+        params: {'p_plan_id': planId, 'p_pdf_path': pdfStoragePath},
+      );
+      pdfUploadAttempted = true;
+      await _client.storage
+          .from(workoutPlanPdfBucket)
+          .uploadBinary(
+            pdfStoragePath,
+            originalPdf,
+            fileOptions: const FileOptions(
+              contentType: 'application/pdf',
+              cacheControl: '0',
+            ),
+          );
 
       final dayRows = await _client
           .from('days')
@@ -520,26 +545,60 @@ class TrainerRepository {
       }
       await PushNotificationService.instance.notifyEvent(
         'trainer_plan_updated',
-        planId!,
+        planId,
       );
-    } catch (_) {
+    } catch (error, stackTrace) {
+      Object? cleanupError;
+      var pdfRemoved = false;
+      var planDeleted = false;
       try {
+        if (pdfUploadAttempted && pdfStoragePath != null) {
+          await _client.storage.from(workoutPlanPdfBucket).remove([
+            pdfStoragePath,
+          ]);
+          pdfRemoved = true;
+        }
         if (planId != null) {
           await _client.rpc(
             'delete_workout_plan',
             params: {'p_plan_id': planId},
           );
+          planDeleted = true;
         }
         // Also clean up newly created days if linking failed before the RPC
         // could discover them. Linked days are removed atomically by the RPC.
         if (dayIds.isNotEmpty) {
           await _client.from('days').delete().inFilter('id', dayIds);
         }
-      } catch (_) {
-        // Keep the original import failure; never continue destructive cleanup
-        // after a failed atomic plan deletion.
+      } catch (error) {
+        cleanupError = error;
+        if (pdfRemoved && !planDeleted && pdfStoragePath != null) {
+          try {
+            await _client.storage
+                .from(workoutPlanPdfBucket)
+                .uploadBinary(
+                  pdfStoragePath,
+                  originalPdf,
+                  fileOptions: const FileOptions(
+                    contentType: 'application/pdf',
+                    cacheControl: '0',
+                  ),
+                );
+          } catch (restoreError) {
+            cleanupError = StateError(
+              '$error; the original workout PDF could not be restored: '
+              '$restoreError',
+            );
+          }
+        }
       }
-      rethrow;
+      if (cleanupError != null) {
+        throw StateError(
+          'Plan import failed ($error) and cleanup also failed '
+          '($cleanupError).',
+        );
+      }
+      Error.throwWithStackTrace(error, stackTrace);
     }
   }
 
@@ -597,6 +656,39 @@ class TrainerRepository {
   }
 
   Future<void> deletePlan(Object id) async {
-    await _client.rpc('delete_workout_plan', params: {'p_plan_id': id});
+    final plan = await _client
+        .from('workout_plans')
+        .select('pdf_storage_path')
+        .eq('id', id)
+        .maybeSingle();
+    final pdfPath = plan?['pdf_storage_path'] as String?;
+    if (pdfPath == null) {
+      await _client.rpc('delete_workout_plan', params: {'p_plan_id': id});
+      return;
+    }
+
+    final storage = _client.storage.from(workoutPlanPdfBucket);
+    final pdfBackup = await storage.download(pdfPath);
+    await storage.remove([pdfPath]);
+    try {
+      await _client.rpc('delete_workout_plan', params: {'p_plan_id': id});
+    } catch (error, stackTrace) {
+      try {
+        await storage.uploadBinary(
+          pdfPath,
+          pdfBackup,
+          fileOptions: const FileOptions(
+            contentType: 'application/pdf',
+            cacheControl: '0',
+          ),
+        );
+      } catch (restoreError) {
+        throw StateError(
+          'Plan deletion failed ($error), and its original PDF could not be '
+          'restored ($restoreError).',
+        );
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    }
   }
 }

@@ -33,7 +33,9 @@ profile information stay in sync across devices.
 The app includes a trainer console (`lib/trainer/`) for coaches to review
 their trainees, payments, programs, and feedback directly in the app.
 Trainers can also import workout plans from a PDF, which is parsed into
-the standard plan/day/exercise model and saved to Supabase.
+the standard plan/day/exercise model and saved to Supabase. The confirmed
+original PDF is stored privately so the trainee can view the same file from
+their active workout plan.
 
 ## Admin console
 

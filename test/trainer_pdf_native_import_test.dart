@@ -13,27 +13,22 @@ void main() {
   group('native PDF extraction', () {
     var workerReady = false;
     setUpAll(() async {
-      // flutter test does not bundle native plugin libraries. Resolve the
-      // pinned host runtime before Flutter's binding overrides HTTP.
+      // Keep PDFium initialization inside pdfrx's background worker so
+      // document loading does not race library/font setup on a cold worker.
       final cache = Directory(
         Platform.environment['PDFRX_CACHE_DIR'] ??
             '${Directory.systemTemp.path}/calisync-pdf-tests',
       );
       await cache.create(recursive: true);
-      final modulePath =
-          Platform.environment['PDFIUM_PATH'] ??
-          await PDFiumDownloader.downloadAndGetPDFiumModulePath(
-            cache.path,
-          ).timeout(const Duration(seconds: 90));
-      // Fail here with a useful loader error, not an unhandled worker error
-      // that leaves the import waiting forever.
-      DynamicLibrary.open(modulePath);
+      final modulePath = Platform.environment['PDFIUM_PATH'];
+      if (modulePath != null) {
+        DynamicLibrary.open(modulePath);
+      }
       Pdfrx.pdfiumModulePath = modulePath;
-      Pdfrx.getCacheDirectory = () => cache.path;
-      // Explicitly await configuration inside the worker. The pinned engine
-      // starts initialization/font tasks concurrently on a cold worker.
-      await PdfrxEntryFunctions.instance.compute((String path) {
+      Pdfrx.cacheDirectoryPath = cache.path;
+      await PdfrxEntryFunctions.instance.compute<String?, void>((path) {
         Pdfrx.pdfiumModulePath = path;
+        getPdfium();
       }, modulePath);
       workerReady = true;
     });

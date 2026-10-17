@@ -118,6 +118,10 @@ through `trainee_trainers`.
 - Parse the positioned PDF text into a plan with weeks, days, and exercise slots.
 - Show a preview of the parsed plan (name, day summaries, exercise count).
 - On confirmation, create the plan, its days, and exercises in Supabase.
+- Retain the confirmed original PDF in private storage so the assigned trainee
+  can view that exact file from the active workout plan.
+- Restrict original-PDF access to the trainee, assigned trainers, and admins;
+  remove the file when its plan or owning account is deleted.
 - Reload plan data after saving and report success or failure.
 
 ### Feedback

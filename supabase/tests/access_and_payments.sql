@@ -70,11 +70,24 @@ select set_config('request.jwt.claim.sub',pg_temp.fixture('outsider')::text,true
 select pg_temp.assert_true(not exists(select 1 from public.days where id=pg_temp.fixture('day')),
   'unassigned trainer cannot read day');
 select pg_temp.denied('select public.delete_workout_plan(pg_temp.fixture(''plan''))');
+select pg_temp.denied(
+  'select public.set_workout_plan_pdf_path(pg_temp.fixture(''plan''), '
+  'pg_temp.fixture(''trainee'')::text || ''/'' || pg_temp.fixture(''plan'')::text || ''.pdf'')'
+);
 select pg_temp.denied('select public.save_monthly_payment(pg_temp.fixture(''trainee''),true,10,null)');
 
 select set_config('request.jwt.claim.sub',pg_temp.fixture('trainer')::text,true);
 select pg_temp.assert_true((public.current_account_access()->>'is_trainer')::boolean,
   'trainer role works without trainee profile/payment');
+select public.set_workout_plan_pdf_path(
+  pg_temp.fixture('plan'),
+  pg_temp.fixture('trainee')::text || '/' || pg_temp.fixture('plan')::text || '.pdf'
+);
+select pg_temp.assert_true(
+  (select pdf_storage_path = pg_temp.fixture('trainee')::text || '/' || pg_temp.fixture('plan')::text || '.pdf'
+   from public.workout_plans where id=pg_temp.fixture('plan')),
+  'assigned trainer can associate the original plan PDF'
+);
 insert into public.days(week,day_code,title) values (1,'C','New trainer day') returning id;
 update public.days set title='Trainer edit' where id=pg_temp.fixture('day');
 select pg_temp.assert_true((select title='Trainer edit' from public.days where id=pg_temp.fixture('day')),
@@ -96,6 +109,10 @@ select pg_temp.assert_true((select amount is null and notes='Updated note' and p
   and month_start=public.current_payment_month()), 'note/amount edits preserve original paid_at and allow clearing');
 select set_config('request.jwt.claim.sub',pg_temp.fixture('trainee')::text,true);
 select pg_temp.assert_true((public.current_account_access()->>'is_paid')::boolean,'current paid grants access');
+select pg_temp.denied(
+  'select public.set_workout_plan_pdf_path(pg_temp.fixture(''plan''), '
+  'pg_temp.fixture(''trainee'')::text || ''/'' || pg_temp.fixture(''plan'')::text || ''.pdf'')'
+);
 select set_config('request.jwt.claim.sub',pg_temp.fixture('trainer')::text,true);
 select public.delete_workout_plan(pg_temp.fixture('plan'));
 reset role;

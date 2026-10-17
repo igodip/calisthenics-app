@@ -262,6 +262,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get workoutPlanTitle => 'Piano di allenamento';
 
   @override
+  String get workoutPlanPdfView => 'Visualizza PDF del trainer';
+
+  @override
+  String get workoutPlanPdfError =>
+      'Impossibile caricare il PDF della scheda. Riprova.';
+
+  @override
   String get traineeFeedbackTitle => 'I miei feedback';
 
   @override
@@ -1234,6 +1241,10 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get trainerPdfPathUnavailable =>
       'Il PDF selezionato non è disponibile su questo dispositivo.';
+
+  @override
+  String get trainerPdfFileUnavailable =>
+      'PDF non valido o superiore a 25 MB. Seleziona un altro file.';
 
   @override
   String get trainerNoPlans => 'Nessun piano creato.';
