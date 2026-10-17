@@ -1244,13 +1244,11 @@ class _ExerciseCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.04,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
+                          child: Material(
+                            color: colorScheme.onSurface.withValues(
+                              alpha: 0.04,
                             ),
+                            borderRadius: BorderRadius.circular(12),
                             child: CheckboxListTile(
                               value: isCompleted,
                               onChanged: updatingCompletion

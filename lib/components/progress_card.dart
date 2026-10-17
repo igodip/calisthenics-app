@@ -76,6 +76,8 @@ class _ProgressCardState extends State<ProgressCard> {
                   Expanded(
                     child: Text(
                       l10n.homeProgressTitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -106,11 +108,16 @@ class _ProgressCardState extends State<ProgressCard> {
                                   color: colorScheme.primary,
                                 ),
                                 const SizedBox(width: 6),
-                                Text(
-                                  l10n.homePlanLatestLabel,
-                                  style: theme.textTheme.labelMedium?.copyWith(
-                                    color: colorScheme.primary,
-                                    fontWeight: FontWeight.w700,
+                                Expanded(
+                                  child: Text(
+                                    l10n.homePlanLatestLabel,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.labelMedium
+                                        ?.copyWith(
+                                          color: colorScheme.primary,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                   ),
                                 ),
                               ],
@@ -457,10 +464,14 @@ class _StatTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  value,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 FittedBox(
