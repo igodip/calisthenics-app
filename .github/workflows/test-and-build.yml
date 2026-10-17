@@ -68,7 +68,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '18'
+          java-version: '21'
           cache: gradle
 
       - name: Set up Flutter
@@ -77,6 +77,13 @@ jobs:
           channel: 'stable'
           flutter-version: 3.47.7
           cache: true
+
+      - name: Verify Android Java toolchain
+        working-directory: android
+        run: |
+          flutter config --jdk-dir="$JAVA_HOME"
+          java -version
+          ./gradlew --version
 
       - name: Read base version from pubspec.yaml
         id: version
