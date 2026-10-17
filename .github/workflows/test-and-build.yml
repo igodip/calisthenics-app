@@ -28,12 +28,33 @@ jobs:
           path: ${{ runner.temp }}/pdfrx-tests
           key: ${{ runner.os }}-${{ runner.arch }}-pdfium-${{ hashFiles('pubspec.lock') }}
 
+      - name: Cache PDFium shared library
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/pdfium
+          key: ${{ runner.os }}-${{ runner.arch }}-pdfium-chromium-7811
+
+      - name: Set up PDFium for native tests
+        run: |
+          PDFIUM_DIR="${RUNNER_TEMP}/pdfium"
+          PDFIUM_LIBRARY="${PDFIUM_DIR}/lib/libpdfium.so"
+          if [ ! -f "$PDFIUM_LIBRARY" ]; then
+            mkdir -p "$PDFIUM_DIR"
+            curl --fail --location --silent --show-error \
+              "https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7811/pdfium-linux-x64.tgz" \
+              --output "${RUNNER_TEMP}/pdfium-linux-x64.tgz"
+            tar -xzf "${RUNNER_TEMP}/pdfium-linux-x64.tgz" \
+              -C "$PDFIUM_DIR" lib/libpdfium.so
+            rm "${RUNNER_TEMP}/pdfium-linux-x64.tgz"
+          fi
+
       - name: Check for lints
         run: flutter analyze
 
       - name: Run all tests
         env:
           PDFRX_CACHE_DIR: ${{ runner.temp }}/pdfrx-tests
+          PDFIUM_PATH: ${{ runner.temp }}/pdfium/lib/libpdfium.so
         run: flutter test
 
   android:
