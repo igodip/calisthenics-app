@@ -9,6 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pdfium_dart/pdfium_dart.dart';
 import 'package:pdfrx/pdfrx.dart';
 
+import 'support/pdfium_test_runtime.dart';
+
 void main() {
   group('native PDF extraction', () {
     var workerReady = false;
@@ -20,15 +22,15 @@ void main() {
             '${Directory.systemTemp.path}/calisync-pdf-tests',
       );
       await cache.create(recursive: true);
-      final modulePath = Platform.environment['PDFIUM_PATH'];
-      if (modulePath != null) {
-        DynamicLibrary.open(modulePath);
-      }
+      final modulePath = resolvePdfiumTestLibrary(
+        configuredPath: Platform.environment['PDFIUM_PATH'],
+      );
+      DynamicLibrary.open(modulePath);
       Pdfrx.pdfiumModulePath = modulePath;
       Pdfrx.cacheDirectoryPath = cache.path;
-      await PdfrxEntryFunctions.instance.compute<String?, void>((path) {
+      await PdfrxEntryFunctions.instance.compute<String, void>((path) {
         Pdfrx.pdfiumModulePath = path;
-        getPdfium();
+        getPdfium(modulePath: path);
       }, modulePath);
       workerReady = true;
     });
