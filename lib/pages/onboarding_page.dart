@@ -209,6 +209,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               AuthArtwork(
                                 asset: 'assets/auth/${assets[index]}.webp',
                                 height: heroHeight,
+                                subdued: true,
                               ),
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(
