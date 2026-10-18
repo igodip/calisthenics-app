@@ -1,3 +1,4 @@
+import 'package:calisync/components/user_id_section.dart';
 import 'package:calisync/l10n/app_localizations.dart';
 import 'package:calisync/theme/app_theme.dart';
 import 'package:calisync/theme/theme_controller.dart';
@@ -134,6 +135,8 @@ class SettingsPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               const AccountDeletionSection(),
+              const SizedBox(height: 16),
+              const UserIdSection(),
             ],
           ),
         ),

@@ -13,6 +13,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'Introduce un importe válido igual o superior a cero.';
 
   @override
+  String get copy => 'Copiar';
+
+  @override
   String get privacyPolicyTitle => 'Política de privacidad';
 
   @override

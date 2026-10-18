@@ -106,6 +106,12 @@ abstract class AppLocalizations {
   /// **'Inserisci un importo valido maggiore o uguale a zero.'**
   String get trainerPaymentAmountInvalid;
 
+  /// No description provided for @copy.
+  ///
+  /// In it, this message translates to:
+  /// **'Copia'**
+  String get copy;
+
   /// No description provided for @privacyPolicyTitle.
   ///
   /// In it, this message translates to:

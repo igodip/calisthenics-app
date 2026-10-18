@@ -13,6 +13,9 @@ class AppLocalizationsIt extends AppLocalizations {
       'Inserisci un importo valido maggiore o uguale a zero.';
 
   @override
+  String get copy => 'Copia';
+
+  @override
   String get privacyPolicyTitle => 'Informativa sulla privacy';
 
   @override

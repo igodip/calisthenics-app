@@ -13,6 +13,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a valid amount of zero or more.';
 
   @override
+  String get copy => 'Copy';
+
+  @override
   String get privacyPolicyTitle => 'Privacy policy';
 
   @override
