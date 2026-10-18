@@ -299,6 +299,11 @@ class TrainerRepository {
           .select('id, month_start, paid, paid_at, amount, notes')
           .eq('trainee_id', trainee.id)
           .order('month_start', ascending: false),
+      _client
+          .from('trainee_height_logs')
+          .select('id, height, recorded_at, notes')
+          .eq('trainee_id', trainee.id)
+          .order('recorded_at', ascending: false),
     ]);
     final feedback = (await loadFeedback(
       allTrainees,
@@ -317,6 +322,7 @@ class TrainerRepository {
       maxTests: maxTests,
       weightLogs: List<Map<String, dynamic>>.from(results[3] as List),
       payments: List<Map<String, dynamic>>.from(results[4] as List),
+      heightLogs: List<Map<String, dynamic>>.from(results[5] as List),
       feedback: feedback,
     );
   }
@@ -415,6 +421,14 @@ class TrainerRepository {
       _client.from('trainee_weight_logs').insert({
         'trainee_id': traineeId,
         'weight': weight,
+        'recorded_at': DateTime.now().toIso8601String().substring(0, 10),
+        'notes': notes.trim().isEmpty ? null : notes.trim(),
+      });
+
+  Future<void> addHeight(String traineeId, double height, String notes) =>
+      _client.from('trainee_height_logs').insert({
+        'trainee_id': traineeId,
+        'weight': height,
         'recorded_at': DateTime.now().toIso8601String().substring(0, 10),
         'notes': notes.trim().isEmpty ? null : notes.trim(),
       });

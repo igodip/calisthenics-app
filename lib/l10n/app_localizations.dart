@@ -2566,6 +2566,18 @@ abstract class AppLocalizations {
   /// **'Nessuna registrazione del peso.'**
   String get trainerNoWeightEntries;
 
+  /// No description provided for @trainerHeightHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Cronologia altezza'**
+  String get trainerHeightHistory;
+
+  /// No description provided for @trainerNoHeightEntries.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna registrazione dell\'altezza.'**
+  String get trainerNoHeightEntries;
+
   /// No description provided for @trainerPaymentHistory.
   ///
   /// In it, this message translates to:

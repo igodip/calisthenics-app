@@ -1388,6 +1388,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get trainerNoWeightEntries => 'No hay registros de peso.';
 
   @override
+  String get trainerHeightHistory => 'Historial de altura';
+
+  @override
+  String get trainerNoHeightEntries => 'No hay registros de altura.';
+
+  @override
   String get trainerPaymentHistory => 'Historial de pagos';
 
   @override

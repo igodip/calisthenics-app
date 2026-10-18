@@ -677,6 +677,7 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
           (previous - current).abs() > 0.0001,
         _ => true,
       };
+
       if (weightChanged && weightValue != null) {
         await supabase.from('trainee_weight_logs').insert({
           'trainee_id': widget.data.userId,
@@ -685,6 +686,23 @@ class _EditProfileBottomSheetState extends State<_EditProfileBottomSheet> {
           'notes': null,
         });
       }
+
+      final previousHeight = widget.data.profile?.height;
+      final heightChanged = switch ((previousHeight, heightValue)) {
+        (null, null) => false,
+        (final double previous, final double current) =>
+          (previous - current).abs() > 0.0001,
+        _ => true,
+      };
+      if (heightChanged && heightValue != null) {
+        await supabase.from('trainee_height_logs').insert({
+          'trainee_id': widget.data.userId,
+          'height': heightValue,
+          'recorded_at': DateTime.now().toIso8601String().substring(0, 10),
+          'notes': null,
+        });
+      }
+
       await supabase
           .from('trainees')
           .update(updates)

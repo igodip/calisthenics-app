@@ -709,6 +709,21 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
               ),
             ),
           ),
+      _sectionTitle(AppLocalizations.of(context)!.trainerHeightHistory),
+      if (_data!.heightLogs.isEmpty)
+        Text(AppLocalizations.of(context)!.trainerNoWeightEntries)
+      else
+        for (final log in _data!.heightLogs)
+          Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              leading: const Icon(Icons.height),
+              title: Text('${log['height']} cm'),
+              subtitle: Text(
+                '${AppDateFormat.dateValue(log['recorded_at'])}${log['notes'] == null ? '' : ' · ${log['notes']}'}',
+              ),
+            ),
+          ),
       _sectionTitle(AppLocalizations.of(context)!.trainerPaymentHistory),
       if (_data!.payments.isEmpty)
         Text(AppLocalizations.of(context)!.trainerNoPayments)
@@ -1110,6 +1125,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
             days: updatedDays,
             maxTests: currentData.maxTests,
             weightLogs: currentData.weightLogs,
+            heightLogs: currentData.heightLogs,
             payments: currentData.payments,
             feedback: currentData.feedback,
           );

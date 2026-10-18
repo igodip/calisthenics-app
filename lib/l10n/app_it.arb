@@ -630,6 +630,8 @@
   "@trainerMaxTestDeleteError": {"placeholders": {"error": {"type": "String"}}},
   "trainerWeightHistory": "Cronologia peso",
   "trainerNoWeightEntries": "Nessuna registrazione del peso.",
+  "trainerHeightHistory": "Cronologia altezza",
+  "trainerNoHeightEntries": "Nessuna registrazione dell'altezza.",
   "trainerPaymentHistory": "Cronologia pagamenti",
   "trainerNoPayments": "Nessun pagamento.",
   "trainerTrainingDayFallback": "Giorno di allenamento",

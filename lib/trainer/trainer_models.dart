@@ -141,6 +141,7 @@ class TrainerProgramData {
     required this.days,
     required this.maxTests,
     required this.weightLogs,
+    required this.heightLogs,
     required this.payments,
     required this.feedback,
   });
@@ -149,6 +150,7 @@ class TrainerProgramData {
   final List<Map<String, dynamic>> days;
   final List<Map<String, dynamic>> maxTests;
   final List<Map<String, dynamic>> weightLogs;
+  final List<Map<String, dynamic>> heightLogs;
   final List<Map<String, dynamic>> payments;
   final List<TrainerFeedback> feedback;
 
@@ -162,6 +164,7 @@ class TrainerProgramData {
       }).toList(),
       maxTests: maxTests,
       weightLogs: weightLogs,
+      heightLogs: heightLogs,
       payments: payments,
       feedback: feedback,
     );
@@ -172,6 +175,7 @@ class TrainerProgramData {
     days: days,
     maxTests: maxTests,
     weightLogs: weightLogs,
+    heightLogs: heightLogs,
     payments: payments,
     feedback: feedback.where((item) => item.id != feedbackId).toList(),
   );

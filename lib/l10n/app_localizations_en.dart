@@ -1369,6 +1369,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainerNoWeightEntries => 'No weight entries.';
 
   @override
+  String get trainerHeightHistory => 'Height entries';
+
+  @override
+  String get trainerNoHeightEntries => 'No height entries.';
+
+  @override
   String get trainerPaymentHistory => 'Payment history';
 
   @override

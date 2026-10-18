@@ -44,6 +44,7 @@ void main() {
       ],
       maxTests: const [],
       weightLogs: const [],
+      heightLogs: const [],
       payments: const [],
       feedback: const [],
     );
@@ -80,6 +81,7 @@ void main() {
       days: const [],
       maxTests: const [],
       weightLogs: const [],
+      heightLogs: const [],
       payments: const [],
       feedback: [first, second],
     );

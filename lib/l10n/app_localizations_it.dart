@@ -1381,6 +1381,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get trainerNoWeightEntries => 'Nessuna registrazione del peso.';
 
   @override
+  String get trainerHeightHistory => 'Cronologia altezza';
+
+  @override
+  String get trainerNoHeightEntries => 'Nessuna registrazione dell\'altezza.';
+
+  @override
   String get trainerPaymentHistory => 'Cronologia pagamenti';
 
   @override
