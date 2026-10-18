@@ -45,6 +45,8 @@
     <string>This app uses the camera to take a photo of the workout plan PDF and to choose your profile photo.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>This app uses your photo library to let you pick your profile photo.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>CaliSync does not use or store your location. You can deny location access without affecting your workouts or account.</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>

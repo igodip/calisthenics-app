@@ -83,7 +83,6 @@ jobs:
         run: |
           flutter config --jdk-dir="$JAVA_HOME"
           java -version
-          ./gradlew --version
 
       - name: Read base version from pubspec.yaml
         id: version
@@ -123,6 +122,10 @@ jobs:
           flutter build appbundle --release \
             --build-name=${{ steps.version.outputs.base_version }} \
             --build-number=${{ github.run_number }}
+
+      - name: Verify generated Gradle wrapper
+        working-directory: android
+        run: ./gradlew --version
 
       - name: Upload to Play Store
         run: ./gradlew publishReleaseBundle
