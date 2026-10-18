@@ -98,10 +98,14 @@ class AuthArtwork extends StatelessWidget {
     required this.asset,
     required this.height,
     this.fit = BoxFit.contain,
+    this.subdued = false,
   });
   final String asset;
   final double height;
   final BoxFit fit;
+
+  /// Keep onboarding photography behind the text and primary actions.
+  final bool subdued;
 
   @override
   Widget build(BuildContext context) => ExcludeSemantics(
@@ -118,17 +122,23 @@ class AuthArtwork extends StatelessWidget {
             errorBuilder: (_, _, _) =>
                 const ColoredBox(color: AuthVisuals.background),
           ),
-          const DecoratedBox(
+          DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.transparent,
-                  AuthVisuals.background,
-                ],
-                stops: [0, 0.72, 1],
+                colors: subdued
+                    ? const [
+                        Color(0xB310191C),
+                        Color(0xB310191C),
+                        AuthVisuals.background,
+                      ]
+                    : const [
+                        Colors.transparent,
+                        Colors.transparent,
+                        AuthVisuals.background,
+                      ],
+                stops: subdued ? const [0, 0.55, 1] : const [0, 0.72, 1],
               ),
             ),
           ),
