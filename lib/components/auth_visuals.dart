@@ -82,9 +82,11 @@ class AuthBrand extends StatelessWidget {
         ),
       ),
       const SizedBox(width: 8),
-      Text(
-        title,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+      Flexible(
+        child: Text(
+          title,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+        ),
       ),
     ],
   );

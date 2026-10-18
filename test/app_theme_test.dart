@@ -5,6 +5,9 @@ import 'package:calisync/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'support/store_demo_backend.dart';
 
 double contrast(Color a, Color b) {
   final first = a.computeLuminance();
@@ -14,6 +17,29 @@ double contrast(Color a, Color b) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  final backend = StoreDemoBackend();
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    await Supabase.initialize(
+      url: 'https://${StoreDemoBackend.host}',
+      publishableKey: 'fixture-only-public-key',
+      httpClient: backend.client,
+      authOptions: const FlutterAuthClientOptions(
+        autoRefreshToken: false,
+        detectSessionInUri: false,
+      ),
+    );
+    await Supabase.instance.client.auth.signInWithPassword(
+      email: 'alex@example.invalid',
+      password: 'fixture-only-not-a-password',
+    );
+  });
+  tearDownAll(() async {
+    await Supabase.instance.dispose();
+    expect(backend.unexpectedRequests, isEmpty);
+  });
+
   test('all palettes keep readable text and accent buttons', () {
     for (final palette in AppThemeType.values) {
       final theme = AppTheme.themeFor(palette);

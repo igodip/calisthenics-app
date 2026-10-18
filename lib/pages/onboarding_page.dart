@@ -108,6 +108,28 @@ class _OnboardingPageState extends State<OnboardingPage> {
     ];
     const assets = ['pull_up', 'handstand', 'dip'];
     final last = _currentIndex == 2;
+    final compact =
+        MediaQuery.sizeOf(context).width < 360 ||
+        MediaQuery.textScalerOf(context).scale(1) > 1.3;
+    final brand = AuthBrand(title: l10n.appTitle);
+    final skip = TextButton(
+      onPressed: widget.onFinish,
+      child: Text(l10n.onboardingSkip),
+    );
+    final back = TextButton(
+      onPressed: () => _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      ),
+      child: Text(l10n.onboardingBack),
+    );
+    final signIn = TextButton(
+      onPressed: widget.onFinish,
+      child: Text(
+        compact ? l10n.loginButton : l10n.existingAccountPrompt,
+        textAlign: TextAlign.center,
+      ),
+    );
     final titleStyle = theme.textTheme.headlineMedium!.copyWith(
       fontWeight: FontWeight.w800,
       height: 1.12,
@@ -126,15 +148,23 @@ class _OnboardingPageState extends State<OnboardingPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 8, 12, 0),
-                  child: Row(
-                    children: [
-                      Expanded(child: AuthBrand(title: l10n.appTitle)),
-                      TextButton(
-                        onPressed: widget.onFinish,
-                        child: Text(l10n.onboardingSkip),
-                      ),
-                    ],
-                  ),
+                  child: compact
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            brand,
+                            Align(
+                              alignment: AlignmentDirectional.centerEnd,
+                              child: skip,
+                            ),
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            Expanded(child: brand),
+                            skip,
+                          ],
+                        ),
                 ),
                 Expanded(
                   child: LayoutBuilder(
@@ -260,33 +290,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           last ? l10n.signupButton : l10n.onboardingNext,
                         ),
                       ),
-                      Row(
-                        children: [
-                          if (_currentIndex > 0)
-                            TextButton(
-                              onPressed: () => _pageController.previousPage(
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeOutCubic,
+                      if (compact)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (_currentIndex > 0)
+                              Align(
+                                alignment: AlignmentDirectional.centerStart,
+                                child: back,
                               ),
-                              child: Text(l10n.onboardingBack),
-                            ),
-                          Expanded(
-                            child: TextButton(
-                              onPressed: widget.onFinish,
-                              child: Text(
-                                (MediaQuery.sizeOf(context).width < 360 ||
-                                        MediaQuery.textScalerOf(
-                                              context,
-                                            ).scale(1) >
-                                            1.3)
-                                    ? l10n.loginButton
-                                    : l10n.existingAccountPrompt,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                            signIn,
+                          ],
+                        )
+                      else
+                        Row(
+                          children: [
+                            if (_currentIndex > 0) back,
+                            Expanded(child: signIn),
+                          ],
+                        ),
                     ],
                   ),
                 ),
