@@ -220,6 +220,15 @@ abstract class AppLocalizations {
   /// **'Calisync'**
   String get appTitle;
 
+  /// Heading for the sign-in screen.
+  String get authWelcomeTitle;
+
+  /// Accessible action to reveal a password.
+  String get authShowPassword;
+
+  /// Accessible action to conceal a password.
+  String get authHidePassword;
+
   /// No description provided for @authErrorMessage.
   ///
   /// In it, this message translates to:

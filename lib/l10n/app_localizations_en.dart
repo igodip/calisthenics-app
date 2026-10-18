@@ -120,25 +120,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeOrangeLabel => 'Orange';
 
   @override
-  String get onboardingTitleOne => 'Train smarter';
+  String get onboardingTitleOne => 'Build strength.\nMaster control.';
 
   @override
   String get onboardingDescriptionOne =>
-      'Follow guided workouts built for your calisthenics plan.';
+      'Your calisthenics training, all in one place.';
 
   @override
-  String get onboardingTitleTwo => 'Track progress';
+  String get onboardingTitleTwo => 'See your\nprogress.';
 
   @override
   String get onboardingDescriptionTwo =>
-      'Log sets, reps, and notes to see your improvements.';
+      'Track reps, holds and every step forward.';
 
   @override
-  String get onboardingTitleThree => 'Stay consistent';
+  String get onboardingTitleThree => 'Make training\na habit.';
 
   @override
   String get onboardingDescriptionThree =>
-      'Keep momentum with quick access to your next session.';
+      'Your next session, ready when you are.';
 
   @override
   String get onboardingSkip => 'Skip';
@@ -147,7 +147,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingBack => 'Back';
 
   @override
-  String get onboardingNext => 'Next';
+  String get onboardingNext => 'Continue';
 
   @override
   String get onboardingGetStarted => 'Get started';
@@ -782,11 +782,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get loginGreeting =>
-      'Welcome back! Sign in to continue your training.';
+  String get loginGreeting => 'Ready for your next session?';
 
   @override
-  String get signupGreeting => 'Create an account to unlock all workouts.';
+  String get signupGreeting => 'Create your account to get started.';
 
   @override
   String get emailLabel => 'Email';
@@ -801,7 +800,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginButton => 'Sign in';
 
   @override
-  String get signupButton => 'Sign up';
+  String get signupButton => 'Create account';
 
   @override
   String get noAccountPrompt => 'Don\'t have an account? Sign up';
@@ -1588,4 +1587,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String adminActionFailed(String error) {
     return 'Admin action failed: $error';
   }
+
+  @override
+  String get authWelcomeTitle => 'Welcome back.';
+
+  @override
+  String get authShowPassword => 'Show password';
+
+  @override
+  String get authHidePassword => 'Hide password';
 }

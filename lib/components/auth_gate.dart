@@ -6,7 +6,9 @@ import '../pages/home_page.dart';
 import '../pages/login_page.dart';
 
 class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+  const AuthGate({super.key, this.startInSignupMode = false});
+
+  final bool startInSignupMode;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        return const LoginPage();
+        return LoginPage(initialLoginMode: !startInSignupMode);
       },
     );
   }

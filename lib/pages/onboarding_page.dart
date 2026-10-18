@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/auth_gate.dart';
+import '../components/auth_visuals.dart';
 
 class OnboardingGate extends StatefulWidget {
   const OnboardingGate({super.key});
@@ -15,6 +16,7 @@ class _OnboardingGateState extends State<OnboardingGate> {
   static const _onboardingPrefKey = 'hasSeenOnboarding';
 
   late Future<bool> _hasSeenOnboarding;
+  bool _startInSignupMode = false;
 
   @override
   void initState() {
@@ -27,10 +29,12 @@ class _OnboardingGateState extends State<OnboardingGate> {
     return prefs.getBool(_onboardingPrefKey) ?? false;
   }
 
-  Future<void> _completeOnboarding() async {
+  Future<void> _completeOnboarding({bool signup = false}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_onboardingPrefKey, true);
+    if (!mounted) return;
     setState(() {
+      _startInSignupMode = signup;
       _hasSeenOnboarding = Future.value(true);
     });
   }
@@ -47,33 +51,35 @@ class _OnboardingGateState extends State<OnboardingGate> {
         }
 
         if (snapshot.hasError || !(snapshot.data ?? false)) {
-          return OnboardingPage(onFinish: _completeOnboarding);
+          return OnboardingPage(
+            onFinish: _completeOnboarding,
+            onCreateAccount: () => _completeOnboarding(signup: true),
+          );
         }
 
-        return const AuthGate();
+        return AuthGate(startInSignupMode: _startInSignupMode);
       },
     );
   }
 }
 
 class OnboardingPage extends StatefulWidget {
-  const OnboardingPage({super.key, required this.onFinish});
+  const OnboardingPage({
+    super.key,
+    required this.onFinish,
+    this.onCreateAccount,
+  });
 
   final VoidCallback onFinish;
+  final VoidCallback? onCreateAccount;
 
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
 }
 
 class _OnboardingPageState extends State<OnboardingPage> {
-  late final PageController _pageController;
+  final _pageController = PageController();
   int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
 
   @override
   void dispose() {
@@ -82,205 +88,213 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+  Widget build(BuildContext context) => Theme(
+    data: AuthVisuals.theme(context),
+    child: Builder(builder: _buildContent),
+  );
+
+  Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
-    final steps = [
-      _OnboardingStep(
-        icon: Icons.fitness_center,
-        title: l10n.onboardingTitleOne,
-        description: l10n.onboardingDescriptionOne,
-      ),
-      _OnboardingStep(
-        icon: Icons.track_changes,
-        title: l10n.onboardingTitleTwo,
-        description: l10n.onboardingDescriptionTwo,
-      ),
-      _OnboardingStep(
-        icon: Icons.auto_graph,
-        title: l10n.onboardingTitleThree,
-        description: l10n.onboardingDescriptionThree,
-      ),
+    final theme = Theme.of(context);
+    final titles = [
+      l10n.onboardingTitleOne,
+      l10n.onboardingTitleTwo,
+      l10n.onboardingTitleThree,
     ];
-
-    final isLastStep = _currentIndex == steps.length - 1;
+    final descriptions = [
+      l10n.onboardingDescriptionOne,
+      l10n.onboardingDescriptionTwo,
+      l10n.onboardingDescriptionThree,
+    ];
+    const assets = ['pull_up', 'handstand', 'dip'];
+    final last = _currentIndex == 2;
+    final titleStyle = theme.textTheme.headlineMedium!.copyWith(
+      fontWeight: FontWeight.w800,
+      height: 1.12,
+    );
+    final descriptionStyle = theme.textTheme.bodyLarge!.copyWith(
+      color: AuthVisuals.muted,
+      height: 1.4,
+    );
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              colorScheme.primaryContainer.withValues(alpha: 0.16),
-              colorScheme.secondaryContainer.withValues(alpha: 0.24),
-              colorScheme.surface.withValues(alpha: 0.96),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: widget.onFinish,
-                    child: Text(l10n.onboardingSkip),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 12, 0),
+                  child: Row(
+                    children: [
+                      Expanded(child: AuthBrand(title: l10n.appTitle)),
+                      TextButton(
+                        onPressed: widget.onFinish,
+                        child: Text(l10n.onboardingSkip),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: steps.length,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentIndex = index;
-                    });
-                  },
-                  itemBuilder: (context, index) {
-                    final step = steps[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  colorScheme.primary,
-                                  colorScheme.secondary,
-                                ],
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Measure all translations together so every page shares
+                      // the same text baselines, including large system fonts.
+                      double maxHeight(List<String> strings, TextStyle style) {
+                        var result = 0.0;
+                        for (final text in strings) {
+                          final painter = TextPainter(
+                            text: TextSpan(text: text, style: style),
+                            textDirection: Directionality.of(context),
+                            textScaler: MediaQuery.textScalerOf(context),
+                          )..layout(maxWidth: constraints.maxWidth - 48);
+                          if (painter.height > result) result = painter.height;
+                          painter.dispose();
+                        }
+                        return result;
+                      }
+
+                      final titleHeight = maxHeight(titles, titleStyle);
+                      final descriptionHeight = maxHeight(
+                        descriptions,
+                        descriptionStyle,
+                      );
+                      final heroHeight =
+                          (constraints.maxHeight -
+                                  titleHeight -
+                                  descriptionHeight -
+                                  40)
+                              .clamp(140.0, 520.0)
+                              .toDouble();
+                      return PageView.builder(
+                        controller: _pageController,
+                        itemCount: 3,
+                        onPageChanged: (index) =>
+                            setState(() => _currentIndex = index),
+                        itemBuilder: (context, index) => SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              AuthArtwork(
+                                asset: 'assets/auth/${assets[index]}.webp',
+                                height: heroHeight,
                               ),
-                              borderRadius: BorderRadius.circular(32),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: colorScheme.primary.withValues(
-                                    alpha: 0.35,
-                                  ),
-                                  blurRadius: 30,
-                                  offset: const Offset(0, 16),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  24,
+                                  8,
+                                  24,
+                                  16,
                                 ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(28),
-                              child: Icon(
-                                step.icon,
-                                size: 48,
-                                color: colorScheme.onPrimary,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    SizedBox(
+                                      height: titleHeight,
+                                      child: Text(
+                                        titles[index],
+                                        style: titleStyle,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    SizedBox(
+                                      height: descriptionHeight,
+                                      child: Text(
+                                        descriptions[index],
+                                        style: descriptionStyle,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                          Text(
-                            step.title,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: colorScheme.onSurface,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            step.description,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        steps.length,
-                        (index) => AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: index == _currentIndex ? 24 : 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: index == _currentIndex
-                                ? colorScheme.primary
-                                : colorScheme.onSurfaceVariant.withValues(
-                                    alpha: 0.4,
-                                  ),
-                            borderRadius: BorderRadius.circular(24),
+                            ],
                           ),
                         ),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          for (var index = 0; index < 3; index++)
+                            Semantics(
+                              label: titles[index],
+                              selected: index == _currentIndex,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: index == _currentIndex
+                                      ? AuthVisuals.mint
+                                      : const Color(0xFF52626A),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        if (_currentIndex > 0)
-                          TextButton(
-                            onPressed: () {
-                              _pageController.previousPage(
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeOutCubic,
-                              );
-                            },
-                            child: Text(l10n.onboardingBack),
-                          )
-                        else
-                          const SizedBox(width: 64),
-                        const Spacer(),
-                        FilledButton(
-                          onPressed: () {
-                            if (isLastStep) {
-                              widget.onFinish();
-                              return;
-                            }
+                      const SizedBox(height: 20),
+                      FilledButton(
+                        onPressed: () {
+                          if (last) {
+                            (widget.onCreateAccount ?? widget.onFinish)();
+                          } else {
                             _pageController.nextPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeOutCubic,
                             );
-                          },
-                          child: Text(
-                            isLastStep
-                                ? l10n.onboardingGetStarted
-                                : l10n.onboardingNext,
-                          ),
+                          }
+                        },
+                        child: Text(
+                          last ? l10n.signupButton : l10n.onboardingNext,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      Row(
+                        children: [
+                          if (_currentIndex > 0)
+                            TextButton(
+                              onPressed: () => _pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOutCubic,
+                              ),
+                              child: Text(l10n.onboardingBack),
+                            ),
+                          Expanded(
+                            child: TextButton(
+                              onPressed: widget.onFinish,
+                              child: Text(
+                                (MediaQuery.sizeOf(context).width < 360 ||
+                                        MediaQuery.textScalerOf(
+                                              context,
+                                            ).scale(1) >
+                                            1.3)
+                                    ? l10n.loginButton
+                                    : l10n.existingAccountPrompt,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-class _OnboardingStep {
-  const _OnboardingStep({
-    required this.icon,
-    required this.title,
-    required this.description,
-  });
-
-  final IconData icon;
-  final String title;
-  final String description;
 }
