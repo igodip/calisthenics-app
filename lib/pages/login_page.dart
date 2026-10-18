@@ -145,10 +145,10 @@ class _LoginPageState extends State<LoginPage> {
           _setFeedback(l10n.signupEmailCheck, false);
         }
       }
-    } on AuthException {
-      _setFeedback(l10n.invalidCredentials, true);
-    } catch (e) {
-      _setFeedback(l10n.unexpectedError('$e'), true);
+    } on AuthException catch (e) {
+      _setFeedback(_authErrorMessage(e), true);
+    } catch (_) {
+      _setFeedback(l10n.authOperationFailed, true);
     } finally {
       if (mounted) {
         setState(() {
@@ -156,6 +156,40 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     }
+  }
+
+  String _authErrorMessage(AuthException exception) {
+    switch (exception.code) {
+      case 'invalid_credentials':
+      case 'user_not_found':
+        return isLoginMode ? l10n.invalidCredentials : l10n.authOperationFailed;
+      case 'email_not_confirmed':
+        return l10n.emailNotConfirmed;
+      case 'email_exists':
+      case 'user_already_exists':
+        return l10n.emailAlreadyRegistered;
+      case 'weak_password':
+        return l10n.weakPassword;
+      case 'email_address_invalid':
+        return l10n.invalidEmail;
+      case 'signup_disabled':
+      case 'email_provider_disabled':
+      case 'provider_disabled':
+        return l10n.signupDisabled;
+      case 'over_email_send_rate_limit':
+      case 'over_request_rate_limit':
+        return l10n.authTooManyRequests;
+      case 'request_timeout':
+        return l10n.authServiceUnavailable;
+    }
+
+    final statusCode = int.tryParse(exception.statusCode ?? '');
+    if (statusCode == 429) return l10n.authTooManyRequests;
+    if (statusCode != null && statusCode >= 500) {
+      return l10n.authServiceUnavailable;
+    }
+
+    return l10n.authOperationFailed;
   }
 
   void _setFeedback(String? message, bool error) {

@@ -747,7 +747,40 @@ class AppLocalizationsEs extends AppLocalizations {
   String get passwordMismatch => 'Las contraseñas no coinciden.';
 
   @override
-  String get invalidCredentials => 'Credenciales inválidas.';
+  String get invalidCredentials =>
+      'El correo electrónico o la contraseña no son correctos.';
+
+  @override
+  String get emailNotConfirmed =>
+      'Confirma tu dirección de correo electrónico antes de iniciar sesión.';
+
+  @override
+  String get emailAlreadyRegistered =>
+      'Ya existe una cuenta con esta dirección de correo electrónico.';
+
+  @override
+  String get weakPassword =>
+      'La contraseña no cumple los requisitos de seguridad.';
+
+  @override
+  String get invalidEmail =>
+      'Introduce una dirección de correo electrónico válida.';
+
+  @override
+  String get signupDisabled =>
+      'El registro no está disponible en este momento.';
+
+  @override
+  String get authTooManyRequests =>
+      'Has realizado demasiadas solicitudes. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get authServiceUnavailable =>
+      'El servicio no está disponible temporalmente. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get authOperationFailed =>
+      'No se pudo completar la operación. Inténtalo de nuevo.';
 
   @override
   String get signupEmailCheck =>

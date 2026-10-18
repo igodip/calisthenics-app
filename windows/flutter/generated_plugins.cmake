@@ -8,7 +8,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_core
   flutter_tts
   no_screenshot
-  passkeys_windows
   url_launcher_windows
 )
 

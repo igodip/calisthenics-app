@@ -1399,8 +1399,56 @@ abstract class AppLocalizations {
   /// No description provided for @invalidCredentials.
   ///
   /// In it, this message translates to:
-  /// **'Credenziali invalide.'**
+  /// **'Email o password non corrette.'**
   String get invalidCredentials;
+
+  /// No description provided for @emailNotConfirmed.
+  ///
+  /// In it, this message translates to:
+  /// **'Conferma il tuo indirizzo email prima di accedere.'**
+  String get emailNotConfirmed;
+
+  /// No description provided for @emailAlreadyRegistered.
+  ///
+  /// In it, this message translates to:
+  /// **'Esiste già un account con questo indirizzo email.'**
+  String get emailAlreadyRegistered;
+
+  /// No description provided for @weakPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'La password non soddisfa i requisiti di sicurezza.'**
+  String get weakPassword;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un indirizzo email valido.'**
+  String get invalidEmail;
+
+  /// No description provided for @signupDisabled.
+  ///
+  /// In it, this message translates to:
+  /// **'La registrazione non è al momento disponibile.'**
+  String get signupDisabled;
+
+  /// No description provided for @authTooManyRequests.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai effettuato troppe richieste. Riprova più tardi.'**
+  String get authTooManyRequests;
+
+  /// No description provided for @authServiceUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Il servizio non è al momento disponibile. Riprova più tardi.'**
+  String get authServiceUnavailable;
+
+  /// No description provided for @authOperationFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile completare l\'operazione. Riprova.'**
+  String get authOperationFailed;
 
   /// No description provided for @signupEmailCheck.
   ///
