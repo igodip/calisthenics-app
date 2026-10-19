@@ -10,6 +10,18 @@ import UIKit
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
+    if let registrar = registrar(forPlugin: "TimerScreenAwake") {
+      let channel = FlutterMethodChannel(
+        name: "calisync/timer_screen", binaryMessenger: registrar.messenger())
+      channel.setMethodCallHandler { call, result in
+        guard call.method == "setKeepAwake" else {
+          result(FlutterMethodNotImplemented)
+          return
+        }
+        UIApplication.shared.isIdleTimerDisabled = call.arguments as? Bool == true
+        result(nil)
+      }
+    }
     enableScreenSecurity()
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

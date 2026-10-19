@@ -23,6 +23,8 @@ class WorkoutTimerPanel extends StatefulWidget {
 class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
     with WidgetsBindingObserver {
   static const String _sessionKey = 'timer_workout_session';
+  static const _screenChannel = MethodChannel('calisync/timer_screen');
+  bool _foreground = true;
 
   Timer? _ticker;
   WorkoutTimerMode _mode = WorkoutTimerMode.amrap;
@@ -53,6 +55,7 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
 
   @override
   void dispose() {
+    _foreground = false;
     _syncFromWallClock(updateUi: false);
     _ticker?.cancel();
     WidgetsBinding.instance.removeObserver(this);
@@ -62,6 +65,8 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
+    unawaited(_updateScreenAwake());
     if (state == AppLifecycleState.resumed) {
       _syncFromWallClock();
       if (_isRunning) _startTicker();
@@ -114,6 +119,7 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
   }
 
   Future<void> _persistSession() async {
+    await _updateScreenAwake();
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(
       _sessionKey,
@@ -136,8 +142,22 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
   }
 
   void _startTicker() {
+    unawaited(_updateScreenAwake());
     _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+  }
+
+  Future<void> _updateScreenAwake() async {
+    try {
+      await _screenChannel.invokeMethod<void>(
+        'setKeepAwake',
+        mounted && _foreground && _isRunning,
+      );
+    } on MissingPluginException {
+      // Desktop/web do not implement the mobile screen-awake integration.
+    } on PlatformException catch (error) {
+      debugPrint('Unable to keep timer screen awake: ${error.code}');
+    }
   }
 
   void _syncFromWallClock({
@@ -408,7 +428,19 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
       WorkoutTimerMode.tabata =>
         1 - (_remainingSeconds / (_isRestPhase ? _restSeconds : _workSeconds)),
     }.clamp(0.0, 1.0);
-    final ringProgress = _isPreparing ? 0.0 : progress;
+    final ringProgress = _isFinished
+        ? 1.0
+        : _isPreparing
+        ? (10 - _remainingSeconds) / 10
+        : progress;
+    final phaseDurationSeconds = _isPreparing
+        ? 10
+        : switch (_mode) {
+            WorkoutTimerMode.amrap => _amrapMinutes * 60,
+            WorkoutTimerMode.emom || WorkoutTimerMode.forTime => 60,
+            WorkoutTimerMode.tabata =>
+              _isRestPhase ? _restSeconds : _workSeconds,
+          };
     final totalElapsed = _mode == WorkoutTimerMode.emom && !_emomUnlimited
         ? _emomMinutes * 60 - _remainingSeconds
         : _elapsedSeconds;
@@ -428,6 +460,13 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
               children: [
                 for (final mode in WorkoutTimerMode.values)
                   ChoiceChip(
+                    showCheckmark: false,
+                    selectedColor: colors.primaryContainer,
+                    side: BorderSide.none,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 10,
+                    ),
                     label: Text(switch (mode) {
                       WorkoutTimerMode.amrap => l10n.timerModeAmrap,
                       WorkoutTimerMode.emom => l10n.timerModeEmom,
@@ -440,7 +479,20 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
               ],
             ),
             const SizedBox(height: 16),
-            _buildSettings(l10n),
+            if (_mode != WorkoutTimerMode.forTime)
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: colors.outlineVariant.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: _buildSettings(l10n),
+                ),
+              ),
             if (_mode == WorkoutTimerMode.amrap) ...[
               const SizedBox(height: 12),
               Wrap(
@@ -476,54 +528,73 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    CustomPaint(
-                      size: Size.square(ringSize),
-                      painter: IntervalRingPainter(
+                    Positioned.fill(
+                      child: WorkoutTimerDial(
+                        key: ValueKey((
+                          _mode,
+                          _isPreparing,
+                          _isRestPhase,
+                          _tabataRound,
+                          _mode == WorkoutTimerMode.emom ||
+                                  _mode == WorkoutTimerMode.forTime
+                              ? _elapsedSeconds ~/ 60
+                              : 0,
+                        )),
                         progress: ringProgress,
+                        phaseDuration: Duration(seconds: phaseDurationSeconds),
                         activeColor: phaseColor,
-                        inactiveColor: colors.onSurface.withValues(alpha: 0.1),
-                        thickness: 20,
+                        animate: _isRunning,
                       ),
                     ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          title,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: phaseColor,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          _formatSeconds(displaySeconds),
-                          style: theme.textTheme.displayMedium?.copyWith(
-                            fontSize: (ringSize * 0.23)
-                                .clamp(42, 76)
-                                .toDouble(),
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        if (_mode == WorkoutTimerMode.emom &&
-                            !_isPreparing) ...[
-                          const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                           Text(
-                            '${l10n.timerWorkoutElapsed}: ${_formatSeconds(totalElapsed)}',
+                            title,
                             textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: phaseColor,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
-                        ],
-                        if (_mode == WorkoutTimerMode.tabata) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            '${l10n.timerRoundsLabel}: $_tabataRound/$_tabataRounds',
+                          const SizedBox(height: 12),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              _formatSeconds(displaySeconds),
+                              style: theme.textTheme.displayMedium?.copyWith(
+                                fontSize: (ringSize * 0.23)
+                                    .clamp(42, 76)
+                                    .toDouble(),
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -2,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
+                            ),
                           ),
+                          if (_mode == WorkoutTimerMode.emom &&
+                              !_isPreparing) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              '${l10n.timerWorkoutElapsed}: ${_formatSeconds(totalElapsed)}',
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                          if (_mode == WorkoutTimerMode.tabata) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              '${l10n.timerRoundsLabel}: $_tabataRound/$_tabataRounds',
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -536,6 +607,15 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
               runSpacing: 12,
               children: [
                 FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 18,
+                    ),
+                    textStyle: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   key: const ValueKey('workout-timer-toggle'),
                   onPressed: _toggleTimer,
                   icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
@@ -551,6 +631,7 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
                   )
                 else
                   OutlinedButton.icon(
+                    key: const ValueKey('workout-timer-reset'),
                     onPressed: _resetTimer,
                     icon: const Icon(Icons.restart_alt),
                     label: Text(l10n.timerControlReset),
@@ -692,6 +773,109 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A frame-driven dial, independent of the once-per-second text updates.
+/// The controller uses subsecond elapsed time, never advances session state,
+/// and is disposed when the timer leaves the screen.
+class WorkoutTimerDial extends StatefulWidget {
+  const WorkoutTimerDial({
+    super.key,
+    required this.progress,
+    required this.activeColor,
+    required this.animate,
+    this.phaseDuration = const Duration(seconds: 60),
+  });
+
+  final double progress;
+  final Color activeColor;
+  final bool animate;
+  final Duration phaseDuration;
+
+  @override
+  State<WorkoutTimerDial> createState() => _WorkoutTimerDialState();
+}
+
+class _WorkoutTimerDialState extends State<WorkoutTimerDial>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(vsync: this);
+  bool _reducedMotion = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reducedMotion = MediaQuery.disableAnimationsOf(context);
+    _syncAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant WorkoutTimerDial oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.progress != widget.progress ||
+        oldWidget.animate != widget.animate ||
+        oldWidget.phaseDuration != widget.phaseDuration) {
+      _syncAnimation();
+    }
+  }
+
+  void _syncAnimation() {
+    _controller.stop();
+    _controller.value = widget.progress.clamp(0.0, 1.0);
+    if (widget.animate && !_reducedMotion && _controller.value < 1) {
+      final remainingMicros =
+          (widget.phaseDuration.inMicroseconds * (1 - _controller.value))
+              .round();
+      if (remainingMicros > 0) {
+        _controller.animateTo(
+          1,
+          duration: Duration(microseconds: remainingMicros),
+          curve: Curves.linear,
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final activeColor = widget.activeColor;
+    return RepaintBoundary(
+      child: AnimatedContainer(
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 300),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [
+              activeColor.withValues(alpha: 0.12),
+              colors.surface.withValues(alpha: 0.02),
+            ],
+          ),
+          border: Border.all(color: activeColor.withValues(alpha: 0.12)),
+        ),
+        padding: const EdgeInsets.all(10),
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) => CircularProgressIndicator(
+            key: const ValueKey('workout-timer-progress'),
+            value: _controller.value,
+            strokeWidth: 10,
+            strokeCap: StrokeCap.round,
+            color: activeColor,
+            backgroundColor: colors.outlineVariant.withValues(alpha: 0.35),
+            // The visible digits already announce the time to screen readers.
+          ),
+        ),
+      ),
     );
   }
 }
