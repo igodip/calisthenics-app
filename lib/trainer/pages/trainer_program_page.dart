@@ -295,8 +295,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
               planGroup,
               editable: false,
               weekLimit: _showAllCalendarDays ? null : 2,
-              isTraineeVisible:
-                  '${planGroup.plan?['id']}' == traineeVisiblePlanId,
+              isActive: '${planGroup.plan?['id']}' == traineeVisiblePlanId,
             ),
           if (hiddenDays > 0)
             Align(
@@ -396,7 +395,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   Widget _planCalendarCard(
     _TrainerPlanDays planGroup, {
     required bool editable,
-    bool isTraineeVisible = false,
+    bool isActive = false,
     int? weekLimit,
   }) {
     final l10n = AppLocalizations.of(context)!;
@@ -405,6 +404,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     final isCompleted =
         planGroup.days.isNotEmpty &&
         planGroup.days.every((day) => day['completed'] == true);
+    final isActive = '${plan?['status']}'.toLowerCase() == 'active';
     final theme = Theme.of(context);
     final appColors = theme.extension<AppColors>();
     final visibleWeeks = weekLimit == null
@@ -463,12 +463,12 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
                 ],
               ),
             ),
-            if (isTraineeVisible || isCompleted)
+            if (isActive || isCompleted)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (isTraineeVisible)
+                  if (isActive)
                     Chip(
                       label: Text(l10n.profilePlanActive),
                       visualDensity: VisualDensity.compact,
@@ -586,8 +586,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
           _planCalendarCard(
             planGroup,
             editable: true,
-            isTraineeVisible:
-                '${planGroup.plan?['id']}' == traineeVisiblePlanId,
+            isActive: '${planGroup.plan?['id']}' == traineeVisiblePlanId,
           ),
       ],
     );
@@ -1187,6 +1186,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     setState(() => _data = updatedData);
     try {
       await widget.repository.deletePlan(planId);
+      if (mounted) await _load();
     } catch (e) {
       if (mounted) {
         if (identical(_data, updatedData)) {
