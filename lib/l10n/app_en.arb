@@ -1,4 +1,6 @@
 {
+  "homeMascotTitle": "Little athlete on Home",
+  "homeMascotDescription": "Show a continuously exercising character on Home. Off by default. Saved on this device; respects reduced motion.",
   "exerciseGalleryOpen": "View pictures of {exercise}",
   "@exerciseGalleryOpen": {"placeholders": {"exercise": {"type": "String"}}},
   "exerciseGalleryView": "View picture",

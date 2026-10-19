@@ -95,7 +95,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final titles = [
       l10n.onboardingTitleOne,
       l10n.onboardingTitleTwo,
@@ -130,23 +129,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
         textAlign: TextAlign.center,
       ),
     );
-    final titleStyle = theme.textTheme.headlineMedium!.copyWith(
-      fontWeight: FontWeight.w800,
-      height: 1.12,
-    );
-    final descriptionStyle = theme.textTheme.bodyLarge!.copyWith(
-      color: AuthVisuals.muted,
-      height: 1.4,
-    );
+    final titleStyle = AuthVisuals.headingStyle(context);
+    final descriptionStyle = AuthVisuals.descriptionStyle(context);
 
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 520),
+            constraints: const BoxConstraints(
+              maxWidth: AuthVisuals.maxContentWidth,
+            ),
             child: Column(
               children: [
                 Padding(
+                  key: const ValueKey('onboarding-header'),
                   padding: const EdgeInsets.fromLTRB(24, 8, 12, 0),
                   child: compact
                       ? Column(
@@ -247,70 +243,78 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                ConstrainedBox(
+                  key: const ValueKey('onboarding-footer'),
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(context).height * .45,
+                  ),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          for (var index = 0; index < 3; index++)
-                            Semantics(
-                              label: titles[index],
-                              selected: index == _currentIndex,
-                              child: Container(
-                                width: 8,
-                                height: 8,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 5,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              for (var index = 0; index < 3; index++)
+                                Semantics(
+                                  label: titles[index],
+                                  selected: index == _currentIndex,
+                                  child: Container(
+                                    width: 8,
+                                    height: 8,
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: index == _currentIndex
+                                          ? AuthVisuals.mint
+                                          : const Color(0xFF52626A),
+                                    ),
+                                  ),
                                 ),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: index == _currentIndex
-                                      ? AuthVisuals.mint
-                                      : const Color(0xFF52626A),
-                                ),
-                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          FilledButton(
+                            onPressed: () {
+                              if (last) {
+                                (widget.onCreateAccount ?? widget.onFinish)();
+                              } else {
+                                _pageController.nextPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeOutCubic,
+                                );
+                              }
+                            },
+                            child: Text(
+                              last ? l10n.signupButton : l10n.onboardingNext,
+                            ),
+                          ),
+                          if (compact)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                if (_currentIndex > 0)
+                                  Align(
+                                    alignment: AlignmentDirectional.centerStart,
+                                    child: back,
+                                  ),
+                                signIn,
+                              ],
+                            )
+                          else
+                            Row(
+                              children: [
+                                if (_currentIndex > 0) back,
+                                Expanded(child: signIn),
+                              ],
                             ),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      FilledButton(
-                        onPressed: () {
-                          if (last) {
-                            (widget.onCreateAccount ?? widget.onFinish)();
-                          } else {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOutCubic,
-                            );
-                          }
-                        },
-                        child: Text(
-                          last ? l10n.signupButton : l10n.onboardingNext,
-                        ),
-                      ),
-                      if (compact)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (_currentIndex > 0)
-                              Align(
-                                alignment: AlignmentDirectional.centerStart,
-                                child: back,
-                              ),
-                            signIn,
-                          ],
-                        )
-                      else
-                        Row(
-                          children: [
-                            if (_currentIndex > 0) back,
-                            Expanded(child: signIn),
-                          ],
-                        ),
-                    ],
+                    ),
                   ),
                 ),
               ],

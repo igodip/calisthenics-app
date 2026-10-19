@@ -9,6 +9,13 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get homeMascotTitle => 'Pequeño atleta en Inicio';
+
+  @override
+  String get homeMascotDescription =>
+      'Muestra un personaje que se ejercita continuamente en Inicio. Desactivado por defecto. Se guarda en este dispositivo y respeta el movimiento reducido.';
+
+  @override
   String exerciseGalleryOpen(String exercise) {
     return 'Ver imágenes de $exercise';
   }

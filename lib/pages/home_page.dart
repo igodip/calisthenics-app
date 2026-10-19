@@ -10,9 +10,12 @@ import 'package:calisync/trainer/pages/trainer_section_page.dart';
 import 'package:calisync/trainer/trainer_models.dart';
 import 'package:calisync/trainer/trainer_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
+import '../components/first_login_pushup.dart';
 import '../data/account_access.dart';
+import '../data/trainee_final_week.dart';
 import '../data/exercise_guides.dart' as guide_data;
 import '../data/terminology_repository.dart';
 import '../l10n/app_localizations.dart';
@@ -315,7 +318,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final scaffold = Scaffold(
       extendBody: true,
       bottomNavigationBar: _roleError == null
-          ? null
+          ? currentItem.section == HomeSection.home
+                ? FirstLoginPushup(
+                    key: ValueKey(
+                      Supabase.instance.client.auth.currentUser?.id,
+                    ),
+                    userId: Supabase.instance.client.auth.currentUser?.id ?? '',
+                    loadAura: () => loadTraineeFinalWeek(
+                      Supabase.instance.client,
+                      Supabase.instance.client.auth.currentUser?.id ?? '',
+                    ),
+                  )
+                : null
           : Material(
               child: SafeArea(
                 top: false,

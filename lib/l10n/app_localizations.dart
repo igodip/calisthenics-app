@@ -100,6 +100,18 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @homeMascotTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Piccolo atleta nella Home'**
+  String get homeMascotTitle;
+
+  /// No description provided for @homeMascotDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra un personaggio che si allena continuamente nella Home. Disattivato per impostazione predefinita. Salvato su questo dispositivo; rispetta il movimento ridotto.'**
+  String get homeMascotDescription;
+
   /// No description provided for @exerciseGalleryOpen.
   ///
   /// In it, this message translates to:

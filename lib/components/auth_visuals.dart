@@ -6,6 +6,18 @@ abstract final class AuthVisuals {
   static const mint = Color(0xFF8CD9BF);
   static const muted = Color(0xFFB9C7CC);
   static const horizontalPadding = 24.0;
+  static const maxContentWidth = 520.0;
+  static const inputBackground = Color(0xFF1B272C);
+  static const inputOutline = Color(0xFF6B7F87);
+
+  static TextStyle headingStyle(BuildContext context) => Theme.of(context)
+      .textTheme
+      .headlineMedium!
+      .copyWith(fontWeight: FontWeight.w800, height: 1.12);
+
+  static TextStyle descriptionStyle(BuildContext context) => Theme.of(
+    context,
+  ).textTheme.bodyLarge!.copyWith(color: muted, height: 1.4);
 
   static ThemeData theme(BuildContext context) {
     final base = Theme.of(context);
@@ -37,7 +49,7 @@ abstract final class AuthVisuals {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF1B272C),
+        fillColor: inputBackground,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 18,
@@ -45,7 +57,7 @@ abstract final class AuthVisuals {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF415158)),
+          borderSide: const BorderSide(color: inputOutline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -104,7 +116,8 @@ class AuthArtwork extends StatelessWidget {
   final double height;
   final BoxFit fit;
 
-  /// Keep onboarding photography behind the text and primary actions.
+  /// Lightly unify photography with the entry-screen palette. Text is placed
+  /// outside the artwork, so the subject does not need a heavy scrim.
   final bool subdued;
 
   @override
@@ -129,8 +142,8 @@ class AuthArtwork extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: subdued
                     ? const [
-                        Color(0xB310191C),
-                        Color(0xB310191C),
+                        Color(0x2610191C),
+                        Color(0x1410191C),
                         AuthVisuals.background,
                       ]
                     : const [
@@ -138,7 +151,7 @@ class AuthArtwork extends StatelessWidget {
                         Colors.transparent,
                         AuthVisuals.background,
                       ],
-                stops: subdued ? const [0, 0.55, 1] : const [0, 0.72, 1],
+                stops: const [0, 0.72, 1],
               ),
             ),
           ),

@@ -1,4 +1,6 @@
 {
+  "homeMascotTitle": "Pequeño atleta en Inicio",
+  "homeMascotDescription": "Muestra un personaje que se ejercita continuamente en Inicio. Desactivado por defecto. Se guarda en este dispositivo y respeta el movimiento reducido.",
   "exerciseGalleryOpen": "Ver imágenes de {exercise}",
   "@exerciseGalleryOpen": {"placeholders": {"exercise": {"type": "String"}}},
   "exerciseGalleryView": "Ver imagen",

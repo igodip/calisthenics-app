@@ -5,6 +5,7 @@ import 'package:calisync/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
 import '../components/account_deletion_section.dart';
 import '../components/privacy_policy_link.dart';
+import '../components/home_mascot_setting.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -121,6 +122,8 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              const Card(child: HomeMascotSetting()),
+              const SizedBox(height: 16),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),

@@ -421,180 +421,228 @@ class _LoginPageState extends State<LoginPage> {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final appColors = theme.extension<AppColors>()!;
+    // Scaffold consumes the bottom inset when it resizes its body. Read it
+    // above Scaffold so keyboard-aware artwork sizing uses the real inset.
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 520),
+            constraints: const BoxConstraints(
+              maxWidth: AuthVisuals.maxContentWidth,
+            ),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final keyboardOpen =
-                    MediaQuery.viewInsetsOf(context).bottom > 0;
-                return SingleChildScrollView(
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: AutofillGroup(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                          child: AuthBrand(title: l10n.appTitle),
+                return AutofillGroup(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        key: const ValueKey('auth-header'),
+                        padding: const EdgeInsets.fromLTRB(
+                          AuthVisuals.horizontalPadding,
+                          8,
+                          AuthVisuals.horizontalPadding,
+                          0,
                         ),
-                        AuthArtwork(
-                          asset: 'assets/auth/rings.webp',
-                          fit: BoxFit.cover,
-                          height: keyboardOpen
-                              ? 80
-                              : (constraints.maxHeight * .29)
-                                    .clamp(120.0, 260.0)
-                                    .toDouble(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                        child: AuthBrand(title: l10n.appTitle),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          key: const ValueKey('auth-content'),
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Text(
-                                isLoginMode
-                                    ? l10n.authWelcomeTitle
-                                    : l10n.signupButton,
-                                style: theme.textTheme.headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.w800,
+                              if (!keyboardOpen)
+                                AuthArtwork(
+                                  key: const ValueKey('auth-hero'),
+                                  asset: 'assets/auth/rings.webp',
+                                  subdued: true,
+                                  height:
+                                      (constraints.maxHeight *
+                                              (isLoginMode ? .26 : .20))
+                                          .clamp(100.0, 240.0)
+                                          .toDouble(),
+                                )
+                              else
+                                const SizedBox(height: 24),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  AuthVisuals.horizontalPadding,
+                                  8,
+                                  AuthVisuals.horizontalPadding,
+                                  24,
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                isLoginMode
-                                    ? l10n.loginGreeting
-                                    : l10n.signupGreeting,
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: AuthVisuals.muted,
-                                ),
-                              ),
-                              const SizedBox(height: 28),
-                              _AuthTextField(
-                                controller: emailController,
-                                label: l10n.emailLabel,
-                                keyboardType: TextInputType.emailAddress,
-                                icon: Icons.mail_outline,
-                                autofillHints: const [AutofillHints.email],
-                              ),
-                              const SizedBox(height: 18),
-                              _AuthTextField(
-                                controller: passwordController,
-                                label: l10n.passwordLabel,
-                                isPassword: true,
-                                icon: Icons.lock_outline,
-                                autofillHints: [
-                                  isLoginMode
-                                      ? AutofillHints.password
-                                      : AutofillHints.newPassword,
-                                ],
-                                onSubmitted: isLoginMode
-                                    ? (_) => _submit()
-                                    : null,
-                              ),
-                              if (!isLoginMode) ...[
-                                const SizedBox(height: 18),
-                                _AuthTextField(
-                                  controller: confirmPasswordController,
-                                  label: l10n.confirmPasswordLabel,
-                                  isPassword: true,
-                                  icon: Icons.lock_reset,
-                                  autofillHints: const [
-                                    AutofillHints.newPassword,
-                                  ],
-                                  onSubmitted: (_) => _submit(),
-                                ),
-                                const SizedBox(height: 18),
-                                Text(
-                                  l10n.registrationPrivacyNotice,
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                                const PrivacyPolicyLink(),
-                              ],
-                              if (isLoginMode)
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: passwordResetLoading || loading
-                                        ? null
-                                        : _sendPasswordResetEmail,
-                                    child: passwordResetLoading
-                                        ? const SizedBox(
-                                            width: 18,
-                                            height: 18,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                            ),
-                                          )
-                                        : Text(l10n.forgotPasswordLink),
-                                  ),
-                                ),
-                              if (feedbackMessage != null) ...[
-                                const SizedBox(height: 12),
-                                Semantics(
-                                  liveRegion: true,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: isError
-                                          ? scheme.errorContainer
-                                          : appColors.successContainer,
-                                      borderRadius: BorderRadius.circular(12),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      isLoginMode
+                                          ? l10n.authWelcomeTitle
+                                          : l10n.signupButton,
+                                      style: AuthVisuals.headingStyle(context),
                                     ),
-                                    child: Text(
-                                      feedbackMessage!,
-                                      style: TextStyle(
-                                        color: isError
-                                            ? scheme.onErrorContainer
-                                            : appColors.success,
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      isLoginMode
+                                          ? l10n.loginGreeting
+                                          : l10n.signupGreeting,
+                                      style: AuthVisuals.descriptionStyle(
+                                        context,
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ],
-                              const SizedBox(height: 20),
-                              FilledButton(
-                                onPressed: loading || passwordResetLoading
-                                    ? null
-                                    : _submit,
-                                child: loading
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : Text(
+                                    const SizedBox(height: 24),
+                                    _AuthTextField(
+                                      controller: emailController,
+                                      label: l10n.emailLabel,
+                                      keyboardType: TextInputType.emailAddress,
+                                      icon: Icons.mail_outline,
+                                      autofillHints: const [
+                                        AutofillHints.email,
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _AuthTextField(
+                                      controller: passwordController,
+                                      label: l10n.passwordLabel,
+                                      isPassword: true,
+                                      icon: Icons.lock_outline,
+                                      autofillHints: [
                                         isLoginMode
-                                            ? l10n.loginButton
-                                            : l10n.signupButton,
+                                            ? AutofillHints.password
+                                            : AutofillHints.newPassword,
+                                      ],
+                                      onSubmitted: isLoginMode
+                                          ? (_) => _submit()
+                                          : null,
+                                    ),
+                                    if (!isLoginMode) ...[
+                                      const SizedBox(height: 16),
+                                      _AuthTextField(
+                                        controller: confirmPasswordController,
+                                        label: l10n.confirmPasswordLabel,
+                                        isPassword: true,
+                                        icon: Icons.lock_reset,
+                                        autofillHints: const [
+                                          AutofillHints.newPassword,
+                                        ],
+                                        onSubmitted: (_) => _submit(),
                                       ),
-                              ),
-                              const SizedBox(height: 8),
-                              TextButton(
-                                onPressed: loading || passwordResetLoading
-                                    ? null
-                                    : () => setState(() {
-                                        isLoginMode = !isLoginMode;
-                                        confirmPasswordController.clear();
-                                        feedbackMessage = null;
-                                      }),
-                                child: Text(
-                                  isLoginMode
-                                      ? l10n.noAccountPrompt
-                                      : l10n.existingAccountPrompt,
-                                  textAlign: TextAlign.center,
+                                      const SizedBox(height: 18),
+                                      Text(
+                                        l10n.registrationPrivacyNotice,
+                                        style: theme.textTheme.bodySmall,
+                                      ),
+                                      const PrivacyPolicyLink(),
+                                    ],
+                                    if (isLoginMode)
+                                      Align(
+                                        alignment:
+                                            AlignmentDirectional.centerEnd,
+                                        child: TextButton(
+                                          onPressed:
+                                              passwordResetLoading || loading
+                                              ? null
+                                              : _sendPasswordResetEmail,
+                                          child: passwordResetLoading
+                                              ? const SizedBox(
+                                                  width: 18,
+                                                  height: 18,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                      ),
+                                                )
+                                              : Text(l10n.forgotPasswordLink),
+                                        ),
+                                      ),
+                                    if (feedbackMessage != null) ...[
+                                      const SizedBox(height: 12),
+                                      Semantics(
+                                        liveRegion: true,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: isError
+                                                ? scheme.errorContainer
+                                                : appColors.successContainer,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            feedbackMessage!,
+                                            style: TextStyle(
+                                              color: isError
+                                                  ? scheme.onErrorContainer
+                                                  : appColors.success,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: constraints.maxHeight * .45,
+                        ),
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            key: const ValueKey('auth-footer'),
+                            padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                FilledButton(
+                                  onPressed: loading || passwordResetLoading
+                                      ? null
+                                      : _submit,
+                                  child: loading
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : Text(
+                                          isLoginMode
+                                              ? l10n.loginButton
+                                              : l10n.signupButton,
+                                        ),
+                                ),
+                                const SizedBox(height: 8),
+                                TextButton(
+                                  onPressed: loading || passwordResetLoading
+                                      ? null
+                                      : () => setState(() {
+                                          isLoginMode = !isLoginMode;
+                                          confirmPasswordController.clear();
+                                          feedbackMessage = null;
+                                        }),
+                                  child: Text(
+                                    isLoginMode
+                                        ? l10n.noAccountPrompt
+                                        : l10n.existingAccountPrompt,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
