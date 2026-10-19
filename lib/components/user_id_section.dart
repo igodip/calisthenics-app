@@ -30,6 +30,11 @@ class _UserIdSectionState extends State<UserIdSection> {
             OutlinedButton.icon(
               onPressed: () async {
                 await Clipboard.setData(ClipboardData(text: id));
+
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l10n.copied)));
               },
               icon: const Icon(Icons.content_copy),
               label: Text(l10n.copy),

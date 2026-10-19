@@ -711,7 +711,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
           ),
       _sectionTitle(AppLocalizations.of(context)!.trainerHeightHistory),
       if (_data!.heightLogs.isEmpty)
-        Text(AppLocalizations.of(context)!.trainerNoWeightEntries)
+        Text(AppLocalizations.of(context)!.trainerNoHeightEntries)
       else
         for (final log in _data!.heightLogs)
           Card(

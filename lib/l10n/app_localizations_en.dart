@@ -46,6 +46,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copy => 'Copy';
 
   @override
+  String get copied => 'Copied';
+
+  @override
   String get privacyPolicyTitle => 'Privacy policy';
 
   @override

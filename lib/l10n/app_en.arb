@@ -11,6 +11,7 @@
   "@exerciseGalleryPosition": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
   "trainerPaymentAmountInvalid": "Enter a valid amount of zero or more.",
   "copy": "Copy",
+  "copied": "Copied",
   "privacyPolicyTitle": "Privacy policy",
   "registrationPrivacyNotice": "Before creating an account, review how CaliSync uses your data, including trainer and administrator access and notification previews.",
   "privacySettingsDescription": "Read how your account, training, photos and notifications are processed, and how to request deletion.",

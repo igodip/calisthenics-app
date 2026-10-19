@@ -160,6 +160,12 @@ abstract class AppLocalizations {
   /// **'Copia'**
   String get copy;
 
+  /// No description provided for @copied.
+  ///
+  /// In it, this message translates to:
+  /// **'Copiato'**
+  String get copied;
+
   /// No description provided for @privacyPolicyTitle.
   ///
   /// In it, this message translates to:
