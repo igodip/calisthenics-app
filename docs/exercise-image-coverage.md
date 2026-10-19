@@ -1,5 +1,11 @@
 # Exercise picture coverage — 19 October 2026
 
+Update — 20 October 2026: the catalog addition
+`bodyweight-triceps-extension` now has a bundled two-stage reference board
+(straight-arm start and bent-elbow position), bringing picture coverage to 16
+catalog slugs. The generation prompt and source artifact are recorded in
+`assets/exercises/prompts.json`.
+
 Read-only audit of the linked exercise catalog and distinct plan labels:
 
 - 15 canonical catalog exercises; all receive an exact-slug reference picture.

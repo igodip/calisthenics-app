@@ -9,6 +9,90 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get maxTestsResultsTitle => 'Risultati e storico';
+
+  @override
+  String get maxTestsFilteredHistory => 'Storico nel periodo selezionato';
+
+  @override
+  String get maxCategoryAll => 'Tutti';
+
+  @override
+  String get maxCategoryPull => 'Tirata';
+
+  @override
+  String get maxCategoryPush => 'Spinta';
+
+  @override
+  String get maxCategoryLegs => 'Gambe';
+
+  @override
+  String get maxCategoryCore => 'Core';
+
+  @override
+  String get maxCategorySkills => 'Skill';
+
+  @override
+  String get maxCategoryOther => 'Altri';
+
+  @override
+  String get maxUnitReps => 'rip.';
+
+  @override
+  String get maxUnitSeconds => 's';
+
+  @override
+  String get maxUnitMinutes => 'min';
+
+  @override
+  String get maxTestsTraineeIntro =>
+      'Consulta i risultati registrati dal trainer, confronta i progressi e apri lo storico completo di ogni esercizio.';
+
+  @override
+  String get maxTestsTrainerIntro =>
+      'Controlla i progressi per esercizio, aggiungi risultati e gestisci le note private del trainer.';
+
+  @override
+  String get maxTestsSearch => 'Cerca esercizio';
+
+  @override
+  String get maxTestsLatest => 'Ultimo risultato';
+
+  @override
+  String get maxTestsChange => 'Variazione';
+
+  @override
+  String get maxTestsHistory => 'Storico completo';
+
+  @override
+  String get maxTestsNoResults =>
+      'Non ci sono ancora risultati. Il tuo trainer può aggiungere i primi test.';
+
+  @override
+  String get maxTestsNoMatches =>
+      'Nessun risultato con questi filtri. Cambia categoria, ricerca o periodo.';
+
+  @override
+  String get maxTestsLoadError =>
+      'Impossibile caricare i massimali. Controlla la connessione e riprova.';
+
+  @override
+  String get homeMascotAuraSwitch =>
+      'Tocca per cambiare aura. La scelta viene salvata su questo dispositivo.';
+
+  @override
+  String get homeMascotAuraDragonBall => 'Aura Dragon Ball';
+
+  @override
+  String get homeMascotAuraNaruto => 'Aura Naruto';
+
+  @override
+  String get trainerFinalWeekLabel => 'Ultima settimana';
+
+  @override
+  String get trainerFinalWeekTitle => 'Allievi all’ultima settimana';
+
+  @override
   String get homeMascotTitle => 'Piccolo atleta nella Home';
 
   @override

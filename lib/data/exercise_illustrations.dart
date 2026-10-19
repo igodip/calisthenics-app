@@ -11,6 +11,9 @@ abstract final class ExerciseIllustrations {
     'muscle-up': ['assets/exercises/muscle-up.webp'],
     'straight-bar-dip': ['assets/exercises/straight-bar-dip.webp'],
     'dips': ['assets/exercises/dips.webp'],
+    'bodyweight-triceps-extension': [
+      'assets/exercises/bodyweight-triceps-extension.webp',
+    ],
     'australian-row': ['assets/exercises/australian-row.webp'],
     'pike-push-up': ['assets/exercises/pike-push-up.webp'],
     'hollow-body-hold': ['assets/exercises/hollow-body-hold.webp'],

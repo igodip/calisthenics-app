@@ -13,18 +13,26 @@ class TrainerDashboardPage extends StatelessWidget {
     required this.feedback,
     required this.onOpenTrainee,
     required this.onRefresh,
+    this.onOpenMaxTests,
   });
 
   final List<TrainerTrainee> trainees;
   final List<TrainerFeedback> feedback;
   final ValueChanged<TrainerTrainee> onOpenTrainee;
   final Future<void> Function() onRefresh;
+  final ValueChanged<TrainerTrainee>? onOpenMaxTests;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final paid = trainees.where((item) => item.paid).length;
     final unread = feedback.where((item) => !item.isRead).length;
+    final finalWeek = trainees
+        .where((trainee) => trainee.isInFinalWeek)
+        .toList();
+    final otherTrainees = trainees
+        .where((trainee) => !trainee.isInFinalWeek)
+        .toList();
     return TrainerResponsiveList(
       onRefresh: onRefresh,
       children: [
@@ -87,23 +95,44 @@ class TrainerDashboardPage extends StatelessWidget {
           },
         ),
         const SizedBox(height: 20),
-        Text(
-          l10n.trainerTraineesTitle,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
-        if (trainees.isEmpty)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(l10n.trainerNoAssignedTrainees),
+        if (finalWeek.isNotEmpty) ...[
+          Text(
+            '${l10n.trainerFinalWeekTitle} (${finalWeek.length})',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 8),
+          for (final trainee in finalWeek)
+            TrainerTraineeCard(
+              trainee: trainee,
+              onOpen: () => onOpenTrainee(trainee),
+              onOpenMaxTests: onOpenMaxTests == null
+                  ? null
+                  : () => onOpenMaxTests!(trainee),
             ),
+          const SizedBox(height: 12),
+        ],
+        if (otherTrainees.isNotEmpty || trainees.isEmpty) ...[
+          Text(
+            l10n.trainerTraineesTitle,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
-        for (final trainee in trainees.take(6))
-          TrainerTraineeCard(
-            trainee: trainee,
-            onOpen: () => onOpenTrainee(trainee),
-          ),
+          const SizedBox(height: 8),
+          if (trainees.isEmpty)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(l10n.trainerNoAssignedTrainees),
+              ),
+            ),
+          for (final trainee in otherTrainees.take(6))
+            TrainerTraineeCard(
+              trainee: trainee,
+              onOpen: () => onOpenTrainee(trainee),
+              onOpenMaxTests: onOpenMaxTests == null
+                  ? null
+                  : () => onOpenMaxTests!(trainee),
+            ),
+        ],
       ],
     );
   }

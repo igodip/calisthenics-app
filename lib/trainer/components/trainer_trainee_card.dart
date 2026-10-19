@@ -8,16 +8,24 @@ class TrainerTraineeCard extends StatelessWidget {
     super.key,
     required this.trainee,
     required this.onOpen,
+    this.onOpenMaxTests,
   });
 
   final TrainerTrainee trainee;
   final VoidCallback onOpen;
+  final VoidCallback? onOpenMaxTests;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     return Card(
+      shape: trainee.isInFinalWeek
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+              side: BorderSide(color: colors.tertiary, width: 1.5),
+            )
+          : null,
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onOpen,
@@ -27,6 +35,40 @@ class TrainerTraineeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (trainee.isInFinalWeek) ...[
+                Container(
+                  key: ValueKey('final-week-${trainee.id}'),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.bolt_rounded,
+                        color: colors.onTertiaryContainer,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          l10n.trainerFinalWeekLabel,
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(
+                                color: colors.onTertiaryContainer,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               LayoutBuilder(
                 builder: (context, constraints) {
                   final avatarUrl = trainee.profileImageUrl?.trim();
@@ -117,13 +159,23 @@ class TrainerTraineeCard extends StatelessWidget {
                     : trainee.completedExercises / trainee.totalExercises,
               ),
               const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  onPressed: onOpen,
-                  icon: const Icon(Icons.arrow_forward),
-                  label: Text(l10n.trainerOpenProgram),
-                ),
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  if (onOpenMaxTests != null)
+                    TextButton.icon(
+                      onPressed: onOpenMaxTests,
+                      icon: const Icon(Icons.emoji_events_outlined),
+                      label: Text(l10n.trainerMaxTests),
+                    ),
+                  TextButton.icon(
+                    onPressed: onOpen,
+                    icon: const Icon(Icons.arrow_forward),
+                    label: Text(l10n.trainerOpenProgram),
+                  ),
+                ],
               ),
             ],
           ),

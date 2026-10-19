@@ -435,11 +435,9 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('01/10/2026'), findsOneWidget);
-    expect(find.text('30/09/2026'), findsOneWidget);
-    expect(
-      tester.getTopLeft(find.text('01/10/2026')).dy,
-      lessThan(tester.getTopLeft(find.text('30/09/2026')).dy),
-    );
+    expect(find.text('30/09/2026'), findsNWidgets(2));
+    expect(find.byKey(const ValueKey('max-category-legs')), findsOneWidget);
+    expect(find.text('Full history (1)'), findsNWidgets(3));
     expect(find.text('deadlift'), findsOneWidget);
     expect(find.text('bench press'), findsOneWidget);
   });

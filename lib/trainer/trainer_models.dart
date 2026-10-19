@@ -39,6 +39,7 @@ class TrainerTrainee {
     required this.paymentAmount,
     this.paymentNotes = '',
     this.activePlanCount = 0,
+    this.isInFinalWeek = false,
     this.paymentMonth = '',
     required this.coachTip,
     required this.trainerNotes,
@@ -55,6 +56,7 @@ class TrainerTrainee {
   final double? paymentAmount;
   final String paymentNotes;
   final int activePlanCount;
+  final bool isInFinalWeek;
   final String paymentMonth;
   final String coachTip;
   final String trainerNotes;
@@ -84,6 +86,7 @@ class TrainerTrainee {
         ? null
         : paymentAmount ?? this.paymentAmount,
     activePlanCount: activePlanCount,
+    isInFinalWeek: isInFinalWeek,
     paymentMonth: paymentMonth,
     paymentNotes: paymentNotes ?? this.paymentNotes,
     coachTip: coachTip ?? this.coachTip,

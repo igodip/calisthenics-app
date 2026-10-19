@@ -11,10 +11,12 @@ class TrainerTraineesPage extends StatefulWidget {
     required this.trainees,
     required this.onOpen,
     required this.onRefresh,
+    this.onOpenMaxTests,
   });
   final List<TrainerTrainee> trainees;
   final ValueChanged<TrainerTrainee> onOpen;
   final Future<void> Function() onRefresh;
+  final ValueChanged<TrainerTrainee>? onOpenMaxTests;
 
   @override
   State<TrainerTraineesPage> createState() => _TrainerTraineesPageState();
@@ -56,6 +58,9 @@ class _TrainerTraineesPageState extends State<TrainerTraineesPage> {
           TrainerTraineeCard(
             trainee: trainee,
             onOpen: () => widget.onOpen(trainee),
+            onOpenMaxTests: widget.onOpenMaxTests == null
+                ? null
+                : () => widget.onOpenMaxTests!(trainee),
           ),
       ],
     );

@@ -89,11 +89,15 @@ class _TrainerSectionPageState extends State<TrainerSectionPage>
     ).showSnackBar(SnackBar(content: Text('$error')));
   }
 
-  Future<void> _openTrainee(TrainerTrainee trainee) async {
+  Future<void> _openTrainee(
+    TrainerTrainee trainee, {
+    TrainerProgramTab tab = TrainerProgramTab.overview,
+  }) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => TrainerProgramPage(
           trainee: trainee,
+          initialTab: tab,
           allTrainees: _trainees,
           repository: _repository,
           onTraineeChanged: (updated) {
@@ -249,11 +253,15 @@ class _TrainerSectionPageState extends State<TrainerSectionPage>
         trainees: _trainees,
         feedback: _feedback,
         onOpenTrainee: _openTrainee,
+        onOpenMaxTests: (trainee) =>
+            _openTrainee(trainee, tab: TrainerProgramTab.maxTests),
         onRefresh: _load,
       ),
       TrainerSection.trainees => TrainerTraineesPage(
         trainees: _trainees,
         onOpen: _openTrainee,
+        onOpenMaxTests: (trainee) =>
+            _openTrainee(trainee, tab: TrainerProgramTab.maxTests),
         onRefresh: _load,
       ),
       TrainerSection.feedback => TrainerFeedbackPage(

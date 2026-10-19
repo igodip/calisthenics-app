@@ -9,6 +9,90 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get maxTestsResultsTitle => 'Results & history';
+
+  @override
+  String get maxTestsFilteredHistory => 'History in selected period';
+
+  @override
+  String get maxCategoryAll => 'All';
+
+  @override
+  String get maxCategoryPull => 'Pull';
+
+  @override
+  String get maxCategoryPush => 'Push';
+
+  @override
+  String get maxCategoryLegs => 'Legs';
+
+  @override
+  String get maxCategoryCore => 'Core';
+
+  @override
+  String get maxCategorySkills => 'Skills';
+
+  @override
+  String get maxCategoryOther => 'Other';
+
+  @override
+  String get maxUnitReps => 'reps';
+
+  @override
+  String get maxUnitSeconds => 's';
+
+  @override
+  String get maxUnitMinutes => 'min';
+
+  @override
+  String get maxTestsTraineeIntro =>
+      'Review results recorded by your trainer, compare progress, and open the complete history for each exercise.';
+
+  @override
+  String get maxTestsTrainerIntro =>
+      'Check progress by exercise, add results, and manage private trainer notes.';
+
+  @override
+  String get maxTestsSearch => 'Search exercises';
+
+  @override
+  String get maxTestsLatest => 'Latest result';
+
+  @override
+  String get maxTestsChange => 'Change';
+
+  @override
+  String get maxTestsHistory => 'Full history';
+
+  @override
+  String get maxTestsNoResults =>
+      'No results yet. Your trainer can record your first tests.';
+
+  @override
+  String get maxTestsNoMatches =>
+      'No results match these filters. Change the category, search, or period.';
+
+  @override
+  String get maxTestsLoadError =>
+      'Could not load max tests. Check your connection and try again.';
+
+  @override
+  String get homeMascotAuraSwitch =>
+      'Tap to change aura. Your choice is saved on this device.';
+
+  @override
+  String get homeMascotAuraDragonBall => 'Dragon Ball aura';
+
+  @override
+  String get homeMascotAuraNaruto => 'Naruto aura';
+
+  @override
+  String get trainerFinalWeekLabel => 'Final week';
+
+  @override
+  String get trainerFinalWeekTitle => 'Trainees in their final week';
+
+  @override
   String get homeMascotTitle => 'Little athlete on Home';
 
   @override

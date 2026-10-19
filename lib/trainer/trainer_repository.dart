@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../notifications/push_notification_service.dart';
+import '../data/trainee_final_week.dart';
 import 'trainer_models.dart';
 import 'pdf/trainer_pdf_import.dart';
 import 'pdf/trainer_pdf_storage.dart';
@@ -42,13 +43,20 @@ class TrainerRepository {
     final month = await _client.rpc('current_payment_month') as String;
     final activePlans = await _client
         .from('workout_plans')
-        .select('trainee_id')
+        .select(
+          'trainee_id, starts_on, created_at, workout_plan_days(days(week, completed))',
+        )
         .inFilter('trainee_id', ids)
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .order('starts_on', ascending: false)
+        .order('created_at', ascending: false);
     final activePlanCounts = <String, int>{};
+    final finalWeekByTrainee = <String, bool>{};
     for (final row in activePlans) {
       final id = row['trainee_id'] as String;
       activePlanCounts[id] = (activePlanCounts[id] ?? 0) + 1;
+      // Ordered newest first: use the same active plan as the trainee's aura.
+      finalWeekByTrainee.putIfAbsent(id, () => isFinalTrainingWeekForPlan(row));
     }
 
     final paymentRows = await _client
@@ -100,6 +108,7 @@ class TrainerRepository {
         height: (row['height'] as num?)?.toDouble(),
         paid: payment?['paid'] == true,
         activePlanCount: activePlanCounts[id] ?? 0,
+        isInFinalWeek: finalWeekByTrainee[id] ?? false,
         paymentMonth: month,
         paymentAmount: (payment?['amount'] as num?)?.toDouble(),
         paymentNotes: (payment?['notes'] as String?) ?? '',

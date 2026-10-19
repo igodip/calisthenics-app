@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('all 15 audited catalog slugs have distinct bundled pictures', () {
+  test('all 16 supported catalog slugs have distinct bundled pictures', () {
     const auditedSlugs = {
       'pull-up',
       'chin-up',
@@ -18,6 +18,7 @@ void main() {
       'muscle-up',
       'straight-bar-dip',
       'dips',
+      'bodyweight-triceps-extension',
       'australian-row',
       'pike-push-up',
       'hollow-body-hold',
@@ -48,6 +49,7 @@ void main() {
     List<String> assets = const ['assets/exercises/push-up.webp'],
     String locale = 'en',
     double scale = 1,
+    String exerciseName = 'Push-up',
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -63,7 +65,7 @@ void main() {
         home: Scaffold(
           body: SingleChildScrollView(
             child: ExerciseImageGallery(
-              exerciseName: 'Push-up',
+              exerciseName: exerciseName,
               assets: assets,
             ),
           ),
@@ -107,6 +109,23 @@ void main() {
     await tester.tap(find.byIcon(Icons.chevron_left));
     await tester.pumpAndSettle();
     expect(find.text('1 of 2'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('triceps extension illustration opens offline with zoom', (
+    tester,
+  ) async {
+    await open(
+      tester,
+      assets: ExerciseIllustrations.forSlug('bodyweight-triceps-extension'),
+      exerciseName: 'Estensioni tricipiti alla sbarra',
+      locale: 'it',
+    );
+    await tester.tap(find.byType(InkWell).first);
+    await tester.pumpAndSettle();
+    expect(find.text('Estensioni tricipiti alla sbarra'), findsOneWidget);
+    expect(find.byType(InteractiveViewer), findsOneWidget);
+    expect(find.text('Immagine non disponibile'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   setUp(() {
     HomeMascotSettings.enabled.value = false;
+    HomeMascotSettings.auraStyle.value = AthleteAuraStyle.dragonBall;
     SharedPreferences.setMockInitialValues({
       HomeMascotSettings.storageKey: true,
     });
@@ -23,6 +24,8 @@ void main() {
   }) async {
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: MediaQuery(
           data: MediaQueryData(disableAnimations: reducedMotion),
           child: Scaffold(
@@ -45,7 +48,11 @@ void main() {
               .widget<CustomPaint>(
                 find.descendant(
                   of: character(),
-                  matching: find.byType(CustomPaint),
+                  matching: find.byWidgetPredicate(
+                    (widget) =>
+                        widget is CustomPaint &&
+                        widget.painter is WelcomeExercisePainter,
+                  ),
                 ),
               )
               .painter!
@@ -79,6 +86,102 @@ void main() {
     await tester.pump();
     expect(painter(tester).aura, isFalse);
     expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('touch switches aura and remembers it after unlock and remount', (
+    tester,
+  ) async {
+    await open(tester, 'athlete', loadAura: () async => true);
+    await tester.pump();
+    expect(painter(tester).aura, isTrue);
+    final initialStyle = painter(tester).auraStyle;
+    final initialExercise = painter(tester).exercise;
+    await tester.tap(find.byKey(const ValueKey('home-mascot-aura-switch')));
+    await tester.pump();
+    await tester.pump();
+    final selectedStyle = painter(tester).auraStyle;
+    expect(selectedStyle, isNot(initialStyle));
+    expect(painter(tester).exercise, initialExercise);
+    expect(
+      (await SharedPreferences.getInstance()).getString(
+        HomeMascotSettings.auraStorageKey,
+      ),
+      selectedStyle.name,
+    );
+    await tester.pump(const Duration(seconds: 11));
+    expect(painter(tester).auraStyle, selectedStyle);
+    expect(painter(tester).aura, isTrue);
+    await tester.pump(const Duration(seconds: 10));
+    expect(painter(tester).auraStyle, selectedStyle);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    await tester.pump();
+    expect(painter(tester).auraStyle, selectedStyle);
+    await tester.pumpWidget(const SizedBox.shrink());
+    HomeMascotSettings.auraStyle.value = AthleteAuraStyle.dragonBall;
+    await open(tester, 'athlete', loadAura: () async => true);
+    await tester.pump();
+    expect(painter(tester).auraStyle, selectedStyle);
+    await tester.tap(find.byKey(const ValueKey('home-mascot-aura-switch')));
+    await tester.pump();
+    await tester.pump();
+    expect(painter(tester).auraStyle, initialStyle);
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('ordinary athlete cannot enable final-week aura by touch', (
+    tester,
+  ) async {
+    await open(tester, 'athlete', loadAura: () async => false);
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('home-mascot-aura-switch')));
+    await tester.pump();
+    expect(painter(tester).aura, isFalse);
+    expect(
+      (await SharedPreferences.getInstance()).getString(
+        HomeMascotSettings.auraStorageKey,
+      ),
+      isNull,
+    );
+  });
+
+  testWidgets('touch changes static aura with reduced motion enabled', (
+    tester,
+  ) async {
+    await open(
+      tester,
+      'athlete',
+      reducedMotion: true,
+      loadAura: () async => true,
+    );
+    await tester.pump();
+    final style = painter(tester).auraStyle;
+    await tester.tap(find.byKey(const ValueKey('home-mascot-aura-switch')));
+    await tester.pumpAndSettle();
+    expect(painter(tester).auraStyle, isNot(style));
+    expect(painter(tester).progress, 0);
+    expect(tester.binding.hasScheduledFrame, isFalse);
+  });
+
+  testWidgets('reduced motion keeps the chakra style and pose still', (
+    tester,
+  ) async {
+    await open(
+      tester,
+      'athlete',
+      reducedMotion: true,
+      loadAura: () async => true,
+    );
+    await tester.pump();
+    final initialStyle = painter(tester).auraStyle;
+    await tester.pump(const Duration(seconds: 31));
+    expect(painter(tester).auraStyle, initialStyle);
+    expect(painter(tester).progress, 0);
+    expect(tester.binding.hasScheduledFrame, isFalse);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
@@ -172,7 +275,7 @@ void main() {
       final random = math.Random(42);
       WelcomeExercise? previous;
       final selected = <WelcomeExercise>{};
-      for (var appearance = 0; appearance < 100; appearance++) {
+      for (var appearance = 0; appearance < 500; appearance++) {
         final exercise = chooseWelcomeExercise(random, previous: previous);
         expect(exercise, isNot(previous));
         selected.add(exercise);
@@ -182,7 +285,7 @@ void main() {
     },
   );
 
-  testWidgets('all five exercises paint throughout a full repetition', (
+  testWidgets('all exercises paint throughout a full repetition', (
     tester,
   ) async {
     for (final exercise in WelcomeExercise.values) {
@@ -198,6 +301,35 @@ void main() {
                   color: Colors.green,
                   floorColor: Colors.grey,
                   aura: true,
+                ),
+              ),
+            ),
+          ),
+        );
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: '$exercise at $progress',
+        );
+      }
+    }
+  });
+
+  testWidgets('Naruto chakra paints with every exercise', (tester) async {
+    for (final exercise in WelcomeExercise.values) {
+      for (final progress in [0.0, .05, .1, .15, .2]) {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Center(
+              child: CustomPaint(
+                size: const Size(110, 48),
+                painter: WelcomeExercisePainter(
+                  exercise: exercise,
+                  progress: progress,
+                  color: Colors.green,
+                  floorColor: Colors.grey,
+                  aura: true,
+                  auraStyle: AthleteAuraStyle.naruto,
                 ),
               ),
             ),

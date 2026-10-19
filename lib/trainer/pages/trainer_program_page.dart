@@ -13,6 +13,9 @@ import '../../data/exercise_guides.dart';
 import '../../model/exercise_guide.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/app_date_format.dart';
+import '../../components/max_tests_dashboard.dart';
+import '../../model/max_test.dart';
+import '../../model/max_test_series.dart';
 
 typedef _MaxTestDraft = ({
   String? exerciseId,
@@ -23,7 +26,7 @@ typedef _MaxTestDraft = ({
   String notes,
 });
 
-enum _MaxTestAction { editNotes, delete }
+enum TrainerProgramTab { overview, plan, history, maxTests }
 
 typedef _TrainerPlanDays = ({
   Map<String, dynamic>? plan,
@@ -37,11 +40,15 @@ class TrainerProgramPage extends StatefulWidget {
     required this.allTrainees,
     required this.repository,
     required this.onTraineeChanged,
+    this.initialTab = TrainerProgramTab.overview,
+    this.loadExerciseGuides,
   });
   final TrainerTrainee trainee;
   final List<TrainerTrainee> allTrainees;
   final TrainerRepository repository;
   final ValueChanged<TrainerTrainee> onTraineeChanged;
+  final TrainerProgramTab initialTab;
+  final Future<List<ExerciseGuide>> Function(String)? loadExerciseGuides;
 
   @override
   State<TrainerProgramPage> createState() => _TrainerProgramPageState();
@@ -65,7 +72,11 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 4, vsync: this);
+    _tabs = TabController(
+      length: TrainerProgramTab.values.length,
+      initialIndex: widget.initialTab.index,
+      vsync: this,
+    );
     _tip = TextEditingController(text: widget.trainee.coachTip);
     _notes = TextEditingController(text: widget.trainee.trainerNotes);
     _load();
@@ -85,7 +96,9 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     final locale = AppLocalizations.of(context)!.localeName;
     if (_exerciseGuidesFuture == null || _exerciseGuidesLocale != locale) {
       _exerciseGuidesLocale = locale;
-      final future = ExerciseGuides.load(locale);
+      final future =
+          widget.loadExerciseGuides?.call(locale) ??
+          ExerciseGuides.load(locale);
       _exerciseGuidesFuture = future;
       future.then((guides) {
         if (mounted && _exerciseGuidesLocale == locale) {
@@ -153,6 +166,14 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            key: const ValueKey('trainer-max-tests-shortcut'),
+            tooltip: l10n.trainerMaxTests,
+            onPressed: () => _tabs.animateTo(TrainerProgramTab.maxTests.index),
+            icon: const Icon(Icons.emoji_events_outlined),
+          ),
+        ],
         title: Text(
           widget.trainee.name,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -163,12 +184,19 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
           ),
         ),
         bottom: TabBar(
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
           controller: _tabs,
           tabs: [
-            Tab(text: l10n.trainerOverviewTab),
-            Tab(text: l10n.trainerPlanTab),
-            Tab(text: l10n.trainerHistoryTab),
-            Tab(text: l10n.trainerMaxTests),
+            for (final tab in TrainerProgramTab.values)
+              Tab(
+                text: switch (tab) {
+                  TrainerProgramTab.overview => l10n.trainerOverviewTab,
+                  TrainerProgramTab.plan => l10n.trainerPlanTab,
+                  TrainerProgramTab.history => l10n.trainerHistoryTab,
+                  TrainerProgramTab.maxTests => l10n.trainerMaxTests,
+                },
+              ),
           ],
         ),
       ),
@@ -192,7 +220,15 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
             )
           : TabBarView(
               controller: _tabs,
-              children: [_overview(), _plan(), _history(), _maxTests()],
+              children: [
+                for (final tab in TrainerProgramTab.values)
+                  switch (tab) {
+                    TrainerProgramTab.overview => _overview(),
+                    TrainerProgramTab.plan => _plan(),
+                    TrainerProgramTab.history => _history(),
+                    TrainerProgramTab.maxTests => _maxTests(),
+                  },
+              ],
             ),
     );
   }
@@ -592,101 +628,20 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     );
   }
 
-  Widget _maxTests() => TrainerResponsiveList(
-    onRefresh: _load,
-    children: [
-      _sectionTitle(
-        AppLocalizations.of(context)!.trainerMaxTests,
-        action: IconButton.filledTonal(
-          tooltip: AppLocalizations.of(context)!.trainerAddMaxTest,
-          onPressed: _showAddMaxTest,
-          icon: const Icon(Icons.add),
-        ),
-      ),
-      if (_data!.maxTests.isEmpty)
-        Text(AppLocalizations.of(context)!.trainerNoMaxTests)
-      else
-        for (final group in _maxTestDateGroups()) ...[
-          _maxTestDateTitle(group.key),
-          for (final test in group.value)
-            Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: ListTile(
-                leading: const Icon(Icons.emoji_events),
-                title: Text(_maxTestExerciseLabel(test)),
-                subtitle: Text(
-                  '${test['value']} ${test['unit']}${_maxTestNotesSuffix(test)}',
-                ),
-                isThreeLine: _maxTestPrivateNotes(test).isNotEmpty,
-                trailing: PopupMenuButton<_MaxTestAction>(
-                  onSelected: (action) {
-                    switch (action) {
-                      case _MaxTestAction.editNotes:
-                        _editMaxTestNotes(test);
-                      case _MaxTestAction.delete:
-                        _deleteMaxTest(test);
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: _MaxTestAction.editNotes,
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.edit_note_outlined),
-                        title: Text(
-                          AppLocalizations.of(context)!.trainerEditMaxTestNotes,
-                        ),
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: _MaxTestAction.delete,
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.delete_outline),
-                        title: Text(
-                          AppLocalizations.of(context)!.trainerDeleteMaxTest,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-    ],
-  );
-
-  List<MapEntry<String, List<Map<String, dynamic>>>> _maxTestDateGroups() {
-    final groups = <String, List<Map<String, dynamic>>>{};
-    for (final test in _data!.maxTests) {
-      final recordedAt = test['recorded_at']?.toString() ?? '';
-      final date = recordedAt.length >= 10
-          ? recordedAt.substring(0, 10)
-          : recordedAt;
-      groups.putIfAbsent(date, () => []).add(test);
-    }
-    return groups.entries.toList()..sort((a, b) {
-      final aDate = DateTime.tryParse(a.key);
-      final bDate = DateTime.tryParse(b.key);
-      if (aDate == null) return bDate == null ? a.key.compareTo(b.key) : 1;
-      if (bDate == null) return -1;
-      return bDate.compareTo(aDate);
-    });
-  }
-
-  Widget _maxTestDateTitle(String date) {
-    final parsedDate = DateTime.tryParse(date);
-    final label = parsedDate == null
-        ? (date.isEmpty ? '—' : date)
-        : AppDateFormat.date(parsedDate);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
-      child: Text(
-        label,
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-      ),
+  Widget _maxTests() {
+    final rows = {for (final row in _data!.maxTests) row['id'].toString(): row};
+    return MaxTestsDashboard(
+      tests: _data!.maxTests.map(MaxTest.fromMap).toList(),
+      guides: _exerciseGuides,
+      onRefresh: _load,
+      onAdd: () => _showAddMaxTest(),
+      onAddForExercise: _showAddMaxTest,
+      trainerNotes: {
+        for (final row in _data!.maxTests)
+          row['id'].toString(): _maxTestPrivateNotes(row),
+      },
+      onEditNotes: (test) => _editMaxTestNotes(rows[test.id]!),
+      onDelete: (test) => _deleteMaxTest(rows[test.id]!),
     );
   }
 
@@ -773,19 +728,26 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     ),
   );
 
-  Future<void> _showAddMaxTest() async {
+  Future<void> _showAddMaxTest([MaxTest? previous]) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      final guides = await _exerciseGuidesFuture;
-      if (!mounted) return;
-      if (guides == null || guides.isEmpty) {
-        _message(l10n.trainerMaxTestNoExercises);
-        return;
+      List<ExerciseGuide> guides;
+      try {
+        guides = await _exerciseGuidesFuture ?? <ExerciseGuide>[];
+      } catch (_) {
+        guides = <ExerciseGuide>[];
       }
+      if (!mounted) return;
       _exerciseGuides = guides;
       final draft = await showDialog<_MaxTestDraft>(
         context: context,
-        builder: (context) => _AddMaxTestDialog(guides: guides),
+        builder: (context) => _AddMaxTestDialog(
+          guides: [...guides]
+            ..sort(
+              (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+            ),
+          previous: previous,
+        ),
       );
       if (draft == null || !mounted) return;
       await widget.repository.addMaxTest(
@@ -805,30 +767,8 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     }
   }
 
-  String _maxTestExerciseLabel(Map<String, dynamic> test) {
-    final exerciseId = test['exercise_id']?.toString();
-    final raw = test['exercise']?.toString().trim() ?? '';
-    for (final guide in _exerciseGuides) {
-      if ((exerciseId != null && guide.databaseId == exerciseId) ||
-          guide.id.toLowerCase() == raw.toLowerCase() ||
-          guide.name.toLowerCase() == raw.toLowerCase()) {
-        return guide.name;
-      }
-    }
-    return raw.isEmpty
-        ? AppLocalizations.of(context)!.trainerExerciseFallback
-        : raw;
-  }
-
   String _maxTestPrivateNotes(Map<String, dynamic> test) =>
       test['trainer_notes']?.toString().trim() ?? '';
-
-  String _maxTestNotesSuffix(Map<String, dynamic> test) {
-    final notes = _maxTestPrivateNotes(test);
-    return notes.isEmpty
-        ? ''
-        : '\n${AppLocalizations.of(context)!.trainerPrivateNotes}: $notes';
-  }
 
   Future<void> _editMaxTestNotes(Map<String, dynamic> test) async {
     final l10n = AppLocalizations.of(context)!;
@@ -853,6 +793,7 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        scrollable: true,
         title: Text(l10n.trainerDeleteMaxTestTitle),
         content: Text(l10n.trainerDeleteMaxTestMessage),
         actions: [
@@ -1363,9 +1304,10 @@ class _TrainerProgramPageState extends State<TrainerProgramPage>
 }
 
 class _AddMaxTestDialog extends StatefulWidget {
-  const _AddMaxTestDialog({required this.guides});
+  const _AddMaxTestDialog({required this.guides, this.previous});
 
   final List<ExerciseGuide> guides;
+  final MaxTest? previous;
 
   @override
   State<_AddMaxTestDialog> createState() => _AddMaxTestDialogState();
@@ -1382,6 +1324,28 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
   Object? _selectedExercise;
   String _unit = 'reps';
   DateTime _recordedAt = DateTime.now();
+  String _exerciseQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    final previous = widget.previous;
+    if (previous == null) return;
+    for (final guide in widget.guides) {
+      if (guide.databaseId == previous.exerciseId ||
+          guide.id.toLowerCase() == previous.exercise.trim().toLowerCase() ||
+          guide.name.toLowerCase() == previous.exercise.trim().toLowerCase()) {
+        _selectedExercise = guide;
+        break;
+      }
+    }
+    if (_selectedExercise == null) {
+      _selectedExercise = _customExerciseOption;
+      _customExercise.text = previous.exercise;
+    }
+    final unit = normalizeMaxTestUnit(previous.unit);
+    if (_units.contains(unit)) _unit = unit;
+  }
 
   @override
   void dispose() {
@@ -1396,17 +1360,17 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
     final l10n = AppLocalizations.of(context)!;
     final customExerciseSelected = _selectedExercise == _customExerciseOption;
     final exerciseDropdown = DropdownButtonFormField<Object>(
+      key: const ValueKey('max-test-exercise'),
+      itemHeight: null,
       initialValue: _selectedExercise,
       isExpanded: true,
-      decoration: InputDecoration(
-        labelText: l10n.trainerMaxTestExercise,
-        border: customExerciseSelected ? InputBorder.none : null,
-        contentPadding: customExerciseSelected
-            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)
-            : null,
-      ),
+      decoration: InputDecoration(labelText: l10n.trainerMaxTestExercise),
       items: [
-        for (final guide in widget.guides)
+        for (final guide in widget.guides.where(
+          (guide) =>
+              guide == _selectedExercise ||
+              guide.name.toLowerCase().contains(_exerciseQuery.toLowerCase()),
+        ))
           DropdownMenuItem(
             value: guide,
             child: Text(guide.name, overflow: TextOverflow.ellipsis),
@@ -1417,13 +1381,23 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
         ),
       ],
       onChanged: (value) {
-        if (value != null) setState(() => _selectedExercise = value);
+        if (value != null) {
+          setState(() {
+            _selectedExercise = value;
+            if (value == _customExerciseOption &&
+                _customExercise.text.trim().isEmpty) {
+              _customExercise.text = _exerciseQuery.trim();
+            }
+          });
+        }
       },
       validator: (_) => _selectedExercise == null
           ? l10n.trainerMaxTestExerciseRequired
           : null,
     );
     return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      scrollable: true,
       title: Text(l10n.trainerAddMaxTest),
       content: SizedBox(
         width: 440,
@@ -1433,57 +1407,34 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (customExerciseSelected)
-                  Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
-                      borderRadius: BorderRadius.circular(4),
+                TextField(
+                  key: const ValueKey('max-test-exercise-search'),
+                  decoration: InputDecoration(
+                    labelText: l10n.maxTestsSearch,
+                    prefixIcon: const Icon(Icons.search),
+                  ),
+                  onChanged: (value) => setState(() => _exerciseQuery = value),
+                ),
+                const SizedBox(height: 12),
+                exerciseDropdown,
+                if (customExerciseSelected) ...[
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    key: const ValueKey('max-test-custom-exercise'),
+                    controller: _customExercise,
+                    maxLength: 200,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      labelText: l10n.trainerMaxTestCustomExerciseName,
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        exerciseDropdown,
-                        SizedBox(
-                          height: 1,
-                          child: Center(
-                            child: SizedBox(
-                              width: 28,
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.outlineVariant,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        TextFormField(
-                          controller: _customExercise,
-                          textCapitalization: TextCapitalization.sentences,
-                          decoration: InputDecoration(
-                            labelText: l10n.trainerMaxTestCustomExerciseName,
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                          ),
-                          validator: (value) =>
-                              value == null || value.trim().isEmpty
-                              ? l10n.trainerMaxTestExerciseRequired
-                              : null,
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  exerciseDropdown,
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? l10n.trainerMaxTestExerciseRequired
+                        : null,
+                  ),
+                ],
                 const SizedBox(height: 12),
                 TextFormField(
+                  key: const ValueKey('max-test-value'),
                   controller: _value,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -1502,13 +1453,19 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
+                  key: const ValueKey('max-test-unit'),
+                  isExpanded: true,
+                  itemHeight: null,
                   initialValue: _unit,
                   decoration: InputDecoration(
                     labelText: l10n.trainerMaxTestUnit,
                   ),
                   items: [
                     for (final unit in _units)
-                      DropdownMenuItem(value: unit, child: Text(unit)),
+                      DropdownMenuItem(
+                        value: unit,
+                        child: Text(maxUnitLabel(l10n, unit)),
+                      ),
                   ],
                   onChanged: (value) {
                     if (value != null) setState(() => _unit = value);
@@ -1524,6 +1481,7 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
+                  key: const ValueKey('max-test-private-notes'),
                   controller: _notes,
                   minLines: 2,
                   maxLines: 5,
@@ -1532,6 +1490,7 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
                   decoration: InputDecoration(
                     labelText: l10n.trainerPrivateNotes,
                     helperText: l10n.trainerMaxTestPrivateNotesHint,
+                    helperMaxLines: 4,
                     alignLabelWithHint: true,
                   ),
                 ),
@@ -1546,6 +1505,7 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
           child: Text(l10n.trainerCancel),
         ),
         FilledButton.icon(
+          key: const ValueKey('max-test-save'),
           onPressed: _submit,
           icon: const Icon(Icons.save_outlined),
           label: Text(l10n.trainerSave),
@@ -1558,7 +1518,6 @@ class _AddMaxTestDialogState extends State<_AddMaxTestDialog> {
     final now = DateTime.now();
     final selected = await showDatePicker(
       context: context,
-      locale: const Locale('it', 'IT'),
       initialDate: _recordedAt,
       firstDate: DateTime(2000),
       lastDate: DateTime(now.year, now.month, now.day),
@@ -1612,17 +1571,25 @@ class _EditMaxTestNotesDialogState extends State<_EditMaxTestNotesDialog> {
     final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       title: Text(l10n.trainerEditMaxTestNotes),
-      content: TextField(
-        controller: _notes,
-        autofocus: true,
-        minLines: 3,
-        maxLines: 6,
-        maxLength: 2000,
-        textCapitalization: TextCapitalization.sentences,
-        decoration: InputDecoration(
-          labelText: l10n.trainerPrivateNotes,
-          helperText: l10n.trainerMaxTestPrivateNotesHint,
-          alignLabelWithHint: true,
+      scrollable: true,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      content: SizedBox(
+        width: 440,
+        child: SingleChildScrollView(
+          child: TextField(
+            controller: _notes,
+            autofocus: true,
+            minLines: 3,
+            maxLines: 6,
+            maxLength: 2000,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: InputDecoration(
+              labelText: l10n.trainerPrivateNotes,
+              helperText: l10n.trainerMaxTestPrivateNotesHint,
+              helperMaxLines: 4,
+              alignLabelWithHint: true,
+            ),
+          ),
         ),
       ),
       actions: [

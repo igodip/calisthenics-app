@@ -100,6 +100,162 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @maxTestsResultsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultati e storico'**
+  String get maxTestsResultsTitle;
+
+  /// No description provided for @maxTestsFilteredHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Storico nel periodo selezionato'**
+  String get maxTestsFilteredHistory;
+
+  /// No description provided for @maxCategoryAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti'**
+  String get maxCategoryAll;
+
+  /// No description provided for @maxCategoryPull.
+  ///
+  /// In it, this message translates to:
+  /// **'Tirata'**
+  String get maxCategoryPull;
+
+  /// No description provided for @maxCategoryPush.
+  ///
+  /// In it, this message translates to:
+  /// **'Spinta'**
+  String get maxCategoryPush;
+
+  /// No description provided for @maxCategoryLegs.
+  ///
+  /// In it, this message translates to:
+  /// **'Gambe'**
+  String get maxCategoryLegs;
+
+  /// No description provided for @maxCategoryCore.
+  ///
+  /// In it, this message translates to:
+  /// **'Core'**
+  String get maxCategoryCore;
+
+  /// No description provided for @maxCategorySkills.
+  ///
+  /// In it, this message translates to:
+  /// **'Skill'**
+  String get maxCategorySkills;
+
+  /// No description provided for @maxCategoryOther.
+  ///
+  /// In it, this message translates to:
+  /// **'Altri'**
+  String get maxCategoryOther;
+
+  /// No description provided for @maxUnitReps.
+  ///
+  /// In it, this message translates to:
+  /// **'rip.'**
+  String get maxUnitReps;
+
+  /// No description provided for @maxUnitSeconds.
+  ///
+  /// In it, this message translates to:
+  /// **'s'**
+  String get maxUnitSeconds;
+
+  /// No description provided for @maxUnitMinutes.
+  ///
+  /// In it, this message translates to:
+  /// **'min'**
+  String get maxUnitMinutes;
+
+  /// No description provided for @maxTestsTraineeIntro.
+  ///
+  /// In it, this message translates to:
+  /// **'Consulta i risultati registrati dal trainer, confronta i progressi e apri lo storico completo di ogni esercizio.'**
+  String get maxTestsTraineeIntro;
+
+  /// No description provided for @maxTestsTrainerIntro.
+  ///
+  /// In it, this message translates to:
+  /// **'Controlla i progressi per esercizio, aggiungi risultati e gestisci le note private del trainer.'**
+  String get maxTestsTrainerIntro;
+
+  /// No description provided for @maxTestsSearch.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca esercizio'**
+  String get maxTestsSearch;
+
+  /// No description provided for @maxTestsLatest.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimo risultato'**
+  String get maxTestsLatest;
+
+  /// No description provided for @maxTestsChange.
+  ///
+  /// In it, this message translates to:
+  /// **'Variazione'**
+  String get maxTestsChange;
+
+  /// No description provided for @maxTestsHistory.
+  ///
+  /// In it, this message translates to:
+  /// **'Storico completo'**
+  String get maxTestsHistory;
+
+  /// No description provided for @maxTestsNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ci sono ancora risultati. Il tuo trainer può aggiungere i primi test.'**
+  String get maxTestsNoResults;
+
+  /// No description provided for @maxTestsNoMatches.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun risultato con questi filtri. Cambia categoria, ricerca o periodo.'**
+  String get maxTestsNoMatches;
+
+  /// No description provided for @maxTestsLoadError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare i massimali. Controlla la connessione e riprova.'**
+  String get maxTestsLoadError;
+
+  /// No description provided for @homeMascotAuraSwitch.
+  ///
+  /// In it, this message translates to:
+  /// **'Tocca per cambiare aura. La scelta viene salvata su questo dispositivo.'**
+  String get homeMascotAuraSwitch;
+
+  /// No description provided for @homeMascotAuraDragonBall.
+  ///
+  /// In it, this message translates to:
+  /// **'Aura Dragon Ball'**
+  String get homeMascotAuraDragonBall;
+
+  /// No description provided for @homeMascotAuraNaruto.
+  ///
+  /// In it, this message translates to:
+  /// **'Aura Naruto'**
+  String get homeMascotAuraNaruto;
+
+  /// No description provided for @trainerFinalWeekLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultima settimana'**
+  String get trainerFinalWeekLabel;
+
+  /// No description provided for @trainerFinalWeekTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Allievi all’ultima settimana'**
+  String get trainerFinalWeekTitle;
+
   /// No description provided for @homeMascotTitle.
   ///
   /// In it, this message translates to:

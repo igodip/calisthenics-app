@@ -19,7 +19,7 @@ class MaxTest {
     final id = map['id'] as String?;
     final value = map['value'] as num?;
     final recordedAt = DateTime.tryParse(map['recorded_at'] as String? ?? '');
-    if (id == null || value == null || recordedAt == null) {
+    if (id == null || value == null || !value.isFinite || recordedAt == null) {
       throw const FormatException('Invalid max test record.');
     }
     return MaxTest(

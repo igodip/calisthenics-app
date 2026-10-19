@@ -31,7 +31,10 @@ Future<bool> loadTraineeFinalWeek(
       .order('created_at', ascending: false)
       .limit(1)
       .maybeSingle();
-  if (plan == null) return false;
+  return plan != null && isFinalTrainingWeekForPlan(plan);
+}
+
+bool isFinalTrainingWeekForPlan(Map<String, dynamic> plan) {
   final days = <TrainingDayProgress>[];
   for (final link in plan['workout_plan_days'] as List? ?? []) {
     final day = link['days'];
