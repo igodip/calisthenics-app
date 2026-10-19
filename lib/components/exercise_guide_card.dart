@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../model/exercise_guide.dart';
+import '../data/exercise_illustrations.dart';
+import 'exercise_image_gallery.dart';
 
 class ExerciseGuideCard extends StatelessWidget {
   const ExerciseGuideCard({
@@ -72,6 +74,13 @@ class ExerciseGuideCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
+            if (ExerciseIllustrations.forSlug(guide.id).isNotEmpty) ...[
+              ExerciseImageGallery(
+                exerciseName: guide.name,
+                assets: ExerciseIllustrations.forSlug(guide.id),
+              ),
+              const SizedBox(height: 12),
+            ],
             Text(
               guide.description,
               style: theme.textTheme.bodyMedium?.copyWith(

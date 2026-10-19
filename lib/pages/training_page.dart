@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
+import '../components/exercise_image_gallery.dart';
+import '../data/exercise_illustrations.dart';
 import '../data/exercise_guides.dart' as guide_data;
 import '../data/terminology_repository.dart';
 import '../l10n/app_localizations.dart';
@@ -1075,6 +1077,13 @@ class _ExerciseCard extends StatelessWidget {
 
     final hasTerminology = localizedTerminology.isNotEmpty;
     final hasSkills = localizedSkills.isNotEmpty;
+    final guideSlug =
+        exercise.exerciseSlug ??
+        guideLookup.values
+            .where((guide) => guide.databaseId == exercise.exerciseId)
+            .firstOrNull
+            ?.id;
+    final illustrationAssets = ExerciseIllustrations.forSlug(guideSlug ?? '');
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -1201,6 +1210,13 @@ class _ExerciseCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (illustrationAssets.isNotEmpty) ...[
+                      ExerciseImageGallery(
+                        exerciseName: exerciseName,
+                        assets: illustrationAssets,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     Text(
                       l10n.trainingExerciseNotesTitle,
                       style: textTheme.labelLarge?.copyWith(

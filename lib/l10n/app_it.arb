@@ -1,4 +1,12 @@
 {
+  "exerciseGalleryOpen": "Visualizza immagini di {exercise}",
+  "@exerciseGalleryOpen": {"placeholders": {"exercise": {"type": "String"}}},
+  "exerciseGalleryView": "Visualizza immagine",
+  "exerciseGalleryReference": "Illustrazione di riferimento. Segui le indicazioni del tuo trainer.",
+  "exerciseGalleryUnavailable": "Immagine non disponibile",
+  "exerciseGalleryZoomHint": "Pizzica per ingrandire",
+  "exerciseGalleryPosition": "{current} di {total}",
+  "@exerciseGalleryPosition": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
   "trainerPaymentAmountInvalid": "Inserisci un importo valido maggiore o uguale a zero.",
   "copy": "Copia",
   "privacyPolicyTitle": "Informativa sulla privacy",

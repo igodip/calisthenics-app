@@ -9,6 +9,29 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String exerciseGalleryOpen(String exercise) {
+    return 'Visualizza immagini di $exercise';
+  }
+
+  @override
+  String get exerciseGalleryView => 'Visualizza immagine';
+
+  @override
+  String get exerciseGalleryReference =>
+      'Illustrazione di riferimento. Segui le indicazioni del tuo trainer.';
+
+  @override
+  String get exerciseGalleryUnavailable => 'Immagine non disponibile';
+
+  @override
+  String get exerciseGalleryZoomHint => 'Pizzica per ingrandire';
+
+  @override
+  String exerciseGalleryPosition(int current, int total) {
+    return '$current di $total';
+  }
+
+  @override
   String get trainerPaymentAmountInvalid =>
       'Inserisci un importo valido maggiore o uguale a zero.';
 

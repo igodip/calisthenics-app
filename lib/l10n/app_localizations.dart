@@ -100,6 +100,42 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @exerciseGalleryOpen.
+  ///
+  /// In it, this message translates to:
+  /// **'Visualizza immagini di {exercise}'**
+  String exerciseGalleryOpen(String exercise);
+
+  /// No description provided for @exerciseGalleryView.
+  ///
+  /// In it, this message translates to:
+  /// **'Visualizza immagine'**
+  String get exerciseGalleryView;
+
+  /// No description provided for @exerciseGalleryReference.
+  ///
+  /// In it, this message translates to:
+  /// **'Illustrazione di riferimento. Segui le indicazioni del tuo trainer.'**
+  String get exerciseGalleryReference;
+
+  /// No description provided for @exerciseGalleryUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Immagine non disponibile'**
+  String get exerciseGalleryUnavailable;
+
+  /// No description provided for @exerciseGalleryZoomHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Pizzica per ingrandire'**
+  String get exerciseGalleryZoomHint;
+
+  /// No description provided for @exerciseGalleryPosition.
+  ///
+  /// In it, this message translates to:
+  /// **'{current} di {total}'**
+  String exerciseGalleryPosition(int current, int total);
+
   /// No description provided for @trainerPaymentAmountInvalid.
   ///
   /// In it, this message translates to:
@@ -220,15 +256,6 @@ abstract class AppLocalizations {
   /// **'Calisync'**
   String get appTitle;
 
-  /// Heading for the sign-in screen.
-  String get authWelcomeTitle;
-
-  /// Accessible action to reveal a password.
-  String get authShowPassword;
-
-  /// Accessible action to conceal a password.
-  String get authHidePassword;
-
   /// No description provided for @authErrorMessage.
   ///
   /// In it, this message translates to:
@@ -316,37 +343,37 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingTitleOne.
   ///
   /// In it, this message translates to:
-  /// **'Allenati meglio'**
+  /// **'Costruisci forza.\nControlla il movimento.'**
   String get onboardingTitleOne;
 
   /// No description provided for @onboardingDescriptionOne.
   ///
   /// In it, this message translates to:
-  /// **'Segui allenamenti guidati creati per il tuo piano di calisthenics.'**
+  /// **'Il tuo allenamento calistenico, tutto in un posto.'**
   String get onboardingDescriptionOne;
 
   /// No description provided for @onboardingTitleTwo.
   ///
   /// In it, this message translates to:
-  /// **'Monitora i progressi'**
+  /// **'Guarda i tuoi\nprogressi.'**
   String get onboardingTitleTwo;
 
   /// No description provided for @onboardingDescriptionTwo.
   ///
   /// In it, this message translates to:
-  /// **'Registra serie, ripetizioni e note per vedere i miglioramenti.'**
+  /// **'Registra ripetizioni, tenute e ogni passo avanti.'**
   String get onboardingDescriptionTwo;
 
   /// No description provided for @onboardingTitleThree.
   ///
   /// In it, this message translates to:
-  /// **'Rimani costante'**
+  /// **'Fai del movimento\nun’abitudine.'**
   String get onboardingTitleThree;
 
   /// No description provided for @onboardingDescriptionThree.
   ///
   /// In it, this message translates to:
-  /// **'Mantieni il ritmo con accesso rapido alla prossima sessione.'**
+  /// **'La tua prossima sessione, pronta quando vuoi.'**
   String get onboardingDescriptionThree;
 
   /// No description provided for @onboardingSkip.
@@ -364,7 +391,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingNext.
   ///
   /// In it, this message translates to:
-  /// **'Avanti'**
+  /// **'Continua'**
   String get onboardingNext;
 
   /// No description provided for @onboardingGetStarted.
@@ -1480,13 +1507,13 @@ abstract class AppLocalizations {
   /// No description provided for @loginGreeting.
   ///
   /// In it, this message translates to:
-  /// **'Bentornato! Accedi per continuare il tuo allenamento.'**
+  /// **'Pronto per la prossima sessione?'**
   String get loginGreeting;
 
   /// No description provided for @signupGreeting.
   ///
   /// In it, this message translates to:
-  /// **'Crea un account per sbloccare tutti gli allenamenti.'**
+  /// **'Crea il tuo account per iniziare.'**
   String get signupGreeting;
 
   /// No description provided for @emailLabel.
@@ -1516,7 +1543,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupButton.
   ///
   /// In it, this message translates to:
-  /// **'Registrati'**
+  /// **'Crea account'**
   String get signupButton;
 
   /// No description provided for @noAccountPrompt.
@@ -2970,6 +2997,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Operazione amministratore non riuscita: {error}'**
   String adminActionFailed(String error);
+
+  /// No description provided for @authWelcomeTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Bentornato.'**
+  String get authWelcomeTitle;
+
+  /// No description provided for @authShowPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra password'**
+  String get authShowPassword;
+
+  /// No description provided for @authHidePassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Nascondi password'**
+  String get authHidePassword;
 }
 
 class _AppLocalizationsDelegate
