@@ -363,6 +363,65 @@ class AppLocalizationsEs extends AppLocalizations {
       '¿Eliminar este feedback? Esta acción no se puede deshacer.';
 
   @override
+  String get bugReportSettingsTitle => 'Informar de un problema';
+
+  @override
+  String get bugReportSettingsSubtitle =>
+      '¿Has encontrado un error? Ayúdanos a solucionarlo.';
+
+  @override
+  String get bugReportTitle => 'Informe de error';
+
+  @override
+  String get bugReportCategoryLabel => 'Tipo de problema';
+
+  @override
+  String get bugReportCategoryBug => 'Error';
+
+  @override
+  String get bugReportCategoryLogin => 'Problema de acceso';
+
+  @override
+  String get bugReportCategoryOther => 'Otro';
+
+  @override
+  String get bugReportTitleLabel => 'Título';
+
+  @override
+  String get bugReportTitleHint => 'Resume el problema';
+
+  @override
+  String get bugReportDescriptionLabel => 'Descripción';
+
+  @override
+  String get bugReportDescriptionHint => 'Describe lo que ha ocurrido';
+
+  @override
+  String get bugReportStepsLabel => 'Pasos para reproducirlo (opcional)';
+
+  @override
+  String get bugReportStepsHint => 'Indica los pasos que has seguido';
+
+  @override
+  String get bugReportExpectedResultLabel => 'Resultado esperado (opcional)';
+
+  @override
+  String get bugReportExpectedResultHint => '¿Qué esperabas que ocurriera?';
+
+  @override
+  String get bugReportSubmit => 'Enviar informe';
+
+  @override
+  String get bugReportSubmitted => 'Informe enviado. Gracias por ayudarnos.';
+
+  @override
+  String get bugReportSubmitError =>
+      'No se pudo enviar el informe. Inténtalo de nuevo.';
+
+  @override
+  String get bugReportRequired => 'Este campo es obligatorio.';
+
+  @override
   String get refresh => 'Actualizar';
 
   @override

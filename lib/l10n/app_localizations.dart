@@ -736,6 +736,120 @@ abstract class AppLocalizations {
   /// **'Eliminare questo feedback? L\'operazione non può essere annullata.'**
   String get traineeFeedbackDeleteMessage;
 
+  /// No description provided for @bugReportSettingsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnala un problema'**
+  String get bugReportSettingsTitle;
+
+  /// No description provided for @bugReportSettingsSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai trovato un bug? Aiutaci a risolverlo.'**
+  String get bugReportSettingsSubtitle;
+
+  /// No description provided for @bugReportTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalazione bug'**
+  String get bugReportTitle;
+
+  /// No description provided for @bugReportCategoryLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Tipo di problema'**
+  String get bugReportCategoryLabel;
+
+  /// No description provided for @bugReportCategoryBug.
+  ///
+  /// In it, this message translates to:
+  /// **'Bug'**
+  String get bugReportCategoryBug;
+
+  /// No description provided for @bugReportCategoryLogin.
+  ///
+  /// In it, this message translates to:
+  /// **'Problema di accesso'**
+  String get bugReportCategoryLogin;
+
+  /// No description provided for @bugReportCategoryOther.
+  ///
+  /// In it, this message translates to:
+  /// **'Altro'**
+  String get bugReportCategoryOther;
+
+  /// No description provided for @bugReportTitleLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo'**
+  String get bugReportTitleLabel;
+
+  /// No description provided for @bugReportTitleHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Riassumi il problema'**
+  String get bugReportTitleHint;
+
+  /// No description provided for @bugReportDescriptionLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione'**
+  String get bugReportDescriptionLabel;
+
+  /// No description provided for @bugReportDescriptionHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrivi cosa è successo'**
+  String get bugReportDescriptionHint;
+
+  /// No description provided for @bugReportStepsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Passaggi per riprodurlo (facoltativo)'**
+  String get bugReportStepsLabel;
+
+  /// No description provided for @bugReportStepsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Indica i passaggi che hai seguito'**
+  String get bugReportStepsHint;
+
+  /// No description provided for @bugReportExpectedResultLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultato atteso (facoltativo)'**
+  String get bugReportExpectedResultLabel;
+
+  /// No description provided for @bugReportExpectedResultHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Che cosa ti aspettavi che succedesse?'**
+  String get bugReportExpectedResultHint;
+
+  /// No description provided for @bugReportSubmit.
+  ///
+  /// In it, this message translates to:
+  /// **'Invia segnalazione'**
+  String get bugReportSubmit;
+
+  /// No description provided for @bugReportSubmitted.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalazione inviata. Grazie per averci aiutato.'**
+  String get bugReportSubmitted;
+
+  /// No description provided for @bugReportSubmitError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile inviare la segnalazione. Riprova.'**
+  String get bugReportSubmitError;
+
+  /// No description provided for @bugReportRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Compila questo campo.'**
+  String get bugReportRequired;
+
   /// No description provided for @refresh.
   ///
   /// In it, this message translates to:

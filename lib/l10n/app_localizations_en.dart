@@ -359,6 +359,64 @@ class AppLocalizationsEn extends AppLocalizations {
       'Delete this feedback? This cannot be undone.';
 
   @override
+  String get bugReportSettingsTitle => 'Report a problem';
+
+  @override
+  String get bugReportSettingsSubtitle => 'Found a bug? Help us fix it.';
+
+  @override
+  String get bugReportTitle => 'Bug report';
+
+  @override
+  String get bugReportCategoryLabel => 'Type of problem';
+
+  @override
+  String get bugReportCategoryBug => 'Bug';
+
+  @override
+  String get bugReportCategoryLogin => 'Login issue';
+
+  @override
+  String get bugReportCategoryOther => 'Other';
+
+  @override
+  String get bugReportTitleLabel => 'Title';
+
+  @override
+  String get bugReportTitleHint => 'Summarize the problem';
+
+  @override
+  String get bugReportDescriptionLabel => 'Description';
+
+  @override
+  String get bugReportDescriptionHint => 'Describe what happened';
+
+  @override
+  String get bugReportStepsLabel => 'Steps to reproduce (optional)';
+
+  @override
+  String get bugReportStepsHint => 'List the steps you took';
+
+  @override
+  String get bugReportExpectedResultLabel => 'Expected result (optional)';
+
+  @override
+  String get bugReportExpectedResultHint => 'What did you expect to happen?';
+
+  @override
+  String get bugReportSubmit => 'Send report';
+
+  @override
+  String get bugReportSubmitted => 'Report sent. Thanks for helping us.';
+
+  @override
+  String get bugReportSubmitError =>
+      'Could not send the report. Please try again.';
+
+  @override
+  String get bugReportRequired => 'This field is required.';
+
+  @override
   String get refresh => 'Refresh';
 
   @override

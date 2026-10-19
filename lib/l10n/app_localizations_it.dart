@@ -362,6 +362,67 @@ class AppLocalizationsIt extends AppLocalizations {
       'Eliminare questo feedback? L\'operazione non può essere annullata.';
 
   @override
+  String get bugReportSettingsTitle => 'Segnala un problema';
+
+  @override
+  String get bugReportSettingsSubtitle =>
+      'Hai trovato un bug? Aiutaci a risolverlo.';
+
+  @override
+  String get bugReportTitle => 'Segnalazione bug';
+
+  @override
+  String get bugReportCategoryLabel => 'Tipo di problema';
+
+  @override
+  String get bugReportCategoryBug => 'Bug';
+
+  @override
+  String get bugReportCategoryLogin => 'Problema di accesso';
+
+  @override
+  String get bugReportCategoryOther => 'Altro';
+
+  @override
+  String get bugReportTitleLabel => 'Titolo';
+
+  @override
+  String get bugReportTitleHint => 'Riassumi il problema';
+
+  @override
+  String get bugReportDescriptionLabel => 'Descrizione';
+
+  @override
+  String get bugReportDescriptionHint => 'Descrivi cosa è successo';
+
+  @override
+  String get bugReportStepsLabel => 'Passaggi per riprodurlo (facoltativo)';
+
+  @override
+  String get bugReportStepsHint => 'Indica i passaggi che hai seguito';
+
+  @override
+  String get bugReportExpectedResultLabel => 'Risultato atteso (facoltativo)';
+
+  @override
+  String get bugReportExpectedResultHint =>
+      'Che cosa ti aspettavi che succedesse?';
+
+  @override
+  String get bugReportSubmit => 'Invia segnalazione';
+
+  @override
+  String get bugReportSubmitted =>
+      'Segnalazione inviata. Grazie per averci aiutato.';
+
+  @override
+  String get bugReportSubmitError =>
+      'Impossibile inviare la segnalazione. Riprova.';
+
+  @override
+  String get bugReportRequired => 'Compila questo campo.';
+
+  @override
   String get refresh => 'Aggiorna';
 
   @override
