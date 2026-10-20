@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('all 16 supported catalog slugs have distinct bundled pictures', () {
+  test('all supported catalog slugs have distinct bundled pictures', () {
     const auditedSlugs = {
       'pull-up',
       'chin-up',
@@ -25,6 +25,7 @@ void main() {
       'plank',
       'l-sit',
       'handstand-hold',
+      'front-lever',
     };
     expect(ExerciseIllustrations.bySlug.keys.toSet(), auditedSlugs);
     final allAssets = ExerciseIllustrations.bySlug.values
@@ -126,6 +127,20 @@ void main() {
     expect(find.text('Estensioni tricipiti alla sbarra'), findsOneWidget);
     expect(find.byType(InteractiveViewer), findsOneWidget);
     expect(find.text('Immagine non disponibile'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('front lever reference opens offline with zoom', (tester) async {
+    await open(
+      tester,
+      assets: ExerciseIllustrations.forSlug('front-lever'),
+      exerciseName: 'Front lever',
+    );
+    await tester.tap(find.byType(InkWell).first);
+    await tester.pumpAndSettle();
+    expect(find.text('Front lever'), findsOneWidget);
+    expect(find.byType(InteractiveViewer), findsOneWidget);
+    expect(find.text('Picture unavailable'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

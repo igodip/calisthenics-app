@@ -1,5 +1,9 @@
 # Exercise picture coverage — 19 October 2026
 
+Update — 20 October 2026: `front-lever` now has a bundled reference board
+showing the tuck progression and full horizontal hold, bringing picture coverage
+to 17 catalog slugs. It uses the same offline, zoomable gallery as other guides.
+
 Update — 20 October 2026: the catalog addition
 `bodyweight-triceps-extension` now has a bundled two-stage reference board
 (straight-arm start and bent-elbow position), bringing picture coverage to 16

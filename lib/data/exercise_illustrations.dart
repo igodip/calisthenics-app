@@ -20,6 +20,7 @@ abstract final class ExerciseIllustrations {
     'plank': ['assets/exercises/plank.webp'],
     'l-sit': ['assets/exercises/l-sit.webp'],
     'handstand-hold': ['assets/exercises/handstand-hold.webp'],
+    'front-lever': ['assets/exercises/front-lever.webp'],
   };
 
   static List<String> forSlug(String slug) =>
