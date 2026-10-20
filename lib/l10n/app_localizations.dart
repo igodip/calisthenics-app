@@ -100,6 +100,24 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @userIdTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'ID utente'**
+  String get userIdTitle;
+
+  /// No description provided for @userIdUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Non disponibile'**
+  String get userIdUnavailable;
+
+  /// No description provided for @featureInDevelopment.
+  ///
+  /// In it, this message translates to:
+  /// **'Funzionalità in sviluppo.'**
+  String get featureInDevelopment;
+
   /// No description provided for @maxTestsResultsTitle.
   ///
   /// In it, this message translates to:
@@ -331,7 +349,7 @@ abstract class AppLocalizations {
   /// No description provided for @registrationPrivacyNotice.
   ///
   /// In it, this message translates to:
-  /// **'Prima di creare un account, leggi come CaliSync usa i tuoi dati, inclusi l’accesso di trainer e amministratori e le anteprime delle notifiche.'**
+  /// **'Prima di creare un account, leggi come Calisync usa i tuoi dati, inclusi l’accesso di trainer e amministratori e le anteprime delle notifiche.'**
   String get registrationPrivacyNotice;
 
   /// No description provided for @privacySettingsDescription.
@@ -417,12 +435,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Impossibile completare l’eliminazione. Riprova o contatta dipaoloigor@gmail.com.'**
   String get deleteAccountError;
-
-  /// No description provided for @deleteAccountSettings.
-  ///
-  /// In it, this message translates to:
-  /// **'Impostazioni ed eliminazione account'**
-  String get deleteAccountSettings;
 
   /// No description provided for @appTitle.
   ///
@@ -567,12 +579,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Continua'**
   String get onboardingNext;
-
-  /// No description provided for @onboardingGetStarted.
-  ///
-  /// In it, this message translates to:
-  /// **'Inizia'**
-  String get onboardingGetStarted;
 
   /// No description provided for @guidesTitle.
   ///
@@ -745,14 +751,8 @@ abstract class AppLocalizations {
   /// No description provided for @homeProgressNoPlan.
   ///
   /// In it, this message translates to:
-  /// **'Nessun workout plan disponibile al momento.'**
+  /// **'Nessun piano di allenamento disponibile al momento.'**
   String get homeProgressNoPlan;
-
-  /// No description provided for @homePlanStatsTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Statistiche del piano'**
-  String get homePlanStatsTitle;
 
   /// No description provided for @homePlanStatsDaysLabel.
   ///
@@ -765,12 +765,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Esercizi'**
   String get homePlanStatsExercisesLabel;
-
-  /// No description provided for @homePlanStatsCompletionValue.
-  ///
-  /// In it, this message translates to:
-  /// **'{progress}% completato'**
-  String homePlanStatsCompletionValue(int progress);
 
   /// No description provided for @workoutPlanTitle.
   ///
@@ -903,108 +897,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Hai trovato un bug? Aiutaci a risolverlo.'**
   String get bugReportSettingsSubtitle;
-
-  /// No description provided for @bugReportTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Segnalazione bug'**
-  String get bugReportTitle;
-
-  /// No description provided for @bugReportCategoryLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Tipo di problema'**
-  String get bugReportCategoryLabel;
-
-  /// No description provided for @bugReportCategoryBug.
-  ///
-  /// In it, this message translates to:
-  /// **'Bug'**
-  String get bugReportCategoryBug;
-
-  /// No description provided for @bugReportCategoryLogin.
-  ///
-  /// In it, this message translates to:
-  /// **'Problema di accesso'**
-  String get bugReportCategoryLogin;
-
-  /// No description provided for @bugReportCategoryOther.
-  ///
-  /// In it, this message translates to:
-  /// **'Altro'**
-  String get bugReportCategoryOther;
-
-  /// No description provided for @bugReportTitleLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Titolo'**
-  String get bugReportTitleLabel;
-
-  /// No description provided for @bugReportTitleHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Riassumi il problema'**
-  String get bugReportTitleHint;
-
-  /// No description provided for @bugReportDescriptionLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Descrizione'**
-  String get bugReportDescriptionLabel;
-
-  /// No description provided for @bugReportDescriptionHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Descrivi cosa è successo'**
-  String get bugReportDescriptionHint;
-
-  /// No description provided for @bugReportStepsLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Passaggi per riprodurlo (facoltativo)'**
-  String get bugReportStepsLabel;
-
-  /// No description provided for @bugReportStepsHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Indica i passaggi che hai seguito'**
-  String get bugReportStepsHint;
-
-  /// No description provided for @bugReportExpectedResultLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Risultato atteso (facoltativo)'**
-  String get bugReportExpectedResultLabel;
-
-  /// No description provided for @bugReportExpectedResultHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Che cosa ti aspettavi che succedesse?'**
-  String get bugReportExpectedResultHint;
-
-  /// No description provided for @bugReportSubmit.
-  ///
-  /// In it, this message translates to:
-  /// **'Invia segnalazione'**
-  String get bugReportSubmit;
-
-  /// No description provided for @bugReportSubmitted.
-  ///
-  /// In it, this message translates to:
-  /// **'Segnalazione inviata. Grazie per averci aiutato.'**
-  String get bugReportSubmitted;
-
-  /// No description provided for @bugReportSubmitError.
-  ///
-  /// In it, this message translates to:
-  /// **'Impossibile inviare la segnalazione. Riprova.'**
-  String get bugReportSubmitError;
-
-  /// No description provided for @bugReportRequired.
-  ///
-  /// In it, this message translates to:
-  /// **'Compila questo campo.'**
-  String get bugReportRequired;
 
   /// No description provided for @refresh.
   ///
@@ -1390,12 +1282,6 @@ abstract class AppLocalizations {
   /// **'Test massimali'**
   String get profileMaxTestsTitle;
 
-  /// No description provided for @profileMaxTestsDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.'**
-  String get profileMaxTestsDescription;
-
   /// No description provided for @profileMaxTestsPeriodLabel.
   ///
   /// In it, this message translates to:
@@ -1426,12 +1312,6 @@ abstract class AppLocalizations {
   /// **'Tutto il periodo'**
   String get profileMaxTestsPeriodAll;
 
-  /// No description provided for @profileMaxTestsEmptyPeriod.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun test massimale registrato in {period}. Prova un intervallo più lungo.'**
-  String profileMaxTestsEmptyPeriod(String period);
-
   /// No description provided for @profileMaxTestsBestPeriodLabel.
   ///
   /// In it, this message translates to:
@@ -1443,78 +1323,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Aggiorna'**
   String get profileMaxTestsRefresh;
-
-  /// No description provided for @profileMaxTestsHistoryAction.
-  ///
-  /// In it, this message translates to:
-  /// **'Vedi progressi'**
-  String get profileMaxTestsHistoryAction;
-
-  /// No description provided for @profileMaxTestsEmpty.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.'**
-  String get profileMaxTestsEmpty;
-
-  /// No description provided for @profileMaxTestsHistoryTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Progressi nel tempo'**
-  String get profileMaxTestsHistoryTitle;
-
-  /// No description provided for @profileMaxTestsHistoryDescription.
-  ///
-  /// In it, this message translates to:
-  /// **'Rivedi ogni prova e osserva come evolvono i tuoi massimali.'**
-  String get profileMaxTestsHistoryDescription;
-
-  /// No description provided for @profileMaxTestsHistoryEmpty.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun test massimale registrato. Aggiungi una nuova prova per vedere i progressi nel tempo.'**
-  String get profileMaxTestsHistoryEmpty;
-
-  /// No description provided for @profileMaxTestsRecentPerformanceLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Performance recente'**
-  String get profileMaxTestsRecentPerformanceLabel;
-
-  /// No description provided for @profileMaxTestsGoalLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Obiettivo'**
-  String get profileMaxTestsGoalLabel;
-
-  /// No description provided for @profileMaxTestsTipsTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Suggerimenti e tutorial'**
-  String get profileMaxTestsTipsTitle;
-
-  /// No description provided for @profileMaxTestsTipsSubtitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Rivedi i consigli tecnici e gli esercizi complementari.'**
-  String get profileMaxTestsTipsSubtitle;
-
-  /// No description provided for @profileMaxTestsEmptyShort.
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi un nuovo test per vedere il grafico delle prestazioni.'**
-  String get profileMaxTestsEmptyShort;
-
-  /// No description provided for @profileMaxTestsSessionLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Sessione {index}'**
-  String profileMaxTestsSessionLabel(int index);
-
-  /// No description provided for @profileMaxTestsHistoryError.
-  ///
-  /// In it, this message translates to:
-  /// **'Impossibile caricare lo storico dei progressi: {error}'**
-  String profileMaxTestsHistoryError(Object error);
 
   /// No description provided for @profileMaxTestsHistoryDeltaLabel.
   ///
@@ -1528,35 +1336,11 @@ abstract class AppLocalizations {
   /// **'Prima registrazione'**
   String get profileMaxTestsHistoryFirstEntry;
 
-  /// No description provided for @profileMaxTestsError.
-  ///
-  /// In it, this message translates to:
-  /// **'Impossibile caricare i test massimali: {error}'**
-  String profileMaxTestsError(Object error);
-
-  /// No description provided for @profileMaxTestsDateLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Registrato il {date}'**
-  String profileMaxTestsDateLabel(String date);
-
   /// No description provided for @profileMaxTestsBestLabel.
   ///
   /// In it, this message translates to:
   /// **'Miglior risultato'**
   String get profileMaxTestsBestLabel;
-
-  /// No description provided for @profileMaxTestsShowMore.
-  ///
-  /// In it, this message translates to:
-  /// **'Mostra tutti i tentativi'**
-  String get profileMaxTestsShowMore;
-
-  /// No description provided for @profileMaxTestsShowLess.
-  ///
-  /// In it, this message translates to:
-  /// **'Mostra meno tentativi'**
-  String get profileMaxTestsShowLess;
 
   /// No description provided for @profileEdit.
   ///
@@ -1930,18 +1714,6 @@ abstract class AppLocalizations {
   /// **'Timer'**
   String get timerTitle;
 
-  /// No description provided for @timerSectionExercises.
-  ///
-  /// In it, this message translates to:
-  /// **'Timer esercizi'**
-  String get timerSectionExercises;
-
-  /// No description provided for @timerSectionWorkouts.
-  ///
-  /// In it, this message translates to:
-  /// **'Timer workout'**
-  String get timerSectionWorkouts;
-
   /// No description provided for @timerModeAmrap.
   ///
   /// In it, this message translates to:
@@ -2050,30 +1822,6 @@ abstract class AppLocalizations {
   /// **'Cambia timer'**
   String get timerChangeModeConfirm;
 
-  /// No description provided for @timerExercisePushUps.
-  ///
-  /// In it, this message translates to:
-  /// **'Piegamenti'**
-  String get timerExercisePushUps;
-
-  /// No description provided for @timerExercisePullUps.
-  ///
-  /// In it, this message translates to:
-  /// **'Trazioni'**
-  String get timerExercisePullUps;
-
-  /// No description provided for @timerExerciseSquats.
-  ///
-  /// In it, this message translates to:
-  /// **'Squat'**
-  String get timerExerciseSquats;
-
-  /// No description provided for @timerExercisePlank.
-  ///
-  /// In it, this message translates to:
-  /// **'Plank'**
-  String get timerExercisePlank;
-
   /// No description provided for @timerPhaseWork.
   ///
   /// In it, this message translates to:
@@ -2086,59 +1834,11 @@ abstract class AppLocalizations {
   /// **'RECUPERO'**
   String get timerPhaseRest;
 
-  /// No description provided for @timerWorkDurationLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Durata lavoro'**
-  String get timerWorkDurationLabel;
-
-  /// No description provided for @timerRestDurationLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Durata recupero'**
-  String get timerRestDurationLabel;
-
   /// No description provided for @timerRoundsLabel.
   ///
   /// In it, this message translates to:
   /// **'Round'**
   String get timerRoundsLabel;
-
-  /// No description provided for @timerExercisesLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Esercizi'**
-  String get timerExercisesLabel;
-
-  /// No description provided for @timerAddExercise.
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi esercizio'**
-  String get timerAddExercise;
-
-  /// No description provided for @timerExerciseNameLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Nome esercizio'**
-  String get timerExerciseNameLabel;
-
-  /// No description provided for @timerExerciseNameHint.
-  ///
-  /// In it, this message translates to:
-  /// **'Es. Muscle up, Dips, L-sit'**
-  String get timerExerciseNameHint;
-
-  /// No description provided for @timerNoExercisesConfigured.
-  ///
-  /// In it, this message translates to:
-  /// **'Aggiungi almeno un esercizio per avviare il timer.'**
-  String get timerNoExercisesConfigured;
-
-  /// No description provided for @timerControlSkip.
-  ///
-  /// In it, this message translates to:
-  /// **'SALTA'**
-  String get timerControlSkip;
 
   /// No description provided for @timerControlPause.
   ///
@@ -2157,42 +1857,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'RESET'**
   String get timerControlReset;
-
-  /// No description provided for @timerAdjustDecrease.
-  ///
-  /// In it, this message translates to:
-  /// **'-10s'**
-  String get timerAdjustDecrease;
-
-  /// No description provided for @timerAdjustIncrease.
-  ///
-  /// In it, this message translates to:
-  /// **'+10s'**
-  String get timerAdjustIncrease;
-
-  /// No description provided for @timerCountdownGo.
-  ///
-  /// In it, this message translates to:
-  /// **'Via'**
-  String get timerCountdownGo;
-
-  /// No description provided for @timerCountdownStop.
-  ///
-  /// In it, this message translates to:
-  /// **'Stop'**
-  String get timerCountdownStop;
-
-  /// No description provided for @timerNextPlaceholder.
-  ///
-  /// In it, this message translates to:
-  /// **'Prossimo: --'**
-  String get timerNextPlaceholder;
-
-  /// No description provided for @timerNextLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Prossimo: {name} · Serie {current}/{total}'**
-  String timerNextLabel(String name, int current, int total);
 
   /// No description provided for @weekNumber.
   ///
@@ -2692,12 +2356,6 @@ abstract class AppLocalizations {
   /// **'Impossibile importare il PDF. Verifica che contenga tabelle di allenamento GIORNO A–G.'**
   String get trainerPdfImportFailed;
 
-  /// No description provided for @trainerPdfPathUnavailable.
-  ///
-  /// In it, this message translates to:
-  /// **'Il PDF selezionato non è disponibile su questo dispositivo.'**
-  String get trainerPdfPathUnavailable;
-
   /// No description provided for @trainerPdfFileUnavailable.
   ///
   /// In it, this message translates to:
@@ -2715,42 +2373,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Scheda di allenamento'**
   String get trainerWorkoutPlanFallback;
-
-  /// No description provided for @trainerPlanStatusActive.
-  ///
-  /// In it, this message translates to:
-  /// **'Attivo'**
-  String get trainerPlanStatusActive;
-
-  /// No description provided for @trainerPlanStatusInactive.
-  ///
-  /// In it, this message translates to:
-  /// **'Inattivo'**
-  String get trainerPlanStatusInactive;
-
-  /// No description provided for @trainerPlanStatusUpcoming.
-  ///
-  /// In it, this message translates to:
-  /// **'In arrivo'**
-  String get trainerPlanStatusUpcoming;
-
-  /// No description provided for @trainerPlanStatusDraft.
-  ///
-  /// In it, this message translates to:
-  /// **'Bozza'**
-  String get trainerPlanStatusDraft;
-
-  /// No description provided for @trainerPlanStatusArchived.
-  ///
-  /// In it, this message translates to:
-  /// **'Archiviato'**
-  String get trainerPlanStatusArchived;
-
-  /// No description provided for @trainerWorkoutDays.
-  ///
-  /// In it, this message translates to:
-  /// **'Giorni di allenamento'**
-  String get trainerWorkoutDays;
 
   /// No description provided for @trainerMaxTests.
   ///
@@ -2817,12 +2439,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Data del test'**
   String get trainerMaxTestDate;
-
-  /// No description provided for @trainerMaxTestNoExercises.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessun esercizio disponibile.'**
-  String get trainerMaxTestNoExercises;
 
   /// No description provided for @trainerMaxTestSaved.
   ///

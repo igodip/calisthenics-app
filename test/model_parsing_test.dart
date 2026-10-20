@@ -36,4 +36,27 @@ void main() {
     expect(test.unit, 'reps');
     expect(test.recordedAt, DateTime.utc(2026, 8, 8, 10));
   });
+
+  for (final invalid in <String, Map<String, dynamic>>{
+    'missing identifier': {'id': null},
+    'missing measurement': {'value': null},
+    'infinite measurement': {'value': double.infinity},
+    'NaN measurement': {'value': double.nan},
+    'missing date': {'recorded_at': null},
+    'invalid date': {'recorded_at': 'invalid'},
+  }.entries) {
+    test('MaxTest rejects ${invalid.key}', () {
+      expect(
+        () => MaxTest.fromMap({
+          'id': 'test-id',
+          'exercise': 'pull-up',
+          'value': 12,
+          'unit': 'reps',
+          'recorded_at': '2026-10-20',
+          ...invalid.value,
+        }),
+        throwsFormatException,
+      );
+    });
+  }
 }

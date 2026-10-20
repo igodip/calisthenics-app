@@ -546,7 +546,7 @@ class _ProfilePageState extends State<ProfilePage> with WidgetsBindingObserver {
                       onTap: () async {
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Feature in development.")),
+                          SnackBar(content: Text(l10n.featureInDevelopment)),
                         );
                       },
                     ),

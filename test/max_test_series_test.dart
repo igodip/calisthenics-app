@@ -109,15 +109,4 @@ void main() {
     expect(maxTestCategoryForSlug('handstand-hold'), MaxTestCategory.skills);
     expect(MaxTestSeries.build([], [guide]), isEmpty);
   });
-
-  test('non-finite measurement data cannot reach progress charts', () {
-    expect(
-      () => MaxTest.fromMap({
-        'id': 'bad',
-        'value': double.infinity,
-        'recorded_at': '2026-10-20',
-      }),
-      throwsFormatException,
-    );
-  });
 }

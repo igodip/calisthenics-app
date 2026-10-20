@@ -9,6 +9,15 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get userIdTitle => 'ID utente';
+
+  @override
+  String get userIdUnavailable => 'Non disponibile';
+
+  @override
+  String get featureInDevelopment => 'Funzionalità in sviluppo.';
+
+  @override
   String get maxTestsResultsTitle => 'Risultati e storico';
 
   @override
@@ -137,7 +146,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get registrationPrivacyNotice =>
-      'Prima di creare un account, leggi come CaliSync usa i tuoi dati, inclusi l’accesso di trainer e amministratori e le anteprime delle notifiche.';
+      'Prima di creare un account, leggi come Calisync usa i tuoi dati, inclusi l’accesso di trainer e amministratori e le anteprime delle notifiche.';
 
   @override
   String get privacySettingsDescription =>
@@ -187,9 +196,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get deleteAccountError =>
       'Impossibile completare l’eliminazione. Riprova o contatta dipaoloigor@gmail.com.';
-
-  @override
-  String get deleteAccountSettings => 'Impostazioni ed eliminazione account';
 
   @override
   String get appTitle => 'Calisync';
@@ -265,9 +271,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onboardingNext => 'Continua';
-
-  @override
-  String get onboardingGetStarted => 'Inizia';
 
   @override
   String get guidesTitle => 'Skill';
@@ -362,21 +365,13 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeProgressNoPlan =>
-      'Nessun workout plan disponibile al momento.';
-
-  @override
-  String get homePlanStatsTitle => 'Statistiche del piano';
+      'Nessun piano di allenamento disponibile al momento.';
 
   @override
   String get homePlanStatsDaysLabel => 'Giorni';
 
   @override
   String get homePlanStatsExercisesLabel => 'Esercizi';
-
-  @override
-  String homePlanStatsCompletionValue(int progress) {
-    return '$progress% completato';
-  }
 
   @override
   String get workoutPlanTitle => 'Piano di allenamento';
@@ -451,60 +446,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get bugReportSettingsSubtitle =>
       'Hai trovato un bug? Aiutaci a risolverlo.';
-
-  @override
-  String get bugReportTitle => 'Segnalazione bug';
-
-  @override
-  String get bugReportCategoryLabel => 'Tipo di problema';
-
-  @override
-  String get bugReportCategoryBug => 'Bug';
-
-  @override
-  String get bugReportCategoryLogin => 'Problema di accesso';
-
-  @override
-  String get bugReportCategoryOther => 'Altro';
-
-  @override
-  String get bugReportTitleLabel => 'Titolo';
-
-  @override
-  String get bugReportTitleHint => 'Riassumi il problema';
-
-  @override
-  String get bugReportDescriptionLabel => 'Descrizione';
-
-  @override
-  String get bugReportDescriptionHint => 'Descrivi cosa è successo';
-
-  @override
-  String get bugReportStepsLabel => 'Passaggi per riprodurlo (facoltativo)';
-
-  @override
-  String get bugReportStepsHint => 'Indica i passaggi che hai seguito';
-
-  @override
-  String get bugReportExpectedResultLabel => 'Risultato atteso (facoltativo)';
-
-  @override
-  String get bugReportExpectedResultHint =>
-      'Che cosa ti aspettavi che succedesse?';
-
-  @override
-  String get bugReportSubmit => 'Invia segnalazione';
-
-  @override
-  String get bugReportSubmitted =>
-      'Segnalazione inviata. Grazie per averci aiutato.';
-
-  @override
-  String get bugReportSubmitError =>
-      'Impossibile inviare la segnalazione. Riprova.';
-
-  @override
-  String get bugReportRequired => 'Compila questo campo.';
 
   @override
   String get refresh => 'Aggiorna';
@@ -730,10 +671,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileMaxTestsTitle => 'Test massimali';
 
   @override
-  String get profileMaxTestsDescription =>
-      'Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.';
-
-  @override
   String get profileMaxTestsPeriodLabel => 'Periodo';
 
   @override
@@ -749,61 +686,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileMaxTestsPeriodAll => 'Tutto il periodo';
 
   @override
-  String profileMaxTestsEmptyPeriod(String period) {
-    return 'Nessun test massimale registrato in $period. Prova un intervallo più lungo.';
-  }
-
-  @override
   String get profileMaxTestsBestPeriodLabel =>
       'Migliore nel periodo selezionato';
 
   @override
   String get profileMaxTestsRefresh => 'Aggiorna';
-
-  @override
-  String get profileMaxTestsHistoryAction => 'Vedi progressi';
-
-  @override
-  String get profileMaxTestsEmpty =>
-      'Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.';
-
-  @override
-  String get profileMaxTestsHistoryTitle => 'Progressi nel tempo';
-
-  @override
-  String get profileMaxTestsHistoryDescription =>
-      'Rivedi ogni prova e osserva come evolvono i tuoi massimali.';
-
-  @override
-  String get profileMaxTestsHistoryEmpty =>
-      'Nessun test massimale registrato. Aggiungi una nuova prova per vedere i progressi nel tempo.';
-
-  @override
-  String get profileMaxTestsRecentPerformanceLabel => 'Performance recente';
-
-  @override
-  String get profileMaxTestsGoalLabel => 'Obiettivo';
-
-  @override
-  String get profileMaxTestsTipsTitle => 'Suggerimenti e tutorial';
-
-  @override
-  String get profileMaxTestsTipsSubtitle =>
-      'Rivedi i consigli tecnici e gli esercizi complementari.';
-
-  @override
-  String get profileMaxTestsEmptyShort =>
-      'Aggiungi un nuovo test per vedere il grafico delle prestazioni.';
-
-  @override
-  String profileMaxTestsSessionLabel(int index) {
-    return 'Sessione $index';
-  }
-
-  @override
-  String profileMaxTestsHistoryError(Object error) {
-    return 'Impossibile caricare lo storico dei progressi: $error';
-  }
 
   @override
   String profileMaxTestsHistoryDeltaLabel(String delta) {
@@ -814,23 +701,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileMaxTestsHistoryFirstEntry => 'Prima registrazione';
 
   @override
-  String profileMaxTestsError(Object error) {
-    return 'Impossibile caricare i test massimali: $error';
-  }
-
-  @override
-  String profileMaxTestsDateLabel(String date) {
-    return 'Registrato il $date';
-  }
-
-  @override
   String get profileMaxTestsBestLabel => 'Miglior risultato';
-
-  @override
-  String get profileMaxTestsShowMore => 'Mostra tutti i tentativi';
-
-  @override
-  String get profileMaxTestsShowLess => 'Mostra meno tentativi';
 
   @override
   String get profileEdit => 'Modifica profilo';
@@ -1041,12 +912,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get timerTitle => 'Timer';
 
   @override
-  String get timerSectionExercises => 'Timer esercizi';
-
-  @override
-  String get timerSectionWorkouts => 'Timer workout';
-
-  @override
   String get timerModeAmrap => 'AMRAP';
 
   @override
@@ -1104,50 +969,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get timerChangeModeConfirm => 'Cambia timer';
 
   @override
-  String get timerExercisePushUps => 'Piegamenti';
-
-  @override
-  String get timerExercisePullUps => 'Trazioni';
-
-  @override
-  String get timerExerciseSquats => 'Squat';
-
-  @override
-  String get timerExercisePlank => 'Plank';
-
-  @override
   String get timerPhaseWork => 'LAVORO';
 
   @override
   String get timerPhaseRest => 'RECUPERO';
 
   @override
-  String get timerWorkDurationLabel => 'Durata lavoro';
-
-  @override
-  String get timerRestDurationLabel => 'Durata recupero';
-
-  @override
   String get timerRoundsLabel => 'Round';
-
-  @override
-  String get timerExercisesLabel => 'Esercizi';
-
-  @override
-  String get timerAddExercise => 'Aggiungi esercizio';
-
-  @override
-  String get timerExerciseNameLabel => 'Nome esercizio';
-
-  @override
-  String get timerExerciseNameHint => 'Es. Muscle up, Dips, L-sit';
-
-  @override
-  String get timerNoExercisesConfigured =>
-      'Aggiungi almeno un esercizio per avviare il timer.';
-
-  @override
-  String get timerControlSkip => 'SALTA';
 
   @override
   String get timerControlPause => 'PAUSA';
@@ -1157,26 +985,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get timerControlReset => 'RESET';
-
-  @override
-  String get timerAdjustDecrease => '-10s';
-
-  @override
-  String get timerAdjustIncrease => '+10s';
-
-  @override
-  String get timerCountdownGo => 'Via';
-
-  @override
-  String get timerCountdownStop => 'Stop';
-
-  @override
-  String get timerNextPlaceholder => 'Prossimo: --';
-
-  @override
-  String timerNextLabel(String name, int current, int total) {
-    return 'Prossimo: $name · Serie $current/$total';
-  }
 
   @override
   String weekNumber(int week) {
@@ -1448,10 +1256,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Impossibile importare il PDF. Verifica che contenga tabelle di allenamento GIORNO A–G.';
 
   @override
-  String get trainerPdfPathUnavailable =>
-      'Il PDF selezionato non è disponibile su questo dispositivo.';
-
-  @override
   String get trainerPdfFileUnavailable =>
       'PDF non valido o superiore a 25 MB. Seleziona un altro file.';
 
@@ -1460,24 +1264,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get trainerWorkoutPlanFallback => 'Scheda di allenamento';
-
-  @override
-  String get trainerPlanStatusActive => 'Attivo';
-
-  @override
-  String get trainerPlanStatusInactive => 'Inattivo';
-
-  @override
-  String get trainerPlanStatusUpcoming => 'In arrivo';
-
-  @override
-  String get trainerPlanStatusDraft => 'Bozza';
-
-  @override
-  String get trainerPlanStatusArchived => 'Archiviato';
-
-  @override
-  String get trainerWorkoutDays => 'Giorni di allenamento';
 
   @override
   String get trainerMaxTests => 'Test massimali';
@@ -1513,9 +1299,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get trainerMaxTestDate => 'Data del test';
-
-  @override
-  String get trainerMaxTestNoExercises => 'Nessun esercizio disponibile.';
 
   @override
   String get trainerMaxTestSaved => 'Test massimale salvato.';

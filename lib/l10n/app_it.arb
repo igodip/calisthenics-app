@@ -1,4 +1,7 @@
 {
+  "userIdTitle": "ID utente",
+  "userIdUnavailable": "Non disponibile",
+  "featureInDevelopment": "Funzionalità in sviluppo.",
   "maxTestsResultsTitle": "Risultati e storico",
   "maxTestsFilteredHistory": "Storico nel periodo selezionato",
   "maxCategoryAll": "Tutti",
@@ -39,7 +42,7 @@
   "copy": "Copia",
   "copied": "Copiato",
   "privacyPolicyTitle": "Informativa sulla privacy",
-  "registrationPrivacyNotice": "Prima di creare un account, leggi come CaliSync usa i tuoi dati, inclusi l’accesso di trainer e amministratori e le anteprime delle notifiche.",
+  "registrationPrivacyNotice": "Prima di creare un account, leggi come Calisync usa i tuoi dati, inclusi l’accesso di trainer e amministratori e le anteprime delle notifiche.",
   "privacySettingsDescription": "Scopri come vengono trattati account, allenamenti, foto e notifiche e come richiedere l’eliminazione.",
   "privacyPolicyOpenError": "Impossibile aprire l’informativa. Apri questo indirizzo nel browser:",
   "waitingForTrainerTitle": "In attesa del tuo trainer",
@@ -54,7 +57,6 @@
   "deleteAccountDescription": "Rimuovi definitivamente il tuo account e i dati associati.",
   "deleteAccountProgress": "Eliminazione account…",
   "deleteAccountError": "Impossibile completare l’eliminazione. Riprova o contatta dipaoloigor@gmail.com.",
-  "deleteAccountSettings": "Impostazioni ed eliminazione account",
   "appTitle": "Calisync",
   "authErrorMessage": "Errore durante l'autenticazione",
   "navHome": "Home",
@@ -79,7 +81,6 @@
   "onboardingSkip": "Salta",
   "onboardingBack": "Indietro",
   "onboardingNext": "Continua",
-  "onboardingGetStarted": "Inizia",
   "guidesTitle": "Skill",
   "guidesSubtitle": "Esplora tecnica, focus e consigli del coach per ogni skill.",
   "guidesLoadError": "Impossibile caricare le guide delle skill al momento.",
@@ -125,18 +126,9 @@
       }
     }
   },
-  "homeProgressNoPlan": "Nessun workout plan disponibile al momento.",
-  "homePlanStatsTitle": "Statistiche del piano",
+  "homeProgressNoPlan": "Nessun piano di allenamento disponibile al momento.",
   "homePlanStatsDaysLabel": "Giorni",
   "homePlanStatsExercisesLabel": "Esercizi",
-  "homePlanStatsCompletionValue": "{progress}% completato",
-  "@homePlanStatsCompletionValue": {
-    "placeholders": {
-      "progress": {
-        "type": "int"
-      }
-    }
-  },
   "workoutPlanTitle": "Piano di allenamento",
   "workoutPlanPdfView": "Visualizza PDF del trainer",
   "workoutPlanPdfError": "Impossibile caricare il PDF della scheda. Riprova.",
@@ -159,23 +151,6 @@
   "traineeFeedbackDeleteMessage": "Eliminare questo feedback? L'operazione non può essere annullata.",
   "bugReportSettingsTitle": "Segnala un problema",
   "bugReportSettingsSubtitle": "Hai trovato un bug? Aiutaci a risolverlo.",
-  "bugReportTitle": "Segnalazione bug",
-  "bugReportCategoryLabel": "Tipo di problema",
-  "bugReportCategoryBug": "Bug",
-  "bugReportCategoryLogin": "Problema di accesso",
-  "bugReportCategoryOther": "Altro",
-  "bugReportTitleLabel": "Titolo",
-  "bugReportTitleHint": "Riassumi il problema",
-  "bugReportDescriptionLabel": "Descrizione",
-  "bugReportDescriptionHint": "Descrivi cosa è successo",
-  "bugReportStepsLabel": "Passaggi per riprodurlo (facoltativo)",
-  "bugReportStepsHint": "Indica i passaggi che hai seguito",
-  "bugReportExpectedResultLabel": "Risultato atteso (facoltativo)",
-  "bugReportExpectedResultHint": "Che cosa ti aspettavi che succedesse?",
-  "bugReportSubmit": "Invia segnalazione",
-  "bugReportSubmitted": "Segnalazione inviata. Grazie per averci aiutato.",
-  "bugReportSubmitError": "Impossibile inviare la segnalazione. Riprova.",
-  "bugReportRequired": "Compila questo campo.",
   "refresh": "Aggiorna",
   "homeEmptyTitle": "Nessun allenamento disponibile",
   "homeEmptyDescription": "Contatta il tuo coach per ricevere una nuova scheda.",
@@ -324,48 +299,13 @@
     }
   },
   "profileMaxTestsTitle": "Test massimali",
-  "profileMaxTestsDescription": "Tieni traccia dei tuoi massimali per vedere come progredisci nel tempo.",
   "profileMaxTestsPeriodLabel": "Periodo",
   "profileMaxTestsPeriodMonth": "Ultimo mese",
   "profileMaxTestsPeriodHalfYear": "Ultimi 6 mesi",
   "profileMaxTestsPeriodYear": "Ultimo anno",
   "profileMaxTestsPeriodAll": "Tutto il periodo",
-  "profileMaxTestsEmptyPeriod": "Nessun test massimale registrato in {period}. Prova un intervallo più lungo.",
-  "@profileMaxTestsEmptyPeriod": {
-    "placeholders": {
-      "period": {
-        "type": "String"
-      }
-    }
-  },
   "profileMaxTestsBestPeriodLabel": "Migliore nel periodo selezionato",
   "profileMaxTestsRefresh": "Aggiorna",
-  "profileMaxTestsHistoryAction": "Vedi progressi",
-  "profileMaxTestsEmpty": "Nessun test massimale registrato. Aggiungi il primo per iniziare a tracciare i progressi.",
-  "profileMaxTestsHistoryTitle": "Progressi nel tempo",
-  "profileMaxTestsHistoryDescription": "Rivedi ogni prova e osserva come evolvono i tuoi massimali.",
-  "profileMaxTestsHistoryEmpty": "Nessun test massimale registrato. Aggiungi una nuova prova per vedere i progressi nel tempo.",
-  "profileMaxTestsRecentPerformanceLabel": "Performance recente",
-  "profileMaxTestsGoalLabel": "Obiettivo",
-  "profileMaxTestsTipsTitle": "Suggerimenti e tutorial",
-  "profileMaxTestsTipsSubtitle": "Rivedi i consigli tecnici e gli esercizi complementari.",
-  "profileMaxTestsEmptyShort": "Aggiungi un nuovo test per vedere il grafico delle prestazioni.",
-  "profileMaxTestsSessionLabel": "Sessione {index}",
-  "@profileMaxTestsSessionLabel": {
-    "placeholders": {
-      "index": {
-        "type": "int"
-      }
-    }
-  },
-  "profileMaxTestsHistoryError": "Impossibile caricare lo storico dei progressi: {error}",
-  "@profileMaxTestsHistoryError": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
   "profileMaxTestsHistoryDeltaLabel": "Variazione {delta}",
   "@profileMaxTestsHistoryDeltaLabel": {
     "placeholders": {
@@ -375,25 +315,7 @@
     }
   },
   "profileMaxTestsHistoryFirstEntry": "Prima registrazione",
-  "profileMaxTestsError": "Impossibile caricare i test massimali: {error}",
-  "@profileMaxTestsError": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
-  "profileMaxTestsDateLabel": "Registrato il {date}",
-  "@profileMaxTestsDateLabel": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
   "profileMaxTestsBestLabel": "Miglior risultato",
-  "profileMaxTestsShowMore": "Mostra tutti i tentativi",
-  "profileMaxTestsShowLess": "Mostra meno tentativi",
   "profileEdit": "Modifica profilo",
   "profileEditSubtitle": "Aggiorna le tue informazioni personali",
   "profileSettingsSubtitle": "Tema, privacy e gestione dell’account",
@@ -491,8 +413,6 @@
   "add": "Aggiungi",
   "start": "Avvia",
   "timerTitle": "Timer",
-  "timerSectionExercises": "Timer esercizi",
-  "timerSectionWorkouts": "Timer workout",
   "timerModeAmrap": "AMRAP",
   "timerModeEmom": "EMOM",
   "timerModeForTime": "FOR TIME",
@@ -518,43 +438,12 @@
   "timerChangeModeTitle": "Cambiare timer?",
   "timerChangeModeWarning": "Se cambi timer perderai i progressi del timer attuale.",
   "timerChangeModeConfirm": "Cambia timer",
-  "timerExercisePushUps": "Piegamenti",
-  "timerExercisePullUps": "Trazioni",
-  "timerExerciseSquats": "Squat",
-  "timerExercisePlank": "Plank",
   "timerPhaseWork": "LAVORO",
   "timerPhaseRest": "RECUPERO",
-  "timerWorkDurationLabel": "Durata lavoro",
-  "timerRestDurationLabel": "Durata recupero",
   "timerRoundsLabel": "Round",
-  "timerExercisesLabel": "Esercizi",
-  "timerAddExercise": "Aggiungi esercizio",
-  "timerExerciseNameLabel": "Nome esercizio",
-  "timerExerciseNameHint": "Es. Muscle up, Dips, L-sit",
-  "timerNoExercisesConfigured": "Aggiungi almeno un esercizio per avviare il timer.",
-  "timerControlSkip": "SALTA",
   "timerControlPause": "PAUSA",
   "timerControlPlay": "AVVIA",
   "timerControlReset": "RESET",
-  "timerAdjustDecrease": "-10s",
-  "timerAdjustIncrease": "+10s",
-  "timerCountdownGo": "Via",
-  "timerCountdownStop": "Stop",
-  "timerNextPlaceholder": "Prossimo: --",
-  "timerNextLabel": "Prossimo: {name} · Serie {current}/{total}",
-  "@timerNextLabel": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "weekNumber": "Settimana {week}",
   "@weekNumber": {
     "placeholders": {
@@ -651,16 +540,9 @@
   "trainerPdfConfirmImport": "Importa piano",
   "trainerPdfImportSuccess": "Scheda di allenamento importata correttamente.",
   "trainerPdfImportFailed": "Impossibile importare il PDF. Verifica che contenga tabelle di allenamento GIORNO A–G.",
-  "trainerPdfPathUnavailable": "Il PDF selezionato non è disponibile su questo dispositivo.",
   "trainerPdfFileUnavailable": "PDF non valido o superiore a 25 MB. Seleziona un altro file.",
   "trainerNoPlans": "Nessun piano creato.",
   "trainerWorkoutPlanFallback": "Scheda di allenamento",
-  "trainerPlanStatusActive": "Attivo",
-  "trainerPlanStatusInactive": "Inattivo",
-  "trainerPlanStatusUpcoming": "In arrivo",
-  "trainerPlanStatusDraft": "Bozza",
-  "trainerPlanStatusArchived": "Archiviato",
-  "trainerWorkoutDays": "Giorni di allenamento",
   "trainerMaxTests": "Test massimali",
   "trainerNoMaxTests": "Nessun test massimale.",
   "trainerAddMaxTest": "Aggiungi test massimale",
@@ -672,7 +554,6 @@
   "trainerMaxTestValueInvalid": "Inserisci un valore maggiore di zero.",
   "trainerMaxTestUnit": "Unità",
   "trainerMaxTestDate": "Data del test",
-  "trainerMaxTestNoExercises": "Nessun esercizio disponibile.",
   "trainerMaxTestSaved": "Test massimale salvato.",
   "trainerMaxTestPrivateNotesHint": "Visibili solo ai trainer assegnati",
   "trainerEditMaxTestNotes": "Modifica note private",

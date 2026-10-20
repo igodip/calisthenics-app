@@ -1,4 +1,7 @@
 {
+  "userIdTitle": "User ID",
+  "userIdUnavailable": "Not available",
+  "featureInDevelopment": "Feature in development.",
   "maxTestsResultsTitle": "Results & history",
   "maxTestsFilteredHistory": "History in selected period",
   "maxCategoryAll": "All",
@@ -39,7 +42,7 @@
   "copy": "Copy",
   "copied": "Copied",
   "privacyPolicyTitle": "Privacy policy",
-  "registrationPrivacyNotice": "Before creating an account, review how CaliSync uses your data, including trainer and administrator access and notification previews.",
+  "registrationPrivacyNotice": "Before creating an account, review how Calisync uses your data, including trainer and administrator access and notification previews.",
   "privacySettingsDescription": "Read how your account, training, photos and notifications are processed, and how to request deletion.",
   "privacyPolicyOpenError": "Could not open the privacy policy. Open this address in your browser:",
   "waitingForTrainerTitle": "Waiting for your trainer",
@@ -54,7 +57,6 @@
   "deleteAccountDescription": "Permanently remove your account and associated data.",
   "deleteAccountProgress": "Deleting account…",
   "deleteAccountError": "Could not complete account deletion. Retry or contact dipaoloigor@gmail.com.",
-  "deleteAccountSettings": "Settings and account deletion",
   "appTitle": "Calisync",
   "authErrorMessage": "Authentication error",
   "navHome": "Home",
@@ -79,7 +81,6 @@
   "onboardingSkip": "Skip",
   "onboardingBack": "Back",
   "onboardingNext": "Continue",
-  "onboardingGetStarted": "Get started",
   "guidesTitle": "Skills",
   "guidesSubtitle": "Explore techniques, focus areas, and coaching tips for every skill.",
   "guidesLoadError": "Unable to load skill guides right now.",
@@ -126,17 +127,8 @@
     }
   },
   "homeProgressNoPlan": "No workout plan available yet.",
-  "homePlanStatsTitle": "Plan stats",
   "homePlanStatsDaysLabel": "Days",
   "homePlanStatsExercisesLabel": "Exercises",
-  "homePlanStatsCompletionValue": "{progress}% completed",
-  "@homePlanStatsCompletionValue": {
-    "placeholders": {
-      "progress": {
-        "type": "int"
-      }
-    }
-  },
   "workoutPlanTitle": "Workout plan",
   "workoutPlanPdfView": "View trainer PDF",
   "workoutPlanPdfError": "Could not load the workout plan PDF. Please try again.",
@@ -159,23 +151,6 @@
   "traineeFeedbackDeleteMessage": "Delete this feedback? This cannot be undone.",
   "bugReportSettingsTitle": "Report a problem",
   "bugReportSettingsSubtitle": "Found a bug? Help us fix it.",
-  "bugReportTitle": "Bug report",
-  "bugReportCategoryLabel": "Type of problem",
-  "bugReportCategoryBug": "Bug",
-  "bugReportCategoryLogin": "Login issue",
-  "bugReportCategoryOther": "Other",
-  "bugReportTitleLabel": "Title",
-  "bugReportTitleHint": "Summarize the problem",
-  "bugReportDescriptionLabel": "Description",
-  "bugReportDescriptionHint": "Describe what happened",
-  "bugReportStepsLabel": "Steps to reproduce (optional)",
-  "bugReportStepsHint": "List the steps you took",
-  "bugReportExpectedResultLabel": "Expected result (optional)",
-  "bugReportExpectedResultHint": "What did you expect to happen?",
-  "bugReportSubmit": "Send report",
-  "bugReportSubmitted": "Report sent. Thanks for helping us.",
-  "bugReportSubmitError": "Could not send the report. Please try again.",
-  "bugReportRequired": "This field is required.",
   "refresh": "Refresh",
   "homeEmptyTitle": "No workouts available",
   "homeEmptyDescription": "Contact your coach to receive a new plan.",
@@ -324,48 +299,13 @@
     }
   },
   "profileMaxTestsTitle": "Max test tracking",
-  "profileMaxTestsDescription": "Log your best attempts to see how your strength evolves over time.",
   "profileMaxTestsPeriodLabel": "Period",
   "profileMaxTestsPeriodMonth": "Last 1 month",
   "profileMaxTestsPeriodHalfYear": "Last 6 months",
   "profileMaxTestsPeriodYear": "Last 1 year",
   "profileMaxTestsPeriodAll": "All time",
-  "profileMaxTestsEmptyPeriod": "No max tests recorded in {period}. Try a longer time range.",
-  "@profileMaxTestsEmptyPeriod": {
-    "placeholders": {
-      "period": {
-        "type": "String"
-      }
-    }
-  },
   "profileMaxTestsBestPeriodLabel": "Best in selected period",
   "profileMaxTestsRefresh": "Refresh",
-  "profileMaxTestsHistoryAction": "View progress",
-  "profileMaxTestsEmpty": "No max tests recorded yet. Add your first attempt to start tracking progress.",
-  "profileMaxTestsHistoryTitle": "Progress over time",
-  "profileMaxTestsHistoryDescription": "Review each attempt and see how your max values evolve.",
-  "profileMaxTestsHistoryEmpty": "No max tests recorded yet. Add a new attempt to see your progress over time.",
-  "profileMaxTestsRecentPerformanceLabel": "Recent Performance",
-  "profileMaxTestsGoalLabel": "Goal",
-  "profileMaxTestsTipsTitle": "Tips & Tutorials",
-  "profileMaxTestsTipsSubtitle": "Review technique cues and accessory drills.",
-  "profileMaxTestsEmptyShort": "Add a new test to see your performance chart.",
-  "profileMaxTestsSessionLabel": "Session {index}",
-  "@profileMaxTestsSessionLabel": {
-    "placeholders": {
-      "index": {
-        "type": "int"
-      }
-    }
-  },
-  "profileMaxTestsHistoryError": "Unable to load progress history: {error}",
-  "@profileMaxTestsHistoryError": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
   "profileMaxTestsHistoryDeltaLabel": "Change {delta}",
   "@profileMaxTestsHistoryDeltaLabel": {
     "placeholders": {
@@ -375,25 +315,7 @@
     }
   },
   "profileMaxTestsHistoryFirstEntry": "First recorded attempt",
-  "profileMaxTestsError": "Unable to load max tests: {error}",
-  "@profileMaxTestsError": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
-  "profileMaxTestsDateLabel": "Recorded on {date}",
-  "@profileMaxTestsDateLabel": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
   "profileMaxTestsBestLabel": "Personal best",
-  "profileMaxTestsShowMore": "Show all attempts",
-  "profileMaxTestsShowLess": "Show fewer attempts",
   "profileEdit": "Edit profile",
   "profileEditSubtitle": "Update your personal details",
   "profileSettingsSubtitle": "Theme, privacy and account management",
@@ -491,8 +413,6 @@
   "add": "Add",
   "start": "Start",
   "timerTitle": "Timer",
-  "timerSectionExercises": "Exercise timer",
-  "timerSectionWorkouts": "Workout timers",
   "timerModeAmrap": "AMRAP",
   "timerModeEmom": "EMOM",
   "timerModeForTime": "FOR TIME",
@@ -518,43 +438,12 @@
   "timerChangeModeTitle": "Change timer?",
   "timerChangeModeWarning": "If you change timers, you will lose the progress on the current timer.",
   "timerChangeModeConfirm": "Change timer",
-  "timerExercisePushUps": "Push-ups",
-  "timerExercisePullUps": "Pull-ups",
-  "timerExerciseSquats": "Squats",
-  "timerExercisePlank": "Plank",
   "timerPhaseWork": "WORK",
   "timerPhaseRest": "REST",
-  "timerWorkDurationLabel": "Work duration",
-  "timerRestDurationLabel": "Rest duration",
   "timerRoundsLabel": "Rounds",
-  "timerExercisesLabel": "Exercises",
-  "timerAddExercise": "Add exercise",
-  "timerExerciseNameLabel": "Exercise name",
-  "timerExerciseNameHint": "E.g. Muscle up, Dips, L-sit",
-  "timerNoExercisesConfigured": "Add at least one exercise to start the timer.",
-  "timerControlSkip": "SKIP",
   "timerControlPause": "PAUSE",
   "timerControlPlay": "PLAY",
   "timerControlReset": "RESET",
-  "timerAdjustDecrease": "-10s",
-  "timerAdjustIncrease": "+10s",
-  "timerCountdownGo": "Go",
-  "timerCountdownStop": "Stop",
-  "timerNextPlaceholder": "Next: --",
-  "timerNextLabel": "Next: {name} · Set {current}/{total}",
-  "@timerNextLabel": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "weekNumber": "Week {week}",
   "@weekNumber": {
     "placeholders": {
@@ -577,7 +466,7 @@
   "trainerMenuGroup": "TRAINER",
   "trainerNavDashboard": "Trainer dashboard",
   "trainerNavTrainees": "My trainees",
-  "trainerNavFeedback": "Trainer feedback",
+  "trainerNavFeedback": "Trainee feedback",
   "trainerNavPayments": "Trainee payments",
   "trainerWorkspaceTitle": "Trainer workspace",
   "trainerWorkspaceSubtitle": "Your assigned athletes and their latest activity.",
@@ -651,16 +540,9 @@
   "trainerPdfConfirmImport": "Import plan",
   "trainerPdfImportSuccess": "Workout plan imported successfully.",
   "trainerPdfImportFailed": "The PDF could not be imported. Make sure it contains GIORNO A–G workout tables.",
-  "trainerPdfPathUnavailable": "The selected PDF is not available on this device.",
   "trainerPdfFileUnavailable": "The PDF is invalid or larger than 25 MB. Select another file.",
   "trainerNoPlans": "No plans created.",
   "trainerWorkoutPlanFallback": "Workout plan",
-  "trainerPlanStatusActive": "Active",
-  "trainerPlanStatusInactive": "Inactive",
-  "trainerPlanStatusUpcoming": "Upcoming",
-  "trainerPlanStatusDraft": "Draft",
-  "trainerPlanStatusArchived": "Archived",
-  "trainerWorkoutDays": "Workout days",
   "trainerMaxTests": "Max tests",
   "trainerNoMaxTests": "No max tests.",
   "trainerAddMaxTest": "Add max test",
@@ -672,7 +554,6 @@
   "trainerMaxTestValueInvalid": "Enter a value greater than zero.",
   "trainerMaxTestUnit": "Unit",
   "trainerMaxTestDate": "Test date",
-  "trainerMaxTestNoExercises": "No exercises are available.",
   "trainerMaxTestSaved": "Max test saved.",
   "trainerMaxTestPrivateNotesHint": "Visible only to assigned trainers",
   "trainerEditMaxTestNotes": "Edit private notes",
