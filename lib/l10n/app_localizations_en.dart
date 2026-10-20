@@ -444,6 +444,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bugReportSettingsSubtitle => 'Found a bug? Help us fix it.';
 
   @override
+  String get bugReportTitle => 'Bug report';
+
+  @override
+  String get bugReportTitleLabel => 'Title';
+
+  @override
+  String get bugReportTitleHint => 'Summarize the problem';
+
+  @override
+  String get bugReportDescriptionLabel => 'Description';
+
+  @override
+  String get bugReportDescriptionHint => 'Describe what happened';
+
+  @override
+  String get bugReportStepsLabel => 'Steps to reproduce (optional)';
+
+  @override
+  String get bugReportStepsHint => 'List the steps you took';
+
+  @override
+  String get bugReportExpectedResultLabel => 'Expected result (optional)';
+
+  @override
+  String get bugReportExpectedResultHint => 'What did you expect to happen?';
+
+  @override
+  String get bugReportActualResultLabel => 'Actual result (optional)';
+
+  @override
+  String get bugReportActualResultHint => 'What happened instead?';
+
+  @override
+  String get bugReportSubmit => 'Send report';
+
+  @override
+  String get bugReportSubmitted => 'Report sent. Thanks for helping us.';
+
+  @override
+  String bugReportSubmitError(String error) {
+    return 'Could not send the report: $error';
+  }
+
+  @override
+  String get bugReportRequired => 'This field is required.';
+
+  @override
   String get adminBugReportsTitle => 'Bug reports';
 
   @override

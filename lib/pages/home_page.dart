@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:calisync/admin/admin_repository.dart';
 import 'package:calisync/admin/pages/admin_console_page.dart';
-import 'package:calisync/admin/pages/bug_reports.dart';
+import 'package:calisync/admin/pages/admin_bug_reports.dart';
 import 'package:calisync/pages/profile_page.dart';
 import 'package:calisync/notifications/push_notification_service.dart';
 import 'package:calisync/pages/terminology_page.dart';

@@ -898,6 +898,96 @@ abstract class AppLocalizations {
   /// **'Hai trovato un bug? Aiutaci a risolverlo.'**
   String get bugReportSettingsSubtitle;
 
+  /// No description provided for @bugReportTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalazione bug'**
+  String get bugReportTitle;
+
+  /// No description provided for @bugReportTitleLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo'**
+  String get bugReportTitleLabel;
+
+  /// No description provided for @bugReportTitleHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Riassumi il problema'**
+  String get bugReportTitleHint;
+
+  /// No description provided for @bugReportDescriptionLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione'**
+  String get bugReportDescriptionLabel;
+
+  /// No description provided for @bugReportDescriptionHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrivi cosa è successo'**
+  String get bugReportDescriptionHint;
+
+  /// No description provided for @bugReportStepsLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Passaggi per riprodurlo (facoltativo)'**
+  String get bugReportStepsLabel;
+
+  /// No description provided for @bugReportStepsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Indica i passaggi che hai seguito'**
+  String get bugReportStepsHint;
+
+  /// No description provided for @bugReportExpectedResultLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultato atteso (facoltativo)'**
+  String get bugReportExpectedResultLabel;
+
+  /// No description provided for @bugReportExpectedResultHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Che cosa ti aspettavi che succedesse?'**
+  String get bugReportExpectedResultHint;
+
+  /// No description provided for @bugReportActualResultLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultato ottenuto (facoltativo)'**
+  String get bugReportActualResultLabel;
+
+  /// No description provided for @bugReportActualResultHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Che cosa è successo invece?'**
+  String get bugReportActualResultHint;
+
+  /// No description provided for @bugReportSubmit.
+  ///
+  /// In it, this message translates to:
+  /// **'Invia segnalazione'**
+  String get bugReportSubmit;
+
+  /// No description provided for @bugReportSubmitted.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalazione inviata. Grazie per averci aiutato.'**
+  String get bugReportSubmitted;
+
+  /// No description provided for @bugReportSubmitError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile inviare la segnalazione: {error}'**
+  String bugReportSubmitError(String error);
+
+  /// No description provided for @bugReportRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Compila questo campo.'**
+  String get bugReportRequired;
+
   /// No description provided for @adminBugReportsTitle.
   ///
   /// In it, this message translates to:

@@ -62,3 +62,63 @@ class AdminAssignment {
     trainerName: (map['trainer_name'] as String?) ?? 'Trainer',
   );
 }
+
+class BugReport {
+  const BugReport({
+    required this.id,
+    required this.reporterId,
+    required this.title,
+    required this.description,
+    required this.reproductionSteps,
+    required this.expectedBehavior,
+    required this.actualBehavior,
+    required this.platform,
+    required this.appVersion,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  final String id;
+  final String reporterId;
+  final String title;
+  final String description;
+  final String reproductionSteps;
+  final String expectedBehavior;
+  final String actualBehavior;
+  final String platform;
+  final String appVersion;
+  final String status;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  BugReport copyWith({String? status}) => BugReport(
+    id: id,
+    reporterId: reporterId,
+    title: title,
+    description: description,
+    reproductionSteps: reproductionSteps,
+    expectedBehavior: expectedBehavior,
+    actualBehavior: actualBehavior,
+    platform: platform,
+    appVersion: appVersion,
+    status: status ?? this.status,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  );
+
+  factory BugReport.fromMap(Map<String, dynamic> map) => BugReport(
+    id: map['id'] as String,
+    reporterId: (map['reporter_id'] as String?) ?? '',
+    title: (map['title'] as String?) ?? '',
+    description: (map['description'] as String?) ?? '',
+    reproductionSteps: (map['reproduction_steps'] as String?) ?? '',
+    expectedBehavior: (map['expected_behavior'] as String?) ?? '',
+    actualBehavior: (map['actual_behavior'] as String?) ?? '',
+    platform: (map['platform'] as String?) ?? '',
+    appVersion: (map['app_version'] as String?) ?? '',
+    status: (map['status'] as String?) ?? '',
+    createdAt: DateTime.tryParse((map['created_at'] as String?) ?? ''),
+    updatedAt: DateTime.tryParse((map['updated_at'] as String?) ?? ''),
+  );
+}

@@ -448,6 +448,55 @@ class AppLocalizationsIt extends AppLocalizations {
       'Hai trovato un bug? Aiutaci a risolverlo.';
 
   @override
+  String get bugReportTitle => 'Segnalazione bug';
+
+  @override
+  String get bugReportTitleLabel => 'Titolo';
+
+  @override
+  String get bugReportTitleHint => 'Riassumi il problema';
+
+  @override
+  String get bugReportDescriptionLabel => 'Descrizione';
+
+  @override
+  String get bugReportDescriptionHint => 'Descrivi cosa è successo';
+
+  @override
+  String get bugReportStepsLabel => 'Passaggi per riprodurlo (facoltativo)';
+
+  @override
+  String get bugReportStepsHint => 'Indica i passaggi che hai seguito';
+
+  @override
+  String get bugReportExpectedResultLabel => 'Risultato atteso (facoltativo)';
+
+  @override
+  String get bugReportExpectedResultHint =>
+      'Che cosa ti aspettavi che succedesse?';
+
+  @override
+  String get bugReportActualResultLabel => 'Risultato ottenuto (facoltativo)';
+
+  @override
+  String get bugReportActualResultHint => 'Che cosa è successo invece?';
+
+  @override
+  String get bugReportSubmit => 'Invia segnalazione';
+
+  @override
+  String get bugReportSubmitted =>
+      'Segnalazione inviata. Grazie per averci aiutato.';
+
+  @override
+  String bugReportSubmitError(String error) {
+    return 'Impossibile inviare la segnalazione: $error';
+  }
+
+  @override
+  String get bugReportRequired => 'Compila questo campo.';
+
+  @override
   String get adminBugReportsTitle => 'Segnalazioni bug';
 
   @override

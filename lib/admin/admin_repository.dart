@@ -51,4 +51,23 @@ class AdminRepository {
       'p_assigned': assigned,
     },
   );
+
+  Future<List<BugReport>> loadBugReports() async {
+    final result = await _client.from('bug_reports').select();
+    return List<Map<String, dynamic>>.from(
+      result as List,
+    ).map(BugReport.fromMap).toList();
+  }
+
+  Future<void> updateBugReportStatus({
+    required String reportId,
+    required String status,
+  }) async {
+    await _client
+        .from('bug_reports')
+        .update({'status': status})
+        .eq('id', reportId)
+        .select('id')
+        .single();
+  }
 }

@@ -13,6 +13,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
 import '../data/account_access.dart';
+import 'bug_report_page.dart';
 import 'login_page.dart';
 import 'settings_page.dart';
 
@@ -544,9 +545,15 @@ class _ProfilePageState extends State<ProfilePage> with WidgetsBindingObserver {
                       title: Text(l10n.bugReportSettingsTitle),
                       subtitle: Text(l10n.bugReportSettingsSubtitle),
                       onTap: () async {
-                        if (!context.mounted) return;
+                        final submitted = await Navigator.of(context)
+                            .push<bool>(
+                              MaterialPageRoute(
+                                builder: (_) => const BugReportPage(),
+                              ),
+                            );
+                        if (!context.mounted || submitted != true) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.featureInDevelopment)),
+                          SnackBar(content: Text(l10n.bugReportSubmitted)),
                         );
                       },
                     ),
