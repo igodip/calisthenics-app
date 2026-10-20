@@ -444,6 +444,98 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bugReportSettingsSubtitle => 'Found a bug? Help us fix it.';
 
   @override
+  String get adminBugReportsTitle => 'Bug reports';
+
+  @override
+  String get adminBugReportsSubtitle =>
+      'Review and manage problems reported by users.';
+
+  @override
+  String get adminBugReportsSearch => 'Search reports';
+
+  @override
+  String get adminBugReportsEmpty => 'There are no reports.';
+
+  @override
+  String get adminBugReportsNoResults => 'No matching reports.';
+
+  @override
+  String adminBugReportsLoadError(String error) {
+    return 'Could not load reports\n$error';
+  }
+
+  @override
+  String get adminBugReportDetailTitle => 'Report details';
+
+  @override
+  String get adminBugReportReporter => 'Reporter ID';
+
+  @override
+  String get adminBugReportSubmittedAt => 'Date submitted';
+
+  @override
+  String get adminBugReportStatus => 'Status';
+
+  @override
+  String get adminBugReportStatusOpen => 'Open';
+
+  @override
+  String get adminBugReportStatusInProgress => 'In progress';
+
+  @override
+  String get adminBugReportStatusResolved => 'Resolved';
+
+  @override
+  String get adminBugReportDescription => 'Description';
+
+  @override
+  String get adminBugReportReproductionSteps => 'Steps to reproduce';
+
+  @override
+  String get adminBugReportExpectedBehavior => 'Expected result';
+
+  @override
+  String get adminBugReportActualBehavior => 'Actual result';
+
+  @override
+  String get adminBugReportPlatform => 'Platform';
+
+  @override
+  String get adminBugReportAppVersion => 'App version';
+
+  @override
+  String get adminBugReportUnavailable => 'Not provided';
+
+  @override
+  String get adminBugReportChangeStatus => 'Change status';
+
+  @override
+  String get adminBugReportStatusUpdated => 'Report status updated.';
+
+  @override
+  String adminBugReportUpdateFailed(String error) {
+    return 'Could not update the report: $error';
+  }
+
+  @override
+  String get adminBugReportDelete => 'Delete report';
+
+  @override
+  String get adminBugReportDeleteTitle => 'Delete this report?';
+
+  @override
+  String get adminBugReportDeleteMessage =>
+      'This report will be permanently deleted. This action cannot be undone.';
+
+  @override
+  String get adminBugReportDeleted => 'Report deleted.';
+
+  @override
+  String adminBugReportDeleteFailed(String error) {
+    return 'Could not delete the report: $error';
+  }
+
+  @override
   String get refresh => 'Refresh';
 
   @override

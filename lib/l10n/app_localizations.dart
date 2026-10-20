@@ -898,6 +898,174 @@ abstract class AppLocalizations {
   /// **'Hai trovato un bug? Aiutaci a risolverlo.'**
   String get bugReportSettingsSubtitle;
 
+  /// No description provided for @adminBugReportsTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalazioni bug'**
+  String get adminBugReportsTitle;
+
+  /// No description provided for @adminBugReportsSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Consulta e gestisci i problemi segnalati dagli utenti.'**
+  String get adminBugReportsSubtitle;
+
+  /// No description provided for @adminBugReportsSearch.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca segnalazioni'**
+  String get adminBugReportsSearch;
+
+  /// No description provided for @adminBugReportsEmpty.
+  ///
+  /// In it, this message translates to:
+  /// **'Non ci sono segnalazioni.'**
+  String get adminBugReportsEmpty;
+
+  /// No description provided for @adminBugReportsNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna segnalazione corrispondente.'**
+  String get adminBugReportsNoResults;
+
+  /// No description provided for @adminBugReportsLoadError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile caricare le segnalazioni\n{error}'**
+  String adminBugReportsLoadError(String error);
+
+  /// No description provided for @adminBugReportDetailTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Dettagli della segnalazione'**
+  String get adminBugReportDetailTitle;
+
+  /// No description provided for @adminBugReportReporter.
+  ///
+  /// In it, this message translates to:
+  /// **'ID segnalante'**
+  String get adminBugReportReporter;
+
+  /// No description provided for @adminBugReportSubmittedAt.
+  ///
+  /// In it, this message translates to:
+  /// **'Data di invio'**
+  String get adminBugReportSubmittedAt;
+
+  /// No description provided for @adminBugReportStatus.
+  ///
+  /// In it, this message translates to:
+  /// **'Stato'**
+  String get adminBugReportStatus;
+
+  /// No description provided for @adminBugReportStatusOpen.
+  ///
+  /// In it, this message translates to:
+  /// **'Aperta'**
+  String get adminBugReportStatusOpen;
+
+  /// No description provided for @adminBugReportStatusInProgress.
+  ///
+  /// In it, this message translates to:
+  /// **'In lavorazione'**
+  String get adminBugReportStatusInProgress;
+
+  /// No description provided for @adminBugReportStatusResolved.
+  ///
+  /// In it, this message translates to:
+  /// **'Risolta'**
+  String get adminBugReportStatusResolved;
+
+  /// No description provided for @adminBugReportDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione'**
+  String get adminBugReportDescription;
+
+  /// No description provided for @adminBugReportReproductionSteps.
+  ///
+  /// In it, this message translates to:
+  /// **'Passaggi per riprodurlo'**
+  String get adminBugReportReproductionSteps;
+
+  /// No description provided for @adminBugReportExpectedBehavior.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultato atteso'**
+  String get adminBugReportExpectedBehavior;
+
+  /// No description provided for @adminBugReportActualBehavior.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultato ottenuto'**
+  String get adminBugReportActualBehavior;
+
+  /// No description provided for @adminBugReportPlatform.
+  ///
+  /// In it, this message translates to:
+  /// **'Piattaforma'**
+  String get adminBugReportPlatform;
+
+  /// No description provided for @adminBugReportAppVersion.
+  ///
+  /// In it, this message translates to:
+  /// **'Versione app'**
+  String get adminBugReportAppVersion;
+
+  /// No description provided for @adminBugReportUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Non specificato'**
+  String get adminBugReportUnavailable;
+
+  /// No description provided for @adminBugReportChangeStatus.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica stato'**
+  String get adminBugReportChangeStatus;
+
+  /// No description provided for @adminBugReportStatusUpdated.
+  ///
+  /// In it, this message translates to:
+  /// **'Stato della segnalazione aggiornato.'**
+  String get adminBugReportStatusUpdated;
+
+  /// No description provided for @adminBugReportUpdateFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aggiornare la segnalazione: {error}'**
+  String adminBugReportUpdateFailed(String error);
+
+  /// No description provided for @adminBugReportDelete.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina segnalazione'**
+  String get adminBugReportDelete;
+
+  /// No description provided for @adminBugReportDeleteTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare la segnalazione?'**
+  String get adminBugReportDeleteTitle;
+
+  /// No description provided for @adminBugReportDeleteMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'La segnalazione verrà eliminata definitivamente. L\'operazione non può essere annullata.'**
+  String get adminBugReportDeleteMessage;
+
+  /// No description provided for @adminBugReportDeleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalazione eliminata.'**
+  String get adminBugReportDeleted;
+
+  /// No description provided for @adminBugReportDeleteFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile eliminare la segnalazione: {error}'**
+  String adminBugReportDeleteFailed(String error);
+
   /// No description provided for @refresh.
   ///
   /// In it, this message translates to:

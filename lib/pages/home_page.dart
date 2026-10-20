@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:calisync/admin/admin_repository.dart';
 import 'package:calisync/admin/pages/admin_console_page.dart';
+import 'package:calisync/admin/pages/bug_reports.dart';
 import 'package:calisync/pages/profile_page.dart';
 import 'package:calisync/notifications/push_notification_service.dart';
 import 'package:calisync/pages/terminology_page.dart';
@@ -39,6 +40,7 @@ enum HomeSection {
   trainerFeedback,
   trainerPayments,
   adminConsole,
+  adminBugReports,
 }
 
 bool requiresTrainingAccess(HomeSection section) => switch (section) {
@@ -305,6 +307,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           icon: Icons.admin_panel_settings,
           page: const AdminConsolePage(),
           groupTitle: l10n.adminMenuGroup,
+        ),
+      );
+      navigationItems.add(
+        _NavigationItem(
+          section: HomeSection.adminBugReports,
+          title: l10n.adminBugReportsTitle,
+          icon: Icons.bug_report,
+          page: const AdminBugReportsPage(),
         ),
       );
     }

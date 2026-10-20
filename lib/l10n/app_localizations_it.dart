@@ -448,6 +448,99 @@ class AppLocalizationsIt extends AppLocalizations {
       'Hai trovato un bug? Aiutaci a risolverlo.';
 
   @override
+  String get adminBugReportsTitle => 'Segnalazioni bug';
+
+  @override
+  String get adminBugReportsSubtitle =>
+      'Consulta e gestisci i problemi segnalati dagli utenti.';
+
+  @override
+  String get adminBugReportsSearch => 'Cerca segnalazioni';
+
+  @override
+  String get adminBugReportsEmpty => 'Non ci sono segnalazioni.';
+
+  @override
+  String get adminBugReportsNoResults => 'Nessuna segnalazione corrispondente.';
+
+  @override
+  String adminBugReportsLoadError(String error) {
+    return 'Impossibile caricare le segnalazioni\n$error';
+  }
+
+  @override
+  String get adminBugReportDetailTitle => 'Dettagli della segnalazione';
+
+  @override
+  String get adminBugReportReporter => 'ID segnalante';
+
+  @override
+  String get adminBugReportSubmittedAt => 'Data di invio';
+
+  @override
+  String get adminBugReportStatus => 'Stato';
+
+  @override
+  String get adminBugReportStatusOpen => 'Aperta';
+
+  @override
+  String get adminBugReportStatusInProgress => 'In lavorazione';
+
+  @override
+  String get adminBugReportStatusResolved => 'Risolta';
+
+  @override
+  String get adminBugReportDescription => 'Descrizione';
+
+  @override
+  String get adminBugReportReproductionSteps => 'Passaggi per riprodurlo';
+
+  @override
+  String get adminBugReportExpectedBehavior => 'Risultato atteso';
+
+  @override
+  String get adminBugReportActualBehavior => 'Risultato ottenuto';
+
+  @override
+  String get adminBugReportPlatform => 'Piattaforma';
+
+  @override
+  String get adminBugReportAppVersion => 'Versione app';
+
+  @override
+  String get adminBugReportUnavailable => 'Non specificato';
+
+  @override
+  String get adminBugReportChangeStatus => 'Modifica stato';
+
+  @override
+  String get adminBugReportStatusUpdated =>
+      'Stato della segnalazione aggiornato.';
+
+  @override
+  String adminBugReportUpdateFailed(String error) {
+    return 'Impossibile aggiornare la segnalazione: $error';
+  }
+
+  @override
+  String get adminBugReportDelete => 'Elimina segnalazione';
+
+  @override
+  String get adminBugReportDeleteTitle => 'Eliminare la segnalazione?';
+
+  @override
+  String get adminBugReportDeleteMessage =>
+      'La segnalazione verrà eliminata definitivamente. L\'operazione non può essere annullata.';
+
+  @override
+  String get adminBugReportDeleted => 'Segnalazione eliminata.';
+
+  @override
+  String adminBugReportDeleteFailed(String error) {
+    return 'Impossibile eliminare la segnalazione: $error';
+  }
+
+  @override
   String get refresh => 'Aggiorna';
 
   @override

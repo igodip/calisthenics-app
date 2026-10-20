@@ -449,6 +449,99 @@ class AppLocalizationsEs extends AppLocalizations {
       '¿Has encontrado un error? Ayúdanos a solucionarlo.';
 
   @override
+  String get adminBugReportsTitle => 'Informes de errores';
+
+  @override
+  String get adminBugReportsSubtitle =>
+      'Consulta y gestiona los problemas comunicados por los usuarios.';
+
+  @override
+  String get adminBugReportsSearch => 'Buscar informes';
+
+  @override
+  String get adminBugReportsEmpty => 'No hay informes.';
+
+  @override
+  String get adminBugReportsNoResults => 'No hay informes coincidentes.';
+
+  @override
+  String adminBugReportsLoadError(String error) {
+    return 'No se pudieron cargar los informes\n$error';
+  }
+
+  @override
+  String get adminBugReportDetailTitle => 'Detalles del informe';
+
+  @override
+  String get adminBugReportReporter => 'ID del informante';
+
+  @override
+  String get adminBugReportSubmittedAt => 'Fecha de envío';
+
+  @override
+  String get adminBugReportStatus => 'Estado';
+
+  @override
+  String get adminBugReportStatusOpen => 'Abierto';
+
+  @override
+  String get adminBugReportStatusInProgress => 'En curso';
+
+  @override
+  String get adminBugReportStatusResolved => 'Resuelto';
+
+  @override
+  String get adminBugReportDescription => 'Descripción';
+
+  @override
+  String get adminBugReportReproductionSteps => 'Pasos para reproducirlo';
+
+  @override
+  String get adminBugReportExpectedBehavior => 'Resultado esperado';
+
+  @override
+  String get adminBugReportActualBehavior => 'Resultado obtenido';
+
+  @override
+  String get adminBugReportPlatform => 'Plataforma';
+
+  @override
+  String get adminBugReportAppVersion => 'Versión de la aplicación';
+
+  @override
+  String get adminBugReportUnavailable => 'No especificado';
+
+  @override
+  String get adminBugReportChangeStatus => 'Cambiar estado';
+
+  @override
+  String get adminBugReportStatusUpdated =>
+      'Se actualizó el estado del informe.';
+
+  @override
+  String adminBugReportUpdateFailed(String error) {
+    return 'No se pudo actualizar el informe: $error';
+  }
+
+  @override
+  String get adminBugReportDelete => 'Eliminar informe';
+
+  @override
+  String get adminBugReportDeleteTitle => '¿Eliminar este informe?';
+
+  @override
+  String get adminBugReportDeleteMessage =>
+      'El informe se eliminará permanentemente. Esta acción no se puede deshacer.';
+
+  @override
+  String get adminBugReportDeleted => 'Informe eliminado.';
+
+  @override
+  String adminBugReportDeleteFailed(String error) {
+    return 'No se pudo eliminar el informe: $error';
+  }
+
+  @override
   String get refresh => 'Actualizar';
 
   @override
