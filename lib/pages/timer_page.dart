@@ -13,24 +13,45 @@ class TimerPage extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 620),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.timerTitle,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            key: const PageStorageKey('timer-page-scroll'),
+            padding: EdgeInsets.fromLTRB(
+              constraints.maxWidth < 360 ? 12 : 24,
+              constraints.maxHeight < 500 ? 12 : 24,
+              constraints.maxWidth < 360 ? 12 : 24,
+              24,
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1100),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            l10n.timerTitle,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  timer_components.WorkoutTimerPanel(l10n: l10n),
-                ],
+                    const SizedBox(height: 16),
+                    timer_components.WorkoutTimerPanel(
+                      l10n: l10n,
+                      compact: constraints.maxHeight < 500,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

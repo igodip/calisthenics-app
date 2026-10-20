@@ -189,6 +189,7 @@ void main() {
     expect(find.text('TABATA'), findsOneWidget);
     expect(find.text('Reps: 0'), findsOneWidget);
 
+    await tester.ensureVisible(find.byKey(const ValueKey('amrap-add-rep')));
     await tester.tap(find.byKey(const ValueKey('amrap-add-rep')));
     await tester.pump();
     expect(find.text('Reps: 1'), findsOneWidget);
@@ -224,7 +225,8 @@ void main() {
     await tester.tap(workoutToggle);
     await tester.pump();
 
-    await tester.tap(find.text('EMOM'));
+    await tester.ensureVisible(find.byKey(const ValueKey('timer-mode-emom')));
+    await tester.tap(find.byKey(const ValueKey('timer-mode-emom')));
     await tester.pumpAndSettle();
     expect(
       find.text(
@@ -237,7 +239,8 @@ void main() {
     expect(find.text('00:06'), findsOneWidget);
     expect(find.text('Reps: 1'), findsOneWidget);
 
-    await tester.tap(find.text('EMOM'));
+    await tester.ensureVisible(find.byKey(const ValueKey('timer-mode-emom')));
+    await tester.tap(find.byKey(const ValueKey('timer-mode-emom')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('timer-change-confirm')));
     await tester.pumpAndSettle();

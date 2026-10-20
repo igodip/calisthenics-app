@@ -18,6 +18,7 @@ enum WelcomeExercise {
   lunge,
   jumpingJack,
   tricepsExtension,
+  frontLever,
 }
 
 WelcomeExercise chooseWelcomeExercise(
@@ -290,6 +291,20 @@ class WelcomeExercisePainter extends CustomPainter {
     }
 
     switch (exercise) {
+      case WelcomeExercise.frontLever:
+        // Straight-arm, face-up horizontal hold with a subtle breathing motion.
+        line(const Offset(25, 5), const Offset(78, 5));
+        final height = 27 + 0.8 * math.sin(progress * math.pi * 10);
+        final shoulder = Offset(38, height);
+        final hip = Offset(63, height);
+        head(Offset(29, height));
+        line(Offset(33, height), shoulder);
+        line(const Offset(45, 5), shoulder);
+        line(const Offset(51, 5), Offset(40, height));
+        line(shoulder, hip);
+        chain([hip, Offset(94, height), Offset(97, height - 3)]);
+        chain([hip, Offset(92, height + 3), Offset(95, height)]);
+        return;
       case WelcomeExercise.handstandPushUp:
         final shoulder = Offset(55, 25 + 7 * bend);
         head(Offset(55, shoulder.dy + 7));

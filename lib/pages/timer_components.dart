@@ -12,8 +12,13 @@ enum WorkoutTimerMode { amrap, emom, forTime, tabata }
 
 class WorkoutTimerPanel extends StatefulWidget {
   final AppLocalizations l10n;
+  final bool compact;
 
-  const WorkoutTimerPanel({super.key, required this.l10n});
+  const WorkoutTimerPanel({
+    super.key,
+    required this.l10n,
+    this.compact = false,
+  });
 
   @override
   State<WorkoutTimerPanel> createState() => _WorkoutTimerPanelState();
@@ -256,6 +261,7 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        scrollable: true,
         title: Text(widget.l10n.timerChangeModeTitle),
         content: Text(widget.l10n.timerChangeModeWarning),
         actions: [
@@ -446,200 +452,254 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final ringSize = (constraints.maxWidth * 0.68)
-            .clamp(220, 320)
-            .toDouble();
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Wrap(
-              alignment: WrapAlignment.center,
+        final textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+        final wide = constraints.maxWidth >= 700 * textScale.clamp(1, 1.5);
+        final settings = _mode == WorkoutTimerMode.forTime
+            ? null
+            : _surface(context, _buildSettings(l10n));
+        final modes = LayoutBuilder(
+          builder: (context, available) {
+            final columns = available.maxWidth >= 560 * textScale
+                ? 4
+                : available.maxWidth >= 260 * textScale
+                ? 2
+                : 1;
+            final width = (available.maxWidth - (columns - 1) * 8) / columns;
+            return Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
                 for (final mode in WorkoutTimerMode.values)
-                  ChoiceChip(
-                    showCheckmark: false,
-                    selectedColor: colors.primaryContainer,
-                    side: BorderSide.none,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 10,
+                  SizedBox(
+                    width: width,
+                    child: ChoiceChip(
+                      key: ValueKey('timer-mode-${mode.name}'),
+                      showCheckmark: false,
+                      selectedColor: colors.primaryContainer,
+                      side: BorderSide(
+                        color: _mode == mode
+                            ? colors.primary
+                            : colors.outlineVariant,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 8,
+                      ),
+                      label: SizedBox(
+                        width: double.infinity,
+                        child: Text(switch (mode) {
+                          WorkoutTimerMode.amrap => l10n.timerModeAmrap,
+                          WorkoutTimerMode.emom => l10n.timerModeEmom,
+                          WorkoutTimerMode.forTime => l10n.timerModeForTime,
+                          WorkoutTimerMode.tabata => l10n.timerModeTabata,
+                        }, textAlign: TextAlign.center),
+                      ),
+                      selected: _mode == mode,
+                      onSelected: (_) => _selectMode(mode),
                     ),
-                    label: Text(switch (mode) {
-                      WorkoutTimerMode.amrap => l10n.timerModeAmrap,
-                      WorkoutTimerMode.emom => l10n.timerModeEmom,
-                      WorkoutTimerMode.forTime => l10n.timerModeForTime,
-                      WorkoutTimerMode.tabata => l10n.timerModeTabata,
-                    }),
-                    selected: _mode == mode,
-                    onSelected: (_) => _selectMode(mode),
                   ),
               ],
-            ),
-            const SizedBox(height: 16),
-            if (_mode != WorkoutTimerMode.forTime)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colors.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: colors.outlineVariant.withValues(alpha: 0.4),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: _buildSettings(l10n),
+            );
+          },
+        );
+        final clock = _surface(
+          context,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                title,
+                key: const ValueKey('timer-phase'),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: phaseColor,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-            if (_mode == WorkoutTimerMode.amrap) ...[
-              const SizedBox(height: 12),
-              Wrap(
-                alignment: WrapAlignment.center,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 12,
-                children: [
-                  Text(
-                    '${l10n.timerAmrapReps}: $_amrapReps',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  FilledButton.tonalIcon(
-                    key: const ValueKey('amrap-add-rep'),
-                    onPressed: _isFinished
-                        ? null
-                        : () {
-                            setState(() => _amrapReps += 1);
-                            unawaited(_persistSession());
-                          },
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n.timerAmrapAddRep),
-                  ),
-                ],
-              ),
-            ],
-            const SizedBox(height: 20),
-            Center(
-              child: SizedBox.square(
-                dimension: ringSize,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned.fill(
-                      child: WorkoutTimerDial(
-                        key: ValueKey((
-                          _mode,
-                          _isPreparing,
-                          _isRestPhase,
-                          _tabataRound,
-                          _mode == WorkoutTimerMode.emom ||
-                                  _mode == WorkoutTimerMode.forTime
-                              ? _elapsedSeconds ~/ 60
-                              : 0,
-                        )),
-                        progress: ringProgress,
-                        phaseDuration: Duration(seconds: phaseDurationSeconds),
-                        activeColor: phaseColor,
-                        animate: _isRunning,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+              const SizedBox(height: 16),
+              LayoutBuilder(
+                builder: (context, available) {
+                  // Never impose a minimum diameter wider than the viewport.
+                  final ringSize = math.min(
+                    available.maxWidth,
+                    widget.compact ? 210.0 : 300.0,
+                  );
+                  return Center(
+                    child: SizedBox.square(
+                      key: const ValueKey('timer-dial-container'),
+                      dimension: ringSize,
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Text(
-                            title,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: phaseColor,
-                              fontWeight: FontWeight.w800,
+                          Positioned.fill(
+                            child: WorkoutTimerDial(
+                              key: ValueKey((
+                                _mode,
+                                _isPreparing,
+                                _isRestPhase,
+                                _tabataRound,
+                                _mode == WorkoutTimerMode.emom ||
+                                        _mode == WorkoutTimerMode.forTime
+                                    ? _elapsedSeconds ~/ 60
+                                    : 0,
+                              )),
+                              progress: ringProgress,
+                              phaseDuration: Duration(
+                                seconds: phaseDurationSeconds,
+                              ),
+                              activeColor: phaseColor,
+                              animate: _isRunning,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              _formatSeconds(displaySeconds),
-                              style: theme.textTheme.displayMedium?.copyWith(
-                                fontSize: (ringSize * 0.23)
-                                    .clamp(42, 76)
-                                    .toDouble(),
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -2,
-                                fontFeatures: const [
-                                  FontFeature.tabularFigures(),
-                                ],
+                          Padding(
+                            padding: EdgeInsets.all(ringSize * 0.14),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                _formatSeconds(displaySeconds),
+                                style: theme.textTheme.displayLarge?.copyWith(
+                                  fontSize: 76,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -2,
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                          if (_mode == WorkoutTimerMode.emom &&
-                              !_isPreparing) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              '${l10n.timerWorkoutElapsed}: ${_formatSeconds(totalElapsed)}',
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                          if (_mode == WorkoutTimerMode.tabata) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              '${l10n.timerRoundsLabel}: $_tabataRound/$_tabataRounds',
-                            ),
-                          ],
                         ],
                       ),
                     ),
-                  ],
+                  );
+                },
+              ),
+              if (_mode == WorkoutTimerMode.emom && !_isPreparing) ...[
+                const SizedBox(height: 12),
+                Text(
+                  '${l10n.timerWorkoutElapsed}: ${_formatSeconds(totalElapsed)}',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge,
+                ),
+              ],
+              if (_mode == WorkoutTimerMode.tabata) ...[
+                const SizedBox(height: 12),
+                Text(
+                  '${l10n.timerRoundsLabel}: $_tabataRound/$_tabataRounds',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge,
+                ),
+              ],
+              const SizedBox(height: 20),
+              FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(0, 56),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  textStyle: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                key: const ValueKey('workout-timer-toggle'),
+                onPressed: _toggleTimer,
+                icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
+                label: Text(
+                  _isRunning ? l10n.timerControlPause : l10n.timerControlPlay,
+                  textAlign: TextAlign.center,
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 28,
-                      vertical: 18,
-                    ),
-                    textStyle: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  key: const ValueKey('workout-timer-toggle'),
-                  onPressed: _toggleTimer,
-                  icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
+              const SizedBox(height: 10),
+              if (_mode == WorkoutTimerMode.forTime && !_isFinished)
+                OutlinedButton.icon(
+                  onPressed: _elapsedSeconds == 0 ? null : _finishTimer,
+                  icon: const Icon(Icons.stop_rounded),
                   label: Text(
-                    _isRunning ? l10n.timerControlPause : l10n.timerControlPlay,
+                    l10n.timerWorkoutFinish,
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              else
+                OutlinedButton.icon(
+                  key: const ValueKey('workout-timer-reset'),
+                  onPressed: _resetTimer,
+                  icon: const Icon(Icons.restart_alt),
+                  label: Text(
+                    l10n.timerControlReset,
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                if (_mode == WorkoutTimerMode.forTime && !_isFinished)
-                  OutlinedButton.icon(
-                    onPressed: _elapsedSeconds == 0 ? null : _finishTimer,
-                    icon: const Icon(Icons.stop_rounded),
-                    label: Text(l10n.timerWorkoutFinish),
-                  )
-                else
-                  OutlinedButton.icon(
-                    key: const ValueKey('workout-timer-reset'),
-                    onPressed: _resetTimer,
-                    icon: const Icon(Icons.restart_alt),
-                    label: Text(l10n.timerControlReset),
+              if (_mode == WorkoutTimerMode.amrap) ...[
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                Text(
+                  '${l10n.timerAmrapReps}: $_amrapReps',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
+                ),
+                const SizedBox(height: 8),
+                FilledButton.tonalIcon(
+                  key: const ValueKey('amrap-add-rep'),
+                  onPressed: _isFinished
+                      ? null
+                      : () {
+                          setState(() => _amrapReps += 1);
+                          unawaited(_persistSession());
+                        },
+                  icon: const Icon(Icons.add),
+                  label: Text(
+                    l10n.timerAmrapAddRep,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
-            ),
+            ],
+          ),
+        );
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            modes,
+            const SizedBox(height: 16),
+            if (wide && settings != null)
+              Row(
+                key: const ValueKey('timer-wide-layout'),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 6, child: clock),
+                  const SizedBox(width: 20),
+                  Expanded(flex: 5, child: settings),
+                ],
+              )
+            else ...[
+              if (settings != null) ...[settings, const SizedBox(height: 16)],
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 560),
+                  child: clock,
+                ),
+              ),
+            ],
           ],
         );
       },
+    );
+  }
+
+  Widget _surface(BuildContext context, Widget child) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: child,
     );
   }
 
@@ -709,10 +769,8 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
         ),
       );
     }
-    return Wrap(
-      alignment: WrapAlignment.center,
-      spacing: 12,
-      runSpacing: 12,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         WorkoutTimerSetting(
           title: l10n.timerTabataWork,
@@ -733,6 +791,7 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
             (value) => _workSeconds = value,
           ),
         ),
+        const SizedBox(height: 12),
         WorkoutTimerSetting(
           title: l10n.timerTabataRest,
           value: '${_restSeconds}s',
@@ -752,6 +811,7 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
             (value) => _restSeconds = value,
           ),
         ),
+        const SizedBox(height: 12),
         WorkoutTimerSetting(
           title: l10n.timerRoundsLabel,
           value: '$_tabataRounds',
@@ -921,7 +981,14 @@ class WorkoutTimerSetting extends StatelessWidget {
                 onPressed: enabled ? onDecrease : null,
                 icon: const Icon(Icons.remove),
               ),
-              Text(value, style: theme.textTheme.titleMedium),
+              Expanded(
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(value, style: theme.textTheme.titleMedium),
+                  ),
+                ),
+              ),
               IconButton(
                 onPressed: enabled ? onIncrease : null,
                 icon: const Icon(Icons.add),
