@@ -14,7 +14,9 @@ class TerminologyPage extends StatefulWidget {
   State<TerminologyPage> createState() => _TerminologyPageState();
 }
 
-class _TerminologyPageState extends State<TerminologyPage> {
+class _TerminologyPageState extends State<TerminologyPage>
+    with WidgetsBindingObserver {
+  Future<void>? _refreshInFlight;
   Future<List<TerminologyEntry>>? _terminologyFuture;
   String? _localeCode;
   final ScrollController _scrollController = ScrollController();
@@ -27,6 +29,7 @@ class _TerminologyPageState extends State<TerminologyPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _highlightedTermKey = widget.termKey?.trim().toLowerCase();
   }
 
@@ -36,6 +39,7 @@ class _TerminologyPageState extends State<TerminologyPage> {
     final locale = Localizations.localeOf(context).languageCode;
     if (_localeCode != locale) {
       _localeCode = locale;
+      _refreshInFlight = null;
       _terminologyFuture = (widget.loadTerms ?? TerminologyRepository.load)(
         locale,
       );
@@ -54,6 +58,7 @@ class _TerminologyPageState extends State<TerminologyPage> {
       _scrollRequest++;
     }
     if (oldWidget.loadTerms != widget.loadTerms) {
+      _refreshInFlight = null;
       _terminologyFuture = (widget.loadTerms ?? TerminologyRepository.load)(
         _localeCode!,
       );
@@ -65,8 +70,38 @@ class _TerminologyPageState extends State<TerminologyPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted && _localeCode != null) {
+      _reload(forceRefresh: false);
+    }
+  }
+
+  Future<void> _reload({bool forceRefresh = true}) {
+    if (_refreshInFlight != null) return _refreshInFlight!;
+    final future =
+        widget.loadTerms?.call(_localeCode!) ??
+        TerminologyRepository.load(_localeCode!, forceRefresh: forceRefresh);
+    setState(() {
+      _terminologyFuture = future;
+      _didScrollToTarget = false;
+      _scrollRequest++;
+    });
+    final handled = future.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace stack) {},
+    );
+    late final Future<void> operation;
+    operation = handled.whenComplete(() {
+      if (identical(_refreshInFlight, operation)) _refreshInFlight = null;
+    });
+    _refreshInFlight = operation;
+    return operation;
   }
 
   void _scrollToHighlightedEntry(List<TerminologyEntry> terms) {
@@ -107,147 +142,185 @@ class _TerminologyPageState extends State<TerminologyPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return FutureBuilder<List<TerminologyEntry>>(
-      future: _terminologyFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CustomScrollView(
-            slivers: [
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ],
-          );
-        }
-
-        if (snapshot.hasError) {
-          return CustomScrollView(
-            slivers: [
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      l10n.unexpectedError(snapshot.error.toString()),
-                      style: theme.textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        }
-
-        final terms = snapshot.data ?? const [];
-        if (terms.isEmpty) {
-          return CustomScrollView(
-            slivers: [
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: Text(
-                    l10n.profileNoData,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ),
-              ),
-            ],
-          );
-        }
-
-        _scrollToHighlightedEntry(terms);
-
-        return CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              // Lay out the glossary together so even off-screen, variable-height
-              // entries have a context and an exact offset for ensureVisible.
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  children: List<Widget>.generate(terms.length, (index) {
-                    final entry = terms[index];
-                    final termKey = entry.termKey.trim().toLowerCase();
-                    final entryKey = _entryKeys.putIfAbsent(
-                      termKey,
-                      () => GlobalKey(),
-                    );
-                    final isHighlighted = termKey == _highlightedTermKey;
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        bottom: index == terms.length - 1 ? 0 : 12,
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: IconButton(
+            tooltip: l10n.refresh,
+            onPressed: _reload,
+            icon: const Icon(Icons.refresh),
+          ),
+        ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: _reload,
+            child: FutureBuilder<List<TerminologyEntry>>(
+              future: _terminologyFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(child: CircularProgressIndicator()),
                       ),
-                      child: DecoratedBox(
-                        key: entryKey,
-                        decoration: BoxDecoration(
-                          color: isHighlighted
-                              ? colorScheme.primaryContainer.withValues(
-                                  alpha: 0.6,
-                                )
-                              : colorScheme.surfaceContainerHighest.withValues(
-                                  alpha: 0.5,
+                    ],
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  l10n.unexpectedError(
+                                    snapshot.error.toString(),
+                                  ),
+                                  style: theme.textTheme.bodyMedium,
+                                  textAlign: TextAlign.center,
                                 ),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isHighlighted
-                                ? colorScheme.primary
-                                : colorScheme.outlineVariant,
-                            width: isHighlighted ? 1.5 : 1,
+                                const SizedBox(height: 12),
+                                FilledButton.icon(
+                                  onPressed: _reload,
+                                  icon: const Icon(Icons.refresh),
+                                  label: Text(l10n.retry),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 18,
-                                    backgroundColor:
-                                        colorScheme.primaryContainer,
-                                    child: Icon(
-                                      Icons.fitness_center,
-                                      size: 18,
-                                      color: colorScheme.onPrimaryContainer,
-                                    ),
+                      ),
+                    ],
+                  );
+                }
+
+                final terms = snapshot.data ?? const [];
+                if (terms.isEmpty) {
+                  return CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: Text(
+                            l10n.profileNoData,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                _scrollToHighlightedEntry(terms);
+
+                return CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  controller: _scrollController,
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                      // Lay out the glossary together so even off-screen, variable-height
+                      // entries have a context and an exact offset for ensureVisible.
+                      sliver: SliverToBoxAdapter(
+                        child: Column(
+                          children: List<Widget>.generate(terms.length, (
+                            index,
+                          ) {
+                            final entry = terms[index];
+                            final termKey = entry.termKey.trim().toLowerCase();
+                            final entryKey = _entryKeys.putIfAbsent(
+                              termKey,
+                              () => GlobalKey(),
+                            );
+                            final isHighlighted =
+                                termKey == _highlightedTermKey;
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                bottom: index == terms.length - 1 ? 0 : 12,
+                              ),
+                              child: DecoratedBox(
+                                key: entryKey,
+                                decoration: BoxDecoration(
+                                  color: isHighlighted
+                                      ? colorScheme.primaryContainer.withValues(
+                                          alpha: 0.6,
+                                        )
+                                      : colorScheme.surfaceContainerHighest
+                                            .withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: isHighlighted
+                                        ? colorScheme.primary
+                                        : colorScheme.outlineVariant,
+                                    width: isHighlighted ? 1.5 : 1,
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      entry.term,
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w700,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 18,
+                                            backgroundColor:
+                                                colorScheme.primaryContainer,
+                                            child: Icon(
+                                              Icons.fitness_center,
+                                              size: 18,
+                                              color: colorScheme
+                                                  .onPrimaryContainer,
+                                            ),
                                           ),
-                                    ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              entry.term,
+                                              style: theme.textTheme.titleMedium
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        entry.description,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(height: 1.4),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                entry.description,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  height: 1.4,
                                 ),
                               ),
-                            ],
-                          ),
+                            );
+                          }),
                         ),
                       ),
-                    );
-                  }),
-                ),
-              ),
+                    ),
+                  ],
+                );
+              },
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 }

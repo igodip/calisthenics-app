@@ -9,16 +9,20 @@ class ExerciseGuidesPage extends StatefulWidget {
     super.key,
     this.initialGuideSlug,
     this.initialGuideId,
+    this.loadGuides,
   });
 
   final String? initialGuideSlug;
   final String? initialGuideId;
+  final Future<List<ExerciseGuide>> Function(String locale)? loadGuides;
 
   @override
   State<ExerciseGuidesPage> createState() => _ExerciseGuidesPageState();
 }
 
-class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
+class _ExerciseGuidesPageState extends State<ExerciseGuidesPage>
+    with WidgetsBindingObserver {
+  Future<void>? _refreshInFlight;
   Difficulty _selectedDifficulty = Difficulty.beginner;
   Future<List<ExerciseGuide>>? _guidesFuture;
   String? _localeName;
@@ -28,17 +32,65 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
   bool _initialGuideHandled = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted && _localeName != null) {
+      _reload(forceRefresh: false);
+    }
+  }
+
+  Future<void> _reload({bool forceRefresh = true}) {
+    if (_refreshInFlight != null) return _refreshInFlight!;
+    final future = _loadGuides(_localeName!, forceRefresh: forceRefresh);
+    setState(() {
+      _guidesFuture = future;
+      if (forceRefresh) _initialGuideHandled = false;
+    });
+    final handled = future.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace stack) {},
+    );
+    late final Future<void> operation;
+    operation = handled.whenComplete(() {
+      if (identical(_refreshInFlight, operation)) _refreshInFlight = null;
+    });
+    _refreshInFlight = operation;
+    return operation;
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final l10n = AppLocalizations.of(context)!;
     if (_guidesFuture == null || _localeName != l10n.localeName) {
       _localeName = l10n.localeName;
+      _refreshInFlight = null;
       _guidesFuture = _loadGuides(l10n.localeName);
     }
   }
 
   @override
+  void didUpdateWidget(covariant ExerciseGuidesPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.loadGuides != widget.loadGuides) {
+      _refreshInFlight = null;
+      _guidesFuture = _loadGuides(_localeName!);
+    }
+    if (oldWidget.loadGuides != widget.loadGuides ||
+        oldWidget.initialGuideSlug != widget.initialGuideSlug ||
+        oldWidget.initialGuideId != widget.initialGuideId) {
+      _initialGuideHandled = false;
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _scrollController.dispose();
     super.dispose();
   }
@@ -95,86 +147,111 @@ class _ExerciseGuidesPageState extends State<ExerciseGuidesPage> {
     );
   }
 
-  Future<List<ExerciseGuide>> _loadGuides(String localeName) {
-    return ExerciseGuides.load(localeName);
+  Future<List<ExerciseGuide>> _loadGuides(
+    String localeName, {
+    bool forceRefresh = false,
+  }) {
+    return widget.loadGuides?.call(localeName) ??
+        ExerciseGuides.load(localeName, forceRefresh: forceRefresh);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return FutureBuilder<List<ExerciseGuide>>(
-      future: _guidesFuture,
-      builder: (context, snapshot) {
-        final guides = snapshot.data ?? const <ExerciseGuide>[];
-        final filteredGuides = guides
-            .where((guide) => guide.difficulty == _selectedDifficulty)
-            .toList();
-        if (!_initialGuideHandled &&
-            snapshot.connectionState == ConnectionState.done) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _handleInitialGuide(guides);
-          });
-        }
+    return RefreshIndicator(
+      onRefresh: _reload,
+      child: FutureBuilder<List<ExerciseGuide>>(
+        future: _guidesFuture,
+        builder: (context, snapshot) {
+          final guides = snapshot.data ?? const <ExerciseGuide>[];
+          final filteredGuides = guides
+              .where((guide) => guide.difficulty == _selectedDifficulty)
+              .toList();
+          if (!_initialGuideHandled &&
+              !snapshot.hasError &&
+              snapshot.connectionState == ConnectionState.done) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _handleInitialGuide(guides);
+            });
+          }
 
-        return ListView(
-          controller: _scrollController,
-          padding: const EdgeInsets.all(20),
-          children: [
-            _PageHeader(
-              title: l10n.guidesTitle,
-              description: l10n.guidesSubtitle,
-            ),
-            const SizedBox(height: 16),
-            _DifficultySelector(
-              selected: _selectedDifficulty,
-              l10n: l10n,
-              onChanged: (difficulty) {
-                setState(() {
-                  _selectedDifficulty = difficulty;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            if (snapshot.connectionState == ConnectionState.waiting)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            else if (snapshot.hasError)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Text(
-                  l10n.guidesLoadError,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              )
-            else
-              for (final guide in filteredGuides)
+          return ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: _scrollController,
+            padding: const EdgeInsets.all(20),
+            children: [
+              _PageHeader(
+                title: l10n.guidesTitle,
+                description: l10n.guidesSubtitle,
+                onRefresh: _reload,
+              ),
+              const SizedBox(height: 16),
+              _DifficultySelector(
+                selected: _selectedDifficulty,
+                l10n: l10n,
+                onChanged: (difficulty) {
+                  setState(() {
+                    _selectedDifficulty = difficulty;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else if (snapshot.hasError)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Container(
-                    key: _guideKeys.putIfAbsent(guide.id, () => GlobalKey()),
-                    child: ExerciseGuideCard(
-                      guide: guide,
-                      l10n: l10n,
-                      isHighlighted: guide.id == _highlightedGuideId,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Column(
+                    children: [
+                      Text(
+                        l10n.guidesLoadError,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      FilledButton.icon(
+                        onPressed: _reload,
+                        icon: const Icon(Icons.refresh),
+                        label: Text(l10n.retry),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                for (final guide in filteredGuides)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Container(
+                      key: _guideKeys.putIfAbsent(guide.id, () => GlobalKey()),
+                      child: ExerciseGuideCard(
+                        guide: guide,
+                        l10n: l10n,
+                        isHighlighted: guide.id == _highlightedGuideId,
+                      ),
                     ),
                   ),
-                ),
-          ],
-        );
-      },
+            ],
+          );
+        },
+      ),
     );
   }
 }
 
 class _PageHeader extends StatelessWidget {
-  const _PageHeader({required this.title, required this.description});
+  const _PageHeader({
+    required this.title,
+    required this.description,
+    required this.onRefresh,
+  });
 
   final String title;
   final String description;
+  final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -196,12 +273,23 @@ class _PageHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: colorScheme.onPrimaryContainer,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ),
+              IconButton(
+                tooltip: AppLocalizations.of(context)!.refresh,
+                onPressed: onRefresh,
+                icon: const Icon(Icons.refresh),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           Text(

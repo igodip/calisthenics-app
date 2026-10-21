@@ -97,14 +97,18 @@ Reference: `lib/pages/profile_page.dart`.
 
 ### Recoverable guide and terminology loading
 
-- [ ] Evict failed loading futures from both locale caches.
-- [ ] Add explicit retry/refresh and cache invalidation paths.
-- [ ] Refresh successful cached catalogs when appropriate without requiring an
+- [x] Evict failed loading futures from both locale caches.
+- [x] Add explicit retry/refresh and cache invalidation paths.
+- [x] Refresh successful cached catalogs when appropriate without requiring an
   app restart.
-- [ ] Test offline startup followed by connectivity recovery and catalog updates.
+- [x] Test offline startup followed by connectivity recovery and catalog updates.
 
-Evidence: both repositories cache the loading `Future`, including failures,
-without an invalidation mechanism.
+Resolved: both repositories use a shared locale cache with five-minute expiry,
+30-second request timeout, failure eviction, forced refresh, and locale/all-cache
+invalidation. Pages offer retry, refresh buttons, pull-to-refresh, and reload on
+foreground resume (respecting cache expiry). Home prefetch errors are handled.
+Tests cover recovery, updates, locale aliases, expiry, request deduplication,
+timeout, and superseded-request races; existing glossary deep links are retained.
 
 References: `lib/data/exercise_guides.dart`,
 `lib/data/terminology_repository.dart`.

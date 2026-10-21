@@ -187,8 +187,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final localeName = AppLocalizations.of(context)!.localeName;
     if (_cachedLocale != localeName) {
       _cachedLocale = localeName;
-      guide_data.ExerciseGuides.load(localeName);
-      TerminologyRepository.load(localeName);
+      // Warm the caches without allowing offline prefetch failures to escape
+      // as unhandled asynchronous errors. The catalog pages provide retry UI.
+      unawaited(
+        guide_data.ExerciseGuides.load(
+          localeName,
+        ).then<void>((_) {}, onError: (Object _, StackTrace stack) {}),
+      );
+      unawaited(
+        TerminologyRepository.load(
+          localeName,
+        ).then<void>((_) {}, onError: (Object _, StackTrace stack) {}),
+      );
     }
   }
 

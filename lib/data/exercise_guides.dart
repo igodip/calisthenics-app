@@ -1,15 +1,19 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../model/exercise_guide.dart';
+import 'locale_catalog_cache.dart';
 
 class ExerciseGuides {
   ExerciseGuides._();
 
-  static final Map<String, Future<List<ExerciseGuide>>> _cachedByLocale = {};
+  static final _cache = LocaleCatalogCache<List<ExerciseGuide>>();
 
-  static Future<List<ExerciseGuide>> load(String locale) {
-    final normalized = _normalizeLocale(locale);
-    return _cachedByLocale.putIfAbsent(normalized, () async {
+  static Future<List<ExerciseGuide>> load(
+    String locale, {
+    bool forceRefresh = false,
+  }) {
+    final normalized = LocaleCatalogCache.normalizeLocale(locale);
+    return _cache.load(normalized, () async {
       final client = Supabase.instance.client;
       final response = await client
           .from('exercises')
@@ -46,7 +50,7 @@ class ExerciseGuides {
             ),
           )
           .toList();
-    });
+    }, forceRefresh: forceRefresh);
   }
 
   static Map<String, ExerciseGuide> toLookup(List<ExerciseGuide> guides) {
@@ -59,8 +63,5 @@ class ExerciseGuides {
     return lookup;
   }
 
-  static String _normalizeLocale(String locale) {
-    if (locale.isEmpty) return 'en';
-    return locale.split('_').first.toLowerCase();
-  }
+  static void invalidate({String? locale}) => _cache.invalidate(locale: locale);
 }
