@@ -100,6 +100,24 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @timerLock.
+  ///
+  /// In it, this message translates to:
+  /// **'Blocca vista timer'**
+  String get timerLock;
+
+  /// No description provided for @timerUnlock.
+  ///
+  /// In it, this message translates to:
+  /// **'Sblocca vista timer'**
+  String get timerUnlock;
+
+  /// No description provided for @timerLocked.
+  ///
+  /// In it, this message translates to:
+  /// **'Timer bloccato'**
+  String get timerLocked;
+
   /// No description provided for @userIdTitle.
   ///
   /// In it, this message translates to:

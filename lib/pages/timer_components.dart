@@ -13,11 +13,13 @@ enum WorkoutTimerMode { amrap, emom, forTime, tabata }
 class WorkoutTimerPanel extends StatefulWidget {
   final AppLocalizations l10n;
   final bool compact;
+  final bool locked;
 
   const WorkoutTimerPanel({
     super.key,
     required this.l10n,
     this.compact = false,
+    this.locked = false,
   });
 
   @override
@@ -449,6 +451,94 @@ class _WorkoutTimerPanelState extends State<WorkoutTimerPanel>
     final totalElapsed = _mode == WorkoutTimerMode.emom && !_emomUnlimited
         ? _emomMinutes * 60 - _remainingSeconds
         : _elapsedSeconds;
+
+    if (widget.locked) {
+      return Column(
+        key: const ValueKey('timer-locked-content'),
+        children: [
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                title,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: phaseColor,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: LayoutBuilder(
+              builder: (context, available) {
+                final diameter = math.min(
+                  available.maxWidth,
+                  available.maxHeight,
+                );
+                return Center(
+                  child: SizedBox.square(
+                    dimension: diameter,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Positioned.fill(
+                          child: WorkoutTimerDial(
+                            progress: ringProgress,
+                            phaseDuration: Duration(
+                              seconds: phaseDurationSeconds,
+                            ),
+                            activeColor: phaseColor,
+                            animate: _isRunning,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(diameter * .14),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              _formatSeconds(displaySeconds),
+                              style: theme.textTheme.displayLarge?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          if (_mode == WorkoutTimerMode.amrap ||
+              _mode == WorkoutTimerMode.tabata ||
+              (_mode == WorkoutTimerMode.emom && !_isPreparing))
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(switch (_mode) {
+                  WorkoutTimerMode.amrap =>
+                    '${l10n.timerAmrapReps}: $_amrapReps',
+                  WorkoutTimerMode.tabata =>
+                    '${l10n.timerRoundsLabel}: $_tabataRound/$_tabataRounds',
+                  _ =>
+                    '${l10n.timerWorkoutElapsed}: ${_formatSeconds(totalElapsed)}',
+                }, style: theme.textTheme.titleMedium),
+              ),
+            ),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(l10n.timerLocked, style: theme.textTheme.labelLarge),
+            ),
+          ),
+        ],
+      );
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {

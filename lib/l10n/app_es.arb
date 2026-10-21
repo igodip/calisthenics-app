@@ -1,4 +1,7 @@
 {
+  "timerLock": "Bloquear vista del temporizador",
+  "timerUnlock": "Desbloquear vista del temporizador",
+  "timerLocked": "Temporizador bloqueado",
   "userIdTitle": "ID de usuario",
   "userIdUnavailable": "No disponible",
   "featureInDevelopment": "Función en desarrollo.",

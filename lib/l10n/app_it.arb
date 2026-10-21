@@ -1,4 +1,7 @@
 {
+  "timerLock": "Blocca vista timer",
+  "timerUnlock": "Sblocca vista timer",
+  "timerLocked": "Timer bloccato",
   "userIdTitle": "ID utente",
   "userIdUnavailable": "Non disponibile",
   "featureInDevelopment": "Funzionalità in sviluppo.",

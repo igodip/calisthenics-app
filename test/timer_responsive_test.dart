@@ -72,11 +72,67 @@ void main() {
               await tester.pumpAndSettle();
             }
             expect(tester.takeException(), isNull);
+            final lock = find.byKey(const ValueKey('timer-lock-toggle'));
+            await tester.ensureVisible(lock);
+            await tester.tap(lock);
+            await tester.pumpAndSettle();
+            expect(
+              find.byKey(const ValueKey('timer-locked-view')),
+              findsOneWidget,
+            );
+            expect(find.byType(Scrollable), findsNothing);
+            expect(
+              find.byKey(const ValueKey('workout-timer-toggle')),
+              findsNothing,
+            );
+            expect(find.byType(WorkoutTimerSetting), findsNothing);
+            expect(lock.hitTestable(), findsOneWidget);
+            expect(tester.takeException(), isNull, reason: 'locked layout');
+            await tester.tap(lock);
+            await tester.pumpAndSettle();
+            expect(
+              find.byKey(const ValueKey('timer-locked-view')),
+              findsNothing,
+            );
+            expect(tester.takeException(), isNull);
           }
         },
       );
     }
   }
+
+  testWidgets('locking preserves the running timer and prevents scrolling', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.binding.setSurfaceSize(const Size(320, 568));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await openTimer(tester, const Locale('en'), 1);
+    final toggle = find.byKey(const ValueKey('workout-timer-toggle'));
+    await tester.ensureVisible(toggle);
+    await tester.tap(toggle);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
+    final lock = find.byKey(const ValueKey('timer-lock-toggle'));
+    await tester.ensureVisible(lock);
+    await tester.tap(lock);
+    await tester.pump();
+    expect(find.text('00:07'), findsOneWidget);
+    expect(find.byType(Scrollable), findsNothing);
+    await tester.drag(
+      find.byKey(const ValueKey('timer-locked-content')),
+      const Offset(0, -200),
+    );
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text('00:05'), findsOneWidget);
+    await tester.tap(lock);
+    await tester.pump();
+    expect(find.text('00:05'), findsOneWidget);
+    await tester.ensureVisible(toggle);
+    await tester.tap(toggle);
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('running timer retains time and reps when switching layouts', (
     tester,

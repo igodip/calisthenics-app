@@ -9,6 +9,15 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get timerLock => 'Blocca vista timer';
+
+  @override
+  String get timerUnlock => 'Sblocca vista timer';
+
+  @override
+  String get timerLocked => 'Timer bloccato';
+
+  @override
   String get userIdTitle => 'ID utente';
 
   @override

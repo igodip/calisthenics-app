@@ -9,6 +9,15 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get timerLock => 'Lock timer view';
+
+  @override
+  String get timerUnlock => 'Unlock timer view';
+
+  @override
+  String get timerLocked => 'Timer locked';
+
+  @override
   String get userIdTitle => 'User ID';
 
   @override

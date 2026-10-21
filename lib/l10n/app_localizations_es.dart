@@ -9,6 +9,15 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get timerLock => 'Bloquear vista del temporizador';
+
+  @override
+  String get timerUnlock => 'Desbloquear vista del temporizador';
+
+  @override
+  String get timerLocked => 'Temporizador bloqueado';
+
+  @override
   String get userIdTitle => 'ID de usuario';
 
   @override
