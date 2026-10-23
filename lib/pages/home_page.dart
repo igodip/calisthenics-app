@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/plan_expired_gate.dart';
+import '../components/account_tutorial_gate.dart';
 import '../components/first_login_pushup.dart';
 import '../data/account_access.dart';
 import '../data/trainee_final_week.dart';
@@ -109,6 +110,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _roleLookupComplete = false;
   bool _rolesLoading = false;
   Object? _roleError;
+  AccountAccess? _tutorialAccess;
   Timer? _rolesTimer;
 
   @override
@@ -145,6 +147,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           _isAdmin = access.isAdmin && access.isActive;
           _roleError = null;
           _roleLookupComplete = true;
+          _tutorialAccess = access;
         });
       }
       if (_trainerProfile != null) {
@@ -523,6 +526,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       ),
     );
 
-    return scaffold;
+    final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
+    return AccountTutorialGate(
+      key: ValueKey('account-tutorial:$userId'),
+      userId: userId,
+      access: _tutorialAccess,
+      child: scaffold,
+    );
   }
 }

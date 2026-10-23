@@ -221,6 +221,12 @@ class StoreDemoBackend {
         result = session;
       } else if (path == '/auth/v1/user' && request.method == 'GET') {
         result = user;
+      } else if (path == '/rest/v1/account_tutorials' &&
+          request.method == 'GET') {
+        // Store screenshots represent an existing account after its tutorial.
+        result = [
+          {'user_id': userId},
+        ];
       } else if (path == '/rest/v1/rpc/is_admin' && request.method == 'POST') {
         result = false;
       } else if (path == '/rest/v1/rpc/current_account_access' &&

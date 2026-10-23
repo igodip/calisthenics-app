@@ -10,6 +10,13 @@ Deletion URL: https://igodip.github.io/calisthenics-app/docs/delete-account.html
 
 ## Evidence and mapping
 
+Update — 24 October 2026: the first-login tutorial stores an account-linked
+completion/skip receipt and timestamp in Supabase, with local completion and
+pending-sync flags. Include this in app-functionality usage/account-state data
+where applicable in the store forms. It is not anonymous analytics, does not
+record individual step views, is owner-only through app permissions, and is
+removed with account deletion.
+
 Data below is transmitted to and retained by Supabase, linked to an account.
 Declare collection for app functionality and, for authentication/account records,
 account management. Do not claim the app collects no data or that records are

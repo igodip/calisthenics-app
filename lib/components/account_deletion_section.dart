@@ -43,6 +43,7 @@ class _AccountDeletionSectionState extends State<AccountDeletionSection> {
         await widget.deleteAccount!();
       } else {
         final client = Supabase.instance.client;
+        final userId = client.auth.currentUser?.id;
         final response = await client.functions.invoke(
           'delete-account',
           body: {'confirm': true},
@@ -56,7 +57,9 @@ class _AccountDeletionSectionState extends State<AccountDeletionSection> {
         final preferences = await SharedPreferences.getInstance();
         for (final key in preferences.getKeys()) {
           if (key.startsWith('cached_profile_image_url:') ||
-              key.startsWith('timer_')) {
+              key.startsWith('timer_') ||
+              key == 'account_tutorial_done:$userId' ||
+              key == 'account_tutorial_pending:$userId') {
             await preferences.remove(key);
           }
         }

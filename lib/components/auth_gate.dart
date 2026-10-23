@@ -21,7 +21,7 @@ class AuthGate extends StatelessWidget {
             : Supabase.instance.client.auth.currentSession;
 
         if (session != null) {
-          return HomePage(title: l10n.appTitle);
+          return HomePage(key: ValueKey(session.user.id), title: l10n.appTitle);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {

@@ -28,6 +28,14 @@ profile information stay in sync across devices.
 - Plan-expired gate that blocks app access when payment is overdue.
 - Modular component structure for cards, theming and reusable widgets.
 
+## First-login tutorial
+
+After the first authenticated role lookup, new and existing accounts without a
+completion receipt receive a skippable, role-aware tutorial. Completion is saved
+per account across devices, with offline synchronization support. Replay it from
+Profile → Settings. See `docs/account-tutorial.md` for persistence, deployment,
+and testing details.
+
 ## Trainer console
 
 The app includes a trainer console (`lib/trainer/`) for coaches to review

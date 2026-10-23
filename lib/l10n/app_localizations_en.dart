@@ -9,6 +9,68 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get tutorialWelcomeTitle => 'Welcome to Calisync';
+
+  @override
+  String get tutorialWelcomeBody =>
+      'Here’s a quick tour of your account. Open the menu at the top left to move between sections. You can skip this tour and replay it from Settings.';
+
+  @override
+  String get tutorialTrainerTrainees =>
+      'Open My trainees from the menu to find your assigned athletes. Open an athlete’s program to review their plan and progress; final-week badges help you spot who needs their next plan.';
+
+  @override
+  String get tutorialTrainerPlans =>
+      'Inside an athlete’s program, use the Plan tab to import a workout PDF and review the exercises. You can edit existing exercises and manage the athlete’s plans.';
+
+  @override
+  String get tutorialTrainerProgress =>
+      'Use the Max tests tab or the trophy shortcut to compare results and histories. Add a new result or private trainer notes here; trainees can view their results but not those private notes.';
+
+  @override
+  String get tutorialTrainerPayments =>
+      'Use Trainee payments to record payment status, amounts and notes. Current-month payment activates a trainee’s training features; profile and account controls stay available.';
+
+  @override
+  String get tutorialTraineePlan =>
+      'Open Workout plan from the menu to follow your assigned days. During a session, record exercise completion, repetitions and your notes. Your trainer manages the program.';
+
+  @override
+  String get tutorialTraineeProgress =>
+      'Open Max test tracking to see results recorded by your trainer. Filter by exercise category and period, then expand an exercise to review its attempt history.';
+
+  @override
+  String get tutorialTrainerFeedback =>
+      'Open Trainee feedback to read updates, reply and mark messages as read. The menu badge helps you find unread feedback.';
+
+  @override
+  String get tutorialTraineeFeedback =>
+      'Use My feedback to tell your trainer how training is going and read replies. You can also leave exercise-specific feedback during a session.';
+
+  @override
+  String get tutorialGuides =>
+      'Use Guides for exercise instructions and reference pictures, and Terminology for training terms. Pictures open with pinch-to-zoom. Use Refresh if the catalog needs updating.';
+
+  @override
+  String get tutorialAccount =>
+      'Open Profile, then Settings, to change your theme, read the privacy policy, replay this tutorial or delete your account. Language and logout are in Profile. These controls remain available while waiting for your trainer.';
+
+  @override
+  String get tutorialAdmin =>
+      'The Admin console lets you manage trainer roles, account access and trainer assignments. Use it only for authorized account administration.';
+
+  @override
+  String get tutorialReplay => 'Replay account tutorial';
+
+  @override
+  String get tutorialFinish => 'Start using Calisync';
+
+  @override
+  String tutorialStep(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
   String get timerLock => 'Lock timer view';
 
   @override

@@ -9,6 +9,68 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get tutorialWelcomeTitle => 'Benvenuto in Calisync';
+
+  @override
+  String get tutorialWelcomeBody =>
+      'Ecco una breve guida al tuo account. Apri il menu in alto a sinistra per passare da una sezione all’altra. Puoi saltare la guida e rivederla dalle Impostazioni.';
+
+  @override
+  String get tutorialTrainerTrainees =>
+      'Apri I miei allievi dal menu per trovare gli atleti assegnati. Apri il programma di un atleta per controllare piano e progressi; le etichette dell’ultima settimana indicano chi potrebbe aver bisogno della prossima scheda.';
+
+  @override
+  String get tutorialTrainerPlans =>
+      'Nel programma di un atleta, usa la scheda Piano per importare un PDF di allenamento e controllare gli esercizi. Puoi modificare gli esercizi esistenti e gestire i piani dell’atleta.';
+
+  @override
+  String get tutorialTrainerProgress =>
+      'Usa la scheda Test massimali o la scorciatoia con il trofeo per confrontare risultati e storico. Aggiungi un risultato o note private del trainer: gli allievi vedono i risultati, ma non queste note.';
+
+  @override
+  String get tutorialTrainerPayments =>
+      'Usa Pagamenti allievi per registrare pagamenti, importi e note. Il pagamento del mese corrente attiva le funzioni di allenamento; profilo e controlli dell’account restano disponibili.';
+
+  @override
+  String get tutorialTraineePlan =>
+      'Apri Piano di allenamento dal menu per seguire i giorni assegnati. Durante una sessione, registra esercizi completati, ripetizioni e note. Il trainer gestisce il programma.';
+
+  @override
+  String get tutorialTraineeProgress =>
+      'Apri Test massimali per vedere i risultati registrati dal trainer. Filtra per categoria e periodo, poi espandi un esercizio per consultare lo storico dei tentativi.';
+
+  @override
+  String get tutorialTrainerFeedback =>
+      'Apri Feedback degli allievi per leggere aggiornamenti, rispondere e segnare i messaggi come letti. Il contatore nel menu ti aiuta a trovare i feedback non letti.';
+
+  @override
+  String get tutorialTraineeFeedback =>
+      'Usa I miei feedback per raccontare al trainer come procede l’allenamento e leggere le risposte. Puoi anche lasciare feedback sui singoli esercizi durante una sessione.';
+
+  @override
+  String get tutorialGuides =>
+      'Usa Guide per istruzioni e immagini degli esercizi, e Terminologia per i termini di allenamento. Apri le immagini e ingrandiscile con due dita. Usa Aggiorna per ricaricare il catalogo.';
+
+  @override
+  String get tutorialAccount =>
+      'Apri Profilo, poi Impostazioni, per cambiare tema, leggere l’informativa sulla privacy, rivedere questa guida o eliminare l’account. Lingua e logout sono nel Profilo. Questi controlli restano disponibili mentre aspetti il trainer.';
+
+  @override
+  String get tutorialAdmin =>
+      'La Console amministratore permette di gestire ruoli trainer, accesso agli account e assegnazioni degli allievi. Usala solo per le attività di amministrazione autorizzate.';
+
+  @override
+  String get tutorialReplay => 'Rivedi la guida all’account';
+
+  @override
+  String get tutorialFinish => 'Inizia a usare Calisync';
+
+  @override
+  String tutorialStep(int current, int total) {
+    return 'Passaggio $current di $total';
+  }
+
+  @override
   String get timerLock => 'Blocca vista timer';
 
   @override
