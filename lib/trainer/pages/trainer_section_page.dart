@@ -35,6 +35,7 @@ class _TrainerSectionPageState extends State<TrainerSectionPage>
   List<TrainerFeedback> _feedback = const [];
   Timer? _timer;
   bool _refreshing = false;
+  bool _foreground = true;
 
   @override
   void initState() {
@@ -53,11 +54,12 @@ class _TrainerSectionPageState extends State<TrainerSectionPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
     if (state == AppLifecycleState.resumed) _load();
   }
 
   Future<void> _load() async {
-    if (!mounted || _refreshing) return;
+    if (!mounted || _refreshing || !_foreground) return;
     _refreshing = true;
     setState(() {
       _loading = true;

@@ -109,6 +109,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _trainerUnreadFeedbackCount = 0;
   bool _roleLookupComplete = false;
   bool _rolesLoading = false;
+  bool _foreground = true;
   Object? _roleError;
   AccountAccess? _tutorialAccess;
   Timer? _rolesTimer;
@@ -135,7 +136,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _loadTrainerRole() async {
-    if (_rolesLoading || !mounted) return;
+    if (_rolesLoading || !mounted || !_foreground) return;
     _rolesLoading = true;
     try {
       final access = await AccountAccess.load();
@@ -170,6 +171,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
     if (state == AppLifecycleState.resumed) _loadTrainerRole();
   }
 

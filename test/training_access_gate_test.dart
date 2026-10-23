@@ -97,4 +97,79 @@ void main() {
     expect(find.text('Training content'), findsNothing);
     expect(find.text('Waiting for your trainer'), findsOneWidget);
   });
+
+  testWidgets('idle timer failure is handled and remains retryable', (
+    tester,
+  ) async {
+    var offline = false;
+    await pumpGate(tester, () async {
+      if (offline) throw StateError('DNS lookup failed');
+      return true;
+    });
+    offline = true;
+    await tester.pump(const Duration(seconds: 30));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Could not check training access'), findsOneWidget);
+    expect(find.text('Waiting for your trainer'), findsNothing);
+    expect(find.text('Settings'), findsOneWidget);
+    offline = false;
+    await tester.tap(find.text('Check again'));
+    await tester.pumpAndSettle();
+    expect(find.text('Training content'), findsOneWidget);
+  });
+
+  testWidgets('background stops polling and offline resume does not throw', (
+    tester,
+  ) async {
+    var queries = 0;
+    var offline = false;
+    await pumpGate(tester, () async {
+      queries++;
+      if (offline) throw StateError('offline');
+      return true;
+    });
+    expect(queries, 1);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump(const Duration(minutes: 2));
+    expect(queries, 1);
+    offline = true;
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+    expect(queries, 2);
+    expect(find.text('Could not check training access'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('stalled access refresh times out without overlapping requests', (
+    tester,
+  ) async {
+    var queries = 0;
+    final pending = Completer<bool>();
+    await pumpGate(tester, () {
+      queries++;
+      return queries == 1 ? Future.value(false) : pending.future;
+    });
+    await tester.tap(find.text('Check again'));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 20));
+    await tester.pumpAndSettle();
+    expect(queries, 2);
+    expect(find.text('Could not check training access'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    pending.completeError(StateError('late offline error'));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('request failure after disposal is still observed', (
+    tester,
+  ) async {
+    final pending = Completer<bool>();
+    await pumpGate(tester, () => pending.future);
+    await tester.pumpWidget(const SizedBox.shrink());
+    pending.completeError(StateError('offline after leaving page'));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
 }

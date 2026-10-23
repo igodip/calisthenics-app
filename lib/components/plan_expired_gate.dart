@@ -5,6 +5,7 @@ import '../data/account_access.dart';
 import '../l10n/app_localizations.dart';
 import '../pages/profile_page.dart';
 import '../pages/settings_page.dart';
+import '../utils/observed_future.dart';
 
 /// Gates training content only. Keep enclosing navigation outside this widget.
 class PlanExpiredGate extends StatefulWidget {
@@ -29,6 +30,8 @@ class _PlanExpiredGateState extends State<PlanExpiredGate>
   Future<bool>? _access;
   Timer? _timer;
   bool _checking = false;
+  bool _foreground = true;
+  int _request = 0;
 
   @override
   void initState() {
@@ -36,7 +39,7 @@ class _PlanExpiredGateState extends State<PlanExpiredGate>
     WidgetsBinding.instance.addObserver(this);
     if (!widget.bypass) _access = _load();
     _timer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (!widget.bypass && !_checking) _refresh();
+      if (_foreground && !widget.bypass && !_checking) _refresh();
     });
   }
 
@@ -49,6 +52,7 @@ class _PlanExpiredGateState extends State<PlanExpiredGate>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
     if (state == AppLifecycleState.resumed && !widget.bypass && !_checking) {
       _refresh();
     }
@@ -63,17 +67,22 @@ class _PlanExpiredGateState extends State<PlanExpiredGate>
     }
   }
 
-  Future<bool> _load() async {
+  Future<bool> _load() {
     _checking = true;
-    try {
-      if (widget.loadAccess != null) return await widget.loadAccess!();
-      return (await AccountAccess.load()).hasTrainingAccess;
-    } finally {
-      _checking = false;
-    }
+    final request = ++_request;
+    final load = widget.loadAccess;
+    return observedFuture(
+      Future<bool>.sync(() async {
+        if (load != null) return await load();
+        return (await AccountAccess.load()).hasTrainingAccess;
+      }).timeout(const Duration(seconds: 20)).whenComplete(() {
+        if (request == _request) _checking = false;
+      }),
+    );
   }
 
   void _refresh() {
+    if (!mounted || _checking || widget.bypass || !_foreground) return;
     final access = _load();
     setState(() {
       _access = access;

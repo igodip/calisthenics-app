@@ -16,6 +16,7 @@ import '../data/account_access.dart';
 import 'bug_report_page.dart';
 import 'login_page.dart';
 import 'settings_page.dart';
+import '../utils/observed_future.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -163,12 +164,13 @@ class _ProfilePageState extends State<ProfilePage> with WidgetsBindingObserver {
   late Future<UserProfileData> _profileFuture;
   Timer? _timer;
   bool _refreshing = false;
+  bool _foreground = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _profileFuture = getUserData();
+    _profileFuture = _loadProfile();
     _timer = Timer.periodic(
       const Duration(seconds: 30),
       (_) => _refreshProfile(),
@@ -184,15 +186,24 @@ class _ProfilePageState extends State<ProfilePage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
     if (state == AppLifecycleState.resumed) _refreshProfile();
   }
 
   void _refreshProfile() {
-    if (!mounted || _refreshing) return;
-    _refreshing = true;
+    if (!mounted || _refreshing || !_foreground) return;
     setState(() {
-      _profileFuture = getUserData().whenComplete(() => _refreshing = false);
+      _profileFuture = _loadProfile();
     });
+  }
+
+  Future<UserProfileData> _loadProfile() {
+    _refreshing = true;
+    return observedFuture(
+      getUserData()
+          .timeout(const Duration(seconds: 20))
+          .whenComplete(() => _refreshing = false),
+    );
   }
 
   void _showLanguagePicker() {
